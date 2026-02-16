@@ -207,6 +207,98 @@ body,
   border-bottom-right-radius: 12px;
 }
 
+.popup-carte {
+  min-width: 230px;
+  max-width: 320px;
+  color: #0f172a;
+  font-size: 0.9rem;
+}
+
+.popup-section + .popup-section {
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid rgba(15, 23, 42, 0.12);
+}
+
+.popup-section-titre {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+
+.popup-badge {
+  display: inline-block;
+  padding: 2px 7px;
+  border-radius: 999px;
+  font-size: 0.72rem;
+  line-height: 1.1;
+  font-weight: 700;
+}
+
+.popup-badge-appareils {
+  color: #1d4ed8;
+  background: rgba(37, 99, 235, 0.14);
+}
+
+.popup-badge-acces {
+  color: #0f766e;
+  background: rgba(20, 184, 166, 0.18);
+}
+
+.popup-badge-itineraire {
+  color: #92400e;
+  background: rgba(245, 158, 11, 0.2);
+}
+
+.popup-section ul {
+  margin: 0 0 0 15px;
+  padding: 0;
+  max-height: 180px;
+  overflow: auto;
+}
+
+.popup-section li + li {
+  margin-top: 6px;
+}
+
+.popup-section p {
+  margin: 0;
+}
+
+.popup-point-couleur {
+  display: inline-block;
+  width: 9px;
+  height: 9px;
+  border-radius: 999px;
+  margin-right: 6px;
+  border: 1px solid rgba(0, 0, 0, 0.2);
+}
+
+.popup-itineraires {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.popup-bouton-itineraire {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px 8px;
+  border-radius: 8px;
+  background: #f8fafc;
+  border: 1px solid rgba(15, 23, 42, 0.16);
+  color: #0f172a;
+  text-decoration: none;
+  font-size: 0.78rem;
+  font-weight: 600;
+}
+
+.popup-bouton-itineraire:hover {
+  background: #eef2ff;
+}
+
 @media (max-width: 720px) {
   .menu-fonds {
     width: min(210px, calc(100vw - 68px - env(safe-area-inset-left) - env(safe-area-inset-right)));
@@ -230,5 +322,10 @@ body,
   .option-filtre {
     font-size: 0.95rem;
     margin: 7px 0;
+  }
+
+  .popup-carte {
+    min-width: 210px;
+    max-width: 280px;
   }
 }
