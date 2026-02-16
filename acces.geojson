@@ -11,7 +11,8 @@
         "acces": "",
         "latitude": 50.6203,
         "longitude": 3.08726,
-        "portail": ""
+        "portail": "",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -30,7 +31,8 @@
         "acces": "",
         "latitude": 49.68836,
         "longitude": 1.7768,
-        "portail": "Triangle"
+        "portail": "Triangle",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -49,7 +51,8 @@
         "acces": "",
         "latitude": "49.706051",
         "longitude": "1.790036",
-        "portail": ""
+        "portail": "",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -68,7 +71,8 @@
         "acces": "",
         "latitude": "49.677472",
         "longitude": "1.767463",
-        "portail": ""
+        "portail": "",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -87,7 +91,8 @@
         "acces": "",
         "latitude": "49.672897",
         "longitude": "1.759137",
-        "portail": ""
+        "portail": "",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -106,7 +111,8 @@
         "acces": "",
         "latitude": "49.683035",
         "longitude": "1.773787",
-        "portail": ""
+        "portail": "",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -125,7 +131,8 @@
         "acces": "",
         "latitude": 49.83359,
         "longitude": 2.82555,
-        "portail": ""
+        "portail": "",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -144,7 +151,8 @@
         "acces": "",
         "latitude": 50.35538,
         "longitude": 3.285046,
-        "portail": ""
+        "portail": "",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -163,7 +171,8 @@
         "acces": "",
         "latitude": 50.13866,
         "longitude": 2.780442,
-        "portail": ""
+        "portail": "",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -182,7 +191,8 @@
         "acces": "",
         "latitude": 50.131653,
         "longitude": 2.779952,
-        "portail": ""
+        "portail": "",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -201,7 +211,8 @@
         "acces": "",
         "latitude": 50.623062,
         "longitude": 2.983871,
-        "portail": ""
+        "portail": "",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -220,7 +231,8 @@
         "acces": "",
         "latitude": 50.99328,
         "longitude": 2.27973,
-        "portail": ""
+        "portail": "",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -239,7 +251,8 @@
         "acces": "",
         "latitude": 50.931476,
         "longitude": 1.839949,
-        "portail": ""
+        "portail": "",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -258,7 +271,8 @@
         "acces": "",
         "latitude": 50.724571,
         "longitude": 2.543193,
-        "portail": ""
+        "portail": "",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -277,7 +291,8 @@
         "acces": "",
         "latitude": 50.62342,
         "longitude": 3.10786,
-        "portail": ""
+        "portail": "",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -296,7 +311,8 @@
         "acces": "",
         "latitude": 50.61520,
         "longitude": 3.08902,
-        "portail": "Ouverture du portail par Agent E"
+        "portail": "Ouverture du portail par Agent E",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -315,7 +331,8 @@
         "acces": "",
         "latitude": 50.7189629,
         "longitude": 3.1774752,
-        "portail": ""
+        "portail": "",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -334,7 +351,8 @@
         "acces": "",
         "latitude": 49.75464,
         "longitude": 2.36441,
-        "portail": ""
+        "portail": "",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -353,7 +371,8 @@
         "acces": "",
         "latitude": 50.90838,
         "longitude": 1.80514,
-        "portail": "Badge Eurotunnel obligatoire"
+        "portail": "Badge Eurotunnel obligatoire",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -372,7 +391,8 @@
         "acces": "",
         "latitude": 50.90913,
         "longitude": 1.81026,
-        "portail": "Badge Eurotunnel obligatoire"
+        "portail": "Badge Eurotunnel obligatoire",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -391,7 +411,8 @@
         "acces": "",
         "latitude": 50.931476,
         "longitude": 1.839949,
-        "portail": "Badge Eurotunnel obligatoire"
+        "portail": "Badge Eurotunnel obligatoire",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -410,7 +431,8 @@
         "acces": "",
         "latitude": 50.931476,
         "longitude": 1.839949,
-        "portail": "Badge Eurotunnel obligatoire"
+        "portail": "Badge Eurotunnel obligatoire",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -429,7 +451,8 @@
         "acces": "",
         "latitude": 50.90838,
         "longitude": 1.80514,
-        "portail": "Badge Eurotunnel obligatoire"
+        "portail": "Badge Eurotunnel obligatoire",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -448,7 +471,8 @@
         "acces": "",
         "latitude": 49.88918,
         "longitude": 2.31432,
-        "portail": "Accès par Carmillon"
+        "portail": "Accès par Carmillon",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -467,7 +491,8 @@
         "acces": "",
         "latitude": 49.88918,
         "longitude": 2.31432,
-        "portail": "Accès par Carmillon"
+        "portail": "Accès par Carmillon",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -486,7 +511,8 @@
         "acces": "",
         "latitude": 49.8766396,
         "longitude": 2.3439634,
-        "portail": ""
+        "portail": "",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -505,7 +531,8 @@
         "acces": "",
         "latitude": "49.888860",
         "longitude": "2.326579",
-        "portail": ""
+        "portail": "",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -524,7 +551,8 @@
         "acces": "",
         "latitude": "49.877483278210676",
         "longitude": "2.3415388512579742",
-        "portail": ""
+        "portail": "",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -543,7 +571,8 @@
         "acces": "",
         "latitude": 49.79982,
         "longitude": 4.29306,
-        "portail": ""
+        "portail": "",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -562,7 +591,8 @@
         "acces": "",
         "latitude": 49.58103,
         "longitude": 3.12081,
-        "portail": ""
+        "portail": "",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -581,7 +611,8 @@
         "acces": "",
         "latitude": 50.68003,
         "longitude": 2.87623,
-        "portail": ""
+        "portail": "",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -600,7 +631,8 @@
         "acces": "",
         "latitude": 50.83125,
         "longitude": 2.40845,
-        "portail": ""
+        "portail": "",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -619,7 +651,8 @@
         "acces": "",
         "latitude": 50.74569,
         "longitude": 2.31635,
-        "portail": ""
+        "portail": "",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -638,7 +671,8 @@
         "acces": "",
         "latitude": 50.28651,
         "longitude": 2.77976,
-        "portail": ""
+        "portail": "",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -657,7 +691,8 @@
         "acces": "",
         "latitude": 50.27188,
         "longitude": 3.15964,
-        "portail": ""
+        "portail": "",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -676,7 +711,8 @@
         "acces": "",
         "latitude": 50.87213,
         "longitude": 2.10028,
-        "portail": ""
+        "portail": "",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -695,7 +731,8 @@
         "acces": "",
         "latitude": 50.19668,
         "longitude": 3.8415,
-        "portail": ""
+        "portail": "",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -714,7 +751,8 @@
         "acces": "",
         "latitude": 50.54338,
         "longitude": 3.06977,
-        "portail": ""
+        "portail": "",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -733,7 +771,8 @@
         "acces": "",
         "latitude": 50.04619,
         "longitude": 2.66314,
-        "portail": ""
+        "portail": "",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -752,7 +791,8 @@
         "acces": "",
         "latitude": 50.04619,
         "longitude": 2.66314,
-        "portail": ""
+        "portail": "",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -771,7 +811,8 @@
         "acces": "",
         "latitude": 50.12665,
         "longitude": 3.93313,
-        "portail": ""
+        "portail": "",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -790,7 +831,8 @@
         "acces": "208-16",
         "latitude": 50.40705,
         "longitude": 2.83331,
-        "portail": ""
+        "portail": "",
+        "hors_patrimoine": true
       },
       "geometry": {
         "type": "Point",
@@ -809,7 +851,8 @@
         "acces": "209-3",
         "latitude": 50.40928,
         "longitude": 2.835957,
-        "portail": "Clé portail spécifique"
+        "portail": "Clé portail spécifique",
+        "hors_patrimoine": true
       },
       "geometry": {
         "type": "Point",
@@ -828,7 +871,8 @@
         "acces": "",
         "latitude": 50.20737,
         "longitude": 3.85838,
-        "portail": ""
+        "portail": "",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -847,7 +891,8 @@
         "acces": "",
         "latitude": 50.57287,
         "longitude": 3.27866,
-        "portail": ""
+        "portail": "",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -866,7 +911,8 @@
         "acces": "",
         "latitude": 50.33494,
         "longitude": 2.839832,
-        "portail": ""
+        "portail": "",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -885,7 +931,8 @@
         "acces": "",
         "latitude": 50.6167,
         "longitude": 3.2631,
-        "portail": ""
+        "portail": "",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -904,7 +951,8 @@
         "acces": "",
         "latitude": 50.20409,
         "longitude": 3.787232,
-        "portail": ""
+        "portail": "",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -923,7 +971,8 @@
         "acces": "",
         "latitude": 50.52139,
         "longitude": 2.63606,
-        "portail": "Contacter l’agent E pour ouverture du portail."
+        "portail": "Contacter l’agent E pour ouverture du portail.",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -942,7 +991,8 @@
         "acces": "",
         "latitude": 50.52467,
         "longitude": 2.63011,
-        "portail": ""
+        "portail": "",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -961,7 +1011,8 @@
         "acces": "230-37A",
         "latitude": 50.52467,
         "longitude": 2.63011,
-        "portail": ""
+        "portail": "",
+        "hors_patrimoine": true
       },
       "geometry": {
         "type": "Point",
@@ -980,7 +1031,8 @@
         "acces": "",
         "latitude": 50.52139,
         "longitude": 2.63606,
-        "portail": "Contacter l’agent E pour ouverture du portail."
+        "portail": "Contacter l’agent E pour ouverture du portail.",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -999,7 +1051,8 @@
         "acces": "",
         "latitude": 50.14911,
         "longitude": 2.86852,
-        "portail": ""
+        "portail": "",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -1018,7 +1071,8 @@
         "acces": "",
         "latitude": "50.38722220627007",
         "longitude": "3.5169661045074467",
-        "portail": ""
+        "portail": "",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -1037,7 +1091,8 @@
         "acces": "",
         "latitude": 49.64698,
         "longitude": 2.75505,
-        "portail": ""
+        "portail": "",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -1056,7 +1111,8 @@
         "acces": "",
         "latitude": 50.53336,
         "longitude": 2.70011,
-        "portail": "Clé spécifique"
+        "portail": "Clé spécifique",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -1075,7 +1131,8 @@
         "acces": "",
         "latitude": 50.93494,
         "longitude": 1.85672,
-        "portail": "clé 590"
+        "portail": "clé 590",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -1094,7 +1151,8 @@
         "acces": "",
         "latitude": 50.96917,
         "longitude": 2.21841,
-        "portail": ""
+        "portail": "",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -1113,7 +1171,8 @@
         "acces": "",
         "latitude": 50.99267,
         "longitude": 2.26646,
-        "portail": ""
+        "portail": "",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -1132,7 +1191,8 @@
         "acces": "",
         "latitude": 50.41549,
         "longitude": 2.918608,
-        "portail": ""
+        "portail": "",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -1151,7 +1211,8 @@
         "acces": "",
         "latitude": 50.29651,
         "longitude": 2.82486,
-        "portail": "Clé spécifique"
+        "portail": "Clé spécifique",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -1170,7 +1231,8 @@
         "acces": "",
         "latitude": 50.29721,
         "longitude": 2.82105,
-        "portail": "Clé spécifique"
+        "portail": "Clé spécifique",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -1189,7 +1251,8 @@
         "acces": "",
         "latitude": "50.222074",
         "longitude": "3.209655",
-        "portail": ""
+        "portail": "",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -1208,7 +1271,8 @@
         "acces": "",
         "latitude": 49.98822,
         "longitude": 3.44319,
-        "portail": ""
+        "portail": "",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -1227,7 +1291,8 @@
         "acces": "",
         "latitude": 50.2105,
         "longitude": 2.772019,
-        "portail": ""
+        "portail": "",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -1246,7 +1311,8 @@
         "acces": "",
         "latitude": 50.21242,
         "longitude": 2.770477,
-        "portail": "Clé spécifique"
+        "portail": "Clé spécifique",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -1265,7 +1331,8 @@
         "acces": "n°2",
         "latitude": 50.21021,
         "longitude": 2.770975,
-        "portail": ""
+        "portail": "",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -1284,7 +1351,8 @@
         "acces": "",
         "latitude": 50.2076,
         "longitude": 2.77998,
-        "portail": ""
+        "portail": "",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -1303,7 +1371,8 @@
         "acces": "",
         "latitude": 50.42889,
         "longitude": 2.82307,
-        "portail": ""
+        "portail": "",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -1322,7 +1391,8 @@
         "acces": "",
         "latitude": 50.46613,
         "longitude": 2.97136,
-        "portail": ""
+        "portail": "",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -1341,7 +1411,8 @@
         "acces": "",
         "latitude": 50.95322,
         "longitude": 2.18403,
-        "portail": ""
+        "portail": "",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -1360,7 +1431,8 @@
         "acces": "",
         "latitude": 50.75496,
         "longitude": 2.55443,
-        "portail": "Clé LGV + 121"
+        "portail": "Clé LGV + 121",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -1379,7 +1451,8 @@
         "acces": "",
         "latitude": 50.80804,
         "longitude": 2.35351,
-        "portail": "Clé LGV + 121"
+        "portail": "Clé LGV + 121",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -1398,7 +1471,8 @@
         "acces": "",
         "latitude": 50.04771,
         "longitude": 3.45259,
-        "portail": ""
+        "portail": "",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -1417,7 +1491,8 @@
         "acces": "",
         "latitude": 50.28057,
         "longitude": 2.77277,
-        "portail": ""
+        "portail": "",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -1436,7 +1511,8 @@
         "acces": "",
         "latitude": 51.02978,
         "longitude": 2.36651,
-        "portail": ""
+        "portail": "",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -1455,7 +1531,8 @@
         "acces": "",
         "latitude": 50.8497,
         "longitude": 1.81277,
-        "portail": ""
+        "portail": "",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -1474,7 +1551,8 @@
         "acces": "",
         "latitude": 50.85015,
         "longitude": 1.8116,
-        "portail": ""
+        "portail": "",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -1493,7 +1571,8 @@
         "acces": "",
         "latitude": 50.85407,
         "longitude": 1.805,
-        "portail": ""
+        "portail": "",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -1512,7 +1591,8 @@
         "acces": "",
         "latitude": 50.16717,
         "longitude": 3.25902,
-        "portail": ""
+        "portail": "",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -1531,7 +1611,8 @@
         "acces": "I83502",
         "latitude": 50.16927,
         "longitude": 3.25753,
-        "portail": "Boite à clé"
+        "portail": "Boite à clé",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -1550,7 +1631,8 @@
         "acces": "",
         "latitude": 50.17684,
         "longitude": 3.25427,
-        "portail": ""
+        "portail": "",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -1569,7 +1651,8 @@
         "acces": "",
         "latitude": 50.78164,
         "longitude": 2.47405,
-        "portail": ""
+        "portail": "",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -1588,7 +1671,8 @@
         "acces": "",
         "latitude": 50.78164,
         "longitude": 2.47405,
-        "portail": ""
+        "portail": "",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -1607,7 +1691,8 @@
         "acces": "",
         "latitude": 50.78139,
         "longitude": 2.47365,
-        "portail": ""
+        "portail": "",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -1626,7 +1711,8 @@
         "acces": "",
         "latitude": 49.84614,
         "longitude": 2.83075,
-        "portail": ""
+        "portail": "",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -1645,7 +1731,8 @@
         "acces": "",
         "latitude": 50.01076,
         "longitude": 2.87424,
-        "portail": ""
+        "portail": "",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -1664,7 +1751,8 @@
         "acces": "",
         "latitude": 50.92621,
         "longitude": 1.83396,
-        "portail": "Badge Eurotunnel obligatoire"
+        "portail": "Badge Eurotunnel obligatoire",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -1683,7 +1771,8 @@
         "acces": "",
         "latitude": 50.931476,
         "longitude": 1.839949,
-        "portail": "Badge Eurotunnel obligatoire"
+        "portail": "Badge Eurotunnel obligatoire",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -1702,7 +1791,8 @@
         "acces": "",
         "latitude": 50.931476,
         "longitude": 1.839949,
-        "portail": "Badge Eurotunnel obligatoire"
+        "portail": "Badge Eurotunnel obligatoire",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -1721,7 +1811,8 @@
         "acces": "",
         "latitude": 50.931476,
         "longitude": 1.839949,
-        "portail": "Badge Eurotunnel obligatoire"
+        "portail": "Badge Eurotunnel obligatoire",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -1740,7 +1831,8 @@
         "acces": "",
         "latitude": 50.931476,
         "longitude": 1.839949,
-        "portail": "Badge Eurotunnel obligatoire"
+        "portail": "Badge Eurotunnel obligatoire",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -1759,7 +1851,8 @@
         "acces": "",
         "latitude": 50.92738,
         "longitude": 1.83633,
-        "portail": "Badge Eurotunnel obligatoire"
+        "portail": "Badge Eurotunnel obligatoire",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -1778,7 +1871,8 @@
         "acces": "",
         "latitude": 49.91218,
         "longitude": 2.5001,
-        "portail": ""
+        "portail": "",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -1797,7 +1891,8 @@
         "acces": "",
         "latitude": 50.99517,
         "longitude": 2.39034,
-        "portail": ""
+        "portail": "",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -1816,7 +1911,8 @@
         "acces": "",
         "latitude": 51.00197,
         "longitude": 2.38353,
-        "portail": ""
+        "portail": "",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -1835,7 +1931,8 @@
         "acces": "",
         "latitude": 51.01106,
         "longitude": 2.37428,
-        "portail": ""
+        "portail": "",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -1854,7 +1951,8 @@
         "acces": "",
         "latitude": 50.93494,
         "longitude": 1.85672,
-        "portail": ""
+        "portail": "",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -1873,7 +1971,8 @@
         "acces": "SM1",
         "latitude": 50.9333,
         "longitude": 1.86056,
-        "portail": ""
+        "portail": "",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -1892,7 +1991,8 @@
         "acces": "SM2",
         "latitude": 50.9333,
         "longitude": 1.86056,
-        "portail": ""
+        "portail": "",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -1911,7 +2011,8 @@
         "acces": "",
         "latitude": 50.93233,
         "longitude": 1.86172,
-        "portail": "Clé 590"
+        "portail": "Clé 590",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -1930,7 +2031,8 @@
         "acces": "I5429",
         "latitude": 50.93179,
         "longitude": 1.86233,
-        "portail": "Clé 590"
+        "portail": "Clé 590",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -1949,7 +2051,8 @@
         "acces": "",
         "latitude": 50.93525,
         "longitude": 1.85033,
-        "portail": ""
+        "portail": "",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -1968,7 +2071,8 @@
         "acces": "",
         "latitude": 50.93525,
         "longitude": 1.85033,
-        "portail": ""
+        "portail": "",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -1987,7 +2091,8 @@
         "acces": "",
         "latitude": 50.93496,
         "longitude": 1.85537,
-        "portail": ""
+        "portail": "",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -2006,7 +2111,8 @@
         "acces": "",
         "latitude": 49.64706,
         "longitude": 1.69978,
-        "portail": "Clé Nord et 121"
+        "portail": "Clé Nord et 121",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -2025,7 +2131,8 @@
         "acces": "",
         "latitude": 50.19842,
         "longitude": 2.86619,
-        "portail": ""
+        "portail": "",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -2044,7 +2151,8 @@
         "acces": "",
         "latitude": 50.94073,
         "longitude": 1.85027,
-        "portail": ""
+        "portail": "",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -2063,7 +2171,8 @@
         "acces": "",
         "latitude": 50.94088,
         "longitude": 1.84929,
-        "portail": ""
+        "portail": "",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -2082,7 +2191,8 @@
         "acces": "",
         "latitude": 50.94073,
         "longitude": 1.85027,
-        "portail": ""
+        "portail": "",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -2101,7 +2211,8 @@
         "acces": "",
         "latitude": 50.94088,
         "longitude": 1.84929,
-        "portail": ""
+        "portail": "",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -2120,7 +2231,8 @@
         "acces": "",
         "latitude": 50.94565,
         "longitude": 1.84089,
-        "portail": ""
+        "portail": "",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -2139,7 +2251,8 @@
         "acces": "",
         "latitude": 50.57681,
         "longitude": 3.24315,
-        "portail": ""
+        "portail": "",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -2158,7 +2271,8 @@
         "acces": "",
         "latitude": 50.5761,
         "longitude": 1.61442,
-        "portail": ""
+        "portail": "",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -2177,7 +2291,8 @@
         "acces": "",
         "latitude": 50.62746,
         "longitude": 2.99342,
-        "portail": ""
+        "portail": "",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -2196,7 +2311,8 @@
         "acces": "",
         "latitude": 50.33367,
         "longitude": 3.4146,
-        "portail": ""
+        "portail": "",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -2215,7 +2331,8 @@
         "acces": "",
         "latitude": 50.55251,
         "longitude": 2.91516,
-        "portail": ""
+        "portail": "",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -2234,7 +2351,8 @@
         "acces": "",
         "latitude": 50.54833,
         "longitude": 2.90457,
-        "portail": ""
+        "portail": "",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -2253,7 +2371,8 @@
         "acces": "",
         "latitude": 50.54747,
         "longitude": 2.90489,
-        "portail": ""
+        "portail": "",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -2272,7 +2391,8 @@
         "acces": "",
         "latitude": 50.55251,
         "longitude": 2.91516,
-        "portail": ""
+        "portail": "",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -2291,7 +2411,8 @@
         "acces": "",
         "latitude": 50.37458,
         "longitude": 3.089757,
-        "portail": "Carmillon"
+        "portail": "Carmillon",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -2310,7 +2431,8 @@
         "acces": "",
         "latitude": 51.02868,
         "longitude": 2.36975,
-        "portail": ""
+        "portail": "",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -2329,7 +2451,8 @@
         "acces": "",
         "latitude": 50.67246,
         "longitude": 2.82542,
-        "portail": ""
+        "portail": "",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -2348,7 +2471,8 @@
         "acces": "",
         "latitude": 50.36802,
         "longitude": 3.31796,
-        "portail": ""
+        "portail": "",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -2367,7 +2491,8 @@
         "acces": "",
         "latitude": 50.88953,
         "longitude": 2.41255,
-        "portail": ""
+        "portail": "",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -2386,7 +2511,8 @@
         "acces": "",
         "latitude": "49.763028",
         "longitude": "3.273352",
-        "portail": ""
+        "portail": "",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -2405,7 +2531,8 @@
         "acces": "",
         "latitude": "49.897676",
         "longitude": "3.366197",
-        "portail": "Clé 121"
+        "portail": "Clé 121",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -2424,7 +2551,8 @@
         "acces": "",
         "latitude": 50.52182,
         "longitude": 1.63236,
-        "portail": "Clé 590"
+        "portail": "Clé 590",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -2443,7 +2571,8 @@
         "acces": "",
         "latitude": 50.51287,
         "longitude": 1.64404,
-        "portail": ""
+        "portail": "",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -2462,7 +2591,8 @@
         "acces": "",
         "latitude": 50.51287,
         "longitude": 1.64404,
-        "portail": ""
+        "portail": "",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -2481,7 +2611,8 @@
         "acces": "",
         "latitude": 50.3264,
         "longitude": 2.9056,
-        "portail": ""
+        "portail": "",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -2500,7 +2631,8 @@
         "acces": "",
         "latitude": 50.30057,
         "longitude": 2.88313,
-        "portail": ""
+        "portail": "",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -2519,7 +2651,8 @@
         "acces": "",
         "latitude": 50.29700,
         "longitude": 2.87374,
-        "portail": ""
+        "portail": "",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -2538,7 +2671,8 @@
         "acces": "",
         "latitude": 50.29700,
         "longitude": 2.87374,
-        "portail": ""
+        "portail": "",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -2557,7 +2691,8 @@
         "acces": "",
         "latitude": 50.35178,
         "longitude": 3.51599,
-        "portail": ""
+        "portail": "",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -2576,7 +2711,8 @@
         "acces": "",
         "latitude": 50.61666,
         "longitude": 3.09427,
-        "portail": ""
+        "portail": "",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -2595,7 +2731,8 @@
         "acces": "S5064-358",
         "latitude": 50.63237,
         "longitude": 3.08324,
-        "portail": ""
+        "portail": "",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -2614,7 +2751,8 @@
         "acces": "",
         "latitude": 50.61666,
         "longitude": 3.09427,
-        "portail": ""
+        "portail": "",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -2633,7 +2771,8 @@
         "acces": "",
         "latitude": 50.62274,
         "longitude": 3.08751,
-        "portail": ""
+        "portail": "",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -2652,7 +2791,8 @@
         "acces": "",
         "latitude": 50.62274,
         "longitude": 3.08751,
-        "portail": ""
+        "portail": "",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -2671,7 +2811,8 @@
         "acces": "",
         "latitude": 50.62222,
         "longitude": 3.1131,
-        "portail": "Clé spécifique pour ouvrir la guérite du SAT4"
+        "portail": "Clé spécifique pour ouvrir la guérite du SAT4",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -2690,7 +2831,8 @@
         "acces": "",
         "latitude": 50.60647,
         "longitude": 3.1061,
-        "portail": ""
+        "portail": "",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -2709,7 +2851,8 @@
         "acces": "n°2",
         "latitude": 50.61666,
         "longitude": 3.09427,
-        "portail": ""
+        "portail": "",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -2728,7 +2871,8 @@
         "acces": "",
         "latitude": 50.62299,
         "longitude": 3.08703,
-        "portail": ""
+        "portail": "",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -2747,7 +2891,8 @@
         "acces": "",
         "latitude": 50.64574,
         "longitude": 2.89574,
-        "portail": "Badge d'accès obligatoire - clé spécifique pour ouvrir le 1er portail"
+        "portail": "Badge d'accès obligatoire - clé spécifique pour ouvrir le 1er portail",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -2766,7 +2911,8 @@
         "acces": "",
         "latitude": 50.28375,
         "longitude": 2.77413,
-        "portail": ""
+        "portail": "",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -2785,7 +2931,8 @@
         "acces": "",
         "latitude": 49.73775,
         "longitude": 1.82787,
-        "portail": ""
+        "portail": "",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -2804,7 +2951,8 @@
         "acces": "",
         "latitude": 50.02076,
         "longitude": 4.05295,
-        "portail": ""
+        "portail": "",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -2823,7 +2971,8 @@
         "acces": "",
         "latitude": 49.96001,
         "longitude": 3.43638,
-        "portail": ""
+        "portail": "",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -2842,7 +2991,8 @@
         "acces": "",
         "latitude": 49.92188,
         "longitude": 2.84689,
-        "portail": ""
+        "portail": "",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -2861,7 +3011,8 @@
         "acces": "",
         "latitude": 50.58547,
         "longitude": 3.14155,
-        "portail": ""
+        "portail": "",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -2880,7 +3031,8 @@
         "acces": "",
         "latitude": 49.58228,
         "longitude": 2.41845,
-        "portail": ""
+        "portail": "",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -2899,7 +3051,8 @@
         "acces": "",
         "latitude": 51.00232,
         "longitude": 2.31363,
-        "portail": ""
+        "portail": "",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -2918,7 +3071,8 @@
         "acces": "",
         "latitude": 50.97897,
         "longitude": 2.12322,
-        "portail": ""
+        "portail": "",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -2937,7 +3091,8 @@
         "acces": "",
         "latitude": 50.97798,
         "longitude": 2.12909,
-        "portail": ""
+        "portail": "",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -2956,7 +3111,8 @@
         "acces": "",
         "latitude": 50.97889,
         "longitude": 2.12036,
-        "portail": ""
+        "portail": "",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -2975,7 +3131,8 @@
         "acces": "",
         "latitude": 50.978,
         "longitude": 2.10702,
-        "portail": ""
+        "portail": "",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -2994,7 +3151,8 @@
         "acces": "",
         "latitude": 50.8522,
         "longitude": 1.849,
-        "portail": ""
+        "portail": "",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -3013,7 +3171,8 @@
         "acces": "",
         "latitude": 50.45753,
         "longitude": 3.012803,
-        "portail": ""
+        "portail": "",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -3032,7 +3191,8 @@
         "acces": "I1037",
         "latitude": 50.452943,
         "longitude": 3.019872,
-        "portail": ""
+        "portail": "",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -3051,7 +3211,8 @@
         "acces": "",
         "latitude": 50.73001,
         "longitude": 2.50458,
-        "portail": ""
+        "portail": "",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -3070,7 +3231,8 @@
         "acces": "sectionneur",
         "latitude": 50.7285,
         "longitude": 2.51927,
-        "portail": ""
+        "portail": "",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -3089,7 +3251,8 @@
         "acces": "",
         "latitude": 50.72107,
         "longitude": 1.6131,
-        "portail": ""
+        "portail": "",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -3108,7 +3271,8 @@
         "acces": "",
         "latitude": 50.70574,
         "longitude": 1.60412,
-        "portail": ""
+        "portail": "",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -3127,7 +3291,8 @@
         "acces": "",
         "latitude": 50.71684,
         "longitude": 1.61336,
-        "portail": ""
+        "portail": "",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -3146,7 +3311,8 @@
         "acces": "",
         "latitude": 50.71684,
         "longitude": 1.61336,
-        "portail": ""
+        "portail": "",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -3165,7 +3331,8 @@
         "acces": "",
         "latitude": 50.26566,
         "longitude": 3.93299,
-        "portail": ""
+        "portail": "",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -3184,7 +3351,8 @@
         "acces": "",
         "latitude": 50.724571,
         "longitude": 2.543193,
-        "portail": "Pas de portail"
+        "portail": "Pas de portail",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -3203,7 +3371,8 @@
         "acces": "263-16",
         "latitude": 50.724571,
         "longitude": 2.543193,
-        "portail": ""
+        "portail": "",
+        "hors_patrimoine": true
       },
       "geometry": {
         "type": "Point",
@@ -3222,7 +3391,8 @@
         "acces": "",
         "latitude": 50.71785,
         "longitude": 2.55197,
-        "portail": ""
+        "portail": "",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -3241,7 +3411,8 @@
         "acces": "",
         "latitude": 50.62342,
         "longitude": 3.10786,
-        "portail": ""
+        "portail": "",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -3260,7 +3431,8 @@
         "acces": "",
         "latitude": 50.60639,
         "longitude": 3.10628,
-        "portail": ""
+        "portail": "",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -3279,7 +3451,8 @@
         "acces": "",
         "latitude": 49.91437,
         "longitude": 4.0838,
-        "portail": ""
+        "portail": "",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -3298,7 +3471,8 @@
         "acces": "",
         "latitude": 50.76495,
         "longitude": 2.51596,
-        "portail": ""
+        "portail": "",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -3317,7 +3491,8 @@
         "acces": "I608",
         "latitude": 50.77567,
         "longitude": 2.47886,
-        "portail": ""
+        "portail": "",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -3336,7 +3511,8 @@
         "acces": "I611",
         "latitude": 50.76744,
         "longitude": 2.49755,
-        "portail": ""
+        "portail": "",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -3355,7 +3531,8 @@
         "acces": "",
         "latitude": 50.06383,
         "longitude": 3.47007,
-        "portail": ""
+        "portail": "",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -3374,7 +3551,8 @@
         "acces": "",
         "latitude": 50.2162,
         "longitude": 3.31093,
-        "portail": ""
+        "portail": "",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -3393,7 +3571,8 @@
         "acces": "",
         "latitude": 50.3481,
         "longitude": 2.93062,
-        "portail": ""
+        "portail": "",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -3412,7 +3591,8 @@
         "acces": "",
         "latitude": 50.29047,
         "longitude": 4.07505,
-        "portail": ""
+        "portail": "",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -3431,7 +3611,8 @@
         "acces": "",
         "latitude": 50.61123,
         "longitude": 3.08054,
-        "portail": ""
+        "portail": "",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -3450,7 +3631,8 @@
         "acces": "",
         "latitude": 50.616002,
         "longitude": 3.0622908,
-        "portail": ""
+        "portail": "",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -3469,7 +3651,8 @@
         "acces": "",
         "latitude": 50.61123,
         "longitude": 3.08054,
-        "portail": ""
+        "portail": "",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -3488,7 +3671,8 @@
         "acces": "",
         "latitude": 49.6849,
         "longitude": 2.33967,
-        "portail": ""
+        "portail": "",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -3507,7 +3691,8 @@
         "acces": "",
         "latitude": 50.6605,
         "longitude": 3.07221,
-        "portail": ""
+        "portail": "",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -3526,7 +3711,8 @@
         "acces": "",
         "latitude": 50.66066,
         "longitude": 3.08042,
-        "portail": ""
+        "portail": "",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -3545,7 +3731,8 @@
         "acces": "",
         "latitude": 50.6605,
         "longitude": 3.07221,
-        "portail": ""
+        "portail": "",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -3564,7 +3751,8 @@
         "acces": "",
         "latitude": 50.59995,
         "longitude": 2.97665,
-        "portail": "Clé 590"
+        "portail": "Clé 590",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -3583,7 +3771,8 @@
         "acces": "",
         "latitude": 50.65763,
         "longitude": 3.03032,
-        "portail": ""
+        "portail": "",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -3602,7 +3791,8 @@
         "acces": "",
         "latitude": 50.65763,
         "longitude": 3.03032,
-        "portail": ""
+        "portail": "",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -3621,7 +3811,8 @@
         "acces": "I549",
         "latitude": 50.65367,
         "longitude": 3.04592,
-        "portail": ""
+        "portail": "",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -3640,7 +3831,8 @@
         "acces": "I553",
         "latitude": 50.662,
         "longitude": 3.01636,
-        "portail": ""
+        "portail": "",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -3659,7 +3851,8 @@
         "acces": "",
         "latitude": 50.65763,
         "longitude": 3.03032,
-        "portail": ""
+        "portail": "",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -3678,7 +3871,8 @@
         "acces": "",
         "latitude": 50.65793,
         "longitude": 3.0293,
-        "portail": ""
+        "portail": "",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -3697,7 +3891,8 @@
         "acces": "",
         "latitude": 50.662,
         "longitude": 3.0139,
-        "portail": ""
+        "portail": "",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -3716,7 +3911,8 @@
         "acces": "",
         "latitude": 49.88525,
         "longitude": 2.39569,
-        "portail": ""
+        "portail": "",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -3735,7 +3931,8 @@
         "acces": "",
         "latitude": 50.11949,
         "longitude": 3.66436,
-        "portail": ""
+        "portail": "",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -3754,7 +3951,8 @@
         "acces": "",
         "latitude": 50.25302,
         "longitude": 3.64478,
-        "portail": ""
+        "portail": "",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -3773,7 +3971,8 @@
         "acces": "",
         "latitude": 50.53876,
         "longitude": 3.04998,
-        "portail": ""
+        "portail": "",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -3792,7 +3991,8 @@
         "acces": "",
         "latitude": 50.70689,
         "longitude": 2.72167,
-        "portail": ""
+        "portail": "",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -3811,7 +4011,8 @@
         "acces": "",
         "latitude": 50.40689,
         "longitude": 2.85233,
-        "portail": ""
+        "portail": "",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -3830,7 +4031,8 @@
         "acces": "",
         "latitude": 50.42474,
         "longitude": 2.83377,
-        "portail": ""
+        "portail": "",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -3849,7 +4051,8 @@
         "acces": "",
         "latitude": 50.41642,
         "longitude": 2.84613,
-        "portail": ""
+        "portail": "",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -3868,7 +4071,8 @@
         "acces": "sectionneur",
         "latitude": 50.42474,
         "longitude": 2.83377,
-        "portail": ""
+        "portail": "",
+        "hors_patrimoine": true
       },
       "geometry": {
         "type": "Point",
@@ -3887,7 +4091,8 @@
         "acces": "",
         "latitude": 50.59582,
         "longitude": 3.11391,
-        "portail": ""
+        "portail": "",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -3906,7 +4111,8 @@
         "acces": "n°2 - par la ferme",
         "latitude": 50.59874,
         "longitude": 3.10879,
-        "portail": ""
+        "portail": "",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -3925,7 +4131,8 @@
         "acces": "I18",
         "latitude": 50.59255,
         "longitude": 3.1128,
-        "portail": ""
+        "portail": "",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -3944,7 +4151,8 @@
         "acces": "I14",
         "latitude": 50.59255,
         "longitude": 3.1128,
-        "portail": ""
+        "portail": "",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -3963,7 +4171,8 @@
         "acces": "",
         "latitude": 50.59102,
         "longitude": 3.11775,
-        "portail": ""
+        "portail": "",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -3982,7 +4191,8 @@
         "acces": "",
         "latitude": 49.759545,
         "longitude": 2.785583,
-        "portail": ""
+        "portail": "",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -4001,7 +4211,8 @@
         "acces": "",
         "latitude": 50.18456,
         "longitude": 3.83642,
-        "portail": ""
+        "portail": "",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -4020,7 +4231,8 @@
         "acces": "",
         "latitude": 50.63237,
         "longitude": 3.08324,
-        "portail": ""
+        "portail": "",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -4039,7 +4251,8 @@
         "acces": "",
         "latitude": 50.63237,
         "longitude": 3.08324,
-        "portail": ""
+        "portail": "",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -4058,7 +4271,8 @@
         "acces": "",
         "latitude": 50.63468,
         "longitude": 3.07861,
-        "portail": ""
+        "portail": "",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -4077,7 +4291,8 @@
         "acces": "S5082",
         "latitude": 50.63313,
         "longitude": 3.07963,
-        "portail": ""
+        "portail": "",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -4096,7 +4311,8 @@
         "acces": "",
         "latitude": 50.616002,
         "longitude": 3.0622908,
-        "portail": ""
+        "portail": "",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -4115,7 +4331,8 @@
         "acces": "",
         "latitude": 50.56119,
         "longitude": 2.47982,
-        "portail": ""
+        "portail": "",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -4134,7 +4351,8 @@
         "acces": "",
         "latitude": 50.64232,
         "longitude": 3.09215,
-        "portail": ""
+        "portail": "",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -4153,7 +4371,8 @@
         "acces": "F IL3",
         "latitude": 50.65531,
         "longitude": 3.10686,
-        "portail": ""
+        "portail": "",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -4172,7 +4391,8 @@
         "acces": "",
         "latitude": 50.65531,
         "longitude": 3.10686,
-        "portail": ""
+        "portail": "",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -4191,7 +4411,8 @@
         "acces": "",
         "latitude": 50.65451,
         "longitude": 3.09628,
-        "portail": ""
+        "portail": "",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -4210,7 +4431,8 @@
         "acces": "",
         "latitude": 50.45093,
         "longitude": 2.85695,
-        "portail": ""
+        "portail": "",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -4229,7 +4451,8 @@
         "acces": "",
         "latitude": 50.65298,
         "longitude": 3.02056,
-        "portail": ""
+        "portail": "",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -4248,7 +4471,8 @@
         "acces": "",
         "latitude": 50.65453,
         "longitude": 3.02365,
-        "portail": ""
+        "portail": "",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -4267,7 +4491,8 @@
         "acces": "",
         "latitude": 49.86072,
         "longitude": 2.371,
-        "portail": ""
+        "portail": "",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -4286,7 +4511,8 @@
         "acces": "",
         "latitude": 50.31894,
         "longitude": 3.34226,
-        "portail": ""
+        "portail": "",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -4305,7 +4531,8 @@
         "acces": "",
         "latitude": 50.31061,
         "longitude": 3.34303,
-        "portail": ""
+        "portail": "",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -4324,7 +4551,8 @@
         "acces": "",
         "latitude": 50.30664,
         "longitude": 3.34714,
-        "portail": ""
+        "portail": "",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -4343,7 +4571,8 @@
         "acces": "",
         "latitude": 50.31163,
         "longitude": 3.502,
-        "portail": ""
+        "portail": "",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -4362,7 +4591,8 @@
         "acces": "",
         "latitude": 50.44316,
         "longitude": 3.011121,
-        "portail": ""
+        "portail": "",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -4381,7 +4611,8 @@
         "acces": "",
         "latitude": 50.435645,
         "longitude": 2.995531,
-        "portail": ""
+        "portail": "",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -4400,7 +4631,8 @@
         "acces": "n°2",
         "latitude": 50.435421,
         "longitude": 2.993743,
-        "portail": ""
+        "portail": "",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -4419,7 +4651,8 @@
         "acces": "",
         "latitude": 50.441352,
         "longitude": 2.998094,
-        "portail": ""
+        "portail": "",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -4438,7 +4671,8 @@
         "acces": "",
         "latitude": 50.441352,
         "longitude": 2.998094,
-        "portail": ""
+        "portail": "",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -4457,7 +4691,8 @@
         "acces": "",
         "latitude": 50.443151,
         "longitude": 3.011385,
-        "portail": ""
+        "portail": "",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -4476,7 +4711,8 @@
         "acces": "",
         "latitude": 50.80576,
         "longitude": 1.72958,
-        "portail": "Portail clé 590"
+        "portail": "Portail clé 590",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -4495,7 +4731,8 @@
         "acces": "",
         "latitude": 50.8058,
         "longitude": 1.73025,
-        "portail": ""
+        "portail": "",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -4514,7 +4751,8 @@
         "acces": "",
         "latitude": 50.8058,
         "longitude": 1.73025,
-        "portail": ""
+        "portail": "",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -4533,7 +4771,8 @@
         "acces": "",
         "latitude": "50.06725",
         "longitude": "3.45597",
-        "portail": ""
+        "portail": "",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -4552,7 +4791,8 @@
         "acces": "",
         "latitude": 50.23139,
         "longitude": 2.77734,
-        "portail": ""
+        "portail": "",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -4571,7 +4811,8 @@
         "acces": "",
         "latitude": 50.24218,
         "longitude": 2.76643,
-        "portail": ""
+        "portail": "",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -4590,7 +4831,8 @@
         "acces": "",
         "latitude": 50.250370,
         "longitude": 2.764586,
-        "portail": ""
+        "portail": "",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -4609,7 +4851,8 @@
         "acces": "",
         "latitude": 50.28057,
         "longitude": 2.77277,
-        "portail": ""
+        "portail": "",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -4628,7 +4871,8 @@
         "acces": "",
         "latitude": 49.95533,
         "longitude": 2.57175,
-        "portail": ""
+        "portail": "",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -4647,7 +4891,8 @@
         "acces": "",
         "latitude": 49.86364,
         "longitude": 3.31832,
-        "portail": ""
+        "portail": "",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -4666,7 +4911,8 @@
         "acces": "",
         "latitude": 50.12636,
         "longitude": 2.87015,
-        "portail": ""
+        "portail": "",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -4685,7 +4931,8 @@
         "acces": "",
         "latitude": 50.89642,
         "longitude": 1.81608,
-        "portail": ""
+        "portail": "",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -4704,7 +4951,8 @@
         "acces": "n°1",
         "latitude": 50.90695,
         "longitude": 1.80842,
-        "portail": ""
+        "portail": "",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -4723,7 +4971,8 @@
         "acces": "n°2",
         "latitude": 50.90004,
         "longitude": 1.80945,
-        "portail": ""
+        "portail": "",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -4742,7 +4991,8 @@
         "acces": "V2",
         "latitude": 50.88869,
         "longitude": 1.81963,
-        "portail": ""
+        "portail": "",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -4761,7 +5011,8 @@
         "acces": "",
         "latitude": 50.89113,
         "longitude": 1.81385,
-        "portail": ""
+        "portail": "",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -4780,7 +5031,8 @@
         "acces": "V1",
         "latitude": 50.88275,
         "longitude": 1.82057,
-        "portail": ""
+        "portail": "",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -4799,7 +5051,8 @@
         "acces": "V1",
         "latitude": 50.89384,
         "longitude": 1.81625,
-        "portail": ""
+        "portail": "",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -4818,7 +5071,8 @@
         "acces": "V2",
         "latitude": 50.87884,
         "longitude": 1.82354,
-        "portail": ""
+        "portail": "",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -4837,7 +5091,8 @@
         "acces": "",
         "latitude": 49.80947,
         "longitude": 2.11521,
-        "portail": ""
+        "portail": "",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -4856,7 +5111,8 @@
         "acces": "",
         "latitude": 50.88074,
         "longitude": 2.04122,
-        "portail": ""
+        "portail": "",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -4875,7 +5131,8 @@
         "acces": "",
         "latitude": 50.40649,
         "longitude": 2.98216,
-        "portail": ""
+        "portail": "",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -4894,7 +5151,8 @@
         "acces": "",
         "latitude": 49.57689,
         "longitude": 3.01283,
-        "portail": ""
+        "portail": "",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -4913,7 +5171,8 @@
         "acces": "",
         "latitude": 50.46613,
         "longitude": 2.97136,
-        "portail": ""
+        "portail": "",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -4932,7 +5191,8 @@
         "acces": "I449",
         "latitude": 50.46588,
         "longitude": 2.97160,
-        "portail": ""
+        "portail": "",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -4951,7 +5211,8 @@
         "acces": "",
         "latitude": 50.484,
         "longitude": 3.237234,
-        "portail": ""
+        "portail": "",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -4970,7 +5231,8 @@
         "acces": "",
         "latitude": 50.44792,
         "longitude": 3.028227,
-        "portail": ""
+        "portail": "",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -4989,7 +5251,8 @@
         "acces": "",
         "latitude": 50.90838,
         "longitude": 1.80514,
-        "portail": ""
+        "portail": "",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -5008,7 +5271,8 @@
         "acces": "",
         "latitude": 50.90254,
         "longitude": 1.80965,
-        "portail": ""
+        "portail": "",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -5027,7 +5291,8 @@
         "acces": "",
         "latitude": 50.90695,
         "longitude": 1.80842,
-        "portail": ""
+        "portail": "",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -5046,7 +5311,8 @@
         "acces": "",
         "latitude": 50.90913,
         "longitude": 1.81026,
-        "portail": ""
+        "portail": "",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -5065,7 +5331,8 @@
         "acces": "",
         "latitude": 50.96917,
         "longitude": 2.21841,
-        "portail": ""
+        "portail": "",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -5084,7 +5351,8 @@
         "acces": "",
         "latitude": 50.99328,
         "longitude": 2.27973,
-        "portail": "Clé spécifique pour ouvrir la guérite"
+        "portail": "Clé spécifique pour ouvrir la guérite",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -5103,7 +5371,8 @@
         "acces": "",
         "latitude": 50.99837,
         "longitude": 2.25687,
-        "portail": ""
+        "portail": "",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -5122,7 +5391,8 @@
         "acces": "n°2",
         "latitude": 50.99267,
         "longitude": 2.26646,
-        "portail": ""
+        "portail": "",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -5141,7 +5411,8 @@
         "acces": "",
         "latitude": 50.52328,
         "longitude": 3.021735,
-        "portail": ""
+        "portail": "",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -5160,7 +5431,8 @@
         "acces": "",
         "latitude": "49.777739",
         "longitude": "1.989939",
-        "portail": ""
+        "portail": "",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -5179,7 +5451,8 @@
         "acces": "",
         "latitude": "49.77550",
         "longitude": "1.99480",
-        "portail": ""
+        "portail": "",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -5198,7 +5471,8 @@
         "acces": "",
         "latitude": 50.68181,
         "longitude": 1.62699,
-        "portail": ""
+        "portail": "",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -5217,7 +5491,8 @@
         "acces": "",
         "latitude": 50.68181,
         "longitude": 1.62699,
-        "portail": ""
+        "portail": "",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -5236,7 +5511,8 @@
         "acces": "",
         "latitude": 50.99328,
         "longitude": 2.27973,
-        "portail": "Clé spécifique pour ouvrir la guérite"
+        "portail": "Clé spécifique pour ouvrir la guérite",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -5255,7 +5531,8 @@
         "acces": "",
         "latitude": 50.33962,
         "longitude": 3.909734,
-        "portail": ""
+        "portail": "",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -5274,7 +5551,8 @@
         "acces": "",
         "latitude": 50.84418,
         "longitude": 2.19101,
-        "portail": ""
+        "portail": "",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -5293,7 +5571,8 @@
         "acces": "I625",
         "latitude": 50.8432,
         "longitude": 2.18123,
-        "portail": ""
+        "portail": "",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -5312,7 +5591,8 @@
         "acces": "",
         "latitude": 50.41705,
         "longitude": 1.64755,
-        "portail": ""
+        "portail": "",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -5331,7 +5611,8 @@
         "acces": "",
         "latitude": 50.93394,
         "longitude": 1.84943,
-        "portail": ""
+        "portail": "",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -5350,7 +5631,8 @@
         "acces": "",
         "latitude": 50.931476,
         "longitude": 1.839949,
-        "portail": ""
+        "portail": "",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -5369,7 +5651,8 @@
         "acces": "TT7371",
         "latitude": 50.931476,
         "longitude": 1.839949,
-        "portail": ""
+        "portail": "",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -5388,7 +5671,8 @@
         "acces": "I628",
         "latitude": 50.82622,
         "longitude": 1.93076,
-        "portail": ""
+        "portail": "",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -5407,7 +5691,8 @@
         "acces": "I629",
         "latitude": 50.82388,
         "longitude": 1.93818,
-        "portail": ""
+        "portail": "",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -5426,7 +5711,8 @@
         "acces": "TT629",
         "latitude": 50.82388,
         "longitude": 1.93818,
-        "portail": ""
+        "portail": "",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -5445,7 +5731,8 @@
         "acces": "I631",
         "latitude": 50.82646,
         "longitude": 1.9214,
-        "portail": ""
+        "portail": "",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -5464,7 +5751,8 @@
         "acces": "",
         "latitude": 50.30525,
         "longitude": 2.8904,
-        "portail": ""
+        "portail": "",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -5483,7 +5771,8 @@
         "acces": "I417",
         "latitude": 50.30523,
         "longitude": 2.88809,
-        "portail": ""
+        "portail": "",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -5502,7 +5791,8 @@
         "acces": "I415",
         "latitude": 50.30523,
         "longitude": 2.88809,
-        "portail": ""
+        "portail": "",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -5521,7 +5811,8 @@
         "acces": "TT415",
         "latitude": 50.30523,
         "longitude": 2.88809,
-        "portail": ""
+        "portail": "",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -5540,7 +5831,8 @@
         "acces": "",
         "latitude": 50.30573,
         "longitude": 2.90343,
-        "portail": ""
+        "portail": "",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -5559,7 +5851,8 @@
         "acces": "",
         "latitude": 50.61104,
         "longitude": 3.0877,
-        "portail": ""
+        "portail": "",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -5578,7 +5871,8 @@
         "acces": "",
         "latitude": 50.61666,
         "longitude": 3.09427,
-        "portail": ""
+        "portail": "",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -5597,7 +5891,8 @@
         "acces": "",
         "latitude": 50.71052,
         "longitude": 3.16269,
-        "portail": ""
+        "portail": "",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -5616,7 +5911,8 @@
         "acces": "",
         "latitude": 50.931476,
         "longitude": 1.839949,
-        "portail": "Badge Eurotunnel obligatoire"
+        "portail": "Badge Eurotunnel obligatoire",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -5635,7 +5931,8 @@
         "acces": "",
         "latitude": 50.931476,
         "longitude": 1.839949,
-        "portail": "Badge Eurotunnel obligatoire"
+        "portail": "Badge Eurotunnel obligatoire",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -5654,7 +5951,8 @@
         "acces": "",
         "latitude": 50.931476,
         "longitude": 1.839949,
-        "portail": "Badge Eurotunnel obligatoire"
+        "portail": "Badge Eurotunnel obligatoire",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -5673,7 +5971,8 @@
         "acces": "",
         "latitude": 50.931476,
         "longitude": 1.839949,
-        "portail": "Badge Eurotunnel obligatoire"
+        "portail": "Badge Eurotunnel obligatoire",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -5692,7 +5991,8 @@
         "acces": "",
         "latitude": 50.931476,
         "longitude": 1.839949,
-        "portail": "Badge Eurotunnel obligatoire"
+        "portail": "Badge Eurotunnel obligatoire",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -5711,7 +6011,8 @@
         "acces": "",
         "latitude": 50.931476,
         "longitude": 1.839949,
-        "portail": "Badge Eurotunnel obligatoire"
+        "portail": "Badge Eurotunnel obligatoire",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -5730,7 +6031,8 @@
         "acces": "",
         "latitude": 50.56443,
         "longitude": 3.31106,
-        "portail": ""
+        "portail": "",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -5749,7 +6051,8 @@
         "acces": "",
         "latitude": 50.84462,
         "longitude": 2.19582,
-        "portail": ""
+        "portail": "",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -5768,7 +6071,8 @@
         "acces": "",
         "latitude": 50.55783,
         "longitude": 3.11842,
-        "portail": ""
+        "portail": "",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -5787,7 +6091,8 @@
         "acces": "",
         "latitude": 50.35633,
         "longitude": 3.082571,
-        "portail": ""
+        "portail": "",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -5806,7 +6111,8 @@
         "acces": "",
         "latitude": 50.35077,
         "longitude": 3.070216,
-        "portail": ""
+        "portail": "",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -5825,7 +6131,8 @@
         "acces": "",
         "latitude": 49.51282,
         "longitude": 2.43483,
-        "portail": ""
+        "portail": "",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -5844,7 +6151,8 @@
         "acces": "",
         "latitude": 50.7535739,
         "longitude": 2.2652234,
-        "portail": ""
+        "portail": "",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -5863,7 +6171,8 @@
         "acces": "",
         "latitude": 50.7511606,
         "longitude": 2.2741785,
-        "portail": ""
+        "portail": "",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -5882,7 +6191,8 @@
         "acces": "",
         "latitude": 50.7511606,
         "longitude": 2.2741785,
-        "portail": ""
+        "portail": "",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -5901,7 +6211,8 @@
         "acces": "",
         "latitude": 50.7580472,
         "longitude": 2.2582956,
-        "portail": ""
+        "portail": "",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -5920,7 +6231,8 @@
         "acces": "",
         "latitude": 49.84075,
         "longitude": 3.29909,
-        "portail": ""
+        "portail": "",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -5939,7 +6251,8 @@
         "acces": "",
         "latitude": "49.89234",
         "longitude": "2.28705",
-        "portail": ""
+        "portail": "",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -5958,7 +6271,8 @@
         "acces": "",
         "latitude": "49.888388",
         "longitude": "2.302023",
-        "portail": "Par parc public, grille ouverte."
+        "portail": "Par parc public, grille ouverte.",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -5977,7 +6291,8 @@
         "acces": "",
         "latitude": 50.61520,
         "longitude": 3.08902,
-        "portail": "Contacter l’agent E pour ouverture du portail."
+        "portail": "Contacter l’agent E pour ouverture du portail.",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -5996,7 +6311,8 @@
         "acces": "",
         "latitude": 50.62299,
         "longitude": 3.08703,
-        "portail": ""
+        "portail": "",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -6015,7 +6331,8 @@
         "acces": "",
         "latitude": 50.22326,
         "longitude": 3.88161,
-        "portail": ""
+        "portail": "",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -6034,7 +6351,8 @@
         "acces": "",
         "latitude": 50.18866,
         "longitude": 3.823426,
-        "portail": ""
+        "portail": "",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -6053,7 +6371,8 @@
         "acces": "",
         "latitude": 50.54875,
         "longitude": 3.036255,
-        "portail": "Carmillon"
+        "portail": "Carmillon",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -6072,7 +6391,8 @@
         "acces": "",
         "latitude": 50.92426,
         "longitude": 1.80846,
-        "portail": ""
+        "portail": "",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -6091,7 +6411,8 @@
         "acces": "",
         "latitude": 50.35781,
         "longitude": 3.106706,
-        "portail": ""
+        "portail": "",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -6110,7 +6431,8 @@
         "acces": "",
         "latitude": 50.63507,
         "longitude": 3.07186,
-        "portail": "Quai n°2 Porte 40 - Accès par Carmillon"
+        "portail": "Quai n°2 Porte 40 - Accès par Carmillon",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -6129,7 +6451,8 @@
         "acces": "",
         "latitude": 50.35537,
         "longitude": 3.263358,
-        "portail": ""
+        "portail": "",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -6148,7 +6471,8 @@
         "acces": "",
         "latitude": 50.7134384,
         "longitude": 2.7864455,
-        "portail": ""
+        "portail": "",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -6167,7 +6491,8 @@
         "acces": "",
         "latitude": 50.70812,
         "longitude": 2.67587,
-        "portail": ""
+        "portail": "",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -6186,7 +6511,8 @@
         "acces": "",
         "latitude": 50.7082,
         "longitude": 2.67278,
-        "portail": ""
+        "portail": "",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -6205,7 +6531,8 @@
         "acces": "",
         "latitude": 50.70867,
         "longitude": 2.68322,
-        "portail": ""
+        "portail": "",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -6224,7 +6551,8 @@
         "acces": "",
         "latitude": 50.57915,
         "longitude": 3.05147,
-        "portail": ""
+        "portail": "",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -6243,7 +6571,8 @@
         "acces": "",
         "latitude": 49.65161,
         "longitude": 3.29395,
-        "portail": ""
+        "portail": "",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -6262,7 +6591,8 @@
         "acces": "",
         "latitude": 50.3617,
         "longitude": 3.136648,
-        "portail": ""
+        "portail": "",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -6281,7 +6611,8 @@
         "acces": "",
         "latitude": 50.65803,
         "longitude": 2.47997,
-        "portail": ""
+        "portail": "",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -6300,7 +6631,8 @@
         "acces": "",
         "latitude": 50.72275,
         "longitude": 3.1935409,
-        "portail": ""
+        "portail": "",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -6319,7 +6651,8 @@
         "acces": "",
         "latitude": 50.7189629,
         "longitude": 3.1774752,
-        "portail": ""
+        "portail": "",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -6338,7 +6671,8 @@
         "acces": "",
         "latitude": "50.051312",
         "longitude": "2.872410",
-        "portail": "Clef Nord"
+        "portail": "Clef Nord",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -6357,7 +6691,8 @@
         "acces": "",
         "latitude": 50.8827577,
         "longitude": 1.8114974,
-        "portail": ""
+        "portail": "",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -6376,7 +6711,8 @@
         "acces": "",
         "latitude": 50.37136,
         "longitude": 3.521082,
-        "portail": ""
+        "portail": "",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -6395,7 +6731,8 @@
         "acces": "n°2",
         "latitude": 50.37174,
         "longitude": 3.22836,
-        "portail": ""
+        "portail": "",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -6414,7 +6751,8 @@
         "acces": "",
         "latitude": 50.36588,
         "longitude": 3.52115,
-        "portail": ""
+        "portail": "",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -6433,7 +6771,8 @@
         "acces": "",
         "latitude": 50.36588,
         "longitude": 3.52115,
-        "portail": "Carmillon"
+        "portail": "Carmillon",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -6452,7 +6791,8 @@
         "acces": "",
         "latitude": 50.4965516,
         "longitude": 2.6623814,
-        "portail": ""
+        "portail": "",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -6471,7 +6811,8 @@
         "acces": "",
         "latitude": 50.7385505,
         "longitude": 2.500813,
-        "portail": ""
+        "portail": "",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -6490,7 +6831,8 @@
         "acces": "",
         "latitude": 50.23461,
         "longitude": 2.85399,
-        "portail": ""
+        "portail": "",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -6509,7 +6851,8 @@
         "acces": "",
         "latitude": 50.57473,
         "longitude": 3.26223,
-        "portail": ""
+        "portail": "",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -6528,7 +6871,8 @@
         "acces": "TT513",
         "latitude": 50.57525,
         "longitude": 3.25675,
-        "portail": ""
+        "portail": "",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -6547,7 +6891,8 @@
         "acces": "I510",
         "latitude": 50.57496,
         "longitude": 3.25535,
-        "portail": ""
+        "portail": "",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -6566,7 +6911,8 @@
         "acces": "n°1",
         "latitude": 50.59791,
         "longitude": 3.062777,
-        "portail": ""
+        "portail": "",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -6585,7 +6931,8 @@
         "acces": "n°2",
         "latitude": 50.5932,
         "longitude": 3.059612,
-        "portail": ""
+        "portail": "",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
@@ -6604,7 +6951,8 @@
         "acces": "",
         "latitude": 50.8189184,
         "longitude": 1.9766565,
-        "portail": ""
+        "portail": "",
+        "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",

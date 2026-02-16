@@ -2,7 +2,7 @@
 const CENTRE_INITIAL = [2.35, 48.85];
 const ZOOM_INITIAL = 6;
 const ZOOM_MAX = 19;
-const VERSION_APP = "V1.2.0";
+const VERSION_APP = "V1.2.2";
 const SOURCE_APPAREILS = "appareils-source";
 const COUCHE_APPAREILS = "appareils-points";
 const COUCHE_APPAREILS_GROUPES = "appareils-groupes";
@@ -66,7 +66,7 @@ const fondsCartographiques = {
 
 let fondActif = "planIgn";
 let afficherAppareils = false;
-let afficherAcces = false;
+let afficherAcces = true;
 let donneesAppareils = null;
 let donneesAcces = null;
 let promesseChargementAppareils = null;
@@ -120,6 +120,16 @@ function determinerCouleurAppareil(codeAppareil) {
   return "#111111"; // Noir
 }
 
+function estHorsPatrimoine(valeur) {
+  if (valeur === true) {
+    return true;
+  }
+  const texte = String(valeur || "")
+    .trim()
+    .toLowerCase();
+  return texte === "true" || texte === "1" || texte === "oui";
+}
+
 function regrouperAppareilsParCoordonnees(geojson) {
   const groupes = new Map();
 
@@ -140,7 +150,8 @@ function regrouperAppareilsParCoordonnees(geojson) {
       type: propr.type || "",
       SAT: propr.SAT || "",
       appareil: propr.appareil || "",
-      couleur_appareil: determinerCouleurAppareil(propr.appareil)
+      couleur_appareil: determinerCouleurAppareil(propr.appareil),
+      hors_patrimoine: estHorsPatrimoine(propr.hors_patrimoine)
     };
 
     if (!groupes.has(cle)) {
@@ -169,6 +180,7 @@ function regrouperAppareilsParCoordonnees(geojson) {
         properties: {
           ...unique,
           appareils_count: 1,
+          hors_patrimoine_count: unique.hors_patrimoine ? 1 : 0,
           est_groupe: false,
           appareils_liste_json: JSON.stringify([unique])
         }
@@ -184,6 +196,8 @@ function regrouperAppareilsParCoordonnees(geojson) {
       },
       properties: {
         appareils_count: total,
+        hors_patrimoine_count: groupe.appareils.filter((a) => a.hors_patrimoine).length,
+        hors_patrimoine: groupe.appareils.some((a) => a.hors_patrimoine),
         est_groupe: true,
         couleur_appareil: "#1f2937",
         appareils_liste_json: JSON.stringify(groupe.appareils)
@@ -218,6 +232,7 @@ function regrouperAccesParCoordonnees(geojson) {
       SAT: propr.SAT || "",
       acces: propr.acces || "",
       portail: propr.portail || "",
+      hors_patrimoine: estHorsPatrimoine(propr.hors_patrimoine),
       latitude,
       longitude
     };
@@ -248,6 +263,7 @@ function regrouperAccesParCoordonnees(geojson) {
         properties: {
           ...unique,
           acces_count: 1,
+          hors_patrimoine_count: unique.hors_patrimoine ? 1 : 0,
           est_groupe: false,
           acces_liste_json: JSON.stringify([unique])
         }
@@ -263,6 +279,8 @@ function regrouperAccesParCoordonnees(geojson) {
       },
       properties: {
         acces_count: total,
+        hors_patrimoine_count: groupe.acces.filter((a) => a.hors_patrimoine).length,
+        hors_patrimoine: groupe.acces.some((a) => a.hors_patrimoine),
         est_groupe: true,
         acces_liste_json: JSON.stringify(groupe.acces)
       }
@@ -293,10 +311,44 @@ const controleFiltres = document.getElementById("controle-filtres");
 const boutonFiltres = document.getElementById("bouton-filtres");
 const caseAppareils = document.querySelector('input[name="filtre-appareils"]');
 const caseAcces = document.querySelector('input[name="filtre-acces"]');
+const compteurAppareils = document.getElementById("compteur-appareils");
+const compteurAcces = document.getElementById("compteur-acces");
 const badgeVersion = document.getElementById("version-app");
 
 if (badgeVersion) {
   badgeVersion.textContent = VERSION_APP;
+  badgeVersion.setAttribute("role", "link");
+  badgeVersion.setAttribute("tabindex", "0");
+  badgeVersion.setAttribute("title", "Ouvrir les mises a jour");
+  badgeVersion.addEventListener("click", () => {
+    window.location.href = "./mises-a-jour.html";
+  });
+  badgeVersion.addEventListener("keydown", (event) => {
+    if (event.key === "Enter" || event.key === " ") {
+      event.preventDefault();
+      window.location.href = "./mises-a-jour.html";
+    }
+  });
+}
+
+function calculerTotalEntrees(donnees, cleCount) {
+  if (!donnees?.features) {
+    return 0;
+  }
+
+  return donnees.features.reduce((total, feature) => {
+    const valeur = Number(feature?.properties?.[cleCount]);
+    return total + (Number.isFinite(valeur) ? valeur : 0);
+  }, 0);
+}
+
+function mettreAJourCompteursFiltres() {
+  if (compteurAppareils) {
+    compteurAppareils.textContent = `(${calculerTotalEntrees(donneesAppareils, "appareils_count")})`;
+  }
+  if (compteurAcces) {
+    compteurAcces.textContent = `(${calculerTotalEntrees(donneesAcces, "acces_count")})`;
+  }
 }
 
 function appliquerCouchesDonnees() {
@@ -321,7 +373,12 @@ function appliquerCouchesDonnees() {
       filter: ["==", ["get", "appareils_count"], 1],
       paint: {
         "circle-radius": 5,
-        "circle-color": ["coalesce", ["get", "couleur_appareil"], "#111111"],
+        "circle-color": [
+          "case",
+          ["==", ["get", "hors_patrimoine"], true],
+          "#ef4444",
+          ["coalesce", ["get", "couleur_appareil"], "#111111"]
+        ],
         "circle-opacity": 0.86,
         "circle-stroke-color": "#ffffff",
         "circle-stroke-width": 1.1
@@ -337,8 +394,8 @@ function appliquerCouchesDonnees() {
       filter: [">", ["get", "appareils_count"], 1],
       paint: {
         "circle-radius": ["interpolate", ["linear"], ["get", "appareils_count"], 2, 13, 5, 17, 10, 22],
-        "circle-color": "#2563eb",
-        "circle-opacity": 0.32,
+        "circle-color": ["case", [">", ["get", "hors_patrimoine_count"], 0], "#f87171", "#2563eb"],
+        "circle-opacity": ["case", [">", ["get", "hors_patrimoine_count"], 0], 0.38, 0.32],
         "circle-stroke-color": "#ffffff",
         "circle-stroke-width": 1.8
       }
@@ -362,8 +419,8 @@ function appliquerCouchesDonnees() {
       filter: ["==", ["get", "acces_count"], 1],
       paint: {
         "circle-radius": 5,
-        "circle-color": "#0f766e",
-        "circle-opacity": 0.9,
+        "circle-color": ["case", ["==", ["get", "hors_patrimoine"], true], "#ef4444", "#7c3aed"],
+        "circle-opacity": ["case", ["==", ["get", "hors_patrimoine"], true], 0.82, 0.9],
         "circle-stroke-color": "#ffffff",
         "circle-stroke-width": 1.1
       }
@@ -378,8 +435,8 @@ function appliquerCouchesDonnees() {
       filter: [">", ["get", "acces_count"], 1],
       paint: {
         "circle-radius": ["interpolate", ["linear"], ["get", "acces_count"], 2, 13, 5, 17, 10, 22],
-        "circle-color": "#14b8a6",
-        "circle-opacity": 0.3,
+        "circle-color": ["case", [">", ["get", "hors_patrimoine_count"], 0], "#f87171", "#8b5cf6"],
+        "circle-opacity": ["case", [">", ["get", "hors_patrimoine_count"], 0], 0.38, 0.34],
         "circle-stroke-color": "#ffffff",
         "circle-stroke-width": 1.8
       }
@@ -412,6 +469,7 @@ function restaurerEtatFiltres() {
     caseAcces.checked = afficherAcces;
   }
 
+  mettreAJourCompteursFiltres();
   appliquerCouchesDonnees();
 }
 
@@ -479,6 +537,7 @@ async function chargerDonneesAppareils() {
       })
       .then((geojson) => {
         donneesAppareils = regrouperAppareilsParCoordonnees(geojson);
+        mettreAJourCompteursFiltres();
         return donneesAppareils;
       })
       .finally(() => {
@@ -505,6 +564,7 @@ async function chargerDonneesAcces() {
       })
       .then((geojson) => {
         donneesAcces = regrouperAccesParCoordonnees(geojson);
+        mettreAJourCompteursFiltres();
         return donneesAcces;
       })
       .finally(() => {
@@ -555,7 +615,11 @@ function construireSectionAppareils(feature) {
       .map((a) => {
         const titre = [a.nom || "", a.type || "", a.SAT || ""].filter(Boolean).join(" | ");
         const couleur = a.couleur_appareil || "#111111";
-        return `<li><strong>${echapperHtml(titre || "Poste inconnu")}</strong><br/><span class="popup-point-couleur" style="background:${echapperHtml(couleur)}"></span>${echapperHtml(a.appareil || "Appareil inconnu")}</li>`;
+        const classeHors = a.hors_patrimoine ? " popup-item-hors" : "";
+        const tagHors = a.hors_patrimoine
+          ? '<span class="popup-tag-hors">Hors patrimoine</span>'
+          : "";
+        return `<li class="${classeHors.trim()}"><strong>${echapperHtml(titre || "Poste inconnu")}</strong>${tagHors}<br/><span class="popup-point-couleur" style="background:${echapperHtml(couleur)}"></span>${echapperHtml(a.appareil || "Appareil inconnu")}</li>`;
       })
       .join("");
 
@@ -565,7 +629,9 @@ function construireSectionAppareils(feature) {
   const appareil = appareilsListe[0] || {};
   const titre = [appareil.nom || "", appareil.type || "", appareil.SAT || ""].filter(Boolean).join(" | ");
   const couleur = appareil.couleur_appareil || "#111111";
-  return `<section class="popup-section"><div class="popup-section-titre"><span class="popup-badge popup-badge-appareils">Appareil</span><strong>${echapperHtml(titre || "Poste inconnu")}</strong></div><p><span class="popup-point-couleur" style="background:${echapperHtml(couleur)}"></span>${echapperHtml(appareil.appareil || "Appareil inconnu")}</p></section>`;
+  const classeHors = appareil.hors_patrimoine ? " class=\"popup-item-hors\"" : "";
+  const tagHors = appareil.hors_patrimoine ? '<span class="popup-tag-hors">Hors patrimoine</span>' : "";
+  return `<section class="popup-section"><div class="popup-section-titre"><span class="popup-badge popup-badge-appareils">Appareil</span><strong>${echapperHtml(titre || "Poste inconnu")}</strong>${tagHors}</div><p${classeHors}><span class="popup-point-couleur" style="background:${echapperHtml(couleur)}"></span>${echapperHtml(appareil.appareil || "Appareil inconnu")}</p></section>`;
 }
 
 function construireSectionAcces(feature) {
@@ -585,17 +651,21 @@ function construireSectionAcces(feature) {
     const lignes = accesListe
       .map((a) => {
         const titre = [a.nom || "", a.type || "", a.SAT || ""].filter(Boolean).join(" | ");
-        const details = [a.acces || "", a.portail || ""].filter(Boolean).join(" | ");
-        return `<li><strong>${echapperHtml(titre || "Acces inconnu")}</strong>${details ? `<br/>${echapperHtml(details)}` : ""}</li>`;
+        const classeHors = a.hors_patrimoine ? "popup-item-hors" : "";
+        const tagHors = a.hors_patrimoine
+          ? '<span class="popup-tag-hors">Hors patrimoine</span>'
+          : "";
+        return `<li class="${classeHors}"><span class="popup-acces-ligne">${echapperHtml(titre || "Acces inconnu")}</span>${tagHors}</li>`;
       })
       .join("");
-    return `<section class="popup-section"><div class="popup-section-titre"><span class="popup-badge popup-badge-acces">Acces voiture</span><strong>${echapperHtml(String(propr.acces_count))} acces sur le meme point</strong></div><ul>${lignes}</ul></section>`;
+    return `<section class="popup-section"><div class="popup-section-titre"><span class="popup-badge popup-badge-acces">Acces voiture</span><strong>${echapperHtml(String(propr.acces_count))} acces voiture</strong></div><ul>${lignes}</ul></section>`;
   }
 
   const acces = accesListe[0] || {};
   const titre = [acces.nom || "", acces.type || "", acces.SAT || ""].filter(Boolean).join(" | ");
-  const details = [acces.acces || "", acces.portail || ""].filter(Boolean).join(" | ");
-  return `<section class="popup-section"><div class="popup-section-titre"><span class="popup-badge popup-badge-acces">Acces voiture</span><strong>${echapperHtml(titre || "Acces inconnu")}</strong></div>${details ? `<p>${echapperHtml(details)}</p>` : ""}</section>`;
+  const classeHors = acces.hors_patrimoine ? " popup-item-hors" : "";
+  const tagHors = acces.hors_patrimoine ? '<span class="popup-tag-hors">Hors patrimoine</span>' : "";
+  return `<section class="popup-section"><div class="popup-section-titre"><span class="popup-badge popup-badge-acces">Acces voiture</span><strong>1 acces voiture</strong></div><p class="popup-acces-ligne${classeHors}">${echapperHtml(titre || "Acces inconnu")}</p>${tagHors}</section>`;
 }
 
 function activerInteractionsCarte() {
@@ -824,6 +894,34 @@ if (caseAcces) {
     remonterCouchesDonnees();
   });
 }
+
+async function initialiserDonneesParDefaut() {
+  if (!afficherAcces) {
+    return;
+  }
+
+  if (caseAcces) {
+    caseAcces.disabled = true;
+  }
+  try {
+    await chargerDonneesAcces();
+  } catch (erreur) {
+    afficherAcces = false;
+    if (caseAcces) {
+      caseAcces.checked = false;
+    }
+    console.error("Impossible de charger acces.geojson", erreur);
+  } finally {
+    if (caseAcces) {
+      caseAcces.disabled = false;
+    }
+  }
+
+  appliquerCouchesDonnees();
+  remonterCouchesDonnees();
+}
+
+initialiserDonneesParDefaut();
 
 boutonFiltres.addEventListener("click", (event) => {
   event.stopPropagation();
