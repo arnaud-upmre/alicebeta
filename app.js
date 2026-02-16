@@ -2,7 +2,7 @@
 const CENTRE_INITIAL = [2.35, 48.85];
 const ZOOM_INITIAL = 6;
 const ZOOM_MAX = 19;
-const VERSION_APP = "V1.1.3";
+const VERSION_APP = "V1.1.5";
 const SOURCE_APPAREILS = "appareils-source";
 const COUCHE_APPAREILS = "appareils-points";
 const COUCHE_APPAREILS_GROUPES = "appareils-groupes";
@@ -60,7 +60,7 @@ const fondsCartographiques = {
   satelliteIgn: styleSatelliteIgn
 };
 
-let fondActif = "planIgn";
+let fondActif = "osm";
 let afficherAppareils = false;
 let donneesAppareils = null;
 let promesseChargementAppareils = null;
@@ -279,6 +279,26 @@ function restaurerEtatFiltres() {
   appliquerCoucheAppareils();
 }
 
+function planifierRestaurationFiltres() {
+  const tentativeMax = 30;
+  let tentatives = 0;
+
+  const essayer = () => {
+    tentatives += 1;
+
+    if (carte.isStyleLoaded()) {
+      restaurerEtatFiltres();
+      return;
+    }
+
+    if (tentatives < tentativeMax) {
+      setTimeout(essayer, 60);
+    }
+  };
+
+  essayer();
+}
+
 async function chargerDonneesAppareils() {
   if (donneesAppareils) {
     return donneesAppareils;
@@ -313,22 +333,6 @@ function activerInteractionsAppareils() {
       .replaceAll(">", "&gt;")
       .replaceAll('"', "&quot;")
       .replaceAll("'", "&#39;");
-  const nomCouleurAppareil = (hex) => {
-    switch ((hex || "").toLowerCase()) {
-      case "#d90429":
-        return "Rouge";
-      case "#f77f00":
-        return "Orange";
-      case "#ffd60a":
-        return "Jaune";
-      case "#2a9d8f":
-        return "Vert";
-      case "#8d99ae":
-        return "Gris";
-      default:
-        return "Noir";
-    }
-  };
 
   carte.on("click", (event) => {
     if (!carte.getLayer(COUCHE_APPAREILS) || !carte.getLayer(COUCHE_APPAREILS_GROUPES)) {
@@ -353,28 +357,15 @@ function activerInteractionsAppareils() {
 
     let contenu = "";
     if (Number(propr.appareils_count) > 1) {
-      const repartition = new Map();
-      for (const a of appareilsListe) {
-        const couleur = a.couleur_appareil || "#111111";
-        repartition.set(couleur, (repartition.get(couleur) || 0) + 1);
-      }
-
-      const resumeCouleurs = Array.from(repartition.entries())
-        .map(([couleur, nb]) => {
-          const nom = nomCouleurAppareil(couleur);
-          return `<span style="display:inline-flex;align-items:center;gap:6px;margin:2px 8px 2px 0"><span style="width:10px;height:10px;border-radius:999px;background:${echapperHtml(couleur)};display:inline-block;border:1px solid rgba(0,0,0,0.2)"></span>${echapperHtml(nom)}: ${echapperHtml(String(nb))}</span>`;
-        })
-        .join("");
-
       const lignes = appareilsListe
         .map((a) => {
           const titre = [a.nom || "", a.type || "", a.SAT || ""].filter(Boolean).join(" | ");
           const couleur = a.couleur_appareil || "#111111";
-          return `<li><span style="display:inline-block;width:9px;height:9px;border-radius:999px;background:${echapperHtml(couleur)};margin-right:6px;border:1px solid rgba(0,0,0,0.2)"></span><strong>${echapperHtml(titre || "Poste inconnu")}</strong><br/>Appareil: ${echapperHtml(a.appareil || "Appareil inconnu")}</li>`;
+          return `<li><strong>${echapperHtml(titre || "Poste inconnu")}</strong><br/><span style="display:inline-block;width:9px;height:9px;border-radius:999px;background:${echapperHtml(couleur)};margin-right:6px;border:1px solid rgba(0,0,0,0.2)"></span>Appareil: ${echapperHtml(a.appareil || "Appareil inconnu")}</li>`;
         })
         .join("");
 
-      contenu = `<div class="popup-appareils"><strong>${echapperHtml(String(propr.appareils_count))} appareils au meme point</strong><div style="margin-top:6px">${resumeCouleurs}</div><ul style="margin:8px 0 0 16px;padding:0;max-height:180px;overflow:auto">${lignes}</ul></div>`;
+      contenu = `<div class="popup-appareils"><strong>${echapperHtml(String(propr.appareils_count))} appareils sur le meme support</strong><ul style="margin:8px 0 0 16px;padding:0;max-height:180px;overflow:auto">${lignes}</ul></div>`;
     } else {
       const appareil = appareilsListe[0] || {};
       const titre = [appareil.nom || "", appareil.type || "", appareil.SAT || ""].filter(Boolean).join(" | ");
@@ -457,6 +448,7 @@ function changerFondCarte(nomFond) {
   carte.setStyle(fondsCartographiques[nomFond]);
   fondActif = nomFond;
   mettreAJourSelection(nomFond);
+  planifierRestaurationFiltres();
 }
 
 carte.on("style.load", () => {
@@ -464,7 +456,7 @@ carte.on("style.load", () => {
 });
 
 carte.on("styledata", () => {
-  if (carte.isStyleLoaded()) {
+  if (afficherAppareils && carte.isStyleLoaded()) {
     restaurerEtatFiltres();
   }
 });
