@@ -2,7 +2,7 @@
 const CENTRE_INITIAL = [2.35, 48.85];
 const ZOOM_INITIAL = 6;
 const ZOOM_MAX = 19;
-const VERSION_APP = "V1.2.2";
+const VERSION_APP = "V1.2.4";
 const SOURCE_APPAREILS = "appareils-source";
 const COUCHE_APPAREILS = "appareils-points";
 const COUCHE_APPAREILS_GROUPES = "appareils-groupes";
@@ -72,6 +72,8 @@ let donneesAcces = null;
 let promesseChargementAppareils = null;
 let promesseChargementAcces = null;
 let popupCarte = null;
+let initialisationEffectuee = false;
+let totalAppareilsBrut = 0;
 
 function determinerCouleurAppareil(codeAppareil) {
   const code = String(codeAppareil || "").trim().toUpperCase();
@@ -344,7 +346,8 @@ function calculerTotalEntrees(donnees, cleCount) {
 
 function mettreAJourCompteursFiltres() {
   if (compteurAppareils) {
-    compteurAppareils.textContent = `(${calculerTotalEntrees(donneesAppareils, "appareils_count")})`;
+    const totalAppareils = totalAppareilsBrut || calculerTotalEntrees(donneesAppareils, "appareils_count");
+    compteurAppareils.textContent = `(${totalAppareils})`;
   }
   if (compteurAcces) {
     compteurAcces.textContent = `(${calculerTotalEntrees(donneesAcces, "acces_count")})`;
@@ -536,6 +539,7 @@ async function chargerDonneesAppareils() {
         return reponse.json();
       })
       .then((geojson) => {
+        totalAppareilsBrut = Array.isArray(geojson?.features) ? geojson.features.length : 0;
         donneesAppareils = regrouperAppareilsParCoordonnees(geojson);
         mettreAJourCompteursFiltres();
         return donneesAppareils;
@@ -546,6 +550,21 @@ async function chargerDonneesAppareils() {
   }
 
   return promesseChargementAppareils;
+}
+
+async function chargerCompteurAppareils() {
+  if (donneesAppareils) {
+    mettreAJourCompteursFiltres();
+    return;
+  }
+
+  try {
+    await chargerDonneesAppareils();
+  } catch (erreur) {
+    console.error("Impossible de precharger appareils.geojson pour le compteur", erreur);
+  } finally {
+    mettreAJourCompteursFiltres();
+  }
 }
 
 async function chargerDonneesAcces() {
@@ -611,19 +630,28 @@ function construireSectionAppareils(feature) {
   }
 
   if (Number(propr.appareils_count) > 1) {
+    const titresUniques = [
+      ...new Set(
+        appareilsListe
+          .map((a) => [a.nom || "", a.type || "", a.SAT || ""].filter(Boolean).join(" | "))
+          .filter(Boolean)
+      )
+    ];
+    const titreLieu =
+      titresUniques.length === 1 ? titresUniques[0] : `${String(titresUniques.length)} lieux`;
+
     const lignes = appareilsListe
       .map((a) => {
-        const titre = [a.nom || "", a.type || "", a.SAT || ""].filter(Boolean).join(" | ");
         const couleur = a.couleur_appareil || "#111111";
         const classeHors = a.hors_patrimoine ? " popup-item-hors" : "";
         const tagHors = a.hors_patrimoine
           ? '<span class="popup-tag-hors">Hors patrimoine</span>'
           : "";
-        return `<li class="${classeHors.trim()}"><strong>${echapperHtml(titre || "Poste inconnu")}</strong>${tagHors}<br/><span class="popup-point-couleur" style="background:${echapperHtml(couleur)}"></span>${echapperHtml(a.appareil || "Appareil inconnu")}</li>`;
+        return `<li class="${classeHors.trim()}"><span class="popup-point-couleur" style="background:${echapperHtml(couleur)}"></span>${echapperHtml(a.appareil || "Appareil inconnu")}${tagHors ? `<br/>${tagHors}` : ""}</li>`;
       })
       .join("");
 
-    return `<section class="popup-section"><div class="popup-section-titre"><span class="popup-badge popup-badge-appareils">Appareils</span><strong>${echapperHtml(String(propr.appareils_count))} appareils sur le meme support</strong></div><ul>${lignes}</ul></section>`;
+    return `<section class="popup-section"><div class="popup-pill-ligne"><span class="popup-badge popup-badge-appareils">${echapperHtml(String(propr.appareils_count))} appareils</span></div><div class="popup-sous-titre-centre">sur le meme support</div><p class="popup-lieu-unique"><strong>${echapperHtml(titreLieu || "Poste inconnu")}</strong></p><ul>${lignes}</ul></section>`;
   }
 
   const appareil = appareilsListe[0] || {};
@@ -631,7 +659,7 @@ function construireSectionAppareils(feature) {
   const couleur = appareil.couleur_appareil || "#111111";
   const classeHors = appareil.hors_patrimoine ? " class=\"popup-item-hors\"" : "";
   const tagHors = appareil.hors_patrimoine ? '<span class="popup-tag-hors">Hors patrimoine</span>' : "";
-  return `<section class="popup-section"><div class="popup-section-titre"><span class="popup-badge popup-badge-appareils">Appareil</span><strong>${echapperHtml(titre || "Poste inconnu")}</strong>${tagHors}</div><p${classeHors}><span class="popup-point-couleur" style="background:${echapperHtml(couleur)}"></span>${echapperHtml(appareil.appareil || "Appareil inconnu")}</p></section>`;
+  return `<section class="popup-section"><div class="popup-pill-ligne"><span class="popup-badge popup-badge-appareils">1 appareil</span></div><p${classeHors}><strong>${echapperHtml(titre || "Poste inconnu")}</strong>${tagHors ? `<br/>${tagHors}` : ""}<br/><span class="popup-point-couleur" style="background:${echapperHtml(couleur)}"></span>${echapperHtml(appareil.appareil || "Appareil inconnu")}</p></section>`;
 }
 
 function construireSectionAcces(feature) {
@@ -655,17 +683,17 @@ function construireSectionAcces(feature) {
         const tagHors = a.hors_patrimoine
           ? '<span class="popup-tag-hors">Hors patrimoine</span>'
           : "";
-        return `<li class="${classeHors}"><span class="popup-acces-ligne">${echapperHtml(titre || "Acces inconnu")}</span>${tagHors}</li>`;
+        return `<li class="${classeHors}"><span class="popup-acces-ligne">${echapperHtml(titre || "Acces inconnu")}</span>${tagHors ? `<br/>${tagHors}` : ""}</li>`;
       })
       .join("");
-    return `<section class="popup-section"><div class="popup-section-titre"><span class="popup-badge popup-badge-acces">Acces voiture</span><strong>${echapperHtml(String(propr.acces_count))} acces voiture</strong></div><ul>${lignes}</ul></section>`;
+    return `<section class="popup-section"><div class="popup-pill-ligne"><span class="popup-badge popup-badge-acces">${echapperHtml(String(propr.acces_count))} acces voiture</span></div><ul>${lignes}</ul></section>`;
   }
 
   const acces = accesListe[0] || {};
   const titre = [acces.nom || "", acces.type || "", acces.SAT || ""].filter(Boolean).join(" | ");
   const classeHors = acces.hors_patrimoine ? " popup-item-hors" : "";
   const tagHors = acces.hors_patrimoine ? '<span class="popup-tag-hors">Hors patrimoine</span>' : "";
-  return `<section class="popup-section"><div class="popup-section-titre"><span class="popup-badge popup-badge-acces">Acces voiture</span><strong>1 acces voiture</strong></div><p class="popup-acces-ligne${classeHors}">${echapperHtml(titre || "Acces inconnu")}</p>${tagHors}</section>`;
+  return `<section class="popup-section"><div class="popup-pill-ligne"><span class="popup-badge popup-badge-acces">1 acces voiture</span></div><p class="popup-acces-ligne${classeHors}">${echapperHtml(titre || "Acces inconnu")}</p>${tagHors}</section>`;
 }
 
 function activerInteractionsCarte() {
@@ -706,6 +734,7 @@ function activerInteractionsCarte() {
     }
 
     const sections = [];
+    let contientAcces = false;
     const ordreCouches = [COUCHE_ACCES_GROUPES, COUCHE_ACCES, COUCHE_APPAREILS_GROUPES, COUCHE_APPAREILS];
     for (const couche of ordreCouches) {
       const feature = uniquesParCouche.get(couche);
@@ -715,6 +744,7 @@ function activerInteractionsCarte() {
       if (couche === COUCHE_ACCES_GROUPES || couche === COUCHE_ACCES) {
         const sectionAcces = construireSectionAcces(feature);
         if (sectionAcces) {
+          contientAcces = true;
           sections.push(sectionAcces);
         }
       } else {
@@ -729,7 +759,10 @@ function activerInteractionsCarte() {
       return;
     }
 
-    const contenu = `<div class="popup-carte">${sections.join("")}<section class="popup-section popup-section-itineraires"><div class="popup-section-titre"><span class="popup-badge popup-badge-itineraire">Itineraire</span><strong>Navigation</strong></div>${construireLiensItineraires(longitude, latitude)}</section></div>`;
+    const sectionItineraire = contientAcces
+      ? `<section class="popup-section popup-section-itineraires"><div class="popup-section-titre"><span class="popup-badge popup-badge-itineraire">Itineraire</span><strong>Navigation</strong></div>${construireLiensItineraires(longitude, latitude)}</section>`
+      : "";
+    const contenu = `<div class="popup-carte">${sections.join("")}${sectionItineraire}</div>`;
 
     if (popupCarte) {
       popupCarte.remove();
@@ -819,6 +852,11 @@ function changerFondCarte(nomFond) {
 carte.on("style.load", () => {
   restaurerEtatFiltres();
   restaurerAffichageDonnees();
+
+  if (!initialisationEffectuee) {
+    initialisationEffectuee = true;
+    initialiserDonneesParDefaut();
+  }
 });
 
 carte.on("styledata", () => {
@@ -896,7 +934,11 @@ if (caseAcces) {
 }
 
 async function initialiserDonneesParDefaut() {
+  await chargerCompteurAppareils();
+
   if (!afficherAcces) {
+    appliquerCouchesDonnees();
+    remonterCouchesDonnees();
     return;
   }
 
@@ -920,8 +962,6 @@ async function initialiserDonneesParDefaut() {
   appliquerCouchesDonnees();
   remonterCouchesDonnees();
 }
-
-initialiserDonneesParDefaut();
 
 boutonFiltres.addEventListener("click", (event) => {
   event.stopPropagation();
