@@ -1085,6 +1085,54 @@ function extraireCodesTelecommande(valeur) {
   return codes;
 }
 
+function construireCleCorrespondance(entree) {
+  return [
+    normaliserTexteRecherche(champCompletOuVide(entree?.nom)),
+    normaliserTexteRecherche(champCompletOuVide(entree?.type)),
+    normaliserTexteRecherche(champCompletOuVide(entree?.SAT)),
+    normaliserTexteRecherche(champCompletOuVide(entree?.acces))
+  ].join("|");
+}
+
+function extraireListeDepuisFeature(feature, cleJson) {
+  try {
+    return JSON.parse(feature?.properties?.[cleJson] || "[]");
+  } catch {
+    return [];
+  }
+}
+
+function trouverCoordonneesAccesDepuisPostes(featurePostes) {
+  if (!featurePostes || !donneesAcces?.features?.length) {
+    return null;
+  }
+
+  const postesListe = extraireListeDepuisFeature(featurePostes, "postes_liste_json");
+  if (!postesListe.length) {
+    return null;
+  }
+
+  const clesPostes = new Set(postesListe.map((poste) => construireCleCorrespondance(poste)).filter(Boolean));
+  if (!clesPostes.size) {
+    return null;
+  }
+
+  for (const featureAcces of donneesAcces.features) {
+    const accesListe = extraireListeDepuisFeature(featureAcces, "acces_liste_json");
+    const correspond = accesListe.some((acces) => clesPostes.has(construireCleCorrespondance(acces)));
+    if (!correspond) {
+      continue;
+    }
+
+    const [longitude, latitude] = featureAcces.geometry?.coordinates || [];
+    if (Number.isFinite(longitude) && Number.isFinite(latitude)) {
+      return [longitude, latitude];
+    }
+  }
+
+  return null;
+}
+
 function construireLignePkEtLigne(poste) {
   const pk = champCompletOuVide(poste.pk);
   const numeroLigne = poste.numero_ligne !== "" && poste.numero_ligne !== null && poste.numero_ligne !== undefined
@@ -1148,7 +1196,7 @@ function construireSectionPostes(feature) {
         const codesTelecommande = extraireCodesTelecommande(p.description_telecommande);
         const pillsTelecommande = codesTelecommande.length
           ? `<div class="popup-poste-pills">${codesTelecommande
-              .map((code) => `<span class="popup-poste-pill">(${echapperHtml(code)})</span>`)
+              .map((code) => `<span class="popup-poste-pill">${echapperHtml(code)}</span>`)
               .join("")}</div>`
           : "";
         const classeHors = p.hors_patrimoine ? "popup-item-hors" : "";
@@ -1165,7 +1213,7 @@ function construireSectionPostes(feature) {
   const codesTelecommande = extraireCodesTelecommande(poste.description_telecommande);
   const pillsTelecommande = codesTelecommande.length
     ? `<div class="popup-poste-pills">${codesTelecommande
-        .map((code) => `<span class="popup-poste-pill">(${echapperHtml(code)})</span>`)
+        .map((code) => `<span class="popup-poste-pill">${echapperHtml(code)}</span>`)
         .join("")}</div>`
     : "";
   const classeHors = poste.hors_patrimoine ? " popup-item-hors" : "";
@@ -1343,7 +1391,7 @@ function obtenirFeatureALaCoordonnee(collection, longitude, latitude) {
 
 function construirePopupDepuisFeatures(longitude, latitude, featurePostes, featureAcces, featureAppareils) {
   const sections = [];
-  let contientAcces = false;
+  let coordonneesNavigation = null;
 
   if (featurePostes) {
     const sectionPostes = construireSectionPostes(featurePostes);
@@ -1355,8 +1403,11 @@ function construirePopupDepuisFeatures(longitude, latitude, featurePostes, featu
   if (featureAcces) {
     const sectionAcces = construireSectionAcces(featureAcces);
     if (sectionAcces) {
-      contientAcces = true;
       sections.push(sectionAcces);
+      const [lngAcces, latAcces] = featureAcces.geometry?.coordinates || [];
+      if (Number.isFinite(lngAcces) && Number.isFinite(latAcces)) {
+        coordonneesNavigation = [lngAcces, latAcces];
+      }
     }
   }
 
@@ -1373,8 +1424,12 @@ function construirePopupDepuisFeatures(longitude, latitude, featurePostes, featu
     return false;
   }
 
-  const sectionItineraire = contientAcces
-    ? `<section class="popup-section popup-section-itineraires"><div class="popup-section-titre"><span class="popup-badge popup-badge-itineraire">Itineraire</span><strong>Navigation</strong></div>${construireLiensItineraires(longitude, latitude)}</section>`
+  if (!coordonneesNavigation && featurePostes) {
+    coordonneesNavigation = trouverCoordonneesAccesDepuisPostes(featurePostes);
+  }
+
+  const sectionItineraire = coordonneesNavigation
+    ? `<section class="popup-section popup-section-itineraires"><div class="popup-section-titre"><span class="popup-badge popup-badge-itineraire">Itineraire</span><strong>Navigation</strong></div>${construireLiensItineraires(coordonneesNavigation[0], coordonneesNavigation[1])}</section>`
     : "";
   const contenu = `<div class="popup-carte">${sections.join("")}${sectionItineraire}</div>`;
 
