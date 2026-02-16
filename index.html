@@ -13,6 +13,27 @@
   <body>
     <div id="map"></div>
 
+    <div class="controle-filtres" id="controle-filtres">
+      <button
+        class="bouton-filtres"
+        id="bouton-filtres"
+        type="button"
+        aria-label="Afficher les filtres"
+        aria-expanded="false"
+      >
+        <svg class="icone-burger" viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M4 6h16v2H4V6zm0 5h16v2H4v-2zm0 5h16v2H4v-2z" />
+        </svg>
+      </button>
+
+      <form class="menu-filtres" aria-label="Filtres de couches">
+        <label class="option-filtre">
+          <input type="checkbox" name="filtre-appareils" />
+          <span>Appareils</span>
+        </label>
+      </form>
+    </div>
+
     <div class="controle-fonds" id="controle-fonds">
       <button
         class="bouton-fonds"
@@ -21,7 +42,9 @@
         aria-label="Choisir le fond de carte"
         aria-expanded="false"
       >
-        <span class="icone-couches" aria-hidden="true"></span>
+        <svg class="icone-couches" viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M12 2 1 7l11 5 11-5-11-5zm0 9L1 6v2l11 5 11-5V6l-11 5zm0 4L1 10v2l11 5 11-5v-2l-11 5z" />
+        </svg>
       </button>
 
       <form class="menu-fonds" role="radiogroup" aria-label="Fond de carte">
