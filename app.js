@@ -74,6 +74,7 @@ let promesseChargementAcces = null;
 let popupCarte = null;
 let initialisationEffectuee = false;
 let totalAppareilsBrut = 0;
+const DIAMETRE_ICONE_GROUPE_APPAREILS = 84;
 
 function determinerCouleurAppareil(codeAppareil) {
   const code = String(codeAppareil || "").trim().toUpperCase();
@@ -132,6 +133,118 @@ function estHorsPatrimoine(valeur) {
   return texte === "true" || texte === "1" || texte === "oui";
 }
 
+function normaliserCouleurHex(couleur) {
+  const valeur = String(couleur || "")
+    .trim()
+    .toLowerCase();
+  if (!valeur) {
+    return "#111111";
+  }
+  const hex = valeur.startsWith("#") ? valeur.slice(1) : valeur;
+  if (/^[0-9a-f]{3}$/.test(hex)) {
+    return `#${hex
+      .split("")
+      .map((c) => c + c)
+      .join("")}`;
+  }
+  if (/^[0-9a-f]{6}$/.test(hex)) {
+    return `#${hex}`;
+  }
+  return "#111111";
+}
+
+function convertirHexEnRgba(couleurHex, alpha) {
+  const hex = normaliserCouleurHex(couleurHex).slice(1);
+  const r = parseInt(hex.slice(0, 2), 16);
+  const g = parseInt(hex.slice(2, 4), 16);
+  const b = parseInt(hex.slice(4, 6), 16);
+  return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+}
+
+function construireIdIconeGroupeAppareils(couleurs, horsPatrimoine) {
+  const palette = (couleurs || [])
+    .map((couleur) => normaliserCouleurHex(couleur).slice(1))
+    .join("-");
+  const suffixeHp = horsPatrimoine ? "-hp" : "";
+  return `appareils-groupe-${palette || "111111"}${suffixeHp}`;
+}
+
+function creerImageIconeGroupeAppareils(couleurs, horsPatrimoine) {
+  const canvas = document.createElement("canvas");
+  canvas.width = DIAMETRE_ICONE_GROUPE_APPAREILS;
+  canvas.height = DIAMETRE_ICONE_GROUPE_APPAREILS;
+  const ctx = canvas.getContext("2d");
+  if (!ctx) {
+    return null;
+  }
+
+  const teintes = Array.isArray(couleurs) && couleurs.length ? couleurs : ["#2563eb"];
+  const taille = teintes.length;
+  const centre = DIAMETRE_ICONE_GROUPE_APPAREILS / 2;
+  const rayon = centre - 3;
+  const depart = -Math.PI / 2;
+
+  for (let i = 0; i < taille; i += 1) {
+    const angleStart = depart + (i / taille) * Math.PI * 2;
+    const angleEnd = depart + ((i + 1) / taille) * Math.PI * 2;
+    ctx.beginPath();
+    ctx.moveTo(centre, centre);
+    ctx.arc(centre, centre, rayon, angleStart, angleEnd);
+    ctx.closePath();
+    ctx.fillStyle = convertirHexEnRgba(teintes[i], 0.52);
+    ctx.fill();
+  }
+
+  ctx.beginPath();
+  ctx.arc(centre, centre, rayon, 0, Math.PI * 2);
+  ctx.strokeStyle = horsPatrimoine ? "#f87171" : "#ffffff";
+  ctx.lineWidth = 3;
+  ctx.stroke();
+
+  const imageData = ctx.getImageData(0, 0, DIAMETRE_ICONE_GROUPE_APPAREILS, DIAMETRE_ICONE_GROUPE_APPAREILS);
+  return {
+    width: DIAMETRE_ICONE_GROUPE_APPAREILS,
+    height: DIAMETRE_ICONE_GROUPE_APPAREILS,
+    data: imageData.data
+  };
+}
+
+function enregistrerIconesGroupesAppareils() {
+  if (!carte.hasImage("appareils-groupe-111111")) {
+    const fallback = creerImageIconeGroupeAppareils(["#111111"], false);
+    if (fallback) {
+      carte.addImage("appareils-groupe-111111", fallback, { pixelRatio: 2 });
+    }
+  }
+
+  if (!donneesAppareils?.features?.length) {
+    return;
+  }
+
+  for (const feature of donneesAppareils.features) {
+    const propr = feature?.properties || {};
+    if (Number(propr.appareils_count) <= 1) {
+      continue;
+    }
+
+    const idIcone = String(propr.icone_groupe_appareils || "").trim();
+    if (!idIcone || carte.hasImage(idIcone)) {
+      continue;
+    }
+
+    let couleurs = [];
+    try {
+      couleurs = JSON.parse(propr.appareils_couleurs_json || "[]");
+    } catch {
+      couleurs = [];
+    }
+    const image = creerImageIconeGroupeAppareils(couleurs, Number(propr.hors_patrimoine_count) > 0);
+    if (image) {
+      carte.addImage(idIcone, image, { pixelRatio: 2 });
+    }
+  }
+}
+
 function regrouperAppareilsParCoordonnees(geojson) {
   const groupes = new Map();
 
@@ -183,7 +296,6 @@ function regrouperAppareilsParCoordonnees(geojson) {
           ...unique,
           appareils_count: 1,
           hors_patrimoine_count: unique.hors_patrimoine ? 1 : 0,
-          est_groupe: false,
           appareils_liste_json: JSON.stringify([unique])
         }
       });
@@ -197,11 +309,16 @@ function regrouperAppareilsParCoordonnees(geojson) {
         coordinates: [groupe.longitude, groupe.latitude]
       },
       properties: {
+        icone_groupe_appareils: construireIdIconeGroupeAppareils(
+          groupe.appareils.map((a) => a.couleur_appareil || "#111111"),
+          groupe.appareils.some((a) => a.hors_patrimoine)
+        ),
+        appareils_couleurs_json: JSON.stringify(
+          groupe.appareils.map((a) => normaliserCouleurHex(a.couleur_appareil || "#111111"))
+        ),
         appareils_count: total,
         hors_patrimoine_count: groupe.appareils.filter((a) => a.hors_patrimoine).length,
         hors_patrimoine: groupe.appareils.some((a) => a.hors_patrimoine),
-        est_groupe: true,
-        couleur_appareil: "#1f2937",
         appareils_liste_json: JSON.stringify(groupe.appareils)
       }
     });
@@ -235,7 +352,6 @@ function regrouperAccesParCoordonnees(geojson) {
       type: propr.type || "",
       SAT: propr.SAT || "",
       acces: horsPatrimoine ? champAcces || "A COMPLETER" : champAcces,
-      portail: propr.portail || "",
       hors_patrimoine: horsPatrimoine,
       latitude,
       longitude
@@ -268,7 +384,6 @@ function regrouperAccesParCoordonnees(geojson) {
           ...unique,
           acces_count: 1,
           hors_patrimoine_count: unique.hors_patrimoine ? 1 : 0,
-          est_groupe: false,
           acces_liste_json: JSON.stringify([unique])
         }
       });
@@ -285,7 +400,6 @@ function regrouperAccesParCoordonnees(geojson) {
         acces_count: total,
         hors_patrimoine_count: groupe.acces.filter((a) => a.hors_patrimoine).length,
         hors_patrimoine: groupe.acces.some((a) => a.hors_patrimoine),
-        est_groupe: true,
         acces_liste_json: JSON.stringify(groupe.acces)
       }
     });
@@ -370,6 +484,8 @@ function appliquerCouchesDonnees() {
     carte.getSource(SOURCE_APPAREILS).setData(donneesAppareils || APPAREILS_VIDE);
   }
 
+  enregistrerIconesGroupesAppareils();
+
   if (!carte.getLayer(COUCHE_APPAREILS)) {
     carte.addLayer({
       id: COUCHE_APPAREILS,
@@ -394,15 +510,16 @@ function appliquerCouchesDonnees() {
   if (!carte.getLayer(COUCHE_APPAREILS_GROUPES)) {
     carte.addLayer({
       id: COUCHE_APPAREILS_GROUPES,
-      type: "circle",
+      type: "symbol",
       source: SOURCE_APPAREILS,
       filter: [">", ["get", "appareils_count"], 1],
+      layout: {
+        "icon-image": ["coalesce", ["get", "icone_groupe_appareils"], "appareils-groupe-111111"],
+        "icon-size": ["interpolate", ["linear"], ["get", "appareils_count"], 2, 0.42, 5, 0.55, 10, 0.72],
+        "icon-allow-overlap": true
+      },
       paint: {
-        "circle-radius": ["interpolate", ["linear"], ["get", "appareils_count"], 2, 13, 5, 17, 10, 22],
-        "circle-color": ["case", [">", ["get", "hors_patrimoine_count"], 0], "#f87171", "#2563eb"],
-        "circle-opacity": ["case", [">", ["get", "hors_patrimoine_count"], 0], 0.38, 0.32],
-        "circle-stroke-color": "#ffffff",
-        "circle-stroke-width": 1.8
+        "icon-opacity": 0.92
       }
     });
   }
