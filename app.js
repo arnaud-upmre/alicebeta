@@ -2,7 +2,7 @@
 const CENTRE_INITIAL = [2.35, 48.85];
 const ZOOM_INITIAL = 6;
 const ZOOM_MAX = 19;
-const VERSION_APP = "V1.2.7";
+const VERSION_APP = "V1.2.8";
 const SOURCE_APPAREILS = "appareils-source";
 const COUCHE_APPAREILS = "appareils-points";
 const COUCHE_APPAREILS_GROUPES = "appareils-groupes";
@@ -228,13 +228,15 @@ function regrouperAccesParCoordonnees(geojson) {
 
     const propr = feature.properties || {};
     const cle = `${longitude}|${latitude}`;
+    const horsPatrimoine = estHorsPatrimoine(propr.hors_patrimoine);
+    const champAcces = String(propr.acces || "").trim();
     const acces = {
       nom: propr.nom || "",
       type: propr.type || "",
       SAT: propr.SAT || "",
-      acces: propr.acces || "",
+      acces: horsPatrimoine ? champAcces || "A COMPLETER" : champAcces,
       portail: propr.portail || "",
-      hors_patrimoine: estHorsPatrimoine(propr.hors_patrimoine),
+      hors_patrimoine: horsPatrimoine,
       latitude,
       longitude
     };
@@ -671,11 +673,16 @@ function construireSectionAcces(feature) {
     return "";
   }
 
+  const construireNomAvecAcces = (acces) => {
+    const nomAvecVille = acces.hors_patrimoine ? `${acces.nom || ""} (Ville De)` : acces.nom || "";
+    const champAcces = String(acces.acces || "").trim() || "A COMPLETER";
+    return `${nomAvecVille} | Acces ${champAcces}`;
+  };
+
   if (Number(propr.acces_count) > 1) {
     const lignes = accesListe
       .map((a) => {
-        const nomAvecVille = a.hors_patrimoine ? `${a.nom || ""} (Ville De)` : a.nom || "";
-        const titre = [nomAvecVille, a.type || "", a.SAT || ""].filter(Boolean).join(" | ");
+        const titre = [construireNomAvecAcces(a), a.type || "", a.SAT || ""].filter(Boolean).join(" | ");
         const classeHors = a.hors_patrimoine ? "popup-item-hors" : "";
         return `<li class="${classeHors}"><span class="popup-acces-ligne">${echapperHtml(titre || "Acces inconnu")}</span></li>`;
       })
@@ -684,10 +691,9 @@ function construireSectionAcces(feature) {
   }
 
   const acces = accesListe[0] || {};
-  const nomAvecVille = acces.hors_patrimoine
-    ? `${acces.nom || ""} (Ville De)`
-    : acces.nom || "";
-  const titre = [nomAvecVille, acces.type || "", acces.SAT || ""].filter(Boolean).join(" | ");
+  const titre = [construireNomAvecAcces(acces), acces.type || "", acces.SAT || ""]
+    .filter(Boolean)
+    .join(" | ");
   const classeHors = acces.hors_patrimoine ? " popup-item-hors" : "";
   return `<section class="popup-section"><div class="popup-pill-ligne"><span class="popup-badge popup-badge-acces">1 acces voiture</span></div><p class="popup-acces-ligne${classeHors}">${echapperHtml(titre || "Acces inconnu")}</p></section>`;
 }
