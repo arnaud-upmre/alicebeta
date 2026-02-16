@@ -82,6 +82,8 @@ let popupCarte = null;
 let initialisationEffectuee = false;
 let totalAppareilsBrut = 0;
 let totalPostesBrut = 0;
+let indexRecherche = [];
+let promesseChargementRecherche = null;
 const DIAMETRE_ICONE_GROUPE_APPAREILS = 84;
 
 function determinerCouleurAppareil(codeAppareil) {
@@ -539,6 +541,9 @@ const compteurAppareils = document.getElementById("compteur-appareils");
 const compteurAcces = document.getElementById("compteur-acces");
 const compteurPostes = document.getElementById("compteur-postes");
 const badgeVersion = document.getElementById("version-app");
+const controleRecherche = document.getElementById("controle-recherche");
+const champRecherche = document.getElementById("champ-recherche");
+const listeResultatsRecherche = document.getElementById("recherche-resultats");
 
 if (badgeVersion) {
   badgeVersion.textContent = VERSION_APP;
@@ -1108,6 +1113,315 @@ function construireSectionPostes(feature) {
   return `<section class="popup-section"><div class="popup-pill-ligne"><span class="popup-badge popup-badge-postes">1 poste</span></div><p class="popup-acces-ligne${classeHors}">${echapperHtml(titre)}${details ? `<br/><span class="popup-poste-details">${echapperHtml(details)}</span>` : ""}</p></section>`;
 }
 
+function normaliserTexteRecherche(valeur) {
+  return String(valeur || "")
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .trim();
+}
+
+function fermerResultatsRecherche() {
+  if (!controleRecherche) {
+    return;
+  }
+  controleRecherche.classList.remove("est-ouvert");
+}
+
+function ouvrirResultatsRecherche() {
+  if (!controleRecherche) {
+    return;
+  }
+  controleRecherche.classList.add("est-ouvert");
+}
+
+function viderResultatsRecherche() {
+  if (!listeResultatsRecherche) {
+    return;
+  }
+  listeResultatsRecherche.innerHTML = "";
+}
+
+function construireResumeRecherche(entree) {
+  if (entree.type === "postes") {
+    return "Poste";
+  }
+  if (entree.type === "appareils") {
+    return "Appareil";
+  }
+  return "Acces";
+}
+
+function reconstruireIndexRecherche() {
+  const index = [];
+
+  for (const feature of donneesPostes?.features || []) {
+    const [longitude, latitude] = feature.geometry?.coordinates || [];
+    if (!Number.isFinite(longitude) || !Number.isFinite(latitude)) {
+      continue;
+    }
+
+    let postesListe = [];
+    try {
+      postesListe = JSON.parse(feature.properties?.postes_liste_json || "[]");
+    } catch {
+      postesListe = [];
+    }
+
+    for (const poste of postesListe) {
+      const titre = construireTitrePoste(poste) || "Poste";
+      const details = construireDetailsPoste(poste);
+      const motsCles = [titre, details, poste.nom, poste.type, poste.SAT, poste.acces, poste.rss, poste.pk, poste.contact]
+        .filter(Boolean)
+        .join(" ");
+
+      index.push({
+        type: "postes",
+        titre,
+        sousTitre: details,
+        longitude,
+        latitude,
+        scoreBase: 3,
+        texteRecherche: normaliserTexteRecherche(motsCles)
+      });
+    }
+  }
+
+  for (const feature of donneesAppareils?.features || []) {
+    const [longitude, latitude] = feature.geometry?.coordinates || [];
+    if (!Number.isFinite(longitude) || !Number.isFinite(latitude)) {
+      continue;
+    }
+
+    let appareilsListe = [];
+    try {
+      appareilsListe = JSON.parse(feature.properties?.appareils_liste_json || "[]");
+    } catch {
+      appareilsListe = [];
+    }
+
+    for (const appareil of appareilsListe) {
+      const titre = construireTitreNomTypeSatAcces(appareil) || "Appareil";
+      const appareilNom = champCompletOuVide(appareil.appareil) || "";
+      const motsCles = [titre, appareilNom, appareil.nom, appareil.type, appareil.SAT, appareil.acces]
+        .filter(Boolean)
+        .join(" ");
+
+      index.push({
+        type: "appareils",
+        titre,
+        sousTitre: appareilNom,
+        longitude,
+        latitude,
+        scoreBase: 2,
+        texteRecherche: normaliserTexteRecherche(motsCles)
+      });
+    }
+  }
+
+  for (const feature of donneesAcces?.features || []) {
+    const [longitude, latitude] = feature.geometry?.coordinates || [];
+    if (!Number.isFinite(longitude) || !Number.isFinite(latitude)) {
+      continue;
+    }
+
+    let accesListe = [];
+    try {
+      accesListe = JSON.parse(feature.properties?.acces_liste_json || "[]");
+    } catch {
+      accesListe = [];
+    }
+
+    for (const acces of accesListe) {
+      const titre = construireTitreNomTypeSatAcces(acces, { nomVilleDe: true }) || "Acces";
+      const motsCles = [titre, acces.nom, acces.type, acces.SAT, acces.acces]
+        .filter(Boolean)
+        .join(" ");
+
+      index.push({
+        type: "acces",
+        titre,
+        sousTitre: "",
+        longitude,
+        latitude,
+        scoreBase: 1,
+        texteRecherche: normaliserTexteRecherche(motsCles)
+      });
+    }
+  }
+
+  indexRecherche = index;
+}
+
+async function chargerDonneesRecherche() {
+  if (indexRecherche.length) {
+    return;
+  }
+
+  if (!promesseChargementRecherche) {
+    promesseChargementRecherche = Promise.all([
+      chargerDonneesPostes(),
+      chargerDonneesAppareils(),
+      chargerDonneesAcces()
+    ])
+      .then(() => {
+        reconstruireIndexRecherche();
+      })
+      .finally(() => {
+        promesseChargementRecherche = null;
+      });
+  }
+
+  await promesseChargementRecherche;
+}
+
+function obtenirFeatureALaCoordonnee(collection, longitude, latitude) {
+  return (collection?.features || []).find((feature) => {
+    const [lng, lat] = feature.geometry?.coordinates || [];
+    return lng === longitude && lat === latitude;
+  });
+}
+
+function construirePopupDepuisFeatures(longitude, latitude, featurePostes, featureAcces, featureAppareils) {
+  const sections = [];
+  let contientAcces = false;
+  let contientPostes = false;
+
+  if (featurePostes) {
+    const sectionPostes = construireSectionPostes(featurePostes);
+    if (sectionPostes) {
+      contientPostes = true;
+      sections.push(sectionPostes);
+    }
+  }
+
+  if (featureAcces) {
+    const sectionAcces = construireSectionAcces(featureAcces);
+    if (sectionAcces) {
+      contientAcces = true;
+      sections.push(sectionAcces);
+    }
+  }
+
+  if (featureAppareils) {
+    const sectionAppareils = construireSectionAppareils(featureAppareils);
+    if (sectionAppareils) {
+      sections.push(sectionAppareils);
+    }
+  }
+
+  if (!sections.length) {
+    return false;
+  }
+
+  const sectionItineraire = contientAcces || contientPostes
+    ? `<section class="popup-section popup-section-itineraires"><div class="popup-section-titre"><span class="popup-badge popup-badge-itineraire">Itineraire</span><strong>Navigation</strong></div>${construireLiensItineraires(longitude, latitude)}</section>`
+    : "";
+  const contenu = `<div class="popup-carte">${sections.join("")}${sectionItineraire}</div>`;
+
+  if (popupCarte) {
+    popupCarte.remove();
+  }
+
+  popupCarte = new maplibregl.Popup({ closeButton: true, closeOnClick: true })
+    .setLngLat([longitude, latitude])
+    .setHTML(contenu)
+    .addTo(carte);
+
+  return true;
+}
+
+function ouvrirPopupDepuisCoordonnees(longitude, latitude) {
+  const featurePostes = afficherPostes ? obtenirFeatureALaCoordonnee(donneesPostes, longitude, latitude) : null;
+  const featureAcces = afficherAcces ? obtenirFeatureALaCoordonnee(donneesAcces, longitude, latitude) : null;
+  const featureAppareils = afficherAppareils ? obtenirFeatureALaCoordonnee(donneesAppareils, longitude, latitude) : null;
+  return construirePopupDepuisFeatures(longitude, latitude, featurePostes, featureAcces, featureAppareils);
+}
+
+async function activerFiltrePourType(type) {
+  if (type === "postes") {
+    afficherPostes = true;
+    if (casePostes) {
+      casePostes.checked = true;
+    }
+    await chargerDonneesPostes();
+    return;
+  }
+
+  if (type === "appareils") {
+    afficherAppareils = true;
+    if (caseAppareils) {
+      caseAppareils.checked = true;
+    }
+    await chargerDonneesAppareils();
+    return;
+  }
+
+  afficherAcces = true;
+  if (caseAcces) {
+    caseAcces.checked = true;
+  }
+  await chargerDonneesAcces();
+}
+
+function rechercherEntrees(terme) {
+  const termeNormalise = normaliserTexteRecherche(terme);
+  if (!termeNormalise || termeNormalise.length < 2) {
+    return [];
+  }
+
+  const resultats = [];
+  for (const entree of indexRecherche) {
+    if (!entree.texteRecherche.includes(termeNormalise)) {
+      continue;
+    }
+    const matchDebut = entree.texteRecherche.startsWith(termeNormalise) ? 1 : 0;
+    resultats.push({
+      ...entree,
+      score: entree.scoreBase + matchDebut
+    });
+  }
+
+  resultats.sort((a, b) => {
+    if (b.score !== a.score) {
+      return b.score - a.score;
+    }
+    return a.titre.localeCompare(b.titre, "fr", { sensitivity: "base" });
+  });
+
+  return resultats.slice(0, 24);
+}
+
+function afficherResultatsRecherche(resultats) {
+  if (!listeResultatsRecherche) {
+    return;
+  }
+
+  if (!resultats.length) {
+    listeResultatsRecherche.innerHTML = '<li class="recherche-resultat-vide">Aucun resultat</li>';
+    ouvrirResultatsRecherche();
+    return;
+  }
+
+  listeResultatsRecherche.innerHTML = resultats
+    .map((resultat, index) => {
+      const titre = echapperHtml(resultat.titre || "Element");
+      const sousTitre = echapperHtml(resultat.sousTitre || "");
+      const meta = construireResumeRecherche(resultat);
+      return `<li><button class="recherche-resultat" type="button" data-index="${index}" data-type="${echapperHtml(resultat.type)}" data-lng="${resultat.longitude}" data-lat="${resultat.latitude}"><span class="recherche-resultat-titre">${titre}</span><span class="recherche-resultat-meta">${echapperHtml(meta)}${sousTitre ? ` | ${sousTitre}` : ""}</span></button></li>`;
+    })
+    .join("");
+
+  ouvrirResultatsRecherche();
+}
+
+async function executerRecherche(texte) {
+  await chargerDonneesRecherche();
+  const resultats = rechercherEntrees(texte);
+  afficherResultatsRecherche(resultats);
+  return resultats;
+}
+
 function activerInteractionsCarte() {
   const couchesInteractives = [
     COUCHE_POSTES_GROUPES,
@@ -1133,73 +1447,7 @@ function activerInteractionsCarte() {
 
     const objet = objets[0];
     const [longitude, latitude] = objet.geometry.coordinates || [];
-    const cle = `${longitude}|${latitude}`;
-    const uniquesParCouche = new Map();
-
-    for (const feature of objets) {
-      const coord = feature.geometry?.coordinates || [];
-      if (`${coord[0]}|${coord[1]}` !== cle) {
-        continue;
-      }
-      const idCouche = feature.layer?.id;
-      if (idCouche && !uniquesParCouche.has(idCouche)) {
-        uniquesParCouche.set(idCouche, feature);
-      }
-    }
-
-    const sections = [];
-    let contientAcces = false;
-    let contientPostes = false;
-    const ordreCouches = [
-      COUCHE_POSTES_GROUPES,
-      COUCHE_POSTES,
-      COUCHE_ACCES_GROUPES,
-      COUCHE_ACCES,
-      COUCHE_APPAREILS_GROUPES,
-      COUCHE_APPAREILS
-    ];
-    for (const couche of ordreCouches) {
-      const feature = uniquesParCouche.get(couche);
-      if (!feature) {
-        continue;
-      }
-      if (couche === COUCHE_POSTES_GROUPES || couche === COUCHE_POSTES) {
-        const sectionPostes = construireSectionPostes(feature);
-        if (sectionPostes) {
-          contientPostes = true;
-          sections.push(sectionPostes);
-        }
-      } else if (couche === COUCHE_ACCES_GROUPES || couche === COUCHE_ACCES) {
-        const sectionAcces = construireSectionAcces(feature);
-        if (sectionAcces) {
-          contientAcces = true;
-          sections.push(sectionAcces);
-        }
-      } else {
-        const sectionAppareils = construireSectionAppareils(feature);
-        if (sectionAppareils) {
-          sections.push(sectionAppareils);
-        }
-      }
-    }
-
-    if (!sections.length) {
-      return;
-    }
-
-    const sectionItineraire = contientAcces || contientPostes
-      ? `<section class="popup-section popup-section-itineraires"><div class="popup-section-titre"><span class="popup-badge popup-badge-itineraire">Itineraire</span><strong>Navigation</strong></div>${construireLiensItineraires(longitude, latitude)}</section>`
-      : "";
-    const contenu = `<div class="popup-carte">${sections.join("")}${sectionItineraire}</div>`;
-
-    if (popupCarte) {
-      popupCarte.remove();
-    }
-
-    popupCarte = new maplibregl.Popup({ closeButton: true, closeOnClick: true })
-      .setLngLat(objet.geometry.coordinates)
-      .setHTML(contenu)
-      .addTo(carte);
+    ouvrirPopupDepuisCoordonnees(longitude, latitude);
   });
 
   carte.on("mousemove", (event) => {
@@ -1443,6 +1691,104 @@ boutonFiltres.addEventListener("click", (event) => {
   basculerMenuFiltres();
 });
 
+if (champRecherche && listeResultatsRecherche) {
+  let temporisationRecherche = null;
+
+  champRecherche.addEventListener("input", () => {
+    const texte = champRecherche.value.trim();
+    if (temporisationRecherche) {
+      clearTimeout(temporisationRecherche);
+    }
+
+    if (!texte || texte.length < 2) {
+      viderResultatsRecherche();
+      fermerResultatsRecherche();
+      return;
+    }
+
+    temporisationRecherche = setTimeout(async () => {
+      try {
+        await executerRecherche(texte);
+      } catch (erreur) {
+        console.error("Impossible d'executer la recherche", erreur);
+      }
+    }, 220);
+  });
+
+  champRecherche.addEventListener("focus", async () => {
+    const texte = champRecherche.value.trim();
+    if (texte.length < 2) {
+      return;
+    }
+    try {
+      await executerRecherche(texte);
+    } catch (erreur) {
+      console.error("Impossible d'executer la recherche", erreur);
+    }
+  });
+
+  champRecherche.addEventListener("keydown", async (event) => {
+    if (event.key !== "Enter") {
+      return;
+    }
+    const premierResultat = listeResultatsRecherche.querySelector(".recherche-resultat");
+    if (!premierResultat) {
+      return;
+    }
+
+    event.preventDefault();
+    premierResultat.click();
+  });
+
+  listeResultatsRecherche.addEventListener("click", async (event) => {
+    const boutonResultat = event.target.closest(".recherche-resultat");
+    if (!boutonResultat) {
+      return;
+    }
+
+    const type = boutonResultat.dataset.type || "acces";
+    const longitude = Number(boutonResultat.dataset.lng);
+    const latitude = Number(boutonResultat.dataset.lat);
+
+    if (!Number.isFinite(longitude) || !Number.isFinite(latitude)) {
+      return;
+    }
+
+    try {
+      await activerFiltrePourType(type);
+      appliquerCouchesDonnees();
+      remonterCouchesDonnees();
+
+      fermerResultatsRecherche();
+      champRecherche.blur();
+      fermerMenuFiltres();
+      fermerMenuFonds();
+
+      let popupOuverte = false;
+      const ouvrirPopup = () => {
+        if (popupOuverte) {
+          return;
+        }
+        popupOuverte = true;
+        ouvrirPopupDepuisCoordonnees(longitude, latitude);
+      };
+
+      carte.once("moveend", ouvrirPopup);
+      carte.flyTo({
+        center: [longitude, latitude],
+        zoom: Math.max(carte.getZoom(), 14),
+        speed: 1.15,
+        curve: 1.2,
+        essential: true
+      });
+
+      setTimeout(ouvrirPopup, 700);
+    } catch (erreur) {
+      console.error("Impossible d'ouvrir le resultat de recherche", erreur);
+    }
+  });
+}
+
 document.addEventListener("click", (event) => {
   if (!controleFonds.contains(event.target)) {
     fermerMenuFonds();
@@ -1451,11 +1797,16 @@ document.addEventListener("click", (event) => {
   if (!controleFiltres.contains(event.target)) {
     fermerMenuFiltres();
   }
+
+  if (controleRecherche && !controleRecherche.contains(event.target)) {
+    fermerResultatsRecherche();
+  }
 });
 
 document.addEventListener("keydown", (event) => {
   if (event.key === "Escape") {
     fermerMenuFonds();
     fermerMenuFiltres();
+    fermerResultatsRecherche();
   }
 });

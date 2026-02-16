@@ -15,6 +15,19 @@
   <body>
     <div id="map"></div>
     <div class="version-app" id="version-app" aria-label="Version de l'application"></div>
+    <div class="controle-recherche" id="controle-recherche">
+      <label class="recherche-champ-wrap" for="champ-recherche">
+        <input
+          id="champ-recherche"
+          class="recherche-champ"
+          type="search"
+          autocomplete="off"
+          placeholder="Rechercher un poste, appareil, acces..."
+          aria-label="Rechercher un poste, un appareil ou un acces"
+        />
+      </label>
+      <ul class="recherche-resultats" id="recherche-resultats" aria-label="Resultats de recherche"></ul>
+    </div>
 
     <div class="controle-filtres" id="controle-filtres">
       <button
