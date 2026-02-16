@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ALICE — Application de Localisation des Installations de Conduite Électrique</title>
+    <link
+      href="https://unpkg.com/maplibre-gl@5.1.0/dist/maplibre-gl.css"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div id="map"></div>
+
+    <div class="controle-fonds" id="controle-fonds">
+      <button
+        class="bouton-fonds"
+        id="bouton-fonds"
+        type="button"
+        aria-label="Choisir le fond de carte"
+        aria-expanded="false"
+      >
+        <span class="icone-couches" aria-hidden="true"></span>
+      </button>
+
+      <form class="menu-fonds" role="radiogroup" aria-label="Fond de carte">
+        <label class="option-fond">
+          <input type="radio" name="fond" value="planIgn" checked />
+          <span>Plan IGN</span>
+        </label>
+        <label class="option-fond">
+          <input type="radio" name="fond" value="osm" />
+          <span>Plan Open</span>
+        </label>
+        <label class="option-fond">
+          <input type="radio" name="fond" value="satelliteIgn" />
+          <span>Satellite IGN</span>
+        </label>
+      </form>
+    </div>
+
+    <script src="https://unpkg.com/maplibre-gl@5.1.0/dist/maplibre-gl.js"></script>
+    <script src="./app.js"></script>
+  </body>
+</html>
