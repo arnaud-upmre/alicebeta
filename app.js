@@ -2,7 +2,7 @@
 const CENTRE_INITIAL = [2.35, 48.85];
 const ZOOM_INITIAL = 6;
 const ZOOM_MAX = 19;
-const VERSION_APP = "V1.2.4";
+const VERSION_APP = "V1.2.7";
 const SOURCE_APPAREILS = "appareils-source";
 const COUCHE_APPAREILS = "appareils-points";
 const COUCHE_APPAREILS_GROUPES = "appareils-groupes";
@@ -643,11 +643,8 @@ function construireSectionAppareils(feature) {
     const lignes = appareilsListe
       .map((a) => {
         const couleur = a.couleur_appareil || "#111111";
-        const classeHors = a.hors_patrimoine ? " popup-item-hors" : "";
-        const tagHors = a.hors_patrimoine
-          ? '<span class="popup-tag-hors">Hors patrimoine</span>'
-          : "";
-        return `<li class="${classeHors.trim()}"><span class="popup-point-couleur" style="background:${echapperHtml(couleur)}"></span>${echapperHtml(a.appareil || "Appareil inconnu")}${tagHors ? `<br/>${tagHors}` : ""}</li>`;
+        const tagHp = a.hors_patrimoine ? '<span class="popup-tag-hp">HP</span>' : "";
+        return `<li><span class="popup-point-couleur" style="background:${echapperHtml(couleur)}"></span>${echapperHtml(a.appareil || "Appareil inconnu")}${tagHp}</li>`;
       })
       .join("");
 
@@ -657,9 +654,8 @@ function construireSectionAppareils(feature) {
   const appareil = appareilsListe[0] || {};
   const titre = [appareil.nom || "", appareil.type || "", appareil.SAT || ""].filter(Boolean).join(" | ");
   const couleur = appareil.couleur_appareil || "#111111";
-  const classeHors = appareil.hors_patrimoine ? " class=\"popup-item-hors\"" : "";
-  const tagHors = appareil.hors_patrimoine ? '<span class="popup-tag-hors">Hors patrimoine</span>' : "";
-  return `<section class="popup-section"><div class="popup-pill-ligne"><span class="popup-badge popup-badge-appareils">1 appareil</span></div><p${classeHors}><strong>${echapperHtml(titre || "Poste inconnu")}</strong>${tagHors ? `<br/>${tagHors}` : ""}<br/><span class="popup-point-couleur" style="background:${echapperHtml(couleur)}"></span>${echapperHtml(appareil.appareil || "Appareil inconnu")}</p></section>`;
+  const tagHp = appareil.hors_patrimoine ? '<span class="popup-tag-hp">HP</span>' : "";
+  return `<section class="popup-section"><div class="popup-pill-ligne"><span class="popup-badge popup-badge-appareils">1 appareil</span></div><p><strong>${echapperHtml(titre || "Poste inconnu")}</strong><br/><span class="popup-point-couleur" style="background:${echapperHtml(couleur)}"></span>${echapperHtml(appareil.appareil || "Appareil inconnu")}${tagHp}</p></section>`;
 }
 
 function construireSectionAcces(feature) {
@@ -678,22 +674,22 @@ function construireSectionAcces(feature) {
   if (Number(propr.acces_count) > 1) {
     const lignes = accesListe
       .map((a) => {
-        const titre = [a.nom || "", a.type || "", a.SAT || ""].filter(Boolean).join(" | ");
+        const nomAvecVille = a.hors_patrimoine ? `${a.nom || ""} (Ville De)` : a.nom || "";
+        const titre = [nomAvecVille, a.type || "", a.SAT || ""].filter(Boolean).join(" | ");
         const classeHors = a.hors_patrimoine ? "popup-item-hors" : "";
-        const tagHors = a.hors_patrimoine
-          ? '<span class="popup-tag-hors">Hors patrimoine</span>'
-          : "";
-        return `<li class="${classeHors}"><span class="popup-acces-ligne">${echapperHtml(titre || "Acces inconnu")}</span>${tagHors ? `<br/>${tagHors}` : ""}</li>`;
+        return `<li class="${classeHors}"><span class="popup-acces-ligne">${echapperHtml(titre || "Acces inconnu")}</span></li>`;
       })
       .join("");
     return `<section class="popup-section"><div class="popup-pill-ligne"><span class="popup-badge popup-badge-acces">${echapperHtml(String(propr.acces_count))} acces voiture</span></div><ul>${lignes}</ul></section>`;
   }
 
   const acces = accesListe[0] || {};
-  const titre = [acces.nom || "", acces.type || "", acces.SAT || ""].filter(Boolean).join(" | ");
+  const nomAvecVille = acces.hors_patrimoine
+    ? `${acces.nom || ""} (Ville De)`
+    : acces.nom || "";
+  const titre = [nomAvecVille, acces.type || "", acces.SAT || ""].filter(Boolean).join(" | ");
   const classeHors = acces.hors_patrimoine ? " popup-item-hors" : "";
-  const tagHors = acces.hors_patrimoine ? '<span class="popup-tag-hors">Hors patrimoine</span>' : "";
-  return `<section class="popup-section"><div class="popup-pill-ligne"><span class="popup-badge popup-badge-acces">1 acces voiture</span></div><p class="popup-acces-ligne${classeHors}">${echapperHtml(titre || "Acces inconnu")}</p>${tagHors}</section>`;
+  return `<section class="popup-section"><div class="popup-pill-ligne"><span class="popup-badge popup-badge-acces">1 acces voiture</span></div><p class="popup-acces-ligne${classeHors}">${echapperHtml(titre || "Acces inconnu")}</p></section>`;
 }
 
 function activerInteractionsCarte() {
