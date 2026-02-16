@@ -9,8 +9,12 @@ const COUCHE_APPAREILS_GROUPES = "appareils-groupes";
 const SOURCE_ACCES = "acces-source";
 const COUCHE_ACCES = "acces-points";
 const COUCHE_ACCES_GROUPES = "acces-groupes";
+const SOURCE_POSTES = "postes-source";
+const COUCHE_POSTES = "postes-points";
+const COUCHE_POSTES_GROUPES = "postes-groupes";
 const APPAREILS_VIDE = { type: "FeatureCollection", features: [] };
 const ACCES_VIDE = { type: "FeatureCollection", features: [] };
+const POSTES_VIDE = { type: "FeatureCollection", features: [] };
 
 // Style raster OSM (plan open).
 const stylePlanOsm = {
@@ -64,16 +68,20 @@ const fondsCartographiques = {
   satelliteIgn: styleSatelliteIgn
 };
 
-let fondActif = "planIgn";
+let fondActif = "satelliteIgn";
 let afficherAppareils = false;
 let afficherAcces = true;
+let afficherPostes = false;
 let donneesAppareils = null;
 let donneesAcces = null;
+let donneesPostes = null;
 let promesseChargementAppareils = null;
 let promesseChargementAcces = null;
+let promesseChargementPostes = null;
 let popupCarte = null;
 let initialisationEffectuee = false;
 let totalAppareilsBrut = 0;
+let totalPostesBrut = 0;
 const DIAMETRE_ICONE_GROUPE_APPAREILS = 84;
 
 function determinerCouleurAppareil(codeAppareil) {
@@ -351,7 +359,7 @@ function regrouperAccesParCoordonnees(geojson) {
       nom: propr.nom || "",
       type: propr.type || "",
       SAT: propr.SAT || "",
-      acces: horsPatrimoine ? champAcces || "A COMPLETER" : champAcces,
+      acces: champAcces,
       hors_patrimoine: horsPatrimoine,
       latitude,
       longitude
@@ -411,6 +419,104 @@ function regrouperAccesParCoordonnees(geojson) {
   };
 }
 
+function regrouperPostesParCoordonnees(geojson) {
+  const groupes = new Map();
+
+  for (const feature of geojson.features || []) {
+    if (!feature?.geometry || feature.geometry.type !== "Point") {
+      continue;
+    }
+
+    const [longitude, latitude] = feature.geometry.coordinates || [];
+    if (!Number.isFinite(longitude) || !Number.isFinite(latitude)) {
+      continue;
+    }
+
+    const propr = feature.properties || {};
+    const cle = `${longitude}|${latitude}`;
+    const nomNormalise = String(propr.nom || "")
+      .trim()
+      .toLowerCase();
+
+    if (!groupes.has(cle)) {
+      groupes.set(cle, {
+        longitude,
+        latitude,
+        postes: [],
+        nomsVus: new Set()
+      });
+    }
+
+    const groupe = groupes.get(cle);
+    if (nomNormalise && groupe.nomsVus.has(nomNormalise)) {
+      continue;
+    }
+
+    const poste = {
+      nom: propr.nom || "",
+      type: propr.type || "",
+      SAT: propr.SAT || "",
+      acces: propr.acces || "",
+      description: propr.description || "",
+      description_telecommande: propr.description_telecommande || "",
+      rss: propr.rss || "",
+      contact: propr.contact || "",
+      lignes: propr.lignes || "",
+      numero_ligne: propr.numero_ligne ?? "",
+      pk: propr.pk || "",
+      hors_patrimoine: estHorsPatrimoine(propr.hors_patrimoine)
+    };
+
+    if (nomNormalise) {
+      groupe.nomsVus.add(nomNormalise);
+    }
+
+    groupe.postes.push(poste);
+  }
+
+  const features = [];
+  for (const groupe of groupes.values()) {
+    const total = groupe.postes.length;
+
+    if (total === 1) {
+      const unique = groupe.postes[0];
+      features.push({
+        type: "Feature",
+        geometry: {
+          type: "Point",
+          coordinates: [groupe.longitude, groupe.latitude]
+        },
+        properties: {
+          ...unique,
+          postes_count: 1,
+          hors_patrimoine_count: unique.hors_patrimoine ? 1 : 0,
+          postes_liste_json: JSON.stringify([unique])
+        }
+      });
+      continue;
+    }
+
+    features.push({
+      type: "Feature",
+      geometry: {
+        type: "Point",
+        coordinates: [groupe.longitude, groupe.latitude]
+      },
+      properties: {
+        postes_count: total,
+        hors_patrimoine_count: groupe.postes.filter((p) => p.hors_patrimoine).length,
+        hors_patrimoine: groupe.postes.some((p) => p.hors_patrimoine),
+        postes_liste_json: JSON.stringify(groupe.postes)
+      }
+    });
+  }
+
+  return {
+    type: "FeatureCollection",
+    features
+  };
+}
+
 const carte = new maplibregl.Map({
   container: "map",
   center: CENTRE_INITIAL,
@@ -429,8 +535,10 @@ const controleFiltres = document.getElementById("controle-filtres");
 const boutonFiltres = document.getElementById("bouton-filtres");
 const caseAppareils = document.querySelector('input[name="filtre-appareils"]');
 const caseAcces = document.querySelector('input[name="filtre-acces"]');
+const casePostes = document.querySelector('input[name="filtre-postes"]');
 const compteurAppareils = document.getElementById("compteur-appareils");
 const compteurAcces = document.getElementById("compteur-acces");
+const compteurPostes = document.getElementById("compteur-postes");
 const badgeVersion = document.getElementById("version-app");
 
 if (badgeVersion) {
@@ -467,6 +575,10 @@ function mettreAJourCompteursFiltres() {
   }
   if (compteurAcces) {
     compteurAcces.textContent = `(${calculerTotalEntrees(donneesAcces, "acces_count")})`;
+  }
+  if (compteurPostes) {
+    const totalPostes = totalPostesBrut || calculerTotalEntrees(donneesPostes, "postes_count");
+    compteurPostes.textContent = `(${totalPostes})`;
   }
 }
 
@@ -565,6 +677,47 @@ function appliquerCouchesDonnees() {
     });
   }
 
+  if (!carte.getSource(SOURCE_POSTES)) {
+    carte.addSource(SOURCE_POSTES, {
+      type: "geojson",
+      data: donneesPostes || POSTES_VIDE
+    });
+  } else {
+    carte.getSource(SOURCE_POSTES).setData(donneesPostes || POSTES_VIDE);
+  }
+
+  if (!carte.getLayer(COUCHE_POSTES)) {
+    carte.addLayer({
+      id: COUCHE_POSTES,
+      type: "circle",
+      source: SOURCE_POSTES,
+      filter: ["==", ["get", "postes_count"], 1],
+      paint: {
+        "circle-radius": 5,
+        "circle-color": ["case", ["==", ["get", "hors_patrimoine"], true], "#ef4444", "#2563eb"],
+        "circle-opacity": ["case", ["==", ["get", "hors_patrimoine"], true], 0.82, 0.92],
+        "circle-stroke-color": "#ffffff",
+        "circle-stroke-width": 1.1
+      }
+    });
+  }
+
+  if (!carte.getLayer(COUCHE_POSTES_GROUPES)) {
+    carte.addLayer({
+      id: COUCHE_POSTES_GROUPES,
+      type: "circle",
+      source: SOURCE_POSTES,
+      filter: [">", ["get", "postes_count"], 1],
+      paint: {
+        "circle-radius": ["interpolate", ["linear"], ["get", "postes_count"], 2, 13, 5, 17, 10, 22],
+        "circle-color": ["case", [">", ["get", "hors_patrimoine_count"], 0], "#f87171", "#3b82f6"],
+        "circle-opacity": ["case", [">", ["get", "hors_patrimoine_count"], 0], 0.38, 0.34],
+        "circle-stroke-color": "#ffffff",
+        "circle-stroke-width": 1.8
+      }
+    });
+  }
+
   carte.setLayoutProperty(
     COUCHE_APPAREILS,
     "visibility",
@@ -581,6 +734,12 @@ function appliquerCouchesDonnees() {
     "visibility",
     afficherAcces && donneesAcces ? "visible" : "none"
   );
+  carte.setLayoutProperty(COUCHE_POSTES, "visibility", afficherPostes && donneesPostes ? "visible" : "none");
+  carte.setLayoutProperty(
+    COUCHE_POSTES_GROUPES,
+    "visibility",
+    afficherPostes && donneesPostes ? "visible" : "none"
+  );
 }
 
 function restaurerEtatFiltres() {
@@ -589,6 +748,9 @@ function restaurerEtatFiltres() {
   }
   if (caseAcces) {
     caseAcces.checked = afficherAcces;
+  }
+  if (casePostes) {
+    casePostes.checked = afficherPostes;
   }
 
   mettreAJourCompteursFiltres();
@@ -602,6 +764,14 @@ function remonterCouchesDonnees() {
 
   if (carte.getLayer(COUCHE_ACCES)) {
     carte.moveLayer(COUCHE_ACCES);
+  }
+
+  if (carte.getLayer(COUCHE_POSTES_GROUPES)) {
+    carte.moveLayer(COUCHE_POSTES_GROUPES);
+  }
+
+  if (carte.getLayer(COUCHE_POSTES)) {
+    carte.moveLayer(COUCHE_POSTES);
   }
 
   if (carte.getLayer(COUCHE_APPAREILS_GROUPES)) {
@@ -713,6 +883,49 @@ async function chargerDonneesAcces() {
   return promesseChargementAcces;
 }
 
+async function chargerDonneesPostes() {
+  if (donneesPostes) {
+    return donneesPostes;
+  }
+
+  if (!promesseChargementPostes) {
+    promesseChargementPostes = fetch("./postes.geojson", { cache: "no-store" })
+      .then((reponse) => {
+        if (!reponse.ok) {
+          throw new Error(`HTTP ${reponse.status}`);
+        }
+
+        return reponse.json();
+      })
+      .then((geojson) => {
+        donneesPostes = regrouperPostesParCoordonnees(geojson);
+        totalPostesBrut = calculerTotalEntrees(donneesPostes, "postes_count");
+        mettreAJourCompteursFiltres();
+        return donneesPostes;
+      })
+      .finally(() => {
+        promesseChargementPostes = null;
+      });
+  }
+
+  return promesseChargementPostes;
+}
+
+async function chargerCompteurPostes() {
+  if (donneesPostes) {
+    mettreAJourCompteursFiltres();
+    return;
+  }
+
+  try {
+    await chargerDonneesPostes();
+  } catch (erreur) {
+    console.error("Impossible de precharger postes.geojson pour le compteur", erreur);
+  } finally {
+    mettreAJourCompteursFiltres();
+  }
+}
+
 function echapperHtml(valeur) {
   return String(valeur)
     .replaceAll("&", "&amp;")
@@ -790,16 +1003,16 @@ function construireSectionAcces(feature) {
     return "";
   }
 
-  const construireNomAvecAcces = (acces) => {
+  const construireTitreAcces = (acces) => {
     const nomAvecVille = acces.hors_patrimoine ? `${acces.nom || ""} (Ville De)` : acces.nom || "";
-    const champAcces = String(acces.acces || "").trim() || "A COMPLETER";
-    return `${nomAvecVille} | Acces ${champAcces}`;
+    const champAcces = String(acces.acces || "").trim();
+    return [nomAvecVille, acces.type || "", acces.SAT || "", champAcces].filter(Boolean).join(" | ");
   };
 
   if (Number(propr.acces_count) > 1) {
     const lignes = accesListe
       .map((a) => {
-        const titre = [construireNomAvecAcces(a), a.type || "", a.SAT || ""].filter(Boolean).join(" | ");
+        const titre = construireTitreAcces(a);
         const classeHors = a.hors_patrimoine ? "popup-item-hors" : "";
         return `<li class="${classeHors}"><span class="popup-acces-ligne">${echapperHtml(titre || "Acces inconnu")}</span></li>`;
       })
@@ -808,15 +1021,74 @@ function construireSectionAcces(feature) {
   }
 
   const acces = accesListe[0] || {};
-  const titre = [construireNomAvecAcces(acces), acces.type || "", acces.SAT || ""]
-    .filter(Boolean)
-    .join(" | ");
+  const titre = construireTitreAcces(acces);
   const classeHors = acces.hors_patrimoine ? " popup-item-hors" : "";
   return `<section class="popup-section"><div class="popup-pill-ligne"><span class="popup-badge popup-badge-acces">1 acces voiture</span></div><p class="popup-acces-ligne${classeHors}">${echapperHtml(titre || "Acces inconnu")}</p></section>`;
 }
 
+function construireTitrePoste(poste) {
+  return [poste.nom || "", poste.type || "", poste.SAT || "", poste.acces || ""].filter(Boolean).join(" | ");
+}
+
+function construireDetailsPoste(poste) {
+  const details = [];
+  if (poste.rss) {
+    details.push(`RSS: ${poste.rss}`);
+  }
+  if (poste.numero_ligne !== "" && poste.numero_ligne !== null && poste.numero_ligne !== undefined) {
+    details.push(`Ligne: ${poste.numero_ligne}`);
+  }
+  if (poste.pk) {
+    details.push(`PK: ${poste.pk}`);
+  }
+  if (poste.lignes) {
+    details.push(poste.lignes);
+  }
+  if (poste.description_telecommande) {
+    details.push(poste.description_telecommande);
+  }
+  if (poste.description) {
+    details.push(poste.description);
+  }
+  return details.join(" | ");
+}
+
+function construireSectionPostes(feature) {
+  const propr = feature.properties || {};
+  let postesListe = [];
+  try {
+    postesListe = JSON.parse(propr.postes_liste_json || "[]");
+  } catch {
+    postesListe = [];
+  }
+
+  if (!postesListe.length) {
+    return "";
+  }
+
+  if (Number(propr.postes_count) > 1) {
+    const lignes = postesListe
+      .map((p) => {
+        const titre = construireTitrePoste(p) || "Poste inconnu";
+        const details = construireDetailsPoste(p);
+        const classeHors = p.hors_patrimoine ? "popup-item-hors" : "";
+        return `<li class="${classeHors}"><span class="popup-acces-ligne">${echapperHtml(titre)}</span>${details ? `<br/><span class="popup-poste-details">${echapperHtml(details)}</span>` : ""}</li>`;
+      })
+      .join("");
+    return `<section class="popup-section"><div class="popup-pill-ligne"><span class="popup-badge popup-badge-postes">${echapperHtml(String(propr.postes_count))} postes</span></div><ul>${lignes}</ul></section>`;
+  }
+
+  const poste = postesListe[0] || {};
+  const titre = construireTitrePoste(poste) || "Poste inconnu";
+  const details = construireDetailsPoste(poste);
+  const classeHors = poste.hors_patrimoine ? " popup-item-hors" : "";
+  return `<section class="popup-section"><div class="popup-pill-ligne"><span class="popup-badge popup-badge-postes">1 poste</span></div><p class="popup-acces-ligne${classeHors}">${echapperHtml(titre)}${details ? `<br/><span class="popup-poste-details">${echapperHtml(details)}</span>` : ""}</p></section>`;
+}
+
 function activerInteractionsCarte() {
   const couchesInteractives = [
+    COUCHE_POSTES_GROUPES,
+    COUCHE_POSTES,
     COUCHE_ACCES_GROUPES,
     COUCHE_ACCES,
     COUCHE_APPAREILS_GROUPES,
@@ -854,13 +1126,27 @@ function activerInteractionsCarte() {
 
     const sections = [];
     let contientAcces = false;
-    const ordreCouches = [COUCHE_ACCES_GROUPES, COUCHE_ACCES, COUCHE_APPAREILS_GROUPES, COUCHE_APPAREILS];
+    let contientPostes = false;
+    const ordreCouches = [
+      COUCHE_POSTES_GROUPES,
+      COUCHE_POSTES,
+      COUCHE_ACCES_GROUPES,
+      COUCHE_ACCES,
+      COUCHE_APPAREILS_GROUPES,
+      COUCHE_APPAREILS
+    ];
     for (const couche of ordreCouches) {
       const feature = uniquesParCouche.get(couche);
       if (!feature) {
         continue;
       }
-      if (couche === COUCHE_ACCES_GROUPES || couche === COUCHE_ACCES) {
+      if (couche === COUCHE_POSTES_GROUPES || couche === COUCHE_POSTES) {
+        const sectionPostes = construireSectionPostes(feature);
+        if (sectionPostes) {
+          contientPostes = true;
+          sections.push(sectionPostes);
+        }
+      } else if (couche === COUCHE_ACCES_GROUPES || couche === COUCHE_ACCES) {
         const sectionAcces = construireSectionAcces(feature);
         if (sectionAcces) {
           contientAcces = true;
@@ -878,7 +1164,7 @@ function activerInteractionsCarte() {
       return;
     }
 
-    const sectionItineraire = contientAcces
+    const sectionItineraire = contientAcces || contientPostes
       ? `<section class="popup-section popup-section-itineraires"><div class="popup-section-titre"><span class="popup-badge popup-badge-itineraire">Itineraire</span><strong>Navigation</strong></div>${construireLiensItineraires(longitude, latitude)}</section>`
       : "";
     const contenu = `<div class="popup-carte">${sections.join("")}${sectionItineraire}</div>`;
@@ -979,7 +1265,7 @@ carte.on("style.load", () => {
 });
 
 carte.on("styledata", () => {
-  if ((afficherAppareils || afficherAcces) && carte.isStyleLoaded()) {
+  if ((afficherAppareils || afficherAcces || afficherPostes) && carte.isStyleLoaded()) {
     restaurerEtatFiltres();
     restaurerAffichageDonnees();
   }
@@ -1052,29 +1338,75 @@ if (caseAcces) {
   });
 }
 
+if (casePostes) {
+  casePostes.addEventListener("change", async () => {
+    afficherPostes = casePostes.checked;
+    if (afficherPostes) {
+      casePostes.disabled = true;
+      try {
+        await chargerDonneesPostes();
+      } catch (erreur) {
+        afficherPostes = false;
+        casePostes.checked = false;
+        console.error("Impossible de charger postes.geojson", erreur);
+        alert(
+          "Chargement des postes impossible. Ouvre la carte via un serveur local (http://localhost...) ou vérifie postes.geojson."
+        );
+      } finally {
+        casePostes.disabled = false;
+      }
+    }
+
+    appliquerCouchesDonnees();
+    remonterCouchesDonnees();
+  });
+}
+
 async function initialiserDonneesParDefaut() {
   await chargerCompteurAppareils();
+  await chargerCompteurPostes();
 
-  if (!afficherAcces) {
+  if (!afficherAcces && !afficherPostes) {
     appliquerCouchesDonnees();
     remonterCouchesDonnees();
     return;
   }
 
-  if (caseAcces) {
-    caseAcces.disabled = true;
-  }
-  try {
-    await chargerDonneesAcces();
-  } catch (erreur) {
-    afficherAcces = false;
+  if (afficherAcces) {
     if (caseAcces) {
-      caseAcces.checked = false;
+      caseAcces.disabled = true;
     }
-    console.error("Impossible de charger acces.geojson", erreur);
-  } finally {
-    if (caseAcces) {
-      caseAcces.disabled = false;
+    try {
+      await chargerDonneesAcces();
+    } catch (erreur) {
+      afficherAcces = false;
+      if (caseAcces) {
+        caseAcces.checked = false;
+      }
+      console.error("Impossible de charger acces.geojson", erreur);
+    } finally {
+      if (caseAcces) {
+        caseAcces.disabled = false;
+      }
+    }
+  }
+
+  if (afficherPostes) {
+    if (casePostes) {
+      casePostes.disabled = true;
+    }
+    try {
+      await chargerDonneesPostes();
+    } catch (erreur) {
+      afficherPostes = false;
+      if (casePostes) {
+        casePostes.checked = false;
+      }
+      console.error("Impossible de charger postes.geojson", erreur);
+    } finally {
+      if (casePostes) {
+        casePostes.disabled = false;
+      }
     }
   }
 

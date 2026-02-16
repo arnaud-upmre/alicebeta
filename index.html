@@ -38,6 +38,10 @@
           <input type="checkbox" name="filtre-acces" />
           <span>Acces voiture <span class="filtre-compteur" id="compteur-acces">(0)</span></span>
         </label>
+        <label class="option-filtre">
+          <input type="checkbox" name="filtre-postes" />
+          <span>Postes <span class="filtre-compteur" id="compteur-postes">(0)</span></span>
+        </label>
       </form>
     </div>
 
@@ -56,7 +60,7 @@
 
       <form class="menu-fonds" role="radiogroup" aria-label="Fond de carte">
         <label class="option-fond">
-          <input type="radio" name="fond" value="planIgn" checked />
+          <input type="radio" name="fond" value="planIgn" />
           <span>Plan IGN</span>
         </label>
         <label class="option-fond">
@@ -64,7 +68,7 @@
           <span>Plan Open</span>
         </label>
         <label class="option-fond">
-          <input type="radio" name="fond" value="satelliteIgn" />
+          <input type="radio" name="fond" value="satelliteIgn" checked />
           <span>Satellite IGN</span>
         </label>
       </form>
