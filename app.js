@@ -64,6 +64,53 @@ let donneesAppareils = null;
 let promesseChargementAppareils = null;
 let popupAppareils = null;
 
+function determinerCouleurAppareil(codeAppareil) {
+  const code = String(codeAppareil || "").trim().toUpperCase();
+
+  if (!code) {
+    return "#111111";
+  }
+
+  if (code.startsWith("DU")) {
+    return "#d90429"; // Rouge
+  }
+
+  if (code.startsWith("SI") || code.startsWith("I") || code.startsWith("D")) {
+    return "#f77f00"; // Orange
+  }
+
+  if (
+    code.startsWith("TT") ||
+    code.startsWith("TSA") ||
+    code.startsWith("TC") ||
+    code.startsWith("TRA") ||
+    /^GT\d+$/.test(code) ||
+    /^AT\d+$/.test(code)
+  ) {
+    return "#ffd60a"; // Jaune
+  }
+
+  if (
+    /^T\d+(?:\/\d+)?$/.test(code) ||
+    code.startsWith("T/") ||
+    /^\d/.test(code) ||
+    code.startsWith("ST") ||
+    code.startsWith("S") ||
+    code.startsWith("FB") ||
+    code.startsWith("F") ||
+    code.startsWith("P") ||
+    code.startsWith("B")
+  ) {
+    return "#2a9d8f"; // Vert
+  }
+
+  if (code.startsWith("ALIM")) {
+    return "#8d99ae"; // Gris
+  }
+
+  return "#111111"; // Noir
+}
+
 const carte = new maplibregl.Map({
   container: "map",
   center: CENTRE_INITIAL,
@@ -99,7 +146,7 @@ function appliquerCoucheAppareils() {
       source: SOURCE_APPAREILS,
       paint: {
         "circle-radius": 5,
-        "circle-color": "#db2f2f",
+        "circle-color": ["coalesce", ["get", "couleur_appareil"], "#111111"],
         "circle-opacity": 0.86,
         "circle-stroke-color": "#ffffff",
         "circle-stroke-width": 1.1
@@ -129,6 +176,14 @@ async function chargerDonneesAppareils() {
         return reponse.json();
       })
       .then((geojson) => {
+        for (const feature of geojson.features || []) {
+          if (!feature.properties) {
+            feature.properties = {};
+          }
+
+          feature.properties.couleur_appareil = determinerCouleurAppareil(feature.properties.appareil);
+        }
+
         donneesAppareils = geojson;
         return geojson;
       })
