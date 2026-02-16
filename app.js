@@ -2,7 +2,7 @@
 const CENTRE_INITIAL = [2.35, 48.85];
 const ZOOM_INITIAL = 6;
 const ZOOM_MAX = 19;
-const VERSION_APP = "V1.1.5";
+const VERSION_APP = "V1.1.6";
 const SOURCE_APPAREILS = "appareils-source";
 const COUCHE_APPAREILS = "appareils-points";
 const COUCHE_APPAREILS_GROUPES = "appareils-groupes";
@@ -60,7 +60,7 @@ const fondsCartographiques = {
   satelliteIgn: styleSatelliteIgn
 };
 
-let fondActif = "osm";
+let fondActif = "planIgn";
 let afficherAppareils = false;
 let donneesAppareils = null;
 let promesseChargementAppareils = null;
@@ -279,8 +279,27 @@ function restaurerEtatFiltres() {
   appliquerCoucheAppareils();
 }
 
+function remonterCouchesAppareils() {
+  if (carte.getLayer(COUCHE_APPAREILS_GROUPES)) {
+    carte.moveLayer(COUCHE_APPAREILS_GROUPES);
+  }
+
+  if (carte.getLayer(COUCHE_APPAREILS)) {
+    carte.moveLayer(COUCHE_APPAREILS);
+  }
+}
+
+function restaurerAffichageAppareils() {
+  if (!afficherAppareils || !donneesAppareils || !carte.isStyleLoaded()) {
+    return;
+  }
+
+  appliquerCoucheAppareils();
+  remonterCouchesAppareils();
+}
+
 function planifierRestaurationFiltres() {
-  const tentativeMax = 30;
+  const tentativeMax = 40;
   let tentatives = 0;
 
   const essayer = () => {
@@ -288,6 +307,7 @@ function planifierRestaurationFiltres() {
 
     if (carte.isStyleLoaded()) {
       restaurerEtatFiltres();
+      restaurerAffichageAppareils();
       return;
     }
 
@@ -449,15 +469,22 @@ function changerFondCarte(nomFond) {
   fondActif = nomFond;
   mettreAJourSelection(nomFond);
   planifierRestaurationFiltres();
+
+  // Certains styles vectoriels se finalisent en plusieurs etapes.
+  setTimeout(restaurerAffichageAppareils, 120);
+  setTimeout(restaurerAffichageAppareils, 420);
+  setTimeout(restaurerAffichageAppareils, 900);
 }
 
 carte.on("style.load", () => {
   restaurerEtatFiltres();
+  restaurerAffichageAppareils();
 });
 
 carte.on("styledata", () => {
   if (afficherAppareils && carte.isStyleLoaded()) {
     restaurerEtatFiltres();
+    restaurerAffichageAppareils();
   }
 });
 
