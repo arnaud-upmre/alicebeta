@@ -2,6 +2,7 @@
 const CENTRE_INITIAL = [2.35, 48.85];
 const ZOOM_INITIAL = 6;
 const ZOOM_MAX = 19;
+const VERSION_APP = "V1.1.1";
 const SOURCE_APPAREILS = "appareils-source";
 const COUCHE_APPAREILS = "appareils-points";
 const COUCHE_APPAREILS_GROUPES = "appareils-groupes";
@@ -206,6 +207,11 @@ const optionsFond = Array.from(document.querySelectorAll('input[name="fond"]'));
 const controleFiltres = document.getElementById("controle-filtres");
 const boutonFiltres = document.getElementById("bouton-filtres");
 const caseAppareils = document.querySelector('input[name="filtre-appareils"]');
+const badgeVersion = document.getElementById("version-app");
+
+if (badgeVersion) {
+  badgeVersion.textContent = VERSION_APP;
+}
 
 function appliquerCoucheAppareils() {
   if (!carte.getSource(SOURCE_APPAREILS)) {
@@ -240,11 +246,11 @@ function appliquerCoucheAppareils() {
       source: SOURCE_APPAREILS,
       filter: [">", ["get", "appareils_count"], 1],
       paint: {
-        "circle-radius": ["interpolate", ["linear"], ["get", "appareils_count"], 2, 10, 5, 14, 10, 18],
-        "circle-color": "#1f2937",
-        "circle-opacity": 0.92,
+        "circle-radius": ["interpolate", ["linear"], ["get", "appareils_count"], 2, 13, 5, 17, 10, 22],
+        "circle-color": "#2563eb",
+        "circle-opacity": 0.32,
         "circle-stroke-color": "#ffffff",
-        "circle-stroke-width": 1.3
+        "circle-stroke-width": 1.8
       }
     });
   }

@@ -22,6 +22,22 @@ body,
   z-index: 2;
 }
 
+.version-app {
+  position: absolute;
+  left: calc(8px + env(safe-area-inset-left));
+  bottom: calc(38px + env(safe-area-inset-bottom));
+  z-index: 2;
+  padding: 4px 8px;
+  border: 1px solid rgba(31, 41, 55, 0.14);
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.96);
+  color: #374151;
+  font-size: 0.78rem;
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: 0.01em;
+}
+
 .controle-filtres {
   position: absolute;
   right: calc(8px + env(safe-area-inset-right));
