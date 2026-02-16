@@ -272,6 +272,7 @@ function regrouperAppareilsParCoordonnees(geojson) {
       nom: propr.nom || "",
       type: propr.type || "",
       SAT: propr.SAT || "",
+      acces: propr.acces || "",
       appareil: propr.appareil || "",
       couleur_appareil: determinerCouleurAppareil(propr.appareil),
       hors_patrimoine: estHorsPatrimoine(propr.hors_patrimoine)
@@ -360,9 +361,7 @@ function regrouperAccesParCoordonnees(geojson) {
       type: propr.type || "",
       SAT: propr.SAT || "",
       acces: champAcces,
-      hors_patrimoine: horsPatrimoine,
-      latitude,
-      longitude
+      hors_patrimoine: horsPatrimoine
     };
 
     if (!groupes.has(cle)) {
@@ -935,6 +934,32 @@ function echapperHtml(valeur) {
     .replaceAll("'", "&#39;");
 }
 
+function normaliserChampTexte(valeur) {
+  return String(valeur || "").trim();
+}
+
+function champEstACompleter(valeur) {
+  const texte = normaliserChampTexte(valeur).toUpperCase();
+  return texte === "A COMPLETER" || texte === "A COMPLÉTER" || texte === "COMPLETER" || texte === "COMPLÉTER";
+}
+
+function champCompletOuVide(valeur) {
+  const texte = normaliserChampTexte(valeur);
+  if (!texte || champEstACompleter(texte)) {
+    return "";
+  }
+  return texte;
+}
+
+function construireTitreNomTypeSatAcces(entree, options = {}) {
+  const nomBase = normaliserChampTexte(entree?.nom);
+  const nom = entree?.hors_patrimoine && options.nomVilleDe && nomBase ? `${nomBase} (Ville De)` : nomBase;
+  const type = normaliserChampTexte(entree?.type);
+  const sat = champCompletOuVide(entree?.SAT);
+  const acces = champCompletOuVide(entree?.acces);
+  return [nom, type, sat, acces].filter(Boolean).join(" | ");
+}
+
 function construireLiensItineraires(longitude, latitude) {
   if (!Number.isFinite(longitude) || !Number.isFinite(latitude)) {
     return "";
@@ -965,7 +990,7 @@ function construireSectionAppareils(feature) {
     const titresUniques = [
       ...new Set(
         appareilsListe
-          .map((a) => [a.nom || "", a.type || "", a.SAT || ""].filter(Boolean).join(" | "))
+          .map((a) => construireTitreNomTypeSatAcces(a))
           .filter(Boolean)
       )
     ];
@@ -976,7 +1001,8 @@ function construireSectionAppareils(feature) {
       .map((a) => {
         const couleur = a.couleur_appareil || "#111111";
         const tagHp = a.hors_patrimoine ? '<span class="popup-tag-hp">HP</span>' : "";
-        return `<li><span class="popup-point-couleur" style="background:${echapperHtml(couleur)}"></span>${echapperHtml(a.appareil || "Appareil inconnu")}${tagHp}</li>`;
+        const libelleAppareil = champCompletOuVide(a.appareil) || "Appareil inconnu";
+        return `<li><span class="popup-point-couleur" style="background:${echapperHtml(couleur)}"></span>${echapperHtml(libelleAppareil)}${tagHp}</li>`;
       })
       .join("");
 
@@ -984,10 +1010,11 @@ function construireSectionAppareils(feature) {
   }
 
   const appareil = appareilsListe[0] || {};
-  const titre = [appareil.nom || "", appareil.type || "", appareil.SAT || ""].filter(Boolean).join(" | ");
+  const titre = construireTitreNomTypeSatAcces(appareil);
   const couleur = appareil.couleur_appareil || "#111111";
   const tagHp = appareil.hors_patrimoine ? '<span class="popup-tag-hp">HP</span>' : "";
-  return `<section class="popup-section"><div class="popup-pill-ligne"><span class="popup-badge popup-badge-appareils">1 appareil</span></div><p><strong>${echapperHtml(titre || "Poste inconnu")}</strong><br/><span class="popup-point-couleur" style="background:${echapperHtml(couleur)}"></span>${echapperHtml(appareil.appareil || "Appareil inconnu")}${tagHp}</p></section>`;
+  const libelleAppareil = champCompletOuVide(appareil.appareil) || "Appareil inconnu";
+  return `<section class="popup-section"><div class="popup-pill-ligne"><span class="popup-badge popup-badge-appareils">1 appareil</span></div><p><strong>${echapperHtml(titre || "Poste inconnu")}</strong><br/><span class="popup-point-couleur" style="background:${echapperHtml(couleur)}"></span>${echapperHtml(libelleAppareil)}${tagHp}</p></section>`;
 }
 
 function construireSectionAcces(feature) {
@@ -1003,11 +1030,7 @@ function construireSectionAcces(feature) {
     return "";
   }
 
-  const construireTitreAcces = (acces) => {
-    const nomAvecVille = acces.hors_patrimoine ? `${acces.nom || ""} (Ville De)` : acces.nom || "";
-    const champAcces = String(acces.acces || "").trim();
-    return [nomAvecVille, acces.type || "", acces.SAT || "", champAcces].filter(Boolean).join(" | ");
-  };
+  const construireTitreAcces = (acces) => construireTitreNomTypeSatAcces(acces, { nomVilleDe: true });
 
   if (Number(propr.acces_count) > 1) {
     const lignes = accesListe
@@ -1027,7 +1050,7 @@ function construireSectionAcces(feature) {
 }
 
 function construireTitrePoste(poste) {
-  return [poste.nom || "", poste.type || "", poste.SAT || "", poste.acces || ""].filter(Boolean).join(" | ");
+  return construireTitreNomTypeSatAcces(poste);
 }
 
 function construireDetailsPoste(poste) {

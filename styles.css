@@ -345,21 +345,6 @@ body,
   overflow: hidden;
 }
 
-.popup-tag-hors {
-  display: inline-flex;
-  align-items: center;
-  margin-left: 0;
-  margin-top: 5px;
-  padding: 2px 7px;
-  border-radius: 999px;
-  font-size: 0.7rem;
-  font-weight: 700;
-  color: #b91c1c;
-  background: rgba(239, 68, 68, 0.18);
-  max-width: 100%;
-  white-space: nowrap;
-}
-
 .popup-tag-hp {
   display: inline-flex;
   align-items: center;
