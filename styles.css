@@ -368,6 +368,14 @@ body,
   background: rgba(59, 130, 246, 0.2);
 }
 
+.popup-badge-poste-nom {
+  max-width: 100%;
+  font-size: 0.84rem;
+  line-height: 1.25;
+  text-align: center;
+  white-space: normal;
+}
+
 .popup-pill-ligne {
   display: flex;
   justify-content: center;
@@ -421,6 +429,29 @@ body,
   font-size: 0.75rem;
   line-height: 1.25;
   color: #475569;
+}
+
+.popup-poste-pills {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: -2px 0 8px;
+}
+
+.popup-poste-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 20px;
+  padding: 2px 7px;
+  border-radius: 999px;
+  border: 1px solid rgba(30, 64, 175, 0.22);
+  background: rgba(59, 130, 246, 0.1);
+  color: #1e3a8a;
+  font-size: 0.7rem;
+  font-weight: 700;
+  line-height: 1;
 }
 
 .popup-item-hors {

@@ -1058,25 +1058,79 @@ function construireTitrePoste(poste) {
   return construireTitreNomTypeSatAcces(poste);
 }
 
+function extraireCodesTelecommande(valeur) {
+  const brut = champCompletOuVide(valeur);
+  if (!brut) {
+    return [];
+  }
+
+  const segments = brut
+    .split(/[|,;()]+/)
+    .flatMap((partie) => String(partie).split(/\s+/))
+    .map((element) => String(element || "").trim())
+    .filter(Boolean);
+
+  const codes = [];
+  const dejaVu = new Set();
+  for (const segment of segments) {
+    const token = segment.replace(/[^A-Za-z0-9-]/g, "").toUpperCase();
+    if (!token) {
+      continue;
+    }
+
+    const estCodeCourt = /^[A-Z]{2,5}$/.test(token);
+    const estCodeAvecChiffres = /^[A-Z0-9-]{2,12}$/.test(token) && /\d/.test(token);
+    if (!estCodeCourt && !estCodeAvecChiffres) {
+      continue;
+    }
+
+    if (dejaVu.has(token)) {
+      continue;
+    }
+    dejaVu.add(token);
+    codes.push(token);
+  }
+
+  return codes;
+}
+
+function construireLignePkEtLigne(poste) {
+  const pk = champCompletOuVide(poste.pk);
+  const numeroLigne = poste.numero_ligne !== "" && poste.numero_ligne !== null && poste.numero_ligne !== undefined
+    ? String(poste.numero_ligne).trim()
+    : "";
+  const lignes = champCompletOuVide(poste.lignes);
+
+  const elements = [];
+  if (pk) {
+    elements.push(`PK ${pk}`);
+  }
+  if (numeroLigne || lignes) {
+    const partieLigne = [
+      numeroLigne ? `sur la ligne n°${numeroLigne}` : "",
+      lignes || ""
+    ]
+      .filter(Boolean)
+      .join(" – ");
+    elements.push(partieLigne);
+  }
+
+  return elements.join(" ");
+}
+
 function construireDetailsPoste(poste) {
   const details = [];
-  if (poste.rss) {
-    details.push(`RSS: ${poste.rss}`);
+  const lignePk = construireLignePkEtLigne(poste);
+  const rss = champCompletOuVide(poste.rss);
+  if (lignePk) {
+    details.push(lignePk);
   }
-  if (poste.numero_ligne !== "" && poste.numero_ligne !== null && poste.numero_ligne !== undefined) {
-    details.push(`Ligne: ${poste.numero_ligne}`);
+  if (rss) {
+    details.push(`RSS: ${rss}`);
   }
-  if (poste.pk) {
-    details.push(`PK: ${poste.pk}`);
-  }
-  if (poste.lignes) {
-    details.push(poste.lignes);
-  }
-  if (poste.description_telecommande) {
-    details.push(poste.description_telecommande);
-  }
-  if (poste.description) {
-    details.push(poste.description);
+  const codes = extraireCodesTelecommande(poste.description_telecommande);
+  if (codes.length) {
+    details.push(codes.join(" "));
   }
   return details.join(" | ");
 }
@@ -1097,20 +1151,34 @@ function construireSectionPostes(feature) {
   if (Number(propr.postes_count) > 1) {
     const lignes = postesListe
       .map((p) => {
-        const titre = construireTitrePoste(p) || "Poste inconnu";
-        const details = construireDetailsPoste(p);
+        const titre = champCompletOuVide(p.nom) || construireTitrePoste(p) || "Poste inconnu";
+        const infoLigne = construireLignePkEtLigne(p);
+        const rss = champCompletOuVide(p.rss);
+        const codesTelecommande = extraireCodesTelecommande(p.description_telecommande);
+        const pillsTelecommande = codesTelecommande.length
+          ? `<div class="popup-poste-pills">${codesTelecommande
+              .map((code) => `<span class="popup-poste-pill">(${echapperHtml(code)})</span>`)
+              .join("")}</div>`
+          : "";
         const classeHors = p.hors_patrimoine ? "popup-item-hors" : "";
-        return `<li class="${classeHors}"><span class="popup-acces-ligne">${echapperHtml(titre)}</span>${details ? `<br/><span class="popup-poste-details">${echapperHtml(details)}</span>` : ""}</li>`;
+        return `<li class="${classeHors}"><span class="popup-acces-ligne">${echapperHtml(titre)}</span>${pillsTelecommande}${infoLigne ? `<br/><span class="popup-poste-details">${echapperHtml(infoLigne)}</span>` : ""}${rss ? `<br/><span class="popup-poste-details">RSS: ${echapperHtml(rss)}</span>` : ""}</li>`;
       })
       .join("");
     return `<section class="popup-section"><div class="popup-pill-ligne"><span class="popup-badge popup-badge-postes">${echapperHtml(String(propr.postes_count))} postes</span></div><ul>${lignes}</ul></section>`;
   }
 
   const poste = postesListe[0] || {};
-  const titre = construireTitrePoste(poste) || "Poste inconnu";
-  const details = construireDetailsPoste(poste);
+  const titre = champCompletOuVide(poste.nom) || construireTitrePoste(poste) || "Poste inconnu";
+  const infoLigne = construireLignePkEtLigne(poste);
+  const rss = champCompletOuVide(poste.rss);
+  const codesTelecommande = extraireCodesTelecommande(poste.description_telecommande);
+  const pillsTelecommande = codesTelecommande.length
+    ? `<div class="popup-poste-pills">${codesTelecommande
+        .map((code) => `<span class="popup-poste-pill">(${echapperHtml(code)})</span>`)
+        .join("")}</div>`
+    : "";
   const classeHors = poste.hors_patrimoine ? " popup-item-hors" : "";
-  return `<section class="popup-section"><div class="popup-pill-ligne"><span class="popup-badge popup-badge-postes">1 poste</span></div><p class="popup-acces-ligne${classeHors}">${echapperHtml(titre)}${details ? `<br/><span class="popup-poste-details">${echapperHtml(details)}</span>` : ""}</p></section>`;
+  return `<section class="popup-section"><div class="popup-pill-ligne"><span class="popup-badge popup-badge-postes popup-badge-poste-nom">${echapperHtml(titre)}</span></div>${pillsTelecommande}<p class="popup-acces-ligne${classeHors}">${infoLigne ? echapperHtml(infoLigne) : ""}${rss ? `<br/><span class="popup-poste-details">RSS: ${echapperHtml(rss)}</span>` : ""}</p></section>`;
 }
 
 function normaliserTexteRecherche(valeur) {
@@ -1285,12 +1353,10 @@ function obtenirFeatureALaCoordonnee(collection, longitude, latitude) {
 function construirePopupDepuisFeatures(longitude, latitude, featurePostes, featureAcces, featureAppareils) {
   const sections = [];
   let contientAcces = false;
-  let contientPostes = false;
 
   if (featurePostes) {
     const sectionPostes = construireSectionPostes(featurePostes);
     if (sectionPostes) {
-      contientPostes = true;
       sections.push(sectionPostes);
     }
   }
@@ -1314,7 +1380,7 @@ function construirePopupDepuisFeatures(longitude, latitude, featurePostes, featu
     return false;
   }
 
-  const sectionItineraire = contientAcces || contientPostes
+  const sectionItineraire = contientAcces
     ? `<section class="popup-section popup-section-itineraires"><div class="popup-section-titre"><span class="popup-badge popup-badge-itineraire">Itineraire</span><strong>Navigation</strong></div>${construireLiensItineraires(longitude, latitude)}</section>`
     : "";
   const contenu = `<div class="popup-carte">${sections.join("")}${sectionItineraire}</div>`;
@@ -1335,6 +1401,39 @@ function ouvrirPopupDepuisCoordonnees(longitude, latitude) {
   const featurePostes = afficherPostes ? obtenirFeatureALaCoordonnee(donneesPostes, longitude, latitude) : null;
   const featureAcces = afficherAcces ? obtenirFeatureALaCoordonnee(donneesAcces, longitude, latitude) : null;
   const featureAppareils = afficherAppareils ? obtenirFeatureALaCoordonnee(donneesAppareils, longitude, latitude) : null;
+  return construirePopupDepuisFeatures(longitude, latitude, featurePostes, featureAcces, featureAppareils);
+}
+
+function ouvrirPopupDepuisObjetsCarte(objets) {
+  if (!Array.isArray(objets) || !objets.length) {
+    return false;
+  }
+
+  const objet = objets[0];
+  const [longitude, latitude] = objet.geometry?.coordinates || [];
+  if (!Number.isFinite(longitude) || !Number.isFinite(latitude)) {
+    return false;
+  }
+
+  const cle = `${longitude}|${latitude}`;
+  const uniquesParCouche = new Map();
+
+  for (const feature of objets) {
+    const coord = feature.geometry?.coordinates || [];
+    if (`${coord[0]}|${coord[1]}` !== cle) {
+      continue;
+    }
+    const idCouche = feature.layer?.id;
+    if (idCouche && !uniquesParCouche.has(idCouche)) {
+      uniquesParCouche.set(idCouche, feature);
+    }
+  }
+
+  const featurePostes = uniquesParCouche.get(COUCHE_POSTES_GROUPES) || uniquesParCouche.get(COUCHE_POSTES) || null;
+  const featureAcces = uniquesParCouche.get(COUCHE_ACCES_GROUPES) || uniquesParCouche.get(COUCHE_ACCES) || null;
+  const featureAppareils =
+    uniquesParCouche.get(COUCHE_APPAREILS_GROUPES) || uniquesParCouche.get(COUCHE_APPAREILS) || null;
+
   return construirePopupDepuisFeatures(longitude, latitude, featurePostes, featureAcces, featureAppareils);
 }
 
@@ -1445,9 +1544,7 @@ function activerInteractionsCarte() {
       return;
     }
 
-    const objet = objets[0];
-    const [longitude, latitude] = objet.geometry.coordinates || [];
-    ouvrirPopupDepuisCoordonnees(longitude, latitude);
+    ouvrirPopupDepuisObjetsCarte(objets);
   });
 
   carte.on("mousemove", (event) => {
