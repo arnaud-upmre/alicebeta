@@ -978,7 +978,7 @@ function construireLiensItineraires(longitude, latitude) {
   return `<div class="popup-itineraires"><a class="popup-bouton-itineraire" href="${echapperHtml(googleMaps)}" target="_blank" rel="noopener noreferrer">Google Maps</a><a class="popup-bouton-itineraire" href="${echapperHtml(applePlans)}" target="_blank" rel="noopener noreferrer">Apple Plans</a><a class="popup-bouton-itineraire" href="${echapperHtml(waze)}" target="_blank" rel="noopener noreferrer">Waze</a></div>`;
 }
 
-function construireSectionAppareils(feature) {
+function construireSectionAppareils(feature, options = {}) {
   const propr = feature.properties || {};
   let appareilsListe = [];
   try {
@@ -992,16 +992,6 @@ function construireSectionAppareils(feature) {
   }
 
   if (Number(propr.appareils_count) > 1) {
-    const titresUniques = [
-      ...new Set(
-        appareilsListe
-          .map((a) => construireTitreNomTypeSatAcces(a))
-          .filter(Boolean)
-      )
-    ];
-    const titreLieu =
-      titresUniques.length === 1 ? titresUniques[0] : `${String(titresUniques.length)} lieux`;
-
     const lignes = appareilsListe
       .map((a) => {
         const couleur = a.couleur_appareil || "#111111";
@@ -1011,7 +1001,7 @@ function construireSectionAppareils(feature) {
       })
       .join("");
 
-    return `<section class="popup-section"><div class="popup-pill-ligne"><span class="popup-badge popup-badge-appareils">${echapperHtml(String(propr.appareils_count))} appareils</span></div><div class="popup-sous-titre-centre">sur le meme support</div><p class="popup-lieu-unique"><strong>${echapperHtml(titreLieu || "Poste inconnu")}</strong></p><ul>${lignes}</ul></section>`;
+    return `<section class="popup-section"><div class="popup-pill-ligne"><span class="popup-badge popup-badge-appareils">${echapperHtml(String(propr.appareils_count))} appareils</span></div><div class="popup-sous-titre-centre">sur le meme support</div><ul>${lignes}</ul></section>`;
   }
 
   const appareil = appareilsListe[0] || {};
@@ -1019,7 +1009,8 @@ function construireSectionAppareils(feature) {
   const couleur = appareil.couleur_appareil || "#111111";
   const tagHp = appareil.hors_patrimoine ? '<span class="popup-tag-hp">HP</span>' : "";
   const libelleAppareil = champCompletOuVide(appareil.appareil) || "Appareil inconnu";
-  return `<section class="popup-section"><div class="popup-pill-ligne"><span class="popup-badge popup-badge-appareils">1 appareil</span></div><p><strong>${echapperHtml(titre || "Poste inconnu")}</strong><br/><span class="popup-point-couleur" style="background:${echapperHtml(couleur)}"></span>${echapperHtml(libelleAppareil)}${tagHp}</p></section>`;
+  const ligneTitre = options.masquerTitreLieu ? "" : `<strong>${echapperHtml(titre || "Poste inconnu")}</strong><br/>`;
+  return `<section class="popup-section"><div class="popup-pill-ligne"><span class="popup-badge popup-badge-appareils">1 appareil</span></div><p>${ligneTitre}<span class="popup-point-couleur" style="background:${echapperHtml(couleur)}"></span>${echapperHtml(libelleAppareil)}${tagHp}</p></section>`;
 }
 
 function construireSectionAcces(feature) {
@@ -1151,7 +1142,7 @@ function construireSectionPostes(feature) {
   if (Number(propr.postes_count) > 1) {
     const lignes = postesListe
       .map((p) => {
-        const titre = champCompletOuVide(p.nom) || construireTitrePoste(p) || "Poste inconnu";
+        const titre = construireTitrePoste(p) || "Poste inconnu";
         const infoLigne = construireLignePkEtLigne(p);
         const rss = champCompletOuVide(p.rss);
         const codesTelecommande = extraireCodesTelecommande(p.description_telecommande);
@@ -1168,7 +1159,7 @@ function construireSectionPostes(feature) {
   }
 
   const poste = postesListe[0] || {};
-  const titre = champCompletOuVide(poste.nom) || construireTitrePoste(poste) || "Poste inconnu";
+  const titre = construireTitrePoste(poste) || "Poste inconnu";
   const infoLigne = construireLignePkEtLigne(poste);
   const rss = champCompletOuVide(poste.rss);
   const codesTelecommande = extraireCodesTelecommande(poste.description_telecommande);
@@ -1370,7 +1361,9 @@ function construirePopupDepuisFeatures(longitude, latitude, featurePostes, featu
   }
 
   if (featureAppareils) {
-    const sectionAppareils = construireSectionAppareils(featureAppareils);
+    const sectionAppareils = construireSectionAppareils(featureAppareils, {
+      masquerTitreLieu: Boolean(featurePostes)
+    });
     if (sectionAppareils) {
       sections.push(sectionAppareils);
     }
