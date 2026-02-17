@@ -2,7 +2,7 @@
 const CENTRE_INITIAL = [2.35, 48.85];
 const ZOOM_INITIAL = 6;
 const ZOOM_MAX = 19;
-const VERSION_APP = "V1.2.14";
+const VERSION_APP = "V1.2.15";
 const SOURCE_APPAREILS = "appareils-source";
 const COUCHE_APPAREILS = "appareils-points";
 const COUCHE_APPAREILS_GROUPES = "appareils-groupes";
@@ -1904,6 +1904,90 @@ function basculerMenuFiltres() {
   ouvrirMenuFiltres();
 }
 
+function extraireCoordonneesDepuisCollection(collection) {
+  const coordonnees = [];
+  for (const feature of collection?.features || []) {
+    const [longitude, latitude] = feature?.geometry?.coordinates || [];
+    if (!Number.isFinite(longitude) || !Number.isFinite(latitude)) {
+      continue;
+    }
+    coordonnees.push([longitude, latitude]);
+  }
+  return coordonnees;
+}
+
+function obtenirCoordonneesCadrageInitial() {
+  const coordonnees = [];
+
+  if (afficherAcces) {
+    coordonnees.push(...extraireCoordonneesDepuisCollection(donneesAcces));
+  }
+  if (afficherPostes) {
+    coordonnees.push(...extraireCoordonneesDepuisCollection(donneesPostes));
+  }
+  if (afficherAppareils) {
+    coordonnees.push(...extraireCoordonneesDepuisCollection(donneesAppareils));
+  }
+
+  return coordonnees;
+}
+
+function cadrerCarteSurDonneesInitiales() {
+  const coordonnees = obtenirCoordonneesCadrageInitial();
+  if (!coordonnees.length) {
+    return;
+  }
+
+  if (coordonnees.length === 1) {
+    carte.flyTo({
+      center: coordonnees[0],
+      zoom: Math.max(carte.getZoom(), 12),
+      speed: 1.1,
+      curve: 1.2,
+      essential: true
+    });
+    return;
+  }
+
+  let minLng = Infinity;
+  let minLat = Infinity;
+  let maxLng = -Infinity;
+  let maxLat = -Infinity;
+
+  for (const [longitude, latitude] of coordonnees) {
+    if (longitude < minLng) {
+      minLng = longitude;
+    }
+    if (latitude < minLat) {
+      minLat = latitude;
+    }
+    if (longitude > maxLng) {
+      maxLng = longitude;
+    }
+    if (latitude > maxLat) {
+      maxLat = latitude;
+    }
+  }
+
+  carte.fitBounds(
+    [
+      [minLng, minLat],
+      [maxLng, maxLat]
+    ],
+    {
+      padding: {
+        top: 86,
+        right: 64,
+        bottom: 78,
+        left: 64
+      },
+      maxZoom: 10.8,
+      duration: 850,
+      essential: true
+    }
+  );
+}
+
 function changerFondCarte(nomFond) {
   if (!fondsCartographiques[nomFond] || nomFond === fondActif) {
     return;
@@ -2122,6 +2206,7 @@ async function initialiserDonneesParDefaut() {
 
   appliquerCouchesDonnees();
   remonterCouchesDonnees();
+  cadrerCarteSurDonneesInitiales();
 }
 
 function lancerInitialisationDonneesSiNecessaire() {
