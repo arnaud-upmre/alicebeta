@@ -577,6 +577,10 @@ const menuContextuelCarte = document.getElementById("menu-contextuel-carte");
 const boutonCtxCoord = document.getElementById("ctx-coord");
 const boutonCtxShare = document.getElementById("ctx-share");
 const boutonCtxItin = document.getElementById("ctx-itin");
+const sousMenuItin = document.getElementById("ctx-submenu-itin");
+const boutonCtxGoogleItin = document.getElementById("ctx-gmaps");
+const boutonCtxWaze = document.getElementById("ctx-waze");
+const boutonCtxApple = document.getElementById("ctx-apple");
 const boutonCtxRegle = document.getElementById("ctx-regle");
 const boutonCtxGoogleMarker = document.getElementById("ctx-gmaps-marker");
 const boutonCtxStreet = document.getElementById("ctx-street");
@@ -584,6 +588,7 @@ const boutonCtxImajnet = document.getElementById("ctx-imajnet");
 const boutonCtxAjoutAppareil = document.getElementById("ctx-add-appareil");
 const panneauMesure = document.getElementById("panneau-mesure");
 const textePanneauMesure = document.getElementById("panneau-mesure-texte");
+const boutonSortieMesure = document.getElementById("bouton-sortie-mesure");
 const CLE_STOCKAGE_FENETRE_ACCUEIL = "alice.fenetre-accueil.derniere-date";
 let temporisationInfoVitesse = null;
 
@@ -841,9 +846,26 @@ function reinitialiserMesure() {
   mettreAJourPanneauMesure();
 }
 
+function mettreAJourEtatMesureUI() {
+  if (boutonSortieMesure) {
+    boutonSortieMesure.classList.toggle("est-visible", mesureActive);
+  }
+
+  if (boutonCtxRegle) {
+    boutonCtxRegle.textContent = mesureActive ? "❌ Quitter le traçage" : "📏 Règle / Traçage";
+  }
+}
+
+function quitterModeMesure() {
+  reinitialiserMesure();
+  mesureActive = false;
+  mettreAJourEtatMesureUI();
+}
+
 function activerModeMesure() {
   reinitialiserMesure();
   mesureActive = true;
+  mettreAJourEtatMesureUI();
 }
 
 function ajouterPointMesure(longitude, latitude) {
@@ -859,6 +881,11 @@ function ajouterPointMesure(longitude, latitude) {
 function ouvrirMenuContextuel(event, feature) {
   if (!menuContextuelCarte) {
     return;
+  }
+
+  if (sousMenuItin) {
+    sousMenuItin.classList.remove("est-visible");
+    sousMenuItin.setAttribute("aria-hidden", "true");
   }
 
   const { lng, lat } = event.lngLat || {};
@@ -911,7 +938,25 @@ function fermerMenuContextuel() {
   }
   menuContextuelCarte.classList.remove("est-visible");
   menuContextuelCarte.setAttribute("aria-hidden", "true");
+  if (sousMenuItin) {
+    sousMenuItin.classList.remove("est-visible");
+    sousMenuItin.setAttribute("aria-hidden", "true");
+  }
   menuContextuelOuvert = false;
+}
+
+function basculerSousMenuItineraire() {
+  if (!sousMenuItin) {
+    return;
+  }
+  const ouvert = sousMenuItin.classList.contains("est-visible");
+  if (ouvert) {
+    sousMenuItin.classList.remove("est-visible");
+    sousMenuItin.setAttribute("aria-hidden", "true");
+    return;
+  }
+  sousMenuItin.classList.add("est-visible");
+  sousMenuItin.setAttribute("aria-hidden", "false");
 }
 
 async function partagerPositionContextuelle() {
@@ -2768,6 +2813,12 @@ if (boutonCtxShare) {
 
 if (boutonCtxItin) {
   boutonCtxItin.addEventListener("click", () => {
+    basculerSousMenuItineraire();
+  });
+}
+
+if (boutonCtxGoogleItin) {
+  boutonCtxGoogleItin.addEventListener("click", () => {
     const { latitude, longitude } = contexteMenuPosition;
     if (!Number.isFinite(latitude) || !Number.isFinite(longitude)) {
       return;
@@ -2777,11 +2828,48 @@ if (boutonCtxItin) {
   });
 }
 
+if (boutonCtxWaze) {
+  boutonCtxWaze.addEventListener("click", () => {
+    const { latitude, longitude } = contexteMenuPosition;
+    if (!Number.isFinite(latitude) || !Number.isFinite(longitude)) {
+      return;
+    }
+    window.open(`https://waze.com/ul?ll=${latitude},${longitude}&navigate=yes`, "_blank", "noopener");
+    fermerMenuContextuel();
+  });
+}
+
+if (boutonCtxApple) {
+  if (!/iPhone|iPad|Macintosh/i.test(navigator.userAgent)) {
+    boutonCtxApple.style.display = "none";
+  }
+
+  boutonCtxApple.addEventListener("click", () => {
+    const { latitude, longitude } = contexteMenuPosition;
+    if (!Number.isFinite(latitude) || !Number.isFinite(longitude)) {
+      return;
+    }
+    window.open(`http://maps.apple.com/?daddr=${latitude},${longitude}`, "_blank", "noopener");
+    fermerMenuContextuel();
+  });
+}
+
 if (boutonCtxRegle) {
   boutonCtxRegle.addEventListener("click", () => {
+    if (mesureActive) {
+      quitterModeMesure();
+      fermerMenuContextuel();
+      return;
+    }
     activerModeMesure();
     fermerPopupCarte();
     fermerMenuContextuel();
+  });
+}
+
+if (boutonSortieMesure) {
+  boutonSortieMesure.addEventListener("click", () => {
+    quitterModeMesure();
   });
 }
 
@@ -2824,9 +2912,9 @@ if (boutonCtxAjoutAppareil) {
     if (!Number.isFinite(latitude) || !Number.isFinite(longitude)) {
       return;
     }
-    const sujet = encodeURIComponent("Ajout d'un appareil");
+    const sujet = encodeURIComponent("➕ Ajout d'un appareil");
     const corps = encodeURIComponent(
-      `Bonjour,\n\nMerci d'ajouter un appareil à cette position :\nLatitude: ${latitude}\nLongitude: ${longitude}\n\nLien Google Maps: https://www.google.com/maps?q=${latitude},${longitude}\n`
+      `Bonjour Arnaud,\n\nMerci d'ajouter l'appareil : (à préciser)\nau poste de (à préciser, si poste, sat) :\n\nExiste-t-il d’autres appareils sur le même support ? (si oui, précisez)\n\nCoordonnées GPS :\nLatitude : ${latitude}\nLongitude : ${longitude}\n\n📍 Lien Google Maps :\nhttps://www.google.com/maps?q=${latitude},${longitude}\n\nBonne journée,`
     );
     window.location.href = `mailto:arnaud.debaecker@sncf.fr?subject=${sujet}&body=${corps}`;
     fermerMenuContextuel();
@@ -2859,8 +2947,7 @@ document.addEventListener("keydown", (event) => {
     fermerResultatsRecherche();
     fermerMenuContextuel();
     if (mesureActive || mesurePoints.length) {
-      reinitialiserMesure();
-      mesureActive = false;
+      quitterModeMesure();
     }
   }
 });

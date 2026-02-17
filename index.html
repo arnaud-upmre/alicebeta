@@ -118,11 +118,19 @@
     <div class="panneau-mesure" id="panneau-mesure" aria-live="polite">
       <pre class="panneau-mesure-texte" id="panneau-mesure-texte"></pre>
     </div>
+    <button class="bouton-sortie-mesure" id="bouton-sortie-mesure" type="button">
+      ❌ Quitter le traçage
+    </button>
 
     <div class="menu-contextuel-carte" id="menu-contextuel-carte" role="menu" aria-hidden="true">
       <button class="menu-contextuel-item menu-contextuel-coord" id="ctx-coord" type="button">📍 0.00000, 0.00000</button>
       <button class="menu-contextuel-item" id="ctx-share" type="button">🔗 Partager la position</button>
       <button class="menu-contextuel-item" id="ctx-itin" type="button">🚗 Itinéraire vers ici</button>
+      <div class="menu-contextuel-sousmenu" id="ctx-submenu-itin" aria-hidden="true">
+        <button class="menu-contextuel-sousitem" id="ctx-gmaps" type="button">🚙 Google Maps</button>
+        <button class="menu-contextuel-sousitem" id="ctx-waze" type="button">🚙 Waze</button>
+        <button class="menu-contextuel-sousitem" id="ctx-apple" type="button">🚙 Apple Plans</button>
+      </div>
       <div class="menu-contextuel-separateur"></div>
       <button class="menu-contextuel-item" id="ctx-regle" type="button">📏 Règle / Traçage</button>
       <div class="menu-contextuel-separateur"></div>

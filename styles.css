@@ -801,6 +801,40 @@ body,
   white-space: pre-wrap;
 }
 
+.bouton-sortie-mesure {
+  position: absolute;
+  left: 50%;
+  bottom: calc(18px + env(safe-area-inset-bottom));
+  z-index: 7;
+  display: none;
+  transform: translateX(-50%);
+  border: 1px solid rgba(239, 68, 68, 0.55);
+  border-radius: 999px;
+  background: rgba(127, 29, 29, 0.88);
+  color: #fee2e2;
+  font-family: "Avenir Next", "Segoe UI", sans-serif;
+  font-size: 0.95rem;
+  font-weight: 700;
+  line-height: 1;
+  padding: 12px 18px;
+  box-shadow: 0 12px 24px rgba(15, 23, 42, 0.35);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  cursor: pointer;
+}
+
+.bouton-sortie-mesure.est-visible {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.bouton-sortie-mesure:hover,
+.bouton-sortie-mesure:focus-visible {
+  background: rgba(153, 27, 27, 0.95);
+  outline: none;
+}
+
 .menu-contextuel-carte {
   position: fixed;
   z-index: 9;
@@ -853,6 +887,40 @@ body,
   height: 1px;
   margin: 6px 0;
   background: rgba(255, 255, 255, 0.2);
+}
+
+.menu-contextuel-sousmenu {
+  display: none;
+  flex-direction: column;
+  margin: -4px 8px 6px;
+  padding: 6px 0;
+  border-radius: 10px;
+  background: rgba(0, 0, 0, 0.34);
+}
+
+.menu-contextuel-sousmenu.est-visible {
+  display: flex;
+}
+
+.menu-contextuel-sousitem {
+  width: 100%;
+  margin: 0;
+  padding: 10px 16px 10px 24px;
+  border: 0;
+  background: transparent;
+  color: #f8fafc;
+  text-align: left;
+  font-family: "Avenir Next", "Segoe UI", sans-serif;
+  font-size: 1rem;
+  font-weight: 600;
+  line-height: 1.2;
+  cursor: pointer;
+}
+
+.menu-contextuel-sousitem:hover,
+.menu-contextuel-sousitem:focus-visible {
+  background: rgba(255, 255, 255, 0.14);
+  outline: none;
 }
 
 @media (max-width: 720px) {
