@@ -1684,6 +1684,37 @@ function trouverCoordonneesAccesDepuisPostes(featurePostes) {
   return null;
 }
 
+function trouverCoordonneesAccesDepuisAppareils(featureAppareils) {
+  if (!featureAppareils || !donneesAcces?.features?.length) {
+    return null;
+  }
+
+  const appareilsListe = extraireListeDepuisFeature(featureAppareils, "appareils_liste_json");
+  if (!appareilsListe.length) {
+    return null;
+  }
+
+  const clesAppareils = new Set(appareilsListe.map((appareil) => construireCleCorrespondance(appareil)).filter(Boolean));
+  if (!clesAppareils.size) {
+    return null;
+  }
+
+  for (const featureAcces of donneesAcces.features) {
+    const accesListe = extraireListeDepuisFeature(featureAcces, "acces_liste_json");
+    const correspond = accesListe.some((acces) => clesAppareils.has(construireCleCorrespondance(acces)));
+    if (!correspond) {
+      continue;
+    }
+
+    const [longitude, latitude] = featureAcces.geometry?.coordinates || [];
+    if (Number.isFinite(longitude) && Number.isFinite(latitude)) {
+      return [longitude, latitude];
+    }
+  }
+
+  return null;
+}
+
 function construireLignePkEtLigne(poste) {
   const pk = champCompletOuVide(poste.pk);
   const numeroLigne = poste.numero_ligne !== "" && poste.numero_ligne !== null && poste.numero_ligne !== undefined
@@ -1783,6 +1814,20 @@ function obtenirNumerosRssDepuisCode(codeRss) {
   return tableau.map((numero) => normaliserNumeroTelephone(numero)).filter(Boolean);
 }
 
+function construireLibelleTableRss(codeRss) {
+  const cle = normaliserCleRss(codeRss);
+  if (cle === "A") {
+    return "Table 1";
+  }
+  if (cle === "B") {
+    return "Table 2";
+  }
+  if (cle === "C") {
+    return "Table 3";
+  }
+  return `Table ${cle || "?"}`;
+}
+
 function construireSectionRssPoste(poste) {
   const rss = champCompletOuVide(poste?.rss);
   if (!rss) {
@@ -1791,18 +1836,19 @@ function construireSectionRssPoste(poste) {
 
   const cle = normaliserCleRss(rss);
   const numeros = obtenirNumerosRssDepuisCode(cle);
+  const libelleTable = construireLibelleTableRss(cle);
   if (!numeros.length) {
-    return `<section class="popup-section"><p class="popup-poste-ligne">📞 RSS : ${echapperHtml(rss)}</p></section>`;
+    return `<section class="popup-section"><p class="popup-poste-ligne">📞 RSS ${echapperHtml(libelleTable)}</p></section>`;
   }
 
-  const pills = numeros
+  const boutons = numeros
     .map((numero) => {
       const href = construireHrefTelephone(numero);
-      return `<a class="popup-poste-rss-pill" href="tel:${echapperHtml(href)}">${echapperHtml(numero)}</a>`;
+      return `<a class="popup-bouton-itineraire" href="tel:${echapperHtml(href)}">${echapperHtml(numero)}</a>`;
     })
     .join("");
 
-  return `<section class="popup-section"><p class="popup-poste-rss-titre">📞 RSS Table ${echapperHtml(cle)}</p><div class="popup-poste-rss-pills">${pills}</div></section>`;
+  return `<section class="popup-section"><p class="popup-poste-rss-titre">📞 RSS ${echapperHtml(libelleTable)}</p><div class="popup-itineraires popup-itineraires-rss">${boutons}</div></section>`;
 }
 
 function construireSectionPkPoste(poste) {
@@ -2150,6 +2196,10 @@ function construirePopupDepuisFeatures(longitude, latitude, featurePostes, featu
 
   if (!coordonneesNavigation && featurePostes) {
     coordonneesNavigation = trouverCoordonneesAccesDepuisPostes(featurePostes);
+  }
+
+  if (!coordonneesNavigation && featureAppareils) {
+    coordonneesNavigation = trouverCoordonneesAccesDepuisAppareils(featureAppareils);
   }
 
   const sectionPortail = featureAcces
