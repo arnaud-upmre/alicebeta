@@ -781,10 +781,21 @@ body,
 
 .popup-poste-appareil-lien {
   color: #1d4ed8;
+  border: 0;
+  background: transparent;
+  padding: 0;
   text-decoration: underline;
   text-decoration-thickness: 1.2px;
   text-underline-offset: 2px;
   font-weight: 500;
+  font: inherit;
+  cursor: pointer;
+}
+
+.popup-poste-appareil-lien:hover,
+.popup-poste-appareil-lien:focus-visible {
+  color: #1e40af;
+  outline: none;
 }
 
 .popup-action-lien {

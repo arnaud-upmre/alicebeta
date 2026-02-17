@@ -1951,6 +1951,10 @@ function construireSectionAppareilsAssociesDepuisPostes(postesListe) {
 
   const groupes = new Map();
   for (const feature of donneesAppareils.features) {
+    const [longitudeFeature, latitudeFeature] = feature.geometry?.coordinates || [];
+    if (!Number.isFinite(longitudeFeature) || !Number.isFinite(latitudeFeature)) {
+      continue;
+    }
     const appareilsListe = extraireListeDepuisFeature(feature, "appareils_liste_json");
     for (const appareil of appareilsListe) {
       if (!clesPostesNomType.has(construireCleNomType(appareil))) {
@@ -1967,10 +1971,17 @@ function construireSectionAppareilsAssociesDepuisPostes(postesListe) {
       if (!groupes.has(cleSat)) {
         groupes.set(cleSat, {
           label: sat,
-          codes: new Set()
+          codes: new Map()
         });
       }
-      groupes.get(cleSat).codes.add(code);
+      const groupe = groupes.get(cleSat);
+      if (!groupe.codes.has(code)) {
+        groupe.codes.set(code, {
+          code,
+          longitude: longitudeFeature,
+          latitude: latitudeFeature
+        });
+      }
     }
   }
 
@@ -1981,15 +1992,20 @@ function construireSectionAppareilsAssociesDepuisPostes(postesListe) {
   const lignes = Array.from(groupes.values())
     .sort((a, b) => comparerLibellesSat(a.label, b.label))
     .map((groupe) => {
-      const codes = Array.from(groupe.codes).sort((a, b) => a.localeCompare(b, "fr", { numeric: true }));
+      const codes = Array.from(groupe.codes.values()).sort((a, b) =>
+        String(a.code).localeCompare(String(b.code), "fr", { numeric: true })
+      );
       const codesHtml = codes
-        .map((code) => `<span class="popup-poste-appareil-lien">${echapperHtml(code)}</span>`)
+        .map(
+          (entree) =>
+            `<button class="popup-poste-appareil-lien" type="button" data-lng="${entree.longitude}" data-lat="${entree.latitude}">${echapperHtml(entree.code)}</button>`
+        )
         .join(", ");
       return `<p class="popup-poste-appareils-ligne"><strong>${echapperHtml(groupe.label)} :</strong> ${codesHtml}</p>`;
     })
     .join("");
 
-  return `<section class="popup-section"><p class="popup-poste-appareils-titre">🧩 Appareils trouvés dans ce poste :</p>${lignes}</section>`;
+  return `<section class="popup-section"><p class="popup-poste-appareils-titre">💡 Appareils au poste</p>${lignes}</section>`;
 }
 
 function construireSectionPostes(feature) {
@@ -2064,6 +2080,47 @@ function attacherActionsPopupInterne() {
       }
       popupCarte.setHTML(navigationInternePopup.vueFiche);
       attacherActionsPopupInterne();
+    });
+  }
+
+  const boutonsAppareilsAssocies = racinePopup.querySelectorAll(".popup-poste-appareil-lien[data-lng][data-lat]");
+  for (const bouton of boutonsAppareilsAssocies) {
+    bouton.addEventListener("click", async () => {
+      const longitude = Number(bouton.getAttribute("data-lng"));
+      const latitude = Number(bouton.getAttribute("data-lat"));
+      if (!Number.isFinite(longitude) || !Number.isFinite(latitude)) {
+        return;
+      }
+
+      try {
+        await activerFiltrePourType("appareils");
+        appliquerCouchesDonnees();
+        remonterCouchesDonnees();
+      } catch (erreur) {
+        console.error("Impossible d'activer la couche appareils", erreur);
+      }
+
+      fermerMenuContextuel();
+      fermerResultatsRecherche();
+
+      let popupOuverte = false;
+      const ouvrirPopup = () => {
+        if (popupOuverte) {
+          return;
+        }
+        popupOuverte = true;
+        ouvrirPopupDepuisCoordonnees(longitude, latitude);
+      };
+
+      carte.once("moveend", ouvrirPopup);
+      carte.flyTo({
+        center: [longitude, latitude],
+        zoom: Math.max(carte.getZoom(), 15),
+        speed: 1.1,
+        curve: 1.2,
+        essential: true
+      });
+      setTimeout(ouvrirPopup, 700);
     });
   }
 }
