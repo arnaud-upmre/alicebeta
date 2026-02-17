@@ -2,7 +2,7 @@
 const CENTRE_INITIAL = [2.35, 48.85];
 const ZOOM_INITIAL = 6;
 const ZOOM_MAX = 19;
-const VERSION_APP = "V1.2.18";
+const VERSION_APP = "V1.2.19";
 const SOURCE_APPAREILS = "appareils-source";
 const COUCHE_APPAREILS = "appareils-points";
 const COUCHE_APPAREILS_GROUPES = "appareils-groupes";
@@ -768,9 +768,15 @@ function appliquerCouchesDonnees() {
       layout: {
         "icon-image": ["coalesce", ["get", "icone_groupe_appareils"], "appareils-groupe-111111"],
         "icon-size": [
-          "*",
-          ["interpolate", ["linear"], ["zoom"], 6, 0.96, 12, 1.06, 18, 1.16],
-          ["interpolate", ["linear"], ["get", "appareils_count"], 2, 0.42, 5, 0.55, 10, 0.72]
+          "interpolate",
+          ["linear"],
+          ["zoom"],
+          6,
+          ["interpolate", ["linear"], ["get", "appareils_count"], 2, 0.4, 5, 0.52, 10, 0.68],
+          12,
+          ["interpolate", ["linear"], ["get", "appareils_count"], 2, 0.43, 5, 0.56, 10, 0.73],
+          18,
+          ["interpolate", ["linear"], ["get", "appareils_count"], 2, 0.46, 5, 0.6, 10, 0.78]
         ],
         "icon-allow-overlap": true
       },
