@@ -1,8 +1,8 @@
 // Centre initial de la carte (France metropolitaine).
 const CENTRE_INITIAL = [2.35, 48.85];
 const ZOOM_INITIAL = 6;
-const ZOOM_MAX = 19;
-const VERSION_APP = "V1.2.20";
+const ZOOM_MAX = 18;
+const VERSION_APP = "V1.2.22";
 const SOURCE_APPAREILS = "appareils-source";
 const COUCHE_APPAREILS = "appareils-points";
 const COUCHE_APPAREILS_GROUPES = "appareils-groupes";
@@ -50,6 +50,7 @@ const styleSatelliteIgn = {
         "https://data.geopf.fr/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER=ORTHOIMAGERY.ORTHOPHOTOS&STYLE=normal&TILEMATRIXSET=PM&FORMAT=image/jpeg&TILEMATRIX={z}&TILEROW={y}&TILECOL={x}"
       ],
       tileSize: 256,
+      maxzoom: 18,
       attribution: "© IGN"
     }
   },
@@ -207,7 +208,7 @@ function creerImageIconeGroupeAppareils(couleurs, horsPatrimoine) {
     ctx.moveTo(centre, centre);
     ctx.arc(centre, centre, rayon, angleStart, angleEnd);
     ctx.closePath();
-    ctx.fillStyle = convertirHexEnRgba(teintes[i], 0.52);
+    ctx.fillStyle = convertirHexEnRgba(teintes[i], 1);
     ctx.fill();
   }
 
@@ -771,7 +772,7 @@ function appliquerCouchesDonnees() {
         "icon-allow-overlap": true
       },
       paint: {
-        "icon-opacity": 0.92
+        "icon-opacity": 1
       }
     });
   }
