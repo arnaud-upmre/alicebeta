@@ -2,7 +2,7 @@
 const CENTRE_INITIAL = [2.35, 48.85];
 const ZOOM_INITIAL = 6;
 const ZOOM_MAX = 19;
-const VERSION_APP = "V1.2.15";
+const VERSION_APP = "V1.2.18";
 const SOURCE_APPAREILS = "appareils-source";
 const COUCHE_APPAREILS = "appareils-points";
 const COUCHE_APPAREILS_GROUPES = "appareils-groupes";
@@ -745,7 +745,7 @@ function appliquerCouchesDonnees() {
       source: SOURCE_APPAREILS,
       filter: ["==", ["get", "appareils_count"], 1],
       paint: {
-        "circle-radius": 5,
+        "circle-radius": ["interpolate", ["linear"], ["zoom"], 6, 5, 12, 5.8, 18, 6.8],
         "circle-color": [
           "case",
           ["==", ["get", "hors_patrimoine"], true],
@@ -767,7 +767,11 @@ function appliquerCouchesDonnees() {
       filter: [">", ["get", "appareils_count"], 1],
       layout: {
         "icon-image": ["coalesce", ["get", "icone_groupe_appareils"], "appareils-groupe-111111"],
-        "icon-size": ["interpolate", ["linear"], ["get", "appareils_count"], 2, 0.42, 5, 0.55, 10, 0.72],
+        "icon-size": [
+          "*",
+          ["interpolate", ["linear"], ["zoom"], 6, 0.96, 12, 1.06, 18, 1.16],
+          ["interpolate", ["linear"], ["get", "appareils_count"], 2, 0.42, 5, 0.55, 10, 0.72]
+        ],
         "icon-allow-overlap": true
       },
       paint: {
@@ -792,7 +796,7 @@ function appliquerCouchesDonnees() {
       source: SOURCE_ACCES,
       filter: ["==", ["get", "acces_count"], 1],
       paint: {
-        "circle-radius": 5,
+        "circle-radius": ["interpolate", ["linear"], ["zoom"], 6, 5, 12, 5.8, 18, 6.8],
         "circle-color": ["case", ["==", ["get", "hors_patrimoine"], true], "#ef4444", "#7c3aed"],
         "circle-opacity": ["case", ["==", ["get", "hors_patrimoine"], true], 0.82, 0.9],
         "circle-stroke-color": "#ffffff",
@@ -833,7 +837,7 @@ function appliquerCouchesDonnees() {
       source: SOURCE_POSTES,
       filter: ["==", ["get", "postes_count"], 1],
       paint: {
-        "circle-radius": 5,
+        "circle-radius": ["interpolate", ["linear"], ["zoom"], 6, 5, 12, 5.8, 18, 6.8],
         "circle-color": ["case", ["==", ["get", "hors_patrimoine"], true], "#ef4444", "#2563eb"],
         "circle-opacity": ["case", ["==", ["get", "hors_patrimoine"], true], 0.82, 0.92],
         "circle-stroke-color": "#ffffff",
@@ -2008,14 +2012,16 @@ function changerFondCarte(nomFond) {
 function gererStyleCharge() {
   restaurerEtatFiltres();
   restaurerAffichageDonnees();
-
-  lancerInitialisationDonneesSiNecessaire();
 }
 
 carte.on("style.load", gererStyleCharge);
+carte.once("load", lancerInitialisationDonneesSiNecessaire);
 
 if (carte.isStyleLoaded()) {
   gererStyleCharge();
+}
+if (carte.loaded()) {
+  lancerInitialisationDonneesSiNecessaire();
 }
 
 carte.on("styledata", () => {
@@ -2218,8 +2224,6 @@ function lancerInitialisationDonneesSiNecessaire() {
     console.error("Impossible d'initialiser les donnees au demarrage", erreur);
   });
 }
-
-lancerInitialisationDonneesSiNecessaire();
 
 boutonFiltres.addEventListener("click", (event) => {
   event.stopPropagation();
