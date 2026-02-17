@@ -2,7 +2,6 @@
 const CENTRE_INITIAL = [2.35, 48.85];
 const ZOOM_INITIAL = 6;
 const ZOOM_MAX = 19;
-const ZOOM_REFERENCE_PK = 21; // Calibration historique de Nono Maps.
 const BONUS_ZOOM_PK_MOBILE = 1;
 const VERSION_APP = "V1.3.0";
 const SOURCE_APPAREILS = "appareils-source";
@@ -1291,19 +1290,23 @@ async function chargerCompteurPostes() {
 }
 
 function determinerStepPkPourZoom(zoom) {
-  const zoomNumerique = Number(zoom) || 0;
-  const compensationZoom = Math.max(0, ZOOM_REFERENCE_PK - ZOOM_MAX);
+  const zoomNumerique = Math.floor(Number(zoom) || 0);
   const bonusMobile = window.innerWidth < 768 ? BONUS_ZOOM_PK_MOBILE : 0;
-  const effectiveZoom = Math.floor(zoomNumerique + compensationZoom + bonusMobile);
-  if (effectiveZoom < 11) return -1;
-  if (effectiveZoom === 11) return 15000;
-  if (effectiveZoom === 12) return 10000;
-  if (effectiveZoom === 13) return 5000;
-  if (effectiveZoom === 14) return 2000;
-  if (effectiveZoom === 15) return 1000;
-  if (effectiveZoom === 16) return 500;
-  if (effectiveZoom === 17) return 200;
-  return 0; // Z18+ : pas de filtrage de pas.
+
+  // Delta dezoom relatif au zoom max (mobile: +1 niveau de detail).
+  const dezoom = Math.max(0, ZOOM_MAX - zoomNumerique - bonusMobile);
+
+  if (dezoom === 0) return 0; // Zoom max : tous les PK.
+  if (dezoom === 1) return 100;
+  if (dezoom === 2) return 100;
+  if (dezoom === 3) return 200;
+  if (dezoom === 4) return 500;
+  if (dezoom === 5) return 1000;
+  if (dezoom === 6) return 2000;
+  if (dezoom === 7) return 5000;
+  if (dezoom === 8) return 10000;
+  if (dezoom === 9) return 15000;
+  return -1; // Trop dezoom : on masque les PK.
 }
 
 function estFeaturePkDansLePas(feature, step) {
