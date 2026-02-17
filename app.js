@@ -612,6 +612,14 @@ function afficherMessageInfoVitesseLigne() {
   }, 5200);
 }
 
+function fermerPopupCarte() {
+  if (!popupCarte) {
+    return;
+  }
+  popupCarte.remove();
+  popupCarte = null;
+}
+
 if (fenetreAccueil && doitAfficherFenetreAccueilAujourdhui()) {
   fenetreAccueil.classList.add("est-visible");
   fenetreAccueil.setAttribute("aria-hidden", "false");
@@ -1584,14 +1592,15 @@ function construirePopupDepuisFeatures(longitude, latitude, featurePostes, featu
     : "";
   const contenu = `<div class="popup-carte">${sections.join("")}${sectionItineraire}</div>`;
 
-  if (popupCarte) {
-    popupCarte.remove();
-  }
+  fermerPopupCarte();
 
   popupCarte = new maplibregl.Popup({ closeButton: true, closeOnClick: true })
     .setLngLat([longitude, latitude])
     .setHTML(contenu)
     .addTo(carte);
+  popupCarte.on("close", () => {
+    popupCarte = null;
+  });
 
   return true;
 }
@@ -1757,6 +1766,10 @@ function activerInteractionsCarte() {
       layers: couchesDisponibles
     });
     carte.getCanvas().style.cursor = objets.length ? "pointer" : "";
+  });
+
+  carte.on("movestart", () => {
+    fermerPopupCarte();
   });
 }
 
@@ -1935,6 +1948,17 @@ if (casePostes) {
 if (caseLignes) {
   caseLignes.addEventListener("change", () => {
     afficherLignes = caseLignes.checked;
+    if (afficherLignes) {
+      afficherVitesseLigne = false;
+      if (caseVitesseLigne) {
+        caseVitesseLigne.checked = false;
+      }
+      masquerMessageInfoVitesseLigne();
+      if (temporisationInfoVitesse) {
+        clearTimeout(temporisationInfoVitesse);
+        temporisationInfoVitesse = null;
+      }
+    }
     appliquerCouchesDonnees();
     remonterCouchesDonnees();
   });
@@ -1944,6 +1968,10 @@ if (caseVitesseLigne) {
   caseVitesseLigne.addEventListener("change", () => {
     afficherVitesseLigne = caseVitesseLigne.checked;
     if (afficherVitesseLigne) {
+      afficherLignes = false;
+      if (caseLignes) {
+        caseLignes.checked = false;
+      }
       afficherMessageInfoVitesseLigne();
     } else {
       masquerMessageInfoVitesseLigne();
