@@ -1413,9 +1413,25 @@ function construireResumeRecherche(entree) {
     return "Poste";
   }
   if (entree.type === "appareils") {
+    if (Number(entree.appareilsCount) > 1) {
+      return `${entree.appareilsCount} appareils`;
+    }
     return "Appareil";
   }
   return "Acces";
+}
+
+function obtenirPrioriteTypeRecherche(type) {
+  if (type === "acces") {
+    return 0;
+  }
+  if (type === "postes") {
+    return 1;
+  }
+  if (type === "appareils") {
+    return 2;
+  }
+  return 3;
 }
 
 function reconstruireIndexRecherche() {
@@ -1447,7 +1463,7 @@ function reconstruireIndexRecherche() {
         sousTitre: details,
         longitude,
         latitude,
-        scoreBase: 3,
+        couleurPastille: "#2563eb",
         texteRecherche: normaliserTexteRecherche(motsCles)
       });
     }
@@ -1466,21 +1482,43 @@ function reconstruireIndexRecherche() {
       appareilsListe = [];
     }
 
+    const groupesParTitre = new Map();
     for (const appareil of appareilsListe) {
       const titre = construireTitreNomTypeSatAcces(appareil) || "Appareil";
       const appareilNom = champCompletOuVide(appareil.appareil) || "";
       const motsCles = [titre, appareilNom, appareil.nom, appareil.type, appareil.SAT, appareil.acces]
         .filter(Boolean)
         .join(" ");
+      const cle = `${titre}|${longitude}|${latitude}`;
 
+      if (!groupesParTitre.has(cle)) {
+        groupesParTitre.set(cle, {
+          type: "appareils",
+          titre,
+          sousTitre: "",
+          longitude,
+          latitude,
+          couleurPastille: normaliserCouleurHex(
+            appareil.couleur_appareil || determinerCouleurAppareil(appareilNom)
+          ),
+          appareilsCount: 0,
+          texteMotsCles: []
+        });
+      }
+
+      const groupe = groupesParTitre.get(cle);
+      groupe.appareilsCount += 1;
+      groupe.texteMotsCles.push(motsCles);
+      if (!groupe.sousTitre && appareilNom) {
+        groupe.sousTitre = appareilNom;
+      }
+    }
+
+    for (const groupe of groupesParTitre.values()) {
       index.push({
-        type: "appareils",
-        titre,
-        sousTitre: appareilNom,
-        longitude,
-        latitude,
-        scoreBase: 2,
-        texteRecherche: normaliserTexteRecherche(motsCles)
+        ...groupe,
+        sousTitre: groupe.appareilsCount > 1 ? "" : groupe.sousTitre,
+        texteRecherche: normaliserTexteRecherche(groupe.texteMotsCles.join(" "))
       });
     }
   }
@@ -1510,7 +1548,7 @@ function reconstruireIndexRecherche() {
         sousTitre: "",
         longitude,
         latitude,
-        scoreBase: 1,
+        couleurPastille: "#8b5cf6",
         texteRecherche: normaliserTexteRecherche(motsCles)
       });
     }
@@ -1682,16 +1720,22 @@ function rechercherEntrees(terme) {
     if (!entree.texteRecherche.includes(termeNormalise)) {
       continue;
     }
-    const matchDebut = entree.texteRecherche.startsWith(termeNormalise) ? 1 : 0;
+    const titreNormalise = normaliserTexteRecherche(entree.titre);
+    const matchDebut = entree.texteRecherche.startsWith(termeNormalise) || titreNormalise.startsWith(termeNormalise) ? 1 : 0;
     resultats.push({
       ...entree,
-      score: entree.scoreBase + matchDebut
+      matchDebut
     });
   }
 
   resultats.sort((a, b) => {
-    if (b.score !== a.score) {
-      return b.score - a.score;
+    if (b.matchDebut !== a.matchDebut) {
+      return b.matchDebut - a.matchDebut;
+    }
+    const prioriteA = obtenirPrioriteTypeRecherche(a.type);
+    const prioriteB = obtenirPrioriteTypeRecherche(b.type);
+    if (prioriteA !== prioriteB) {
+      return prioriteA - prioriteB;
     }
     return a.titre.localeCompare(b.titre, "fr", { sensitivity: "base" });
   });
@@ -1715,7 +1759,13 @@ function afficherResultatsRecherche(resultats) {
       const titre = echapperHtml(resultat.titre || "Element");
       const sousTitre = echapperHtml(resultat.sousTitre || "");
       const meta = construireResumeRecherche(resultat);
-      return `<li><button class="recherche-resultat" type="button" data-index="${index}" data-type="${echapperHtml(resultat.type)}" data-lng="${resultat.longitude}" data-lat="${resultat.latitude}"><span class="recherche-resultat-titre">${titre}</span><span class="recherche-resultat-meta">${echapperHtml(meta)}${sousTitre ? ` | ${sousTitre}` : ""}</span></button></li>`;
+      const classePastille = `recherche-resultat-pastille-${echapperHtml(resultat.type || "acces")}`;
+      const couleurPastille = echapperHtml(
+        normaliserCouleurHex(
+          resultat.couleurPastille || (resultat.type === "postes" ? "#2563eb" : resultat.type === "appareils" ? "#111111" : "#8b5cf6")
+        )
+      );
+      return `<li><button class="recherche-resultat" type="button" data-index="${index}" data-type="${echapperHtml(resultat.type)}" data-lng="${resultat.longitude}" data-lat="${resultat.latitude}"><span class="recherche-resultat-titre"><span class="recherche-resultat-pastille ${classePastille}" style="background-color:${couleurPastille};"></span>${titre}</span><span class="recherche-resultat-meta">${echapperHtml(meta)}${sousTitre ? ` | ${sousTitre}` : ""}</span></button></li>`;
     })
     .join("");
 

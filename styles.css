@@ -201,10 +201,28 @@ body,
 }
 
 .recherche-resultat-titre {
-  display: block;
+  display: flex;
+  align-items: center;
+  gap: 8px;
   font-size: 0.85rem;
   font-weight: 600;
   line-height: 1.25;
+}
+
+.recherche-resultat-pastille {
+  width: 10px;
+  height: 10px;
+  flex: 0 0 10px;
+  border-radius: 999px;
+  border: 1px solid rgba(15, 23, 42, 0.18);
+}
+
+.recherche-resultat-pastille-acces {
+  background: #8b5cf6;
+}
+
+.recherche-resultat-pastille-postes {
+  background: #2563eb;
 }
 
 .recherche-resultat-meta {
