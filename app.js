@@ -85,7 +85,7 @@ let promesseChargementAppareils = null;
 let promesseChargementAcces = null;
 let promesseChargementPostes = null;
 let popupCarte = null;
-let initialisationEffectuee = false;
+let initialisationDonneesLancee = false;
 let totalAppareilsBrut = 0;
 let totalPostesBrut = 0;
 let indexRecherche = [];
@@ -1825,10 +1825,7 @@ function gererStyleCharge() {
   restaurerEtatFiltres();
   restaurerAffichageDonnees();
 
-  if (!initialisationEffectuee) {
-    initialisationEffectuee = true;
-    initialiserDonneesParDefaut();
-  }
+  lancerInitialisationDonneesSiNecessaire();
 }
 
 carte.on("style.load", gererStyleCharge);
@@ -2011,6 +2008,18 @@ async function initialiserDonneesParDefaut() {
   appliquerCouchesDonnees();
   remonterCouchesDonnees();
 }
+
+function lancerInitialisationDonneesSiNecessaire() {
+  if (initialisationDonneesLancee) {
+    return;
+  }
+  initialisationDonneesLancee = true;
+  initialiserDonneesParDefaut().catch((erreur) => {
+    console.error("Impossible d'initialiser les donnees au demarrage", erreur);
+  });
+}
+
+lancerInitialisationDonneesSiNecessaire();
 
 boutonFiltres.addEventListener("click", (event) => {
   event.stopPropagation();
