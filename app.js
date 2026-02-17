@@ -1,8 +1,8 @@
 // Centre initial de la carte (France metropolitaine).
 const CENTRE_INITIAL = [2.35, 48.85];
 const ZOOM_INITIAL = 6;
-const ZOOM_MAX = 18;
-const VERSION_APP = "V1.2.22";
+const ZOOM_MAX = 19;
+const VERSION_APP = "V1.2.24";
 const SOURCE_APPAREILS = "appareils-source";
 const COUCHE_APPAREILS = "appareils-points";
 const COUCHE_APPAREILS_GROUPES = "appareils-groupes";
@@ -746,7 +746,7 @@ function appliquerCouchesDonnees() {
       source: SOURCE_APPAREILS,
       filter: ["==", ["get", "appareils_count"], 1],
       paint: {
-        "circle-radius": ["interpolate", ["linear"], ["zoom"], 6, 5, 12, 5.8, 18, 6.8],
+        "circle-radius": ["interpolate", ["linear"], ["zoom"], 6, 4.5, 12, 5.2, 18, 5.9],
         "circle-color": [
           "case",
           ["==", ["get", "hors_patrimoine"], true],
@@ -768,7 +768,7 @@ function appliquerCouchesDonnees() {
       filter: [">", ["get", "appareils_count"], 1],
       layout: {
         "icon-image": ["coalesce", ["get", "icone_groupe_appareils"], "appareils-groupe-111111"],
-        "icon-size": ["interpolate", ["linear"], ["get", "appareils_count"], 2, 0.47, 5, 0.6, 10, 0.78],
+        "icon-size": ["interpolate", ["linear"], ["get", "appareils_count"], 2, 0.43, 5, 0.56, 10, 0.72],
         "icon-allow-overlap": true
       },
       paint: {
