@@ -3,7 +3,7 @@ const CENTRE_INITIAL = [2.35, 48.85];
 const ZOOM_INITIAL = 6;
 const ZOOM_MAX = 19;
 const BONUS_ZOOM_PK_MOBILE = 1;
-const VERSION_APP = "V1.3.0";
+const VERSION_APP = "V1.3.1";
 const SOURCE_APPAREILS = "appareils-source";
 const COUCHE_APPAREILS = "appareils-points";
 const COUCHE_APPAREILS_GROUPES = "appareils-groupes";
@@ -1314,12 +1314,11 @@ function estFeaturePkDansLePas(feature, step) {
     return true;
   }
 
-  const pkKm = Number(feature?.properties?.pk);
-  if (!Number.isFinite(pkKm)) {
+  const pkMetres = Number(feature?.properties?.pk_m);
+  if (!Number.isFinite(pkMetres)) {
     return false;
   }
 
-  const pkMetres = Math.round(pkKm * 1000);
   const modulo = ((pkMetres % step) + step) % step;
   const distancePlusProche = Math.min(modulo, step - modulo);
   return distancePlusProche <= TOLERANCE_PK_METRES;
@@ -1351,60 +1350,8 @@ function obtenirDonneesPkPourStep(step) {
   return resultat;
 }
 
-function estLongitudeDansBornes(longitude, ouest, est) {
-  if (ouest <= est) {
-    return longitude >= ouest && longitude <= est;
-  }
-  // Cas de franchissement de l'antimeridien.
-  return longitude >= ouest || longitude <= est;
-}
-
-function obtenirDonneesPkVisibles(step) {
-  const donneesStep = obtenirDonneesPkPourStep(step);
-  if (!donneesStep?.features?.length) {
-    return PK_VIDE;
-  }
-
-  const bornes = carte.getBounds?.();
-  if (!bornes) {
-    return donneesStep;
-  }
-
-  // Petite marge pour eviter la disparition des labels sur les bords pendant la navigation.
-  const marge = 0.02;
-  const sud = bornes.getSouth() - marge;
-  const nord = bornes.getNorth() + marge;
-  const ouest = bornes.getWest() - marge;
-  const est = bornes.getEast() + marge;
-
-  const features = donneesStep.features.filter((feature) => {
-    const [longitude, latitude] = feature?.geometry?.coordinates || [];
-    if (!Number.isFinite(longitude) || !Number.isFinite(latitude)) {
-      return false;
-    }
-    return latitude >= sud && latitude <= nord && estLongitudeDansBornes(longitude, ouest, est);
-  });
-
-  return {
-    type: "FeatureCollection",
-    features
-  };
-}
-
 function construireCleAffichagePk(step) {
-  const bornes = carte.getBounds?.();
-  if (!bornes) {
-    return `${step}|sans-bornes`;
-  }
-
-  const arrondir = (valeur) => Number(valeur).toFixed(3);
-  return [
-    step,
-    arrondir(bornes.getWest()),
-    arrondir(bornes.getSouth()),
-    arrondir(bornes.getEast()),
-    arrondir(bornes.getNorth())
-  ].join("|");
+  return `${step}`;
 }
 
 function mettreAJourCouchePkSelonZoom(force = false) {
@@ -1425,10 +1372,10 @@ function mettreAJourCouchePkSelonZoom(force = false) {
 
   dernierStepPkApplique = step;
   derniereCleAffichagePk = cleAffichage;
-  sourcePk.setData(obtenirDonneesPkVisibles(step));
+  sourcePk.setData(obtenirDonneesPkPourStep(step));
 }
 
-function planifierMiseAJourPkSelonZoom() {
+function planifierMiseAJourPkSelonZoom(force = false) {
   if (rafMiseAJourPk !== null) {
     return;
   }
@@ -1438,7 +1385,7 @@ function planifierMiseAJourPkSelonZoom() {
     if (!afficherPk || !donneesPk) {
       return;
     }
-    mettreAJourCouchePkSelonZoom();
+    mettreAJourCouchePkSelonZoom(force);
   });
 }
 
@@ -1448,7 +1395,7 @@ async function chargerDonneesPk() {
   }
 
   if (!promesseChargementPk) {
-    promesseChargementPk = fetch("./pk.geojson", { cache: "no-store" })
+    promesseChargementPk = fetch("./pk.geojson", { cache: "force-cache" })
       .then((reponse) => {
         if (!reponse.ok) {
           throw new Error(`HTTP ${reponse.status}`);
@@ -1460,6 +1407,10 @@ async function chargerDonneesPk() {
         for (const feature of features) {
           const propr = feature.properties || {};
           const etiquettePk = formaterPkPourEtiquette(propr.pk);
+          const pkKm = Number(propr.pk);
+          if (Number.isFinite(pkKm)) {
+            propr.pk_m = Math.round(pkKm * 1000);
+          }
           if (etiquettePk) {
             propr.pk_label = `PK ${etiquettePk}`;
           }
@@ -2268,6 +2219,12 @@ carte.on("zoomend", () => {
 });
 
 carte.on("moveend", () => {
+  // Re-evalue l'affichage PK apres deplacement (pan/drag).
+  planifierMiseAJourPkSelonZoom(true);
+});
+
+// Mise a jour continue pendant la navigation pour eviter l'effet de latence visuelle.
+carte.on("zoom", () => {
   planifierMiseAJourPkSelonZoom();
 });
 
@@ -2387,6 +2344,10 @@ if (casePk) {
 async function initialiserDonneesParDefaut() {
   chargerCompteurAppareils();
   chargerCompteurPostes();
+  // Precharge PK en arriere-plan pour supprimer la latence au premier affichage.
+  chargerDonneesPk().catch((erreur) => {
+    console.error("Impossible de precharger pk.geojson", erreur);
+  });
 
   if (!afficherAcces && !afficherPostes && !afficherPk) {
     planifierSynchronisationCarte();
