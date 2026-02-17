@@ -2,6 +2,8 @@
 const CENTRE_INITIAL = [2.35, 48.85];
 const ZOOM_INITIAL = 6;
 const ZOOM_MAX = 19;
+const ZOOM_REFERENCE_PK = 21; // Calibration historique de Nono Maps.
+const BONUS_ZOOM_PK_MOBILE = 1;
 const VERSION_APP = "V1.3.0";
 const SOURCE_APPAREILS = "appareils-source";
 const COUCHE_APPAREILS = "appareils-points";
@@ -727,9 +729,9 @@ function formaterAltitudePk(valeurAltitude) {
 }
 
 function creerImageFondEtiquettePk() {
-  const largeur = 82;
-  const hauteur = 24;
-  const rayon = 5;
+  const largeur = 74;
+  const hauteur = 20;
+  const rayon = 4;
 
   const canvas = document.createElement("canvas");
   canvas.width = largeur;
@@ -754,7 +756,7 @@ function creerImageFondEtiquettePk() {
   ctx.closePath();
   ctx.fillStyle = "rgba(255,255,255,0.96)";
   ctx.fill();
-  ctx.lineWidth = 1.5;
+  ctx.lineWidth = 1.2;
   ctx.strokeStyle = "#111111";
   ctx.stroke();
 
@@ -979,7 +981,7 @@ function appliquerCouchesDonnees() {
       type: "circle",
       source: SOURCE_PK,
       paint: {
-        "circle-radius": ["interpolate", ["linear"], ["zoom"], 11, 6, 14, 8, 18, 10],
+        "circle-radius": ["interpolate", ["linear"], ["zoom"], 9, 4, 13, 5, 18, 7],
         "circle-color": "#111111",
         "circle-opacity": 0,
         "circle-stroke-width": 0
@@ -994,7 +996,7 @@ function appliquerCouchesDonnees() {
       source: SOURCE_PK,
       layout: {
         "icon-image": "pk-etiquette-fond",
-        "icon-size": ["interpolate", ["linear"], ["zoom"], 11, 0.62, 14, 0.72, 18, 0.82],
+        "icon-size": ["interpolate", ["linear"], ["zoom"], 9, 0.58, 13, 0.64, 18, 0.72],
         "icon-allow-overlap": true,
         "icon-ignore-placement": true
       }
@@ -1008,7 +1010,7 @@ function appliquerCouchesDonnees() {
       source: SOURCE_PK,
       layout: {
         "text-field": ["coalesce", ["get", "pk_label"], ["concat", "PK ", ["to-string", ["get", "pk"]]]],
-        "text-size": ["interpolate", ["linear"], ["zoom"], 11, 8.8, 15, 9.8, 18, 11],
+        "text-size": ["interpolate", ["linear"], ["zoom"], 9, 8, 13, 8.8, 18, 9.8],
         "text-anchor": "center",
         "text-allow-overlap": true,
         "text-ignore-placement": true
@@ -1016,7 +1018,7 @@ function appliquerCouchesDonnees() {
       paint: {
         "text-color": "#111111",
         "text-halo-color": "#ffffff",
-        "text-halo-width": 0.35
+        "text-halo-width": 0.3
       }
     });
   }
@@ -1289,7 +1291,10 @@ async function chargerCompteurPostes() {
 }
 
 function determinerStepPkPourZoom(zoom) {
-  const effectiveZoom = Math.floor(Number(zoom) || 0);
+  const zoomNumerique = Number(zoom) || 0;
+  const compensationZoom = Math.max(0, ZOOM_REFERENCE_PK - ZOOM_MAX);
+  const bonusMobile = window.innerWidth < 768 ? BONUS_ZOOM_PK_MOBILE : 0;
+  const effectiveZoom = Math.floor(zoomNumerique + compensationZoom + bonusMobile);
   if (effectiveZoom < 11) return -1;
   if (effectiveZoom === 11) return 15000;
   if (effectiveZoom === 12) return 10000;
