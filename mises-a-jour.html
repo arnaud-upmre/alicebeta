@@ -4,7 +4,6 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="robots" content="noindex, nofollow, noarchive, nosnippet, noimageindex" />
-    <meta name="googlebot" content="noindex, nofollow, noarchive, nosnippet, noimageindex" />
     <title>ALICE - Mises a jour</title>
     <style>
       :root {
@@ -75,6 +74,13 @@
     <main class="conteneur">
       <h1>Mises a jour ALICE</h1>
       <p class="sous-titre">Historique recent des evolutions fonctionnelles.</p>
+
+      <h2 class="version">V1.3.0</h2>
+      <ul>
+        <li>Integration de <code>pk.geojson</code> dans la carte avec un switch <strong>PK</strong> dans le menu Filtres.</li>
+        <li>Affichage PK dynamique selon le zoom (pas 15 km a 200 m) avec tolerance de 50 m.</li>
+        <li>Mise en cache memoire des filtres PK par palier de zoom pour limiter les recalculs.</li>
+      </ul>
 
       <h2 class="version">V1.2.9</h2>
       <ul>
