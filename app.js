@@ -99,6 +99,7 @@ let promesseChargementRecherche = null;
 let menuContextuelOuvert = false;
 let mesureActive = false;
 let mesurePoints = [];
+let navigationInternePopup = null;
 let contexteMenuPosition = {
   longitude: null,
   latitude: null
@@ -654,6 +655,7 @@ function fermerPopupCarte() {
   }
   popupCarte.remove();
   popupCarte = null;
+  navigationInternePopup = null;
 }
 
 function formaterCoordonneeMenu(valeur) {
@@ -1654,6 +1656,13 @@ function construireCleCorrespondance(entree) {
   ].join("|");
 }
 
+function construireCleNomType(entree) {
+  return [
+    normaliserTexteRecherche(champCompletOuVide(entree?.nom)),
+    normaliserTexteRecherche(champCompletOuVide(entree?.type))
+  ].join("|");
+}
+
 function extraireListeDepuisFeature(feature, cleJson) {
   try {
     return JSON.parse(feature?.properties?.[cleJson] || "[]");
@@ -1901,6 +1910,88 @@ function construireSectionContactPoste(poste) {
   return `<section class="popup-section"><p class="popup-poste-ligne">👤 <strong>Contact :</strong> ${echapperHtml(etiquette)}${etiquette ? " : " : " "}${liensNumeros}</p></section>`;
 }
 
+function comparerLibellesSat(a, b) {
+  const normaliser = (valeur) => String(valeur || "").trim().toUpperCase();
+  const A = normaliser(a);
+  const B = normaliser(b);
+
+  if (A === B) {
+    return 0;
+  }
+  if (A === "POSTE") {
+    return -1;
+  }
+  if (B === "POSTE") {
+    return 1;
+  }
+
+  const matchA = A.match(/^SAT(\d+)$/);
+  const matchB = B.match(/^SAT(\d+)$/);
+  if (matchA && matchB) {
+    return Number(matchA[1]) - Number(matchB[1]);
+  }
+  if (matchA) {
+    return -1;
+  }
+  if (matchB) {
+    return 1;
+  }
+  return A.localeCompare(B, "fr", { sensitivity: "base", numeric: true });
+}
+
+function construireSectionAppareilsAssociesDepuisPostes(postesListe) {
+  if (!Array.isArray(postesListe) || !postesListe.length || !donneesAppareils?.features?.length) {
+    return "";
+  }
+
+  const clesPostesNomType = new Set(postesListe.map((poste) => construireCleNomType(poste)).filter(Boolean));
+  if (!clesPostesNomType.size) {
+    return "";
+  }
+
+  const groupes = new Map();
+  for (const feature of donneesAppareils.features) {
+    const appareilsListe = extraireListeDepuisFeature(feature, "appareils_liste_json");
+    for (const appareil of appareilsListe) {
+      if (!clesPostesNomType.has(construireCleNomType(appareil))) {
+        continue;
+      }
+
+      const code = champCompletOuVide(appareil?.appareil);
+      if (!code) {
+        continue;
+      }
+
+      const sat = champCompletOuVide(appareil?.SAT) || "Poste";
+      const cleSat = sat.toUpperCase();
+      if (!groupes.has(cleSat)) {
+        groupes.set(cleSat, {
+          label: sat,
+          codes: new Set()
+        });
+      }
+      groupes.get(cleSat).codes.add(code);
+    }
+  }
+
+  if (!groupes.size) {
+    return "";
+  }
+
+  const lignes = Array.from(groupes.values())
+    .sort((a, b) => comparerLibellesSat(a.label, b.label))
+    .map((groupe) => {
+      const codes = Array.from(groupe.codes).sort((a, b) => a.localeCompare(b, "fr", { numeric: true }));
+      const codesHtml = codes
+        .map((code) => `<span class="popup-poste-appareil-lien">${echapperHtml(code)}</span>`)
+        .join(", ");
+      return `<p class="popup-poste-appareils-ligne"><strong>${echapperHtml(groupe.label)} :</strong> ${codesHtml}</p>`;
+    })
+    .join("");
+
+  return `<section class="popup-section"><p class="popup-poste-appareils-titre">🧩 Appareils trouvés dans ce poste :</p>${lignes}</section>`;
+}
+
 function construireSectionPostes(feature) {
   const propr = feature.properties || {};
   let postesListe = [];
@@ -1942,6 +2033,39 @@ function construireSectionPostes(feature) {
   const sectionContact = construireSectionContactPoste(poste);
 
   return `<section class="popup-section${classeHors}"><div class="popup-pill-ligne"><span class="popup-badge popup-badge-postes popup-badge-poste-nom">${echapperHtml(titre)}</span></div></section>${sectionRss}${sectionPk}${sectionInformations}${sectionContact}`;
+}
+
+function attacherActionsPopupInterne() {
+  if (!popupCarte || !navigationInternePopup) {
+    return;
+  }
+
+  const racinePopup = popupCarte.getElement();
+  if (!racinePopup) {
+    return;
+  }
+
+  const boutonVoirAppareils = racinePopup.querySelector("#popup-voir-appareils-associes");
+  if (boutonVoirAppareils) {
+    boutonVoirAppareils.addEventListener("click", () => {
+      if (!popupCarte || !navigationInternePopup?.vueAppareils) {
+        return;
+      }
+      popupCarte.setHTML(navigationInternePopup.vueAppareils);
+      attacherActionsPopupInterne();
+    });
+  }
+
+  const boutonRetourFiche = racinePopup.querySelector("#popup-retour-fiche-poste");
+  if (boutonRetourFiche) {
+    boutonRetourFiche.addEventListener("click", () => {
+      if (!popupCarte || !navigationInternePopup?.vueFiche) {
+        return;
+      }
+      popupCarte.setHTML(navigationInternePopup.vueFiche);
+      attacherActionsPopupInterne();
+    });
+  }
 }
 
 function normaliserTexteRecherche(valeur) {
@@ -2171,11 +2295,20 @@ function obtenirFeatureALaCoordonnee(collection, longitude, latitude) {
 function construirePopupDepuisFeatures(longitude, latitude, featurePostes, featureAcces, featureAppareils) {
   const sections = [];
   let coordonneesNavigation = null;
+  let sectionAppareilsAssociesPoste = "";
 
   if (featurePostes) {
     const sectionPostes = construireSectionPostes(featurePostes);
     if (sectionPostes) {
       sections.push(sectionPostes);
+    }
+
+    const postesListe = extraireListeDepuisFeature(featurePostes, "postes_liste_json");
+    sectionAppareilsAssociesPoste = construireSectionAppareilsAssociesDepuisPostes(postesListe);
+    if (sectionAppareilsAssociesPoste) {
+      sections.push(
+        '<section class="popup-section"><button class="popup-action-lien" id="popup-voir-appareils-associes" type="button">🧩 Voir les appareils associés</button></section>'
+      );
     }
   }
 
@@ -2219,16 +2352,29 @@ function construirePopupDepuisFeatures(longitude, latitude, featurePostes, featu
   const sectionItineraire = coordonneesNavigation
     ? `<section class="popup-section popup-section-itineraires"><div class="popup-section-titre"><span class="popup-badge popup-badge-itineraire">Itineraire</span></div>${construireLiensItineraires(coordonneesNavigation[0], coordonneesNavigation[1])}</section>`
     : "";
-  const contenu = `<div class="popup-carte">${sections.join("")}${sectionPortail}${sectionItineraire}</div>`;
+  const contenuFiche = `<div class="popup-carte">${sections.join("")}${sectionPortail}${sectionItineraire}</div>`;
+
+  let contenuVueAppareils = "";
+  if (sectionAppareilsAssociesPoste) {
+    contenuVueAppareils = `<div class="popup-carte">${sectionAppareilsAssociesPoste}<section class="popup-section"><button class="popup-action-lien" id="popup-retour-fiche-poste" type="button">↩ Retour à la fiche</button></section></div>`;
+  }
 
   fermerPopupCarte();
+  navigationInternePopup = sectionAppareilsAssociesPoste
+    ? {
+        vueFiche: contenuFiche,
+        vueAppareils: contenuVueAppareils
+      }
+    : null;
 
   popupCarte = new maplibregl.Popup({ closeButton: true, closeOnClick: true })
     .setLngLat([longitude, latitude])
-    .setHTML(contenu)
+    .setHTML(contenuFiche)
     .addTo(carte);
+  attacherActionsPopupInterne();
   popupCarte.on("close", () => {
     popupCarte = null;
+    navigationInternePopup = null;
   });
 
   return true;

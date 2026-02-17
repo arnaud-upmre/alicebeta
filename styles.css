@@ -493,6 +493,7 @@ body,
   width: 100%;
   color: #0f172a;
   font-size: 0.88rem;
+  overflow-wrap: anywhere;
 }
 
 .maplibregl-popup {
@@ -759,6 +760,56 @@ body,
   text-underline-offset: 2px;
 }
 
+.popup-poste-appareils-titre {
+  margin: 0 0 8px;
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: #3f3f46;
+}
+
+.popup-poste-appareils-ligne {
+  margin: 0;
+  font-size: 0.88rem;
+  line-height: 1.42;
+  color: #3f3f46;
+  overflow-wrap: anywhere;
+}
+
+.popup-poste-appareils-ligne + .popup-poste-appareils-ligne {
+  margin-top: 8px;
+}
+
+.popup-poste-appareil-lien {
+  color: #1d4ed8;
+  text-decoration: underline;
+  text-decoration-thickness: 1.2px;
+  text-underline-offset: 2px;
+  font-weight: 500;
+}
+
+.popup-action-lien {
+  width: 100%;
+  border: 0;
+  background: transparent;
+  padding: 0;
+  margin: 0;
+  color: #1d4ed8;
+  font-family: "Manrope", "Avenir Next", "Segoe UI", sans-serif;
+  font-size: 0.88rem;
+  font-weight: 600;
+  text-align: left;
+  text-decoration: underline;
+  text-decoration-thickness: 1.2px;
+  text-underline-offset: 2px;
+  cursor: pointer;
+}
+
+.popup-action-lien:hover,
+.popup-action-lien:focus-visible {
+  color: #1e40af;
+  outline: none;
+}
+
 .popup-item-hors {
   background: rgba(239, 68, 68, 0.12);
   border: 1px solid rgba(239, 68, 68, 0.28);
@@ -976,6 +1027,41 @@ body,
   outline: none;
 }
 
+@media (hover: none), (pointer: coarse) {
+  .bouton-fonds,
+  .bouton-filtres,
+  .maplibregl-ctrl-group button {
+    width: 44px;
+    height: 44px;
+  }
+
+  .recherche-champ {
+    height: 44px;
+  }
+
+  .recherche-resultat {
+    padding: 11px 10px;
+  }
+
+  .popup-bouton-itineraire {
+    min-height: 42px;
+    font-size: 0.78rem;
+  }
+
+  .popup-action-lien,
+  .menu-contextuel-item,
+  .menu-contextuel-sousitem {
+    min-height: 44px;
+  }
+
+  .maplibregl-popup-close-button {
+    width: 36px;
+    height: 36px;
+    font-size: 42px;
+    line-height: 24px;
+  }
+}
+
 @media (max-width: 720px) {
   .controle-recherche {
     width: min(260px, calc(100vw - 122px - env(safe-area-inset-left) - env(safe-area-inset-right)));
@@ -1014,7 +1100,8 @@ body,
   }
 
   .maplibregl-popup-content {
-    width: min(320px, calc(100vw - 24px));
+    width: min(340px, calc(100vw - 14px));
+    padding: 14px 13px 12px;
   }
 
   .popup-itineraires {
@@ -1027,5 +1114,46 @@ body,
 
   .menu-contextuel-item {
     font-size: 1.02rem;
+  }
+}
+
+@media (max-width: 520px) {
+  .controle-recherche {
+    width: min(248px, calc(100vw - 124px - env(safe-area-inset-left) - env(safe-area-inset-right)));
+  }
+
+  .recherche-resultats {
+    max-height: min(248px, calc(100vh - 120px));
+  }
+
+  .popup-badge-poste-nom {
+    font-size: 0.8rem;
+  }
+
+  .popup-poste-rss-titre,
+  .popup-poste-appareils-titre,
+  .popup-poste-ligne,
+  .popup-poste-appareils-ligne {
+    font-size: 0.84rem;
+  }
+
+  .popup-bouton-itineraire {
+    font-size: 0.76rem;
+    padding: 8px 4px;
+  }
+
+  .menu-contextuel-carte {
+    max-width: calc(100vw - 12px);
+    border-radius: 14px;
+  }
+
+  .menu-contextuel-item {
+    padding: 10px 14px;
+  }
+
+  .bouton-sortie-mesure {
+    width: calc(100vw - 20px - env(safe-area-inset-left) - env(safe-area-inset-right));
+    max-width: 330px;
+    padding: 13px 14px;
   }
 }
