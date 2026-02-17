@@ -956,13 +956,18 @@ function champCompletOuVide(valeur) {
   return texte;
 }
 
-function construireTitreNomTypeSatAcces(entree, options = {}) {
+function construireTitreNomTypeSat(entree, options = {}) {
   const nomBase = normaliserChampTexte(entree?.nom);
   const nom = entree?.hors_patrimoine && options.nomVilleDe && nomBase ? `${nomBase} (Ville De)` : nomBase;
   const type = normaliserChampTexte(entree?.type);
   const sat = champCompletOuVide(entree?.SAT);
+  return [nom, type, sat].filter(Boolean).join(" | ");
+}
+
+function construireTitreNomTypeSatAcces(entree, options = {}) {
+  const nomTypeSat = construireTitreNomTypeSat(entree, options);
   const acces = champCompletOuVide(entree?.acces);
-  return [nom, type, sat, acces].filter(Boolean).join(" | ");
+  return [nomTypeSat, acces].filter(Boolean).join(" | ");
 }
 
 function construireLiensItineraires(longitude, latitude) {
@@ -997,7 +1002,8 @@ function construireSectionAppareils(feature, options = {}) {
         const couleur = a.couleur_appareil || "#111111";
         const tagHp = a.hors_patrimoine ? '<span class="popup-tag-hp">HP</span>' : "";
         const libelleAppareil = champCompletOuVide(a.appareil) || "Appareil inconnu";
-        return `<li><span class="popup-point-couleur" style="background:${echapperHtml(couleur)}"></span>${echapperHtml(libelleAppareil)}${tagHp}</li>`;
+        const titrePoste = construireTitreNomTypeSat(a);
+        return `<li><span class="popup-point-couleur" style="background:${echapperHtml(couleur)}"></span>${echapperHtml(libelleAppareil)}${tagHp}${titrePoste ? `<br/><span class="popup-poste-details">${echapperHtml(titrePoste)}</span>` : ""}</li>`;
       })
       .join("");
 
