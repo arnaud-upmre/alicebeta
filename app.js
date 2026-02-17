@@ -12,6 +12,8 @@ const COUCHE_ACCES_GROUPES = "acces-groupes";
 const SOURCE_POSTES = "postes-source";
 const COUCHE_POSTES = "postes-points";
 const COUCHE_POSTES_GROUPES = "postes-groupes";
+const SOURCE_LIGNES = "openrailwaymap-source";
+const COUCHE_LIGNES = "openrailwaymap-lignes";
 const APPAREILS_VIDE = { type: "FeatureCollection", features: [] };
 const ACCES_VIDE = { type: "FeatureCollection", features: [] };
 const POSTES_VIDE = { type: "FeatureCollection", features: [] };
@@ -72,6 +74,7 @@ let fondActif = "satelliteIgn";
 let afficherAppareils = false;
 let afficherAcces = true;
 let afficherPostes = false;
+let afficherLignes = false;
 let donneesAppareils = null;
 let donneesAcces = null;
 let donneesPostes = null;
@@ -537,6 +540,7 @@ const boutonFiltres = document.getElementById("bouton-filtres");
 const caseAppareils = document.querySelector('input[name="filtre-appareils"]');
 const caseAcces = document.querySelector('input[name="filtre-acces"]');
 const casePostes = document.querySelector('input[name="filtre-postes"]');
+const caseLignes = document.querySelector('input[name="filtre-lignes"]');
 const compteurAppareils = document.getElementById("compteur-appareils");
 const compteurAcces = document.getElementById("compteur-acces");
 const compteurPostes = document.getElementById("compteur-postes");
@@ -633,6 +637,27 @@ function mettreAJourCompteursFiltres() {
 function appliquerCouchesDonnees() {
   if (!carte.isStyleLoaded()) {
     return;
+  }
+
+  if (!carte.getSource(SOURCE_LIGNES)) {
+    carte.addSource(SOURCE_LIGNES, {
+      type: "raster",
+      tiles: ["https://{a-c}.tiles.openrailwaymap.org/standard/{z}/{x}/{y}.png"],
+      tileSize: 256,
+      attribution: "© OpenRailwayMap, © OpenStreetMap contributors",
+      maxzoom: 19
+    });
+  }
+
+  if (!carte.getLayer(COUCHE_LIGNES)) {
+    carte.addLayer({
+      id: COUCHE_LIGNES,
+      type: "raster",
+      source: SOURCE_LIGNES,
+      paint: {
+        "raster-opacity": 0.92
+      }
+    });
   }
 
   if (!carte.getSource(SOURCE_APPAREILS)) {
@@ -788,6 +813,7 @@ function appliquerCouchesDonnees() {
     "visibility",
     afficherPostes && donneesPostes ? "visible" : "none"
   );
+  carte.setLayoutProperty(COUCHE_LIGNES, "visibility", afficherLignes ? "visible" : "none");
 }
 
 function restaurerEtatFiltres() {
@@ -799,6 +825,9 @@ function restaurerEtatFiltres() {
   }
   if (casePostes) {
     casePostes.checked = afficherPostes;
+  }
+  if (caseLignes) {
+    caseLignes.checked = afficherLignes;
   }
 
   mettreAJourCompteursFiltres();
@@ -1740,7 +1769,7 @@ carte.on("style.load", () => {
 });
 
 carte.on("styledata", () => {
-  if ((afficherAppareils || afficherAcces || afficherPostes) && carte.isStyleLoaded()) {
+  if ((afficherAppareils || afficherAcces || afficherPostes || afficherLignes) && carte.isStyleLoaded()) {
     restaurerEtatFiltres();
     restaurerAffichageDonnees();
   }
@@ -1832,6 +1861,14 @@ if (casePostes) {
       }
     }
 
+    appliquerCouchesDonnees();
+    remonterCouchesDonnees();
+  });
+}
+
+if (caseLignes) {
+  caseLignes.addEventListener("change", () => {
+    afficherLignes = caseLignes.checked;
     appliquerCouchesDonnees();
     remonterCouchesDonnees();
   });
