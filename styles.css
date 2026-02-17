@@ -601,6 +601,27 @@ body,
   color: #1f2937;
 }
 
+.popup-acces-titre {
+  margin: 0;
+  font-size: 1rem;
+  line-height: 1.25;
+  font-weight: 700;
+  color: #1f2937;
+}
+
+.popup-portail-ligne {
+  margin: 0;
+  font-size: 0.83rem;
+  line-height: 1.35;
+  font-weight: 700;
+  color: #1f2937;
+}
+
+.popup-portail-valeur {
+  font-weight: 600;
+  color: #334155;
+}
+
 .popup-poste-details {
   display: inline-block;
   margin-top: 3px;
@@ -682,15 +703,15 @@ body,
   align-items: center;
   justify-content: center;
   min-width: 0;
-  padding: 7px 4px;
-  border-radius: 10px;
-  background: linear-gradient(180deg, #ffffff 0%, #f3f4f6 100%);
-  border: 1px solid rgba(15, 23, 42, 0.14);
-  color: #0f172a;
+  padding: 8px 6px;
+  border-radius: 15px;
+  background: #ffffff;
+  border: 2px solid #2563eb;
+  color: #1d4ed8;
   text-decoration: none;
-  font-size: 0.72rem;
-  font-weight: 600;
-  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.08);
+  font-size: 0.74rem;
+  font-weight: 700;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.06);
   white-space: normal;
   text-align: center;
   line-height: 1.15;
@@ -698,8 +719,8 @@ body,
 }
 
 .popup-bouton-itineraire:hover {
-  background: linear-gradient(180deg, #eef2ff 0%, #e0e7ff 100%);
-  border-color: rgba(79, 70, 229, 0.28);
+  background: #eff6ff;
+  border-color: #1d4ed8;
 }
 
 @media (max-width: 720px) {

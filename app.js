@@ -1125,7 +1125,7 @@ function construireLiensItineraires(longitude, latitude) {
   const applePlans = `https://maps.apple.com/?daddr=${encodeURIComponent(destination)}&dirflg=d`;
   const waze = `https://waze.com/ul?ll=${encodeURIComponent(destination)}&navigate=yes`;
 
-  return `<div class="popup-itineraires"><a class="popup-bouton-itineraire" href="${echapperHtml(googleMaps)}" target="_blank" rel="noopener noreferrer">Google Maps</a><a class="popup-bouton-itineraire" href="${echapperHtml(applePlans)}" target="_blank" rel="noopener noreferrer">Apple Plans</a><a class="popup-bouton-itineraire" href="${echapperHtml(waze)}" target="_blank" rel="noopener noreferrer">Waze</a></div>`;
+  return `<div class="popup-itineraires"><a class="popup-bouton-itineraire" href="${echapperHtml(googleMaps)}" target="_blank" rel="noopener noreferrer">🗺️ Maps</a><a class="popup-bouton-itineraire" href="${echapperHtml(applePlans)}" target="_blank" rel="noopener noreferrer">🍎 Plans</a><a class="popup-bouton-itineraire" href="${echapperHtml(waze)}" target="_blank" rel="noopener noreferrer">🚗 Waze</a></div>`;
 }
 
 function construireSectionAppareils(feature, options = {}) {
@@ -1202,7 +1202,37 @@ function construireSectionAcces(feature) {
   const acces = accesListe[0] || {};
   const titre = construireTitreAcces(acces);
   const classeHors = acces.hors_patrimoine ? " popup-item-hors" : "";
-  return `<section class="popup-section"><div class="popup-pill-ligne"><span class="popup-badge popup-badge-acces">1 acces voiture</span></div><p class="popup-acces-ligne${classeHors}">${echapperHtml(titre || "Acces inconnu")}</p></section>`;
+  return `<section class="popup-section"><p class="popup-acces-titre${classeHors}">🚗 ${echapperHtml(titre || "Acces inconnu")}</p></section>`;
+}
+
+function construireSectionPortail(featureAcces) {
+  if (!featureAcces) {
+    return "";
+  }
+
+  const accesListe = extraireListeDepuisFeature(featureAcces, "acces_liste_json");
+  const portails = [];
+  const dejaVu = new Set();
+
+  for (const acces of accesListe) {
+    const portail = champCompletOuVide(acces?.portail);
+    if (!portail) {
+      continue;
+    }
+    const cle = portail.toLowerCase();
+    if (dejaVu.has(cle)) {
+      continue;
+    }
+    dejaVu.add(cle);
+    portails.push(portail);
+  }
+
+  if (!portails.length) {
+    return "";
+  }
+
+  const contenu = portails.map((texte) => echapperHtml(texte)).join(" • ");
+  return `<section class="popup-section popup-section-portail"><p class="popup-portail-ligne">🔐 Portail : <span class="popup-portail-valeur">${contenu}</span></p></section>`;
 }
 
 function construireTitrePoste(poste) {
@@ -1643,10 +1673,11 @@ function construirePopupDepuisFeatures(longitude, latitude, featurePostes, featu
     coordonneesNavigation = trouverCoordonneesAccesDepuisPostes(featurePostes);
   }
 
+  const sectionPortail = construireSectionPortail(featureAcces);
   const sectionItineraire = coordonneesNavigation
-    ? `<section class="popup-section popup-section-itineraires"><div class="popup-section-titre"><span class="popup-badge popup-badge-itineraire">Itineraire</span><strong>Navigation</strong></div>${construireLiensItineraires(coordonneesNavigation[0], coordonneesNavigation[1])}</section>`
+    ? `<section class="popup-section popup-section-itineraires"><div class="popup-section-titre"><span class="popup-badge popup-badge-itineraire">Itineraire</span></div>${construireLiensItineraires(coordonneesNavigation[0], coordonneesNavigation[1])}</section>`
     : "";
-  const contenu = `<div class="popup-carte">${sections.join("")}${sectionItineraire}</div>`;
+  const contenu = `<div class="popup-carte">${sections.join("")}${sectionPortail}${sectionItineraire}</div>`;
 
   fermerPopupCarte();
 
