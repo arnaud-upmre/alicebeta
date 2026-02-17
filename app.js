@@ -642,7 +642,11 @@ function appliquerCouchesDonnees() {
   if (!carte.getSource(SOURCE_LIGNES)) {
     carte.addSource(SOURCE_LIGNES, {
       type: "raster",
-      tiles: ["https://{a-c}.tiles.openrailwaymap.org/standard/{z}/{x}/{y}.png"],
+      tiles: [
+        "https://a.tiles.openrailwaymap.org/standard/{z}/{x}/{y}.png",
+        "https://b.tiles.openrailwaymap.org/standard/{z}/{x}/{y}.png",
+        "https://c.tiles.openrailwaymap.org/standard/{z}/{x}/{y}.png"
+      ],
       tileSize: 256,
       attribution: "© OpenRailwayMap, © OpenStreetMap contributors",
       maxzoom: 19
