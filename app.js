@@ -14,6 +14,8 @@ const COUCHE_POSTES = "postes-points";
 const COUCHE_POSTES_GROUPES = "postes-groupes";
 const SOURCE_LIGNES = "openrailwaymap-source";
 const COUCHE_LIGNES = "openrailwaymap-lignes";
+const SOURCE_VITESSE_LIGNE = "openrailwaymap-maxspeed-source";
+const COUCHE_VITESSE_LIGNE = "openrailwaymap-maxspeed";
 const APPAREILS_VIDE = { type: "FeatureCollection", features: [] };
 const ACCES_VIDE = { type: "FeatureCollection", features: [] };
 const POSTES_VIDE = { type: "FeatureCollection", features: [] };
@@ -75,6 +77,7 @@ let afficherAppareils = false;
 let afficherAcces = true;
 let afficherPostes = false;
 let afficherLignes = false;
+let afficherVitesseLigne = false;
 let donneesAppareils = null;
 let donneesAcces = null;
 let donneesPostes = null;
@@ -541,6 +544,7 @@ const caseAppareils = document.querySelector('input[name="filtre-appareils"]');
 const caseAcces = document.querySelector('input[name="filtre-acces"]');
 const casePostes = document.querySelector('input[name="filtre-postes"]');
 const caseLignes = document.querySelector('input[name="filtre-lignes"]');
+const caseVitesseLigne = document.querySelector('input[name="filtre-vitesse-ligne"]');
 const compteurAppareils = document.getElementById("compteur-appareils");
 const compteurAcces = document.getElementById("compteur-acces");
 const compteurPostes = document.getElementById("compteur-postes");
@@ -548,9 +552,11 @@ const badgeVersion = document.getElementById("version-app");
 const controleRecherche = document.getElementById("controle-recherche");
 const champRecherche = document.getElementById("champ-recherche");
 const listeResultatsRecherche = document.getElementById("recherche-resultats");
+const infoVitesseLigne = document.getElementById("info-vitesse-ligne");
 const fenetreAccueil = document.getElementById("fenetre-accueil");
 const boutonFermerFenetreAccueil = document.getElementById("fenetre-accueil-fermer");
 const CLE_STOCKAGE_FENETRE_ACCUEIL = "alice.fenetre-accueil.derniere-date";
+let temporisationInfoVitesse = null;
 
 function obtenirDateLocaleDuJour() {
   const maintenant = new Date();
@@ -580,6 +586,30 @@ function fermerFenetreAccueil() {
   } catch {
     // Ignore les erreurs de stockage (mode prive, quota, etc.).
   }
+}
+
+function masquerMessageInfoVitesseLigne() {
+  if (!infoVitesseLigne) {
+    return;
+  }
+  infoVitesseLigne.classList.remove("est-visible");
+  infoVitesseLigne.setAttribute("aria-hidden", "true");
+}
+
+function afficherMessageInfoVitesseLigne() {
+  if (!infoVitesseLigne) {
+    return;
+  }
+  infoVitesseLigne.classList.add("est-visible");
+  infoVitesseLigne.setAttribute("aria-hidden", "false");
+
+  if (temporisationInfoVitesse) {
+    clearTimeout(temporisationInfoVitesse);
+  }
+  temporisationInfoVitesse = setTimeout(() => {
+    masquerMessageInfoVitesseLigne();
+    temporisationInfoVitesse = null;
+  }, 5200);
 }
 
 if (fenetreAccueil && doitAfficherFenetreAccueilAujourdhui()) {
@@ -660,6 +690,31 @@ function appliquerCouchesDonnees() {
       source: SOURCE_LIGNES,
       paint: {
         "raster-opacity": 0.92
+      }
+    });
+  }
+
+  if (!carte.getSource(SOURCE_VITESSE_LIGNE)) {
+    carte.addSource(SOURCE_VITESSE_LIGNE, {
+      type: "raster",
+      tiles: [
+        "https://a.tiles.openrailwaymap.org/maxspeed/{z}/{x}/{y}.png",
+        "https://b.tiles.openrailwaymap.org/maxspeed/{z}/{x}/{y}.png",
+        "https://c.tiles.openrailwaymap.org/maxspeed/{z}/{x}/{y}.png"
+      ],
+      tileSize: 256,
+      attribution: "© OpenRailwayMap, © OpenStreetMap contributors",
+      maxzoom: 19
+    });
+  }
+
+  if (!carte.getLayer(COUCHE_VITESSE_LIGNE)) {
+    carte.addLayer({
+      id: COUCHE_VITESSE_LIGNE,
+      type: "raster",
+      source: SOURCE_VITESSE_LIGNE,
+      paint: {
+        "raster-opacity": 0.95
       }
     });
   }
@@ -818,6 +873,7 @@ function appliquerCouchesDonnees() {
     afficherPostes && donneesPostes ? "visible" : "none"
   );
   carte.setLayoutProperty(COUCHE_LIGNES, "visibility", afficherLignes ? "visible" : "none");
+  carte.setLayoutProperty(COUCHE_VITESSE_LIGNE, "visibility", afficherVitesseLigne ? "visible" : "none");
 }
 
 function restaurerEtatFiltres() {
@@ -832,6 +888,9 @@ function restaurerEtatFiltres() {
   }
   if (caseLignes) {
     caseLignes.checked = afficherLignes;
+  }
+  if (caseVitesseLigne) {
+    caseVitesseLigne.checked = afficherVitesseLigne;
   }
 
   mettreAJourCompteursFiltres();
@@ -1773,7 +1832,7 @@ carte.on("style.load", () => {
 });
 
 carte.on("styledata", () => {
-  if ((afficherAppareils || afficherAcces || afficherPostes || afficherLignes) && carte.isStyleLoaded()) {
+  if ((afficherAppareils || afficherAcces || afficherPostes || afficherLignes || afficherVitesseLigne) && carte.isStyleLoaded()) {
     restaurerEtatFiltres();
     restaurerAffichageDonnees();
   }
@@ -1873,6 +1932,23 @@ if (casePostes) {
 if (caseLignes) {
   caseLignes.addEventListener("change", () => {
     afficherLignes = caseLignes.checked;
+    appliquerCouchesDonnees();
+    remonterCouchesDonnees();
+  });
+}
+
+if (caseVitesseLigne) {
+  caseVitesseLigne.addEventListener("change", () => {
+    afficherVitesseLigne = caseVitesseLigne.checked;
+    if (afficherVitesseLigne) {
+      afficherMessageInfoVitesseLigne();
+    } else {
+      masquerMessageInfoVitesseLigne();
+      if (temporisationInfoVitesse) {
+        clearTimeout(temporisationInfoVitesse);
+        temporisationInfoVitesse = null;
+      }
+    }
     appliquerCouchesDonnees();
     remonterCouchesDonnees();
   });

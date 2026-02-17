@@ -31,6 +31,9 @@
       </div>
     </div>
     <div class="version-app" id="version-app" aria-label="Version de l'application"></div>
+    <div class="info-vitesse-ligne" id="info-vitesse-ligne" aria-live="polite" aria-hidden="true">
+      ⚠️ Vitesse affichée à titre indicatif. Se référer aux documents réglementaires internes pour les vitesses de ligne applicables.
+    </div>
     <div class="controle-recherche" id="controle-recherche">
       <label class="recherche-champ-wrap" for="champ-recherche">
         <input
@@ -74,6 +77,10 @@
         <label class="option-filtre">
           <input type="checkbox" name="filtre-lignes" />
           <span>Ligne</span>
+        </label>
+        <label class="option-filtre">
+          <input type="checkbox" name="filtre-vitesse-ligne" />
+          <span>Vitesse de ligne</span>
         </label>
       </form>
     </div>
