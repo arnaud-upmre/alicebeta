@@ -634,18 +634,7 @@ if (boutonFermerFenetreAccueil) {
 
 if (badgeVersion) {
   badgeVersion.textContent = VERSION_APP;
-  badgeVersion.setAttribute("role", "link");
-  badgeVersion.setAttribute("tabindex", "0");
-  badgeVersion.setAttribute("title", "Ouvrir les mises a jour");
-  badgeVersion.addEventListener("click", () => {
-    window.location.href = "./mises-a-jour.html";
-  });
-  badgeVersion.addEventListener("keydown", (event) => {
-    if (event.key === "Enter" || event.key === " ") {
-      event.preventDefault();
-      window.location.href = "./mises-a-jour.html";
-    }
-  });
+  badgeVersion.setAttribute("aria-label", "Version de l'application");
 }
 
 function calculerTotalEntrees(donnees, cleCount) {
