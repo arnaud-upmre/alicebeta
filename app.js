@@ -14,6 +14,7 @@ const COUCHE_POSTES = "postes-points";
 const COUCHE_POSTES_GROUPES = "postes-groupes";
 const SOURCE_PK = "pk-source";
 const COUCHE_PK_POINTS = "pk-points";
+const COUCHE_PK_FONDS = "pk-fonds";
 const COUCHE_PK_LABELS = "pk-labels";
 const APPAREILS_VIDE = { type: "FeatureCollection", features: [] };
 const ACCES_VIDE = { type: "FeatureCollection", features: [] };
@@ -87,6 +88,7 @@ let promesseChargementAcces = null;
 let promesseChargementPostes = null;
 let promesseChargementPk = null;
 let popupCarte = null;
+let popupPkSurvol = null;
 let initialisationEffectuee = false;
 let totalAppareilsBrut = 0;
 let totalPostesBrut = 0;
@@ -537,14 +539,69 @@ const carte = new maplibregl.Map({
   style: fondsCartographiques[fondActif]
 });
 
+function mettreAJourVariablesViewport() {
+  const racine = document.documentElement;
+  const viewportVisuel = window.visualViewport;
+  let offsetHaut = 0;
+  let offsetBas = 0;
+
+  if (viewportVisuel) {
+    const hauteurFenetre = window.innerHeight || document.documentElement.clientHeight || 0;
+    offsetHaut = Math.max(0, Math.round(viewportVisuel.offsetTop || 0));
+    offsetBas = Math.max(
+      0,
+      Math.round(hauteurFenetre - viewportVisuel.height - viewportVisuel.offsetTop)
+    );
+  }
+
+  racine.style.setProperty("--vv-top", `${offsetHaut}px`);
+  racine.style.setProperty("--vv-bottom", `${offsetBas}px`);
+}
+
+let temporisationResizeCarte = null;
+function planifierResizeCarte() {
+  if (temporisationResizeCarte) {
+    clearTimeout(temporisationResizeCarte);
+  }
+
+  temporisationResizeCarte = setTimeout(() => {
+    temporisationResizeCarte = null;
+    carte.resize();
+  }, 80);
+}
+
+function activerAdaptationViewport() {
+  const rafraichir = () => {
+    mettreAJourVariablesViewport();
+    planifierResizeCarte();
+  };
+
+  rafraichir();
+  window.addEventListener("resize", rafraichir, { passive: true });
+  window.addEventListener(
+    "orientationchange",
+    () => {
+      setTimeout(rafraichir, 120);
+    },
+    { passive: true }
+  );
+
+  if (window.visualViewport) {
+    window.visualViewport.addEventListener("resize", rafraichir, { passive: true });
+    window.visualViewport.addEventListener("scroll", rafraichir, { passive: true });
+  }
+}
+
 carte.addControl(new maplibregl.NavigationControl(), "top-right");
 carte.addControl(new maplibregl.ScaleControl({ maxWidth: 120, unit: "metric" }), "bottom-left");
+activerAdaptationViewport();
 
 const controleFonds = document.getElementById("controle-fonds");
 const boutonFonds = document.getElementById("bouton-fonds");
 const optionsFond = Array.from(document.querySelectorAll('input[name="fond"]'));
 const controleFiltres = document.getElementById("controle-filtres");
 const boutonFiltres = document.getElementById("bouton-filtres");
+const controleRecherche = document.getElementById("controle-recherche");
 const caseAppareils = document.querySelector('input[name="filtre-appareils"]');
 const caseAcces = document.querySelector('input[name="filtre-acces"]');
 const casePostes = document.querySelector('input[name="filtre-postes"]');
@@ -639,6 +696,132 @@ function mettreAJourCompteursFiltres() {
     const totalPostes = totalPostesBrut || calculerTotalEntrees(donneesPostes, "postes_count");
     compteurPostes.textContent = `(${totalPostes})`;
   }
+}
+
+function formaterPkPourEtiquette(valeurPk) {
+  const pkNombre = Number(valeurPk);
+  if (!Number.isFinite(pkNombre)) {
+    return "";
+  }
+
+  const pkMetres = Math.round(pkNombre * 1000);
+  const signe = pkMetres < 0 ? "-" : "";
+  const pkMetresAbs = Math.abs(pkMetres);
+  const kilometres = Math.floor(pkMetresAbs / 1000);
+  const metres = pkMetresAbs % 1000;
+  return `${signe}${kilometres}+${String(metres).padStart(3, "0")}`;
+}
+
+function formaterAltitudePk(valeurAltitude) {
+  const altitude = Number(valeurAltitude);
+  if (!Number.isFinite(altitude)) {
+    return "";
+  }
+
+  const valeur = altitude.toFixed(2).replace(/\.00$/, "").replace(/(\.\d)0$/, "$1");
+  return `${valeur} m`;
+}
+
+function creerImageFondEtiquettePk() {
+  const largeur = 130;
+  const hauteur = 34;
+  const rayon = 7;
+
+  const canvas = document.createElement("canvas");
+  canvas.width = largeur;
+  canvas.height = hauteur;
+
+  const ctx = canvas.getContext("2d");
+  if (!ctx) {
+    return null;
+  }
+
+  ctx.clearRect(0, 0, largeur, hauteur);
+  ctx.beginPath();
+  ctx.moveTo(rayon, 0);
+  ctx.lineTo(largeur - rayon, 0);
+  ctx.quadraticCurveTo(largeur, 0, largeur, rayon);
+  ctx.lineTo(largeur, hauteur - rayon);
+  ctx.quadraticCurveTo(largeur, hauteur, largeur - rayon, hauteur);
+  ctx.lineTo(rayon, hauteur);
+  ctx.quadraticCurveTo(0, hauteur, 0, hauteur - rayon);
+  ctx.lineTo(0, rayon);
+  ctx.quadraticCurveTo(0, 0, rayon, 0);
+  ctx.closePath();
+  ctx.fillStyle = "rgba(255,255,255,0.96)";
+  ctx.fill();
+  ctx.lineWidth = 2;
+  ctx.strokeStyle = "#111111";
+  ctx.stroke();
+
+  const imageData = ctx.getImageData(0, 0, largeur, hauteur);
+  return {
+    width: largeur,
+    height: hauteur,
+    data: imageData.data
+  };
+}
+
+function enregistrerImageFondEtiquettePk() {
+  const idFond = "pk-etiquette-fond";
+  if (carte.hasImage(idFond)) {
+    return;
+  }
+  const image = creerImageFondEtiquettePk();
+  if (image) {
+    carte.addImage(idFond, image);
+  }
+}
+
+function fermerPopupPkSurvol() {
+  if (!popupPkSurvol) {
+    return;
+  }
+  popupPkSurvol.remove();
+  popupPkSurvol = null;
+}
+
+function ouvrirPopupPkSurvol(featurePk) {
+  if (!featurePk?.geometry || featurePk.geometry.type !== "Point") {
+    fermerPopupPkSurvol();
+    return;
+  }
+
+  const [longitude, latitude] = featurePk.geometry.coordinates || [];
+  if (!Number.isFinite(longitude) || !Number.isFinite(latitude)) {
+    fermerPopupPkSurvol();
+    return;
+  }
+
+  const propr = featurePk.properties || {};
+  const ligne = normaliserChampTexte(propr.code_ligne);
+  const altitude = formaterAltitudePk(propr.altitude);
+
+  const lignes = [];
+  if (ligne) {
+    lignes.push(`Ligne ${echapperHtml(ligne)}`);
+  }
+  if (altitude) {
+    lignes.push(`Altitude : ${echapperHtml(altitude)}`);
+  }
+
+  if (!lignes.length) {
+    fermerPopupPkSurvol();
+    return;
+  }
+
+  const contenu = `<div class="popup-pk-survol">${lignes.join("<br/>")}</div>`;
+
+  if (!popupPkSurvol) {
+    popupPkSurvol = new maplibregl.Popup({
+      closeButton: false,
+      closeOnClick: false,
+      closeOnMove: false,
+      className: "popup-pk-survol-conteneur"
+    });
+  }
+
+  popupPkSurvol.setLngLat([longitude, latitude]).setHTML(contenu).addTo(carte);
 }
 
 function appliquerCouchesDonnees() {
@@ -784,17 +967,32 @@ function appliquerCouchesDonnees() {
     });
   }
 
+  enregistrerImageFondEtiquettePk();
+
   if (!carte.getLayer(COUCHE_PK_POINTS)) {
     carte.addLayer({
       id: COUCHE_PK_POINTS,
       type: "circle",
       source: SOURCE_PK,
       paint: {
-        "circle-radius": 2.6,
+        "circle-radius": ["interpolate", ["linear"], ["zoom"], 11, 6, 14, 8, 18, 10],
         "circle-color": "#111111",
-        "circle-opacity": 0.78,
-        "circle-stroke-color": "#ffffff",
-        "circle-stroke-width": 0.8
+        "circle-opacity": 0,
+        "circle-stroke-width": 0
+      }
+    });
+  }
+
+  if (!carte.getLayer(COUCHE_PK_FONDS)) {
+    carte.addLayer({
+      id: COUCHE_PK_FONDS,
+      type: "symbol",
+      source: SOURCE_PK,
+      layout: {
+        "icon-image": "pk-etiquette-fond",
+        "icon-size": ["interpolate", ["linear"], ["zoom"], 11, 0.72, 14, 0.84, 18, 1],
+        "icon-allow-overlap": true,
+        "icon-ignore-placement": true
       }
     });
   }
@@ -806,15 +1004,16 @@ function appliquerCouchesDonnees() {
       source: SOURCE_PK,
       layout: {
         "text-field": ["coalesce", ["get", "pk_label"], ["concat", "PK ", ["to-string", ["get", "pk"]]]],
-        "text-size": ["interpolate", ["linear"], ["zoom"], 11, 10, 15, 11.5, 18, 13],
-        "text-offset": [0, 0.95],
-        "text-anchor": "top",
-        "text-allow-overlap": false
+        "text-size": ["interpolate", ["linear"], ["zoom"], 11, 11, 15, 12.5, 18, 14],
+        "text-anchor": "center",
+        "text-allow-overlap": true,
+        "text-ignore-placement": true,
+        "text-font": ["Open Sans Bold"]
       },
       paint: {
         "text-color": "#111111",
-        "text-halo-color": "#ffffff",
-        "text-halo-width": 1.1
+        "text-halo-color": "rgba(255,255,255,0.01)",
+        "text-halo-width": 0
       }
     });
   }
@@ -852,7 +1051,11 @@ function appliquerCouchesDonnees() {
     afficherPostes && donneesPostes ? "visible" : "none"
   );
   carte.setLayoutProperty(COUCHE_PK_POINTS, "visibility", afficherPk && donneesPk ? "visible" : "none");
+  carte.setLayoutProperty(COUCHE_PK_FONDS, "visibility", afficherPk && donneesPk ? "visible" : "none");
   carte.setLayoutProperty(COUCHE_PK_LABELS, "visibility", afficherPk && donneesPk ? "visible" : "none");
+  if (!afficherPk || !donneesPk) {
+    fermerPopupPkSurvol();
+  }
 }
 
 function restaurerEtatFiltres() {
@@ -900,6 +1103,10 @@ function remonterCouchesDonnees() {
 
   if (carte.getLayer(COUCHE_PK_POINTS)) {
     carte.moveLayer(COUCHE_PK_POINTS);
+  }
+
+  if (carte.getLayer(COUCHE_PK_FONDS)) {
+    carte.moveLayer(COUCHE_PK_FONDS);
   }
 
   if (carte.getLayer(COUCHE_PK_LABELS)) {
@@ -1168,8 +1375,9 @@ async function chargerDonneesPk() {
         const features = Array.isArray(geojson?.features) ? geojson.features : [];
         for (const feature of features) {
           const propr = feature.properties || {};
-          if (!propr.pk_label && Number.isFinite(Number(propr.pk))) {
-            propr.pk_label = `PK ${propr.pk}`;
+          const etiquettePk = formaterPkPourEtiquette(propr.pk);
+          if (etiquettePk) {
+            propr.pk_label = `PK ${etiquettePk}`;
           }
           feature.properties = propr;
         }
@@ -1854,6 +2062,7 @@ function activerInteractionsCarte() {
     COUCHE_APPAREILS_GROUPES,
     COUCHE_APPAREILS
   ];
+  const couchesPkInteractives = [COUCHE_PK_LABELS, COUCHE_PK_FONDS, COUCHE_PK_POINTS];
 
   carte.on("click", (event) => {
     const couchesDisponibles = couchesInteractives.filter((id) => Boolean(carte.getLayer(id)));
@@ -1873,14 +2082,27 @@ function activerInteractionsCarte() {
 
   carte.on("mousemove", (event) => {
     const couchesDisponibles = couchesInteractives.filter((id) => Boolean(carte.getLayer(id)));
-    if (!couchesDisponibles.length) {
+    const couchesPkDisponibles = couchesPkInteractives.filter((id) => Boolean(carte.getLayer(id)));
+    const couchesInterrogeables = [...couchesDisponibles, ...couchesPkDisponibles];
+    if (!couchesInterrogeables.length) {
       carte.getCanvas().style.cursor = "";
+      fermerPopupPkSurvol();
       return;
     }
 
     const objets = carte.queryRenderedFeatures(event.point, {
-      layers: couchesDisponibles
+      layers: couchesInterrogeables
     });
+
+    const featurePk = objets.find((obj) =>
+      [COUCHE_PK_LABELS, COUCHE_PK_FONDS, COUCHE_PK_POINTS].includes(obj.layer?.id)
+    );
+    if (featurePk && afficherPk) {
+      ouvrirPopupPkSurvol(featurePk);
+    } else {
+      fermerPopupPkSurvol();
+    }
+
     carte.getCanvas().style.cursor = objets.length ? "pointer" : "";
   });
 }
