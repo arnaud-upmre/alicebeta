@@ -1205,11 +1205,8 @@ function construireSectionAcces(feature) {
   return `<section class="popup-section"><p class="popup-acces-titre${classeHors}">🚗 ${echapperHtml(titre || "Acces inconnu")}</p></section>`;
 }
 
-function construireSectionPortail(featureAcces) {
-  if (!featureAcces) {
-    return "";
-  }
-
+function construireSectionPortail(featureAcces, options = {}) {
+  const afficherVide = Boolean(options.afficherVide);
   const accesListe = extraireListeDepuisFeature(featureAcces, "acces_liste_json");
   const portails = [];
   const dejaVu = new Set();
@@ -1227,11 +1224,13 @@ function construireSectionPortail(featureAcces) {
     portails.push(portail);
   }
 
-  if (!portails.length) {
+  if (!portails.length && !afficherVide) {
     return "";
   }
 
-  const contenu = portails.map((texte) => echapperHtml(texte)).join(" • ");
+  const contenu = portails.length
+    ? portails.map((texte) => echapperHtml(texte)).join(" • ")
+    : '<span class="popup-portail-vide">(non renseigné)</span>';
   return `<section class="popup-section popup-section-portail"><p class="popup-portail-ligne">🔐 Portail : <span class="popup-portail-valeur">${contenu}</span></p></section>`;
 }
 
@@ -1637,6 +1636,7 @@ function obtenirFeatureALaCoordonnee(collection, longitude, latitude) {
 function construirePopupDepuisFeatures(longitude, latitude, featurePostes, featureAcces, featureAppareils) {
   const sections = [];
   let coordonneesNavigation = null;
+  let featureAccesReference = featureAcces;
 
   if (featurePostes) {
     const sectionPostes = construireSectionPostes(featurePostes);
@@ -1673,7 +1673,13 @@ function construirePopupDepuisFeatures(longitude, latitude, featurePostes, featu
     coordonneesNavigation = trouverCoordonneesAccesDepuisPostes(featurePostes);
   }
 
-  const sectionPortail = construireSectionPortail(featureAcces);
+  if (!featureAccesReference && coordonneesNavigation) {
+    featureAccesReference = obtenirFeatureALaCoordonnee(donneesAcces, coordonneesNavigation[0], coordonneesNavigation[1]);
+  }
+
+  const sectionPortail = construireSectionPortail(featureAccesReference, {
+    afficherVide: Boolean(coordonneesNavigation)
+  });
   const sectionItineraire = coordonneesNavigation
     ? `<section class="popup-section popup-section-itineraires"><div class="popup-section-titre"><span class="popup-badge popup-badge-itineraire">Itineraire</span></div>${construireLiensItineraires(coordonneesNavigation[0], coordonneesNavigation[1])}</section>`
     : "";
