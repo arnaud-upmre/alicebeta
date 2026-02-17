@@ -272,7 +272,15 @@ body,
 }
 
 .recherche-appareil-ligne-principale {
-  display: inline;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.recherche-resultat-pastille-ligne-appareil {
+  width: 10px;
+  height: 10px;
+  flex: 0 0 10px;
 }
 
 .recherche-appareil-code {

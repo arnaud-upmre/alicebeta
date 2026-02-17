@@ -2,7 +2,7 @@
 const CENTRE_INITIAL = [2.35, 48.85];
 const ZOOM_INITIAL = 6;
 const ZOOM_MAX = 19;
-const VERSION_APP = "V1.2.13";
+const VERSION_APP = "V1.2.14";
 const SOURCE_APPAREILS = "appareils-source";
 const COUCHE_APPAREILS = "appareils-points";
 const COUCHE_APPAREILS_GROUPES = "appareils-groupes";
@@ -1516,7 +1516,8 @@ function reconstruireIndexRecherche() {
       groupe.appareilsLignes.push({
         code: appareilNom || "Appareil",
         contexte: contexteAppareil,
-        horsPatrimoine: Boolean(appareil.hors_patrimoine)
+        horsPatrimoine: Boolean(appareil.hors_patrimoine),
+        couleur: normaliserCouleurHex(appareil.couleur_appareil || determinerCouleurAppareil(appareilNom))
       });
       groupe.texteMotsCles.push(motsCles);
       if (!groupe.sousTitre && appareilNom) {
@@ -1791,13 +1792,14 @@ function afficherResultatsRecherche(resultats) {
             const code = echapperHtml(ligne?.code || "Appareil");
             const contexte = echapperHtml(ligne?.contexte || "");
             const blocContexte = contexte ? `<span class="recherche-appareil-contexte">(${contexte})</span>` : "";
+            const couleurLigne = echapperHtml(normaliserCouleurHex(ligne?.couleur || "#111111"));
             const blocHorsPatrimoine = ligne?.horsPatrimoine
               ? '<span class="recherche-appareil-hors-patrimoine">Hors patrimoine</span>'
               : "";
-            return `<span class="recherche-appareil-ligne"><span class="recherche-appareil-ligne-principale"><span class="recherche-appareil-code">${code}</span>${blocContexte}</span>${blocHorsPatrimoine}</span>`;
+            return `<span class="recherche-appareil-ligne"><span class="recherche-appareil-ligne-principale"><span class="recherche-resultat-pastille recherche-resultat-pastille-ligne-appareil" style="background-color:${couleurLigne};"></span><span class="recherche-appareil-code">${code}</span>${blocContexte}</span>${blocHorsPatrimoine}</span>`;
           })
           .join("");
-        return `<li><button class="recherche-resultat" type="button" data-index="${index}" data-type="${echapperHtml(resultat.type)}" data-lng="${resultat.longitude}" data-lat="${resultat.latitude}"><span class="recherche-resultat-titre"><span class="recherche-resultat-pastille ${classePastille}" style="background-color:${couleurPastille};"></span><span class="recherche-appareil-liste${classeGroupe}">${lignesAppareils}</span></span></button></li>`;
+        return `<li><button class="recherche-resultat" type="button" data-index="${index}" data-type="${echapperHtml(resultat.type)}" data-lng="${resultat.longitude}" data-lat="${resultat.latitude}"><span class="recherche-resultat-titre"><span class="recherche-appareil-liste${classeGroupe}">${lignesAppareils}</span></span></button></li>`;
       }
 
       return `<li><button class="recherche-resultat" type="button" data-index="${index}" data-type="${echapperHtml(resultat.type)}" data-lng="${resultat.longitude}" data-lat="${resultat.latitude}"><span class="recherche-resultat-titre"><span class="recherche-resultat-pastille ${classePastille}" style="background-color:${couleurPastille};"></span>${titre}<span class="recherche-resultat-type-inline">${echapperHtml(meta)}</span></span></button></li>`;
