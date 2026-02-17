@@ -296,6 +296,7 @@ function regrouperAppareilsParCoordonnees(geojson) {
       SAT: propr.SAT || "",
       acces: propr.acces || "",
       appareil: propr.appareil || "",
+      description: propr.description || "",
       imajnet: propr.imajnet || "",
       couleur_appareil: determinerCouleurAppareil(propr.appareil),
       hors_patrimoine: estHorsPatrimoine(propr.hors_patrimoine)
@@ -1513,9 +1514,13 @@ function construireSectionAppareils(feature, options = {}) {
         const couleur = a.couleur_appareil || "#111111";
         const tagHp = a.hors_patrimoine ? '<span class="popup-tag-hp">HP</span>' : "";
         const libelleAppareil = champCompletOuVide(a.appareil) || "Appareil inconnu";
+        const descriptionAppareil = champCompletOuVide(a.description);
         const titrePoste = construireTitreNomTypeSat(a);
         const detailsPoste = !titrePosteCommun && titrePoste ? `<br/><span class="popup-poste-details">${echapperHtml(titrePoste)}</span>` : "";
-        return `<li><span class="popup-point-couleur" style="background:${echapperHtml(couleur)}"></span>${echapperHtml(libelleAppareil)}${tagHp}${detailsPoste}</li>`;
+        const detailsDescription = descriptionAppareil
+          ? `<br/><span class="popup-poste-details">${echapperHtml(descriptionAppareil)}</span>`
+          : "";
+        return `<li><span class="popup-point-couleur" style="background:${echapperHtml(couleur)}"></span>${echapperHtml(libelleAppareil)}${tagHp}${detailsPoste}${detailsDescription}</li>`;
       })
       .join("");
 
@@ -1527,12 +1532,16 @@ function construireSectionAppareils(feature, options = {}) {
   }
 
   const appareil = appareilsListe[0] || {};
-  const titre = construireTitreNomTypeSatAcces(appareil);
+  const titre = construireTitreNomTypeSat(appareil);
   const couleur = appareil.couleur_appareil || "#111111";
   const tagHp = appareil.hors_patrimoine ? '<span class="popup-tag-hp">HP</span>' : "";
   const libelleAppareil = champCompletOuVide(appareil.appareil) || "Appareil inconnu";
-  const ligneTitre = options.masquerTitreLieu ? "" : `<strong>${echapperHtml(titre || "Poste inconnu")}</strong><br/>`;
-  return `<section class="popup-section"><div class="popup-pill-ligne"><span class="popup-badge popup-badge-appareils">1 appareil</span></div><p>${ligneTitre}<span class="popup-point-couleur" style="background:${echapperHtml(couleur)}"></span>${echapperHtml(libelleAppareil)}${tagHp}</p></section>`;
+  const descriptionAppareil = champCompletOuVide(appareil.description);
+  const ligneTitre = options.masquerTitreLieu ? "" : `<p class="popup-acces-titre">${echapperHtml(titre || "Poste inconnu")}</p>`;
+  const ligneDescription = descriptionAppareil
+    ? `<p class="popup-poste-details">${echapperHtml(descriptionAppareil)}</p>`
+    : "";
+  return `<section class="popup-section">${ligneTitre}<p><span class="popup-point-couleur" style="background:${echapperHtml(couleur)}"></span>${echapperHtml(libelleAppareil)}${tagHp}</p>${ligneDescription}</section>`;
 }
 
 function construireSectionAcces(feature) {
