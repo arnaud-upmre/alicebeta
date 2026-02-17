@@ -123,6 +123,7 @@ body,
   font-size: 0.84rem;
   font-weight: 600;
   line-height: 1.35;
+  text-align: center;
   opacity: 0;
   transform: translateY(8px);
   pointer-events: none;

@@ -1821,7 +1821,7 @@ function changerFondCarte(nomFond) {
   setTimeout(restaurerAffichageDonnees, 900);
 }
 
-carte.on("style.load", () => {
+function gererStyleCharge() {
   restaurerEtatFiltres();
   restaurerAffichageDonnees();
 
@@ -1829,7 +1829,13 @@ carte.on("style.load", () => {
     initialisationEffectuee = true;
     initialiserDonneesParDefaut();
   }
-});
+}
+
+carte.on("style.load", gererStyleCharge);
+
+if (carte.isStyleLoaded()) {
+  gererStyleCharge();
+}
 
 carte.on("styledata", () => {
   if ((afficherAppareils || afficherAcces || afficherPostes || afficherLignes || afficherVitesseLigne) && carte.isStyleLoaded()) {
