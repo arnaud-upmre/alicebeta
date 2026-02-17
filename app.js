@@ -1112,7 +1112,8 @@ function construireTitreNomTypeSat(entree, options = {}) {
 function construireTitreNomTypeSatAcces(entree, options = {}) {
   const nomTypeSat = construireTitreNomTypeSat(entree, options);
   const acces = champCompletOuVide(entree?.acces);
-  return [nomTypeSat, acces].filter(Boolean).join(" | ");
+  const accesLibelle = acces ? `Accès : ${acces}` : "";
+  return [nomTypeSat, accesLibelle].filter(Boolean).join(" | ");
 }
 
 function construireLiensItineraires(longitude, latitude) {
