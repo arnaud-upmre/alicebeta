@@ -16,6 +16,10 @@ const SOURCE_LIGNES = "openrailwaymap-source";
 const COUCHE_LIGNES = "openrailwaymap-lignes";
 const SOURCE_VITESSE_LIGNE = "openrailwaymap-maxspeed-source";
 const COUCHE_VITESSE_LIGNE = "openrailwaymap-maxspeed";
+const SOURCE_MESURE = "mesure-source";
+const COUCHE_MESURE_LIGNES = "mesure-lignes";
+const COUCHE_MESURE_POINTS = "mesure-points";
+const COUCHE_MESURE_LABELS = "mesure-labels";
 const APPAREILS_VIDE = { type: "FeatureCollection", features: [] };
 const ACCES_VIDE = { type: "FeatureCollection", features: [] };
 const POSTES_VIDE = { type: "FeatureCollection", features: [] };
@@ -91,6 +95,14 @@ let totalAppareilsBrut = 0;
 let totalPostesBrut = 0;
 let indexRecherche = [];
 let promesseChargementRecherche = null;
+let menuContextuelOuvert = false;
+let mesureActive = false;
+let mesurePoints = [];
+let contexteMenuPosition = {
+  longitude: null,
+  latitude: null
+};
+let contexteMenuFeature = null;
 const DIAMETRE_ICONE_GROUPE_APPAREILS = 84;
 
 function determinerCouleurAppareil(codeAppareil) {
@@ -283,6 +295,7 @@ function regrouperAppareilsParCoordonnees(geojson) {
       SAT: propr.SAT || "",
       acces: propr.acces || "",
       appareil: propr.appareil || "",
+      imajnet: propr.imajnet || "",
       couleur_appareil: determinerCouleurAppareil(propr.appareil),
       hors_patrimoine: estHorsPatrimoine(propr.hors_patrimoine)
     };
@@ -326,20 +339,22 @@ function regrouperAppareilsParCoordonnees(geojson) {
         type: "Point",
         coordinates: [groupe.longitude, groupe.latitude]
       },
-      properties: {
-        icone_groupe_appareils: construireIdIconeGroupeAppareils(
-          groupe.appareils.map((a) => a.couleur_appareil || "#111111"),
-          groupe.appareils.some((a) => a.hors_patrimoine)
-        ),
+        properties: {
+          icone_groupe_appareils: construireIdIconeGroupeAppareils(
+            groupe.appareils.map((a) => a.couleur_appareil || "#111111"),
+            groupe.appareils.some((a) => a.hors_patrimoine)
+          ),
         appareils_couleurs_json: JSON.stringify(
           groupe.appareils.map((a) => normaliserCouleurHex(a.couleur_appareil || "#111111"))
         ),
-        appareils_count: total,
-        hors_patrimoine_count: groupe.appareils.filter((a) => a.hors_patrimoine).length,
-        hors_patrimoine: groupe.appareils.some((a) => a.hors_patrimoine),
-        appareils_liste_json: JSON.stringify(groupe.appareils)
-      }
-    });
+          appareils_count: total,
+          hors_patrimoine_count: groupe.appareils.filter((a) => a.hors_patrimoine).length,
+          hors_patrimoine: groupe.appareils.some((a) => a.hors_patrimoine),
+          imajnet:
+            groupe.appareils.find((a) => String(a.imajnet || "").trim())?.imajnet || "",
+          appareils_liste_json: JSON.stringify(groupe.appareils)
+        }
+      });
   }
 
   return {
@@ -558,6 +573,17 @@ const listeResultatsRecherche = document.getElementById("recherche-resultats");
 const infoVitesseLigne = document.getElementById("info-vitesse-ligne");
 const fenetreAccueil = document.getElementById("fenetre-accueil");
 const boutonFermerFenetreAccueil = document.getElementById("fenetre-accueil-fermer");
+const menuContextuelCarte = document.getElementById("menu-contextuel-carte");
+const boutonCtxCoord = document.getElementById("ctx-coord");
+const boutonCtxShare = document.getElementById("ctx-share");
+const boutonCtxItin = document.getElementById("ctx-itin");
+const boutonCtxRegle = document.getElementById("ctx-regle");
+const boutonCtxGoogleMarker = document.getElementById("ctx-gmaps-marker");
+const boutonCtxStreet = document.getElementById("ctx-street");
+const boutonCtxImajnet = document.getElementById("ctx-imajnet");
+const boutonCtxAjoutAppareil = document.getElementById("ctx-add-appareil");
+const panneauMesure = document.getElementById("panneau-mesure");
+const textePanneauMesure = document.getElementById("panneau-mesure-texte");
 const CLE_STOCKAGE_FENETRE_ACCUEIL = "alice.fenetre-accueil.derniere-date";
 let temporisationInfoVitesse = null;
 
@@ -621,6 +647,304 @@ function fermerPopupCarte() {
   }
   popupCarte.remove();
   popupCarte = null;
+}
+
+function formaterCoordonneeMenu(valeur) {
+  return Number(valeur).toFixed(5);
+}
+
+function construireUrlPartagePosition(latitude, longitude) {
+  return `${location.origin}${location.pathname}?lat=${encodeURIComponent(latitude)}&lon=${encodeURIComponent(longitude)}&z=18&marker=true`;
+}
+
+function obtenirLienImajnetDepuisContexte() {
+  const valeurFeature = String(contexteMenuFeature?.properties?.imajnet || "").trim();
+  if (valeurFeature) {
+    return valeurFeature;
+  }
+
+  const valeurListe = (contexteMenuFeature?.properties?.appareils_liste_json || "").trim();
+  if (valeurListe) {
+    try {
+      const liste = JSON.parse(valeurListe);
+      const trouve = Array.isArray(liste) ? liste.find((item) => String(item?.imajnet || "").trim()) : null;
+      const valeur = String(trouve?.imajnet || "").trim();
+      if (valeur) {
+        return valeur;
+      }
+    } catch {
+      // Ignore les JSON invalides.
+    }
+  }
+
+  const { latitude, longitude } = contexteMenuPosition;
+  if (!Number.isFinite(latitude) || !Number.isFinite(longitude)) {
+    return "https://gecko.imajnet.net/";
+  }
+  return `https://gecko.imajnet.net/#map=OSM;zoom=18;loc=${latitude},${longitude};`;
+}
+
+function obtenirDistanceMetres(pointA, pointB) {
+  return new maplibregl.LngLat(pointA[0], pointA[1]).distanceTo(new maplibregl.LngLat(pointB[0], pointB[1]));
+}
+
+function formaterDistanceMetres(distanceMetres) {
+  if (distanceMetres < 1000) {
+    return `${distanceMetres.toFixed(1)} m`;
+  }
+  return `${(distanceMetres / 1000).toFixed(2)} km`;
+}
+
+function construireDonneesSourceMesure() {
+  const featuresPoints = mesurePoints.map((coordonnees, index) => ({
+    type: "Feature",
+    geometry: {
+      type: "Point",
+      coordinates: coordonnees
+    },
+    properties: {
+      lettre: String.fromCharCode(65 + index)
+    }
+  }));
+
+  const features = [...featuresPoints];
+  if (mesurePoints.length >= 2) {
+    features.push({
+      type: "Feature",
+      geometry: {
+        type: "LineString",
+        coordinates: mesurePoints
+      },
+      properties: {}
+    });
+  }
+
+  return {
+    type: "FeatureCollection",
+    features
+  };
+}
+
+function assurerSourceEtCouchesMesure() {
+  if (!carte.isStyleLoaded()) {
+    return;
+  }
+
+  if (!carte.getSource(SOURCE_MESURE)) {
+    carte.addSource(SOURCE_MESURE, {
+      type: "geojson",
+      data: construireDonneesSourceMesure()
+    });
+  }
+
+  if (!carte.getLayer(COUCHE_MESURE_LIGNES)) {
+    carte.addLayer({
+      id: COUCHE_MESURE_LIGNES,
+      type: "line",
+      source: SOURCE_MESURE,
+      filter: ["==", ["geometry-type"], "LineString"],
+      paint: {
+        "line-color": "#ef4444",
+        "line-width": 3.2
+      }
+    });
+  }
+
+  if (!carte.getLayer(COUCHE_MESURE_POINTS)) {
+    carte.addLayer({
+      id: COUCHE_MESURE_POINTS,
+      type: "circle",
+      source: SOURCE_MESURE,
+      filter: ["==", ["geometry-type"], "Point"],
+      paint: {
+        "circle-radius": 6,
+        "circle-color": "#ffffff",
+        "circle-stroke-width": 2,
+        "circle-stroke-color": "#111111"
+      }
+    });
+  }
+
+  if (!carte.getLayer(COUCHE_MESURE_LABELS)) {
+    carte.addLayer({
+      id: COUCHE_MESURE_LABELS,
+      type: "symbol",
+      source: SOURCE_MESURE,
+      filter: ["==", ["geometry-type"], "Point"],
+      layout: {
+        "text-field": ["get", "lettre"],
+        "text-size": 12,
+        "text-offset": [0, -1.1],
+        "text-font": ["Open Sans Bold"]
+      },
+      paint: {
+        "text-color": "#ffffff",
+        "text-halo-color": "rgba(15, 23, 42, 0.88)",
+        "text-halo-width": 1.5
+      }
+    });
+  }
+}
+
+function rafraichirAffichageMesure() {
+  assurerSourceEtCouchesMesure();
+  const source = carte.getSource(SOURCE_MESURE);
+  if (source) {
+    source.setData(construireDonneesSourceMesure());
+  }
+}
+
+function masquerPanneauMesure() {
+  if (!panneauMesure) {
+    return;
+  }
+  panneauMesure.classList.remove("est-visible");
+}
+
+function mettreAJourPanneauMesure() {
+  if (!textePanneauMesure) {
+    return;
+  }
+
+  if (mesurePoints.length < 2) {
+    textePanneauMesure.textContent = "";
+    masquerPanneauMesure();
+    return;
+  }
+
+  let total = 0;
+  const lignes = [];
+
+  for (let i = 1; i < mesurePoints.length; i += 1) {
+    const pointA = mesurePoints[i - 1];
+    const pointB = mesurePoints[i];
+    const distance = obtenirDistanceMetres(pointA, pointB);
+    total += distance;
+
+    const lettreA = String.fromCharCode(64 + i);
+    const lettreB = String.fromCharCode(65 + i);
+    lignes.push(`${lettreA} -> ${lettreB} : ${formaterDistanceMetres(distance)}`);
+  }
+
+  lignes.push("---------------------");
+  lignes.push(`Total : ${formaterDistanceMetres(total)}`);
+  textePanneauMesure.textContent = lignes.join("\n");
+
+  if (panneauMesure) {
+    panneauMesure.classList.add("est-visible");
+  }
+}
+
+function reinitialiserMesure() {
+  mesurePoints = [];
+  rafraichirAffichageMesure();
+  mettreAJourPanneauMesure();
+}
+
+function activerModeMesure() {
+  reinitialiserMesure();
+  mesureActive = true;
+}
+
+function ajouterPointMesure(longitude, latitude) {
+  if (!Number.isFinite(longitude) || !Number.isFinite(latitude)) {
+    return;
+  }
+
+  mesurePoints.push([longitude, latitude]);
+  rafraichirAffichageMesure();
+  mettreAJourPanneauMesure();
+}
+
+function ouvrirMenuContextuel(event, feature) {
+  if (!menuContextuelCarte) {
+    return;
+  }
+
+  const { lng, lat } = event.lngLat || {};
+  if (!Number.isFinite(lng) || !Number.isFinite(lat)) {
+    return;
+  }
+
+  contexteMenuPosition = { longitude: lng, latitude: lat };
+  contexteMenuFeature = feature || null;
+
+  if (boutonCtxCoord) {
+    boutonCtxCoord.textContent = `📍 ${formaterCoordonneeMenu(lat)}, ${formaterCoordonneeMenu(lng)}`;
+  }
+
+  const eventDom = event.originalEvent;
+  const marge = 10;
+  const clientX = Number(eventDom?.clientX);
+  const clientY = Number(eventDom?.clientY);
+
+  menuContextuelCarte.classList.add("est-visible");
+  menuContextuelCarte.setAttribute("aria-hidden", "false");
+
+  const largeur = menuContextuelCarte.offsetWidth;
+  const hauteur = menuContextuelCarte.offsetHeight;
+
+  let gauche = Number.isFinite(clientX) ? clientX + 12 : 28;
+  let haut = Number.isFinite(clientY) ? clientY + 12 : 28;
+
+  if (gauche + largeur > window.innerWidth - marge) {
+    gauche = window.innerWidth - largeur - marge;
+  }
+  if (haut + hauteur > window.innerHeight - marge) {
+    haut = window.innerHeight - hauteur - marge;
+  }
+  if (gauche < marge) {
+    gauche = marge;
+  }
+  if (haut < marge) {
+    haut = marge;
+  }
+
+  menuContextuelCarte.style.left = `${Math.round(gauche)}px`;
+  menuContextuelCarte.style.top = `${Math.round(haut)}px`;
+  menuContextuelOuvert = true;
+}
+
+function fermerMenuContextuel() {
+  if (!menuContextuelCarte || !menuContextuelOuvert) {
+    return;
+  }
+  menuContextuelCarte.classList.remove("est-visible");
+  menuContextuelCarte.setAttribute("aria-hidden", "true");
+  menuContextuelOuvert = false;
+}
+
+async function partagerPositionContextuelle() {
+  const { latitude, longitude } = contexteMenuPosition;
+  if (!Number.isFinite(latitude) || !Number.isFinite(longitude)) {
+    return;
+  }
+
+  const lien = construireUrlPartagePosition(latitude, longitude);
+
+  if (navigator.share) {
+    try {
+      await navigator.share({
+        title: "Position carte",
+        text: `Position: ${latitude.toFixed(5)}, ${longitude.toFixed(5)}`,
+        url: lien
+      });
+      return;
+    } catch {
+      // Annulation utilisateur ou API indisponible: fallback copie.
+    }
+  }
+
+  if (navigator.clipboard?.writeText) {
+    try {
+      await navigator.clipboard.writeText(lien);
+      return;
+    } catch {
+      // Fallback ultime plus bas.
+    }
+  }
+
+  window.prompt("Copiez ce lien :", lien);
 }
 
 if (fenetreAccueil && doitAfficherFenetreAccueilAujourdhui()) {
@@ -1855,8 +2179,28 @@ function activerInteractionsCarte() {
     COUCHE_APPAREILS_GROUPES,
     COUCHE_APPAREILS
   ];
+  let temporisationAppuiLong = null;
+
+  const recupererFeatureContexte = (point) => {
+    if (!point) {
+      return null;
+    }
+    const couchesDisponibles = couchesInteractives.filter((id) => Boolean(carte.getLayer(id)));
+    if (!couchesDisponibles.length) {
+      return null;
+    }
+    const objets = carte.queryRenderedFeatures(point, { layers: couchesDisponibles });
+    return objets[0] || null;
+  };
 
   carte.on("click", (event) => {
+    fermerMenuContextuel();
+
+    if (mesureActive) {
+      ajouterPointMesure(event.lngLat.lng, event.lngLat.lat);
+      return;
+    }
+
     const couchesDisponibles = couchesInteractives.filter((id) => Boolean(carte.getLayer(id)));
     if (!couchesDisponibles.length) {
       return;
@@ -1870,6 +2214,44 @@ function activerInteractionsCarte() {
     }
 
     ouvrirPopupDepuisObjetsCarte(objets);
+  });
+
+  carte.on("contextmenu", (event) => {
+    event.originalEvent?.preventDefault?.();
+    fermerPopupCarte();
+    const featureContexte = recupererFeatureContexte(event.point);
+    ouvrirMenuContextuel(event, featureContexte);
+  });
+
+  carte.on("touchstart", (event) => {
+    if (!event.lngLat) {
+      return;
+    }
+    temporisationAppuiLong = setTimeout(() => {
+      const featureContexte = recupererFeatureContexte(event.point);
+      ouvrirMenuContextuel(event, featureContexte);
+    }, 500);
+  });
+
+  carte.on("touchend", () => {
+    if (temporisationAppuiLong) {
+      clearTimeout(temporisationAppuiLong);
+      temporisationAppuiLong = null;
+    }
+  });
+
+  carte.on("touchcancel", () => {
+    if (temporisationAppuiLong) {
+      clearTimeout(temporisationAppuiLong);
+      temporisationAppuiLong = null;
+    }
+  });
+
+  carte.on("touchmove", () => {
+    if (temporisationAppuiLong) {
+      clearTimeout(temporisationAppuiLong);
+      temporisationAppuiLong = null;
+    }
   });
 
   carte.on("mousemove", (event) => {
@@ -1886,7 +2268,12 @@ function activerInteractionsCarte() {
   });
 
   carte.on("movestart", () => {
+    fermerMenuContextuel();
     fermerPopupCarte();
+  });
+
+  carte.on("zoomstart", () => {
+    fermerMenuContextuel();
   });
 }
 
@@ -2038,6 +2425,7 @@ function changerFondCarte(nomFond) {
 function gererStyleCharge() {
   restaurerEtatFiltres();
   restaurerAffichageDonnees();
+  rafraichirAffichageMesure();
 }
 
 carte.on("style.load", gererStyleCharge);
@@ -2355,6 +2743,96 @@ if (champRecherche && listeResultatsRecherche) {
   });
 }
 
+if (boutonCtxCoord) {
+  boutonCtxCoord.addEventListener("click", async () => {
+    const { latitude, longitude } = contexteMenuPosition;
+    if (!Number.isFinite(latitude) || !Number.isFinite(longitude)) {
+      return;
+    }
+    const texteCoordonnees = `${latitude.toFixed(6)}, ${longitude.toFixed(6)}`;
+    try {
+      await navigator.clipboard.writeText(texteCoordonnees);
+    } catch {
+      window.prompt("Coordonnées :", texteCoordonnees);
+    }
+    fermerMenuContextuel();
+  });
+}
+
+if (boutonCtxShare) {
+  boutonCtxShare.addEventListener("click", async () => {
+    await partagerPositionContextuelle();
+    fermerMenuContextuel();
+  });
+}
+
+if (boutonCtxItin) {
+  boutonCtxItin.addEventListener("click", () => {
+    const { latitude, longitude } = contexteMenuPosition;
+    if (!Number.isFinite(latitude) || !Number.isFinite(longitude)) {
+      return;
+    }
+    window.open(`https://www.google.com/maps/dir/?api=1&destination=${latitude},${longitude}`, "_blank", "noopener");
+    fermerMenuContextuel();
+  });
+}
+
+if (boutonCtxRegle) {
+  boutonCtxRegle.addEventListener("click", () => {
+    activerModeMesure();
+    fermerPopupCarte();
+    fermerMenuContextuel();
+  });
+}
+
+if (boutonCtxGoogleMarker) {
+  boutonCtxGoogleMarker.addEventListener("click", () => {
+    const { latitude, longitude } = contexteMenuPosition;
+    if (!Number.isFinite(latitude) || !Number.isFinite(longitude)) {
+      return;
+    }
+    window.open(`https://www.google.com/maps?q=${latitude},${longitude}`, "_blank", "noopener");
+    fermerMenuContextuel();
+  });
+}
+
+if (boutonCtxStreet) {
+  boutonCtxStreet.addEventListener("click", () => {
+    const { latitude, longitude } = contexteMenuPosition;
+    if (!Number.isFinite(latitude) || !Number.isFinite(longitude)) {
+      return;
+    }
+    window.open(
+      `https://www.google.com/maps?q=&layer=c&cbll=${latitude},${longitude}`,
+      "_blank",
+      "noopener"
+    );
+    fermerMenuContextuel();
+  });
+}
+
+if (boutonCtxImajnet) {
+  boutonCtxImajnet.addEventListener("click", () => {
+    window.open(obtenirLienImajnetDepuisContexte(), "_blank", "noopener");
+    fermerMenuContextuel();
+  });
+}
+
+if (boutonCtxAjoutAppareil) {
+  boutonCtxAjoutAppareil.addEventListener("click", () => {
+    const { latitude, longitude } = contexteMenuPosition;
+    if (!Number.isFinite(latitude) || !Number.isFinite(longitude)) {
+      return;
+    }
+    const sujet = encodeURIComponent("Ajout d'un appareil");
+    const corps = encodeURIComponent(
+      `Bonjour,\n\nMerci d'ajouter un appareil à cette position :\nLatitude: ${latitude}\nLongitude: ${longitude}\n\nLien Google Maps: https://www.google.com/maps?q=${latitude},${longitude}\n`
+    );
+    window.location.href = `mailto:arnaud.debaecker@sncf.fr?subject=${sujet}&body=${corps}`;
+    fermerMenuContextuel();
+  });
+}
+
 document.addEventListener("click", (event) => {
   if (!controleFonds.contains(event.target)) {
     fermerMenuFonds();
@@ -2367,6 +2845,10 @@ document.addEventListener("click", (event) => {
   if (controleRecherche && !controleRecherche.contains(event.target)) {
     fermerResultatsRecherche();
   }
+
+  if (menuContextuelCarte && !menuContextuelCarte.contains(event.target)) {
+    fermerMenuContextuel();
+  }
 });
 
 document.addEventListener("keydown", (event) => {
@@ -2375,5 +2857,10 @@ document.addEventListener("keydown", (event) => {
     fermerMenuFonds();
     fermerMenuFiltres();
     fermerResultatsRecherche();
+    fermerMenuContextuel();
+    if (mesureActive || mesurePoints.length) {
+      reinitialiserMesure();
+      mesureActive = false;
+    }
   }
 });

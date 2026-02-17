@@ -772,6 +772,89 @@ body,
   border-color: rgba(79, 70, 229, 0.28);
 }
 
+.panneau-mesure {
+  position: absolute;
+  left: calc(10px + env(safe-area-inset-left));
+  bottom: calc(74px + env(safe-area-inset-bottom));
+  z-index: 6;
+  display: none;
+  max-width: min(290px, calc(100vw - 20px - env(safe-area-inset-left) - env(safe-area-inset-right)));
+  border: 1px solid rgba(148, 163, 184, 0.32);
+  border-radius: 12px;
+  background: rgba(15, 23, 42, 0.72);
+  color: #f8fafc;
+  box-shadow: 0 14px 32px rgba(2, 6, 23, 0.45);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+.panneau-mesure.est-visible {
+  display: block;
+}
+
+.panneau-mesure-texte {
+  margin: 0;
+  padding: 10px 12px;
+  font-family: "Avenir Next", "Segoe UI", sans-serif;
+  font-size: 0.83rem;
+  line-height: 1.35;
+  white-space: pre-wrap;
+}
+
+.menu-contextuel-carte {
+  position: fixed;
+  z-index: 9;
+  display: none;
+  flex-direction: column;
+  min-width: 260px;
+  max-width: min(360px, calc(100vw - 20px));
+  padding: 10px 0;
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: rgba(0, 0, 0, 0.56);
+  box-shadow: 0 20px 44px rgba(0, 0, 0, 0.46);
+  backdrop-filter: blur(11px);
+  -webkit-backdrop-filter: blur(11px);
+}
+
+.menu-contextuel-carte.est-visible {
+  display: flex;
+}
+
+.menu-contextuel-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  margin: 0;
+  padding: 12px 16px;
+  border: 0;
+  background: transparent;
+  color: #f8fafc;
+  text-align: left;
+  font-family: "Avenir Next", "Segoe UI", sans-serif;
+  font-size: 1.1rem;
+  font-weight: 600;
+  line-height: 1.2;
+  cursor: pointer;
+}
+
+.menu-contextuel-item:hover,
+.menu-contextuel-item:focus-visible {
+  background: rgba(255, 255, 255, 0.12);
+  outline: none;
+}
+
+.menu-contextuel-coord {
+  color: rgba(248, 250, 252, 0.96);
+}
+
+.menu-contextuel-separateur {
+  height: 1px;
+  margin: 6px 0;
+  background: rgba(255, 255, 255, 0.2);
+}
+
 @media (max-width: 720px) {
   .controle-recherche {
     width: min(260px, calc(100vw - 122px - env(safe-area-inset-left) - env(safe-area-inset-right)));
@@ -815,5 +898,13 @@ body,
 
   .popup-itineraires {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .menu-contextuel-carte {
+    min-width: min(280px, calc(100vw - 20px));
+  }
+
+  .menu-contextuel-item {
+    font-size: 1.02rem;
   }
 }
