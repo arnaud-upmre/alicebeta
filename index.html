@@ -14,6 +14,22 @@
   </head>
   <body>
     <div id="map"></div>
+    <div class="fenetre-accueil" id="fenetre-accueil" role="dialog" aria-modal="true" aria-label="Message de bienvenue">
+      <div class="fenetre-accueil-carte">
+        <button
+          class="fenetre-accueil-fermer"
+          id="fenetre-accueil-fermer"
+          type="button"
+          aria-label="Fermer le message de bienvenue"
+        >
+          ×
+        </button>
+        <p class="fenetre-accueil-texte">
+          Bienvenue sur Alice,<br />
+          Application de Localisation des Installations de Conduite Electrique. Projet développé par Arnaud avec Codex®.
+        </p>
+      </div>
+    </div>
     <div class="version-app" id="version-app" aria-label="Version de l'application"></div>
     <div class="controle-recherche" id="controle-recherche">
       <label class="recherche-champ-wrap" for="champ-recherche">

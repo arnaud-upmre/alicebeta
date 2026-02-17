@@ -2,7 +2,7 @@
 const CENTRE_INITIAL = [2.35, 48.85];
 const ZOOM_INITIAL = 6;
 const ZOOM_MAX = 19;
-const VERSION_APP = "V1.2.8";
+const VERSION_APP = "V1.2.9";
 const SOURCE_APPAREILS = "appareils-source";
 const COUCHE_APPAREILS = "appareils-points";
 const COUCHE_APPAREILS_GROUPES = "appareils-groupes";
@@ -544,6 +544,50 @@ const badgeVersion = document.getElementById("version-app");
 const controleRecherche = document.getElementById("controle-recherche");
 const champRecherche = document.getElementById("champ-recherche");
 const listeResultatsRecherche = document.getElementById("recherche-resultats");
+const fenetreAccueil = document.getElementById("fenetre-accueil");
+const boutonFermerFenetreAccueil = document.getElementById("fenetre-accueil-fermer");
+const CLE_STOCKAGE_FENETRE_ACCUEIL = "alice.fenetre-accueil.derniere-date";
+
+function obtenirDateLocaleDuJour() {
+  const maintenant = new Date();
+  const annee = maintenant.getFullYear();
+  const mois = String(maintenant.getMonth() + 1).padStart(2, "0");
+  const jour = String(maintenant.getDate()).padStart(2, "0");
+  return `${annee}-${mois}-${jour}`;
+}
+
+function doitAfficherFenetreAccueilAujourdhui() {
+  try {
+    const dateEnregistree = localStorage.getItem(CLE_STOCKAGE_FENETRE_ACCUEIL);
+    return dateEnregistree !== obtenirDateLocaleDuJour();
+  } catch {
+    return true;
+  }
+}
+
+function fermerFenetreAccueil() {
+  if (!fenetreAccueil) {
+    return;
+  }
+  fenetreAccueil.classList.remove("est-visible");
+  fenetreAccueil.setAttribute("aria-hidden", "true");
+  try {
+    localStorage.setItem(CLE_STOCKAGE_FENETRE_ACCUEIL, obtenirDateLocaleDuJour());
+  } catch {
+    // Ignore les erreurs de stockage (mode prive, quota, etc.).
+  }
+}
+
+if (fenetreAccueil && doitAfficherFenetreAccueilAujourdhui()) {
+  fenetreAccueil.classList.add("est-visible");
+  fenetreAccueil.setAttribute("aria-hidden", "false");
+}
+
+if (boutonFermerFenetreAccueil) {
+  boutonFermerFenetreAccueil.addEventListener("click", () => {
+    fermerFenetreAccueil();
+  });
+}
 
 if (badgeVersion) {
   badgeVersion.textContent = VERSION_APP;
@@ -997,17 +1041,26 @@ function construireSectionAppareils(feature, options = {}) {
   }
 
   if (Number(propr.appareils_count) > 1) {
+    const titresPostes = appareilsListe.map((a) => construireTitreNomTypeSat(a)).filter(Boolean);
+    const titresUniques = [...new Set(titresPostes)];
+    const titrePosteCommun = titresUniques.length === 1 ? titresUniques[0] : "";
+
     const lignes = appareilsListe
       .map((a) => {
         const couleur = a.couleur_appareil || "#111111";
         const tagHp = a.hors_patrimoine ? '<span class="popup-tag-hp">HP</span>' : "";
         const libelleAppareil = champCompletOuVide(a.appareil) || "Appareil inconnu";
         const titrePoste = construireTitreNomTypeSat(a);
-        return `<li><span class="popup-point-couleur" style="background:${echapperHtml(couleur)}"></span>${echapperHtml(libelleAppareil)}${tagHp}${titrePoste ? `<br/><span class="popup-poste-details">${echapperHtml(titrePoste)}</span>` : ""}</li>`;
+        const detailsPoste = !titrePosteCommun && titrePoste ? `<br/><span class="popup-poste-details">${echapperHtml(titrePoste)}</span>` : "";
+        return `<li><span class="popup-point-couleur" style="background:${echapperHtml(couleur)}"></span>${echapperHtml(libelleAppareil)}${tagHp}${detailsPoste}</li>`;
       })
       .join("");
 
-    return `<section class="popup-section"><div class="popup-pill-ligne"><span class="popup-badge popup-badge-appareils">${echapperHtml(String(propr.appareils_count))} appareils</span></div><div class="popup-sous-titre-centre">sur le meme support</div><ul>${lignes}</ul></section>`;
+    const lignePosteCommune = titrePosteCommun
+      ? `<p class="popup-poste-details popup-poste-details-centre">${echapperHtml(titrePosteCommun)}</p>`
+      : "";
+
+    return `<section class="popup-section"><div class="popup-pill-ligne"><span class="popup-badge popup-badge-appareils">${echapperHtml(String(propr.appareils_count))} appareils</span></div><div class="popup-sous-titre-centre">sur le meme support</div>${lignePosteCommune}<ul>${lignes}</ul></section>`;
   }
 
   const appareil = appareilsListe[0] || {};
@@ -1956,6 +2009,7 @@ document.addEventListener("click", (event) => {
 
 document.addEventListener("keydown", (event) => {
   if (event.key === "Escape") {
+    fermerFenetreAccueil();
     fermerMenuFonds();
     fermerMenuFiltres();
     fermerResultatsRecherche();
