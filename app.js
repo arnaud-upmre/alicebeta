@@ -20,6 +20,7 @@ const SOURCE_MESURE = "mesure-source";
 const COUCHE_MESURE_LIGNES = "mesure-lignes";
 const COUCHE_MESURE_POINTS = "mesure-points";
 const COUCHE_MESURE_LABELS = "mesure-labels";
+const TABLES_RSS = window.RSS_TABLE_NUMBERS || {};
 const APPAREILS_VIDE = { type: "FeatureCollection", features: [] };
 const ACCES_VIDE = { type: "FeatureCollection", features: [] };
 const POSTES_VIDE = { type: "FeatureCollection", features: [] };
@@ -1724,6 +1725,127 @@ function construireDetailsPoste(poste) {
   return details.join(" | ");
 }
 
+function normaliserCleRss(valeur) {
+  return String(valeur || "")
+    .toUpperCase()
+    .replace(/\s+/g, "")
+    .replace("TABLE", "")
+    .trim();
+}
+
+function normaliserNumeroTelephone(numero) {
+  const chiffres = String(numero || "").replace(/\D/g, "");
+  if (chiffres.length === 10 && chiffres.startsWith("0")) {
+    return chiffres.replace(/(\d{2})(?=\d)/g, "$1 ").trim();
+  }
+  if (chiffres.length === 11 && chiffres.startsWith("33")) {
+    return `+33 ${chiffres.slice(2).replace(/(\d{2})(?=\d)/g, "$1 ").trim()}`;
+  }
+  return String(numero || "").trim();
+}
+
+function construireHrefTelephone(numero) {
+  const chiffres = String(numero || "").replace(/\D/g, "");
+  if (!chiffres) {
+    return "";
+  }
+  if (chiffres.length === 11 && chiffres.startsWith("33")) {
+    return `+${chiffres}`;
+  }
+  return chiffres;
+}
+
+function extraireNumerosTelephone(texte) {
+  const source = String(texte || "").replace(/\u00a0/g, " ");
+  const motif = /(?:\+33\s?[1-9](?:[\s.-]?\d{2}){4}|0[1-9](?:[\s.-]?\d{2}){4})/g;
+  const correspondances = source.match(motif) || [];
+  const resultat = [];
+  const dejaVu = new Set();
+
+  for (const entree of correspondances) {
+    const normalise = normaliserNumeroTelephone(entree);
+    const cle = normalise.replace(/\D/g, "");
+    if (!cle || dejaVu.has(cle)) {
+      continue;
+    }
+    dejaVu.add(cle);
+    resultat.push(normalise);
+  }
+  return resultat;
+}
+
+function obtenirNumerosRssDepuisCode(codeRss) {
+  const cle = normaliserCleRss(codeRss);
+  const tableau = TABLES_RSS?.[cle];
+  if (!Array.isArray(tableau) || !tableau.length) {
+    return [];
+  }
+  return tableau.map((numero) => normaliserNumeroTelephone(numero)).filter(Boolean);
+}
+
+function construireSectionRssPoste(poste) {
+  const rss = champCompletOuVide(poste?.rss);
+  if (!rss) {
+    return "";
+  }
+
+  const cle = normaliserCleRss(rss);
+  const numeros = obtenirNumerosRssDepuisCode(cle);
+  if (!numeros.length) {
+    return `<section class="popup-section"><p class="popup-poste-ligne">📞 RSS : ${echapperHtml(rss)}</p></section>`;
+  }
+
+  const pills = numeros
+    .map((numero) => {
+      const href = construireHrefTelephone(numero);
+      return `<a class="popup-poste-rss-pill" href="tel:${echapperHtml(href)}">${echapperHtml(numero)}</a>`;
+    })
+    .join("");
+
+  return `<section class="popup-section"><p class="popup-poste-rss-titre">📞 RSS Table ${echapperHtml(cle)}</p><div class="popup-poste-rss-pills">${pills}</div></section>`;
+}
+
+function construireSectionPkPoste(poste) {
+  const lignePk = construireLignePkEtLigne(poste);
+  if (!lignePk) {
+    return "";
+  }
+  return `<section class="popup-section"><p class="popup-poste-ligne">🚆 ${echapperHtml(lignePk)}</p></section>`;
+}
+
+function construireSectionInformationsPoste(poste) {
+  const informations = champCompletOuVide(poste?.description);
+  if (!informations) {
+    return "";
+  }
+  return `<section class="popup-section"><p class="popup-poste-ligne">ℹ️ <strong>Informations :</strong> ${echapperHtml(informations)}</p></section>`;
+}
+
+function construireSectionContactPoste(poste) {
+  const contact = champCompletOuVide(poste?.contact);
+  if (!contact) {
+    return "";
+  }
+
+  const numeros = extraireNumerosTelephone(contact);
+  if (!numeros.length) {
+    return `<section class="popup-section"><p class="popup-poste-ligne">👤 <strong>Contact :</strong> ${echapperHtml(contact)}</p></section>`;
+  }
+
+  const source = String(contact).replace(/\u00a0/g, " ");
+  const premierNumero = source.search(/(?:\+33\s?[1-9](?:[\s.-]?\d{2}){4}|0[1-9](?:[\s.-]?\d{2}){4})/);
+  const etiquette = premierNumero > 0 ? source.slice(0, premierNumero).replace(/[:\s]+$/g, "") : "Contact";
+
+  const liensNumeros = numeros
+    .map((numero) => {
+      const href = construireHrefTelephone(numero);
+      return `<a class="popup-poste-contact-numero" href="tel:${echapperHtml(href)}">${echapperHtml(numero)}</a>`;
+    })
+    .join(" · ");
+
+  return `<section class="popup-section"><p class="popup-poste-ligne">👤 <strong>Contact :</strong> ${echapperHtml(etiquette)}${etiquette ? " : " : " "}${liensNumeros}</p></section>`;
+}
+
 function construireSectionPostes(feature) {
   const propr = feature.properties || {};
   let postesListe = [];
@@ -1758,16 +1880,13 @@ function construireSectionPostes(feature) {
 
   const poste = postesListe[0] || {};
   const titre = construireTitrePoste(poste) || "Poste inconnu";
-  const infoLigne = construireLignePkEtLigne(poste);
-  const rss = champCompletOuVide(poste.rss);
-  const codesTelecommande = extraireCodesTelecommande(poste.description_telecommande);
-  const pillsTelecommande = codesTelecommande.length
-    ? `<div class="popup-poste-pills">${codesTelecommande
-        .map((code) => `<span class="popup-poste-pill">${echapperHtml(code)}</span>`)
-        .join("")}</div>`
-    : "";
   const classeHors = poste.hors_patrimoine ? " popup-item-hors" : "";
-  return `<section class="popup-section"><div class="popup-pill-ligne"><span class="popup-badge popup-badge-postes popup-badge-poste-nom">${echapperHtml(titre)}</span></div>${pillsTelecommande}<p class="popup-acces-ligne${classeHors}">${infoLigne ? echapperHtml(infoLigne) : ""}${rss ? `<br/><span class="popup-poste-details">RSS: ${echapperHtml(rss)}</span>` : ""}</p></section>`;
+  const sectionRss = construireSectionRssPoste(poste);
+  const sectionPk = construireSectionPkPoste(poste);
+  const sectionInformations = construireSectionInformationsPoste(poste);
+  const sectionContact = construireSectionContactPoste(poste);
+
+  return `<section class="popup-section${classeHors}"><div class="popup-pill-ligne"><span class="popup-badge popup-badge-postes popup-badge-poste-nom">${echapperHtml(titre)}</span></div></section>${sectionRss}${sectionPk}${sectionInformations}${sectionContact}`;
 }
 
 function normaliserTexteRecherche(valeur) {
@@ -1997,7 +2116,6 @@ function obtenirFeatureALaCoordonnee(collection, longitude, latitude) {
 function construirePopupDepuisFeatures(longitude, latitude, featurePostes, featureAcces, featureAppareils) {
   const sections = [];
   let coordonneesNavigation = null;
-  let featureAccesReference = featureAcces;
 
   if (featurePostes) {
     const sectionPostes = construireSectionPostes(featurePostes);
@@ -2034,13 +2152,11 @@ function construirePopupDepuisFeatures(longitude, latitude, featurePostes, featu
     coordonneesNavigation = trouverCoordonneesAccesDepuisPostes(featurePostes);
   }
 
-  if (!featureAccesReference && coordonneesNavigation) {
-    featureAccesReference = obtenirFeatureALaCoordonnee(donneesAcces, coordonneesNavigation[0], coordonneesNavigation[1]);
-  }
-
-  const sectionPortail = construireSectionPortail(featureAccesReference, {
-    afficherVide: Boolean(coordonneesNavigation)
-  });
+  const sectionPortail = featureAcces
+    ? construireSectionPortail(featureAcces, {
+        afficherVide: true
+      })
+    : "";
   const sectionItineraire = coordonneesNavigation
     ? `<section class="popup-section popup-section-itineraires"><div class="popup-section-titre"><span class="popup-badge popup-badge-itineraire">Itineraire</span></div>${construireLiensItineraires(coordonneesNavigation[0], coordonneesNavigation[1])}</section>`
     : "";
