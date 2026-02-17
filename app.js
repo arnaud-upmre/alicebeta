@@ -2320,6 +2320,18 @@ function activerInteractionsCarte() {
   carte.on("zoomstart", () => {
     fermerMenuContextuel();
   });
+
+  carte.on("dragstart", () => {
+    fermerMenuContextuel();
+  });
+
+  carte.on("rotatestart", () => {
+    fermerMenuContextuel();
+  });
+
+  carte.on("pitchstart", () => {
+    fermerMenuContextuel();
+  });
 }
 
 function mettreAJourSelection(nomFond) {
