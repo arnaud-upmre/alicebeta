@@ -51,8 +51,8 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          "1.790036",
-          "49.706051"
+          1.790036,
+          49.706051
         ]
       }
     },
@@ -69,8 +69,8 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          "1.767463",
-          "49.677472"
+          1.767463,
+          49.677472
         ]
       }
     },
@@ -87,8 +87,8 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          "1.759137",
-          "49.672897"
+          1.759137,
+          49.672897
         ]
       }
     },
@@ -105,8 +105,8 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          "1.773787",
-          "49.683035"
+          1.773787,
+          49.683035
         ]
       }
     },
@@ -153,7 +153,7 @@
         "type": "SST",
         "SAT": "",
         "acces": "",
-        "portail": "",
+        "portail": "121",
         "hors_patrimoine": false
       },
       "geometry": {
@@ -315,7 +315,7 @@
         "type": "SSP",
         "SAT": "",
         "acces": "",
-        "portail": "",
+        "portail": "Clé Nord",
         "hors_patrimoine": false
       },
       "geometry": {
@@ -483,8 +483,8 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          "2.326579",
-          "49.888860"
+          2.326579,
+          49.888860
         ]
       }
     },
@@ -495,14 +495,14 @@
         "type": "L",
         "SAT": "SATa",
         "acces": "",
-        "portail": "",
+        "portail": "Libre",
         "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
         "coordinates": [
-          "2.3415388512579742",
-          "49.877483278210676"
+          2.3415388512579742,
+          49.877483278210676
         ]
       }
     },
@@ -531,7 +531,7 @@
         "type": "SSP",
         "SAT": "",
         "acces": "",
-        "portail": "",
+        "portail": "Triangle",
         "hors_patrimoine": false
       },
       "geometry": {
@@ -675,7 +675,7 @@
         "type": "PRCI",
         "SAT": "",
         "acces": "",
-        "portail": "",
+        "portail": "LGV",
         "hors_patrimoine": false
       },
       "geometry": {
@@ -693,7 +693,7 @@
         "type": "SP",
         "SAT": "",
         "acces": "",
-        "portail": "",
+        "portail": "Libre",
         "hors_patrimoine": false
       },
       "geometry": {
@@ -945,7 +945,7 @@
         "type": "PRCI",
         "SAT": "",
         "acces": "",
-        "portail": "",
+        "portail": "LGV",
         "hors_patrimoine": false
       },
       "geometry": {
@@ -969,8 +969,8 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          "3.5169661045074467",
-          "50.38722220627007"
+          3.5169661045074467,
+          50.38722220627007
         ]
       }
     },
@@ -981,7 +981,7 @@
         "type": "PRCI",
         "SAT": "",
         "acces": "",
-        "portail": "",
+        "portail": "LGV",
         "hors_patrimoine": false
       },
       "geometry": {
@@ -1131,8 +1131,8 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          "3.209655",
-          "50.222074"
+          3.209655,
+          50.222074
         ]
       }
     },
@@ -1539,7 +1539,7 @@
         "type": "PRCI",
         "SAT": "",
         "acces": "",
-        "portail": "",
+        "portail": "LGV",
         "hors_patrimoine": false
       },
       "geometry": {
@@ -1557,7 +1557,7 @@
         "type": "PRCI",
         "SAT": "",
         "acces": "",
-        "portail": "",
+        "portail": "LGV",
         "hors_patrimoine": false
       },
       "geometry": {
@@ -1917,7 +1917,7 @@
         "type": "PRCI",
         "SAT": "",
         "acces": "",
-        "portail": "",
+        "portail": "LGV",
         "hors_patrimoine": false
       },
       "geometry": {
@@ -2205,7 +2205,7 @@
         "type": "PRCI",
         "SAT": "",
         "acces": "",
-        "portail": "",
+        "portail": "LGV",
         "hors_patrimoine": false
       },
       "geometry": {
@@ -2265,8 +2265,8 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          "3.273352",
-          "49.763028"
+          3.273352,
+          49.763028
         ]
       }
     },
@@ -2283,8 +2283,8 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          "3.366197",
-          "49.897676"
+          3.366197,
+          49.897676
         ]
       }
     },
@@ -2673,7 +2673,7 @@
         "type": "SSP",
         "SAT": "",
         "acces": "",
-        "portail": "",
+        "portail": "121",
         "hors_patrimoine": false
       },
       "geometry": {
@@ -2691,7 +2691,7 @@
         "type": "SP",
         "SAT": "",
         "acces": "",
-        "portail": "",
+        "portail": "LGV + 121",
         "hors_patrimoine": false
       },
       "geometry": {
@@ -2727,7 +2727,7 @@
         "type": "SST",
         "SAT": "",
         "acces": "",
-        "portail": "",
+        "portail": "121",
         "hors_patrimoine": false
       },
       "geometry": {
@@ -3015,7 +3015,7 @@
         "type": "SSPA",
         "SAT": "",
         "acces": "",
-        "portail": "Pas de portail",
+        "portail": "Libre",
         "hors_patrimoine": false
       },
       "geometry": {
@@ -3123,7 +3123,7 @@
         "type": "PRCI",
         "SAT": "",
         "acces": "",
-        "portail": "",
+        "portail": "LGV",
         "hors_patrimoine": false
       },
       "geometry": {
@@ -3141,7 +3141,7 @@
         "type": "PRCI",
         "SAT": "",
         "acces": "I608",
-        "portail": "",
+        "portail": "LGV",
         "hors_patrimoine": false
       },
       "geometry": {
@@ -3159,7 +3159,7 @@
         "type": "PRCI",
         "SAT": "",
         "acces": "I611",
-        "portail": "",
+        "portail": "LGV",
         "hors_patrimoine": false
       },
       "geometry": {
@@ -3213,7 +3213,7 @@
         "type": "PRCI",
         "SAT": "",
         "acces": "",
-        "portail": "",
+        "portail": "LGV",
         "hors_patrimoine": false
       },
       "geometry": {
@@ -3303,7 +3303,7 @@
         "type": "SP",
         "SAT": "",
         "acces": "",
-        "portail": "",
+        "portail": "Triangle",
         "hors_patrimoine": false
       },
       "geometry": {
@@ -3411,7 +3411,7 @@
         "type": "PRCI",
         "SAT": "",
         "acces": "",
-        "portail": "",
+        "portail": "LGV",
         "hors_patrimoine": false
       },
       "geometry": {
@@ -3429,7 +3429,7 @@
         "type": "PRCI",
         "SAT": "",
         "acces": "I549",
-        "portail": "",
+        "portail": "LGV",
         "hors_patrimoine": false
       },
       "geometry": {
@@ -3447,7 +3447,7 @@
         "type": "PRCI",
         "SAT": "",
         "acces": "I553",
-        "portail": "",
+        "portail": "LGV",
         "hors_patrimoine": false
       },
       "geometry": {
@@ -3519,7 +3519,7 @@
         "type": "SST",
         "SAT": "",
         "acces": "",
-        "portail": "",
+        "portail": "121",
         "hors_patrimoine": false
       },
       "geometry": {
@@ -3825,7 +3825,7 @@
         "type": "PRCI",
         "SAT": "",
         "acces": "",
-        "portail": "",
+        "portail": "LGV",
         "hors_patrimoine": false
       },
       "geometry": {
@@ -4299,8 +4299,8 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          "3.45597",
-          "50.06725"
+          3.45597,
+          50.06725
         ]
       }
     },
@@ -4653,7 +4653,7 @@
         "type": "PRCI",
         "SAT": "",
         "acces": "",
-        "portail": "",
+        "portail": "LGV",
         "hors_patrimoine": false
       },
       "geometry": {
@@ -4671,7 +4671,7 @@
         "type": "PRCI",
         "SAT": "",
         "acces": "I449",
-        "portail": "",
+        "portail": "LGV",
         "hors_patrimoine": false
       },
       "geometry": {
@@ -4887,14 +4887,14 @@
         "type": "SSP",
         "SAT": "",
         "acces": "",
-        "portail": "",
+        "portail": "Libre",
         "hors_patrimoine": false
       },
       "geometry": {
         "type": "Point",
         "coordinates": [
-          "1.989939",
-          "49.777739"
+          1.989939,
+          49.777739
         ]
       }
     },
@@ -4911,8 +4911,8 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          "1.99480",
-          "49.77550"
+          1.99480,
+          49.77550
         ]
       }
     },
@@ -4941,7 +4941,7 @@
         "type": "SST",
         "SAT": "SAT1",
         "acces": "",
-        "portail": "Pas de portail",
+        "portail": "Libre",
         "hors_patrimoine": false
       },
       "geometry": {
@@ -4995,7 +4995,7 @@
         "type": "PRCI",
         "SAT": "",
         "acces": "",
-        "portail": "",
+        "portail": "LGV",
         "hors_patrimoine": false
       },
       "geometry": {
@@ -5013,7 +5013,7 @@
         "type": "PRCI",
         "SAT": "",
         "acces": "I625",
-        "portail": "",
+        "portail": "LGV",
         "hors_patrimoine": false
       },
       "geometry": {
@@ -5031,7 +5031,7 @@
         "type": "SSP",
         "SAT": "",
         "acces": "",
-        "portail": "Pas de portail",
+        "portail": "Libre",
         "hors_patrimoine": false
       },
       "geometry": {
@@ -5103,7 +5103,7 @@
         "type": "PRCI",
         "SAT": "",
         "acces": "I628",
-        "portail": "",
+        "portail": "LGV",
         "hors_patrimoine": false
       },
       "geometry": {
@@ -5121,7 +5121,7 @@
         "type": "PRCI",
         "SAT": "",
         "acces": "I629",
-        "portail": "",
+        "portail": "LGV",
         "hors_patrimoine": false
       },
       "geometry": {
@@ -5139,7 +5139,7 @@
         "type": "PRCI",
         "SAT": "",
         "acces": "TT629",
-        "portail": "",
+        "portail": "LGV",
         "hors_patrimoine": false
       },
       "geometry": {
@@ -5157,7 +5157,7 @@
         "type": "PRCI",
         "SAT": "",
         "acces": "I631",
-        "portail": "",
+        "portail": "LGV",
         "hors_patrimoine": false
       },
       "geometry": {
@@ -5175,7 +5175,7 @@
         "type": "PRCI",
         "SAT": "",
         "acces": "",
-        "portail": "",
+        "portail": "LGV",
         "hors_patrimoine": false
       },
       "geometry": {
@@ -5193,7 +5193,7 @@
         "type": "PRCI",
         "SAT": "",
         "acces": "I417",
-        "portail": "",
+        "portail": "LGV",
         "hors_patrimoine": false
       },
       "geometry": {
@@ -5211,7 +5211,7 @@
         "type": "PRCI",
         "SAT": "",
         "acces": "I415",
-        "portail": "",
+        "portail": "LGV",
         "hors_patrimoine": false
       },
       "geometry": {
@@ -5229,7 +5229,7 @@
         "type": "PRCI",
         "SAT": "",
         "acces": "TT415",
-        "portail": "",
+        "portail": "LGV",
         "hors_patrimoine": false
       },
       "geometry": {
@@ -5463,7 +5463,7 @@
         "type": "PRCI",
         "SAT": "",
         "acces": "",
-        "portail": "",
+        "portail": "LGV",
         "hors_patrimoine": false
       },
       "geometry": {
@@ -5631,8 +5631,8 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          "2.28705",
-          "49.89234"
+          2.28705,
+          49.89234
         ]
       }
     },
@@ -5649,8 +5649,8 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          "2.302023",
-          "49.888388"
+          2.302023,
+          49.888388
         ]
       }
     },
@@ -5841,7 +5841,7 @@
         "type": "SP",
         "SAT": "",
         "acces": "",
-        "portail": "Pas de portail",
+        "portail": "Libre",
         "hors_patrimoine": false
       },
       "geometry": {
@@ -5859,7 +5859,7 @@
         "type": "SP",
         "SAT": "SAT1",
         "acces": "",
-        "portail": "Pas de portail",
+        "portail": "Libre",
         "hors_patrimoine": false
       },
       "geometry": {
@@ -5877,7 +5877,7 @@
         "type": "SP",
         "SAT": "SAT2",
         "acces": "",
-        "portail": "Pas de portail",
+        "portail": "Libre",
         "hors_patrimoine": false
       },
       "geometry": {
@@ -5949,7 +5949,7 @@
         "type": "SP",
         "SAT": "",
         "acces": "",
-        "portail": "Pas de portail",
+        "portail": "Libre",
         "hors_patrimoine": false
       },
       "geometry": {
@@ -6009,8 +6009,8 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          "2.872410",
-          "50.051312"
+          2.872410,
+          50.051312
         ]
       }
     },
@@ -6021,7 +6021,7 @@
         "type": "SP",
         "SAT": "",
         "acces": "",
-        "portail": "Pas de portail",
+        "portail": "Libre",
         "hors_patrimoine": false
       },
       "geometry": {
@@ -6129,7 +6129,7 @@
         "type": "SP",
         "SAT": "",
         "acces": "",
-        "portail": "Pas de portail",
+        "portail": "Libre",
         "hors_patrimoine": false
       },
       "geometry": {
@@ -6165,7 +6165,7 @@
         "type": "PRCI",
         "SAT": "",
         "acces": "",
-        "portail": "",
+        "portail": "LGV",
         "hors_patrimoine": false
       },
       "geometry": {
@@ -6183,7 +6183,7 @@
         "type": "PRCI",
         "SAT": "",
         "acces": "TT513",
-        "portail": "",
+        "portail": "LGV",
         "hors_patrimoine": false
       },
       "geometry": {
@@ -6201,7 +6201,7 @@
         "type": "PRCI",
         "SAT": "",
         "acces": "I510",
-        "portail": "",
+        "portail": "LGV",
         "hors_patrimoine": false
       },
       "geometry": {
