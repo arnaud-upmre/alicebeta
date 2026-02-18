@@ -2655,7 +2655,8 @@ function naviguerVersCoordonneesPuisOuvrirPopup(longitude, latitude, ouvrirPopup
   }
 
   const { distancePixels, cibleDansZoneConfort } = calculerContexteDeplacement(longitude, latitude);
-  if (cibleDansZoneConfort && distancePixels < 210) {
+  const forcerZoom = Boolean(options.forceZoom);
+  if (!forcerZoom && cibleDansZoneConfort && distancePixels < 210) {
     ouvrirPopup();
     return true;
   }
@@ -2674,6 +2675,7 @@ function naviguerVersCoordonneesPuisOuvrirPopup(longitude, latitude, ouvrirPopup
   if (distancePixels < 520) {
     carte.easeTo({
       center: [longitude, latitude],
+      zoom: forcerZoom ? Math.max(carte.getZoom(), Number(options.zoomMin) || 14.2) : carte.getZoom(),
       duration: Number(options.durationDouxMs) || 460,
       easing: (t) => 1 - Math.pow(1 - t, 3),
       essential: true
@@ -3483,6 +3485,7 @@ if (champRecherche && listeResultatsRecherche) {
         ouvrirPopupDepuisCoordonnees(longitude, latitude);
       };
       naviguerVersCoordonneesPuisOuvrirPopup(longitude, latitude, ouvrirPopup, {
+        forceZoom: true,
         zoomMin: 14.1,
         durationDouxMs: 430
       });
