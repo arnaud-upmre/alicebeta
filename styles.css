@@ -358,6 +358,10 @@ body {
   right: calc(8px + env(safe-area-inset-right));
   bottom: calc(48px + env(safe-area-inset-bottom));
   z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 8px;
 }
 
 .bouton-filtres {
@@ -384,7 +388,17 @@ body {
   outline-offset: 2px;
 }
 
+.bouton-tableau {
+  text-decoration: none;
+}
+
 .icone-burger {
+  width: 19px;
+  height: 19px;
+  fill: #2f3742;
+}
+
+.icone-tableau {
   width: 19px;
   height: 19px;
   fill: #2f3742;
@@ -1068,6 +1082,7 @@ body {
 @media (hover: none), (pointer: coarse) {
   .bouton-fonds,
   .bouton-filtres,
+  .bouton-tableau,
   .maplibregl-ctrl-group button {
     width: 44px;
     height: 44px;
