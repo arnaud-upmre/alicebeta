@@ -1651,6 +1651,8 @@ function construireSectionAcces(feature) {
   }
 
   const construireTitreAcces = (acces) => construireTitreNomTypeSatAcces(acces, { nomVilleDe: true });
+  const posteAssocie = trouverPosteAssocieDepuisAcces(feature);
+  const sectionRssAssocie = posteAssocie ? construireSectionRssPoste(posteAssocie) : "";
 
   if (Number(propr.acces_count) > 1) {
     const lignes = accesListe
@@ -1660,13 +1662,13 @@ function construireSectionAcces(feature) {
         return `<li class="${classeHors}"><span class="popup-acces-ligne">${echapperHtml(titre || "Acces inconnu")}</span></li>`;
       })
       .join("");
-    return `<section class="popup-section"><div class="popup-pill-ligne"><span class="popup-badge popup-badge-acces">${echapperHtml(String(propr.acces_count))} acces voiture</span></div><ul>${lignes}</ul></section>`;
+    return `<section class="popup-section"><div class="popup-pill-ligne"><span class="popup-badge popup-badge-acces">${echapperHtml(String(propr.acces_count))} acces voiture</span></div><ul>${lignes}</ul></section>${sectionRssAssocie}`;
   }
 
   const acces = accesListe[0] || {};
   const titre = construireTitreAcces(acces);
   const classeHors = acces.hors_patrimoine ? " popup-item-hors" : "";
-  return `<section class="popup-section"><p class="popup-acces-titre${classeHors}">🚗 ${echapperHtml(titre || "Acces inconnu")}</p></section>`;
+  return `<section class="popup-section"><p class="popup-acces-titre${classeHors}">🚗 ${echapperHtml(titre || "Acces inconnu")}</p></section>${sectionRssAssocie}`;
 }
 
 function construireSectionPortail(featureAcces, options = {}) {
@@ -1799,6 +1801,47 @@ function trouverCoordonneesAccesDepuisPostes(featurePostes) {
   }
 
   return null;
+}
+
+function trouverPosteAssocieDepuisAcces(featureAcces) {
+  if (!featureAcces || !donneesPostes?.features?.length) {
+    return null;
+  }
+
+  const accesListe = extraireListeDepuisFeature(featureAcces, "acces_liste_json");
+  if (!accesListe.length) {
+    return null;
+  }
+
+  const clesCorrespondance = new Set(accesListe.map((acces) => construireCleCorrespondance(acces)).filter(Boolean));
+  const clesNomType = new Set(accesListe.map((acces) => construireCleNomType(acces)).filter(Boolean));
+  if (!clesCorrespondance.size && !clesNomType.size) {
+    return null;
+  }
+
+  let fallbackNomType = null;
+  for (const featurePostes of donneesPostes.features) {
+    const postesListe = extraireListeDepuisFeature(featurePostes, "postes_liste_json");
+    if (!postesListe.length) {
+      continue;
+    }
+
+    const matchesCorrespondance = postesListe.filter((poste) => clesCorrespondance.has(construireCleCorrespondance(poste)));
+    if (matchesCorrespondance.length) {
+      const posteAvecRss = matchesCorrespondance.find((poste) => Boolean(champCompletOuVide(poste?.rss)));
+      return posteAvecRss || matchesCorrespondance[0];
+    }
+
+    if (!fallbackNomType) {
+      const matchesNomType = postesListe.filter((poste) => clesNomType.has(construireCleNomType(poste)));
+      if (matchesNomType.length) {
+        const posteAvecRss = matchesNomType.find((poste) => Boolean(champCompletOuVide(poste?.rss)));
+        fallbackNomType = posteAvecRss || matchesNomType[0];
+      }
+    }
+  }
+
+  return fallbackNomType;
 }
 
 function trouverCoordonneesAccesDepuisAppareils(featureAppareils) {
