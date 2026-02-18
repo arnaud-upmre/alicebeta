@@ -25,6 +25,7 @@ const DELAI_DEMARRAGE_DONNEES_MS = 220;
 const PLACEHOLDER_RECHERCHE_DESKTOP = "Rechercher un poste, appareil, acces...";
 const PLACEHOLDER_RECHERCHE_MOBILE = "Rechercher...";
 const SEPARATEUR_LIBELLE = " ";
+const DEBUG_RECHERCHE_FICHE = true;
 const APPAREILS_VIDE = { type: "FeatureCollection", features: [] };
 const ACCES_VIDE = { type: "FeatureCollection", features: [] };
 const POSTES_VIDE = { type: "FeatureCollection", features: [] };
@@ -753,7 +754,10 @@ function afficherMessageInfoVitesseLigne() {
 function fermerPopupCarte(options = {}) {
   const { localiserPoint = false } = options;
   const coordonnees = Array.isArray(coordonneesDerniereFiche) ? [...coordonneesDerniereFiche] : null;
-  conserverFichePendantNavigation = false;
+  const preserveNavigationLock = Boolean(options.preserveNavigationLock);
+  if (!preserveNavigationLock) {
+    conserverFichePendantNavigation = false;
+  }
   if (!popupCarte) {
     if (localiserPoint && coordonnees) {
       demarrerClignotementLocalisation(coordonnees[0], coordonnees[1]);
@@ -2962,6 +2966,71 @@ function obtenirFeatureALaCoordonnee(collection, longitude, latitude) {
   });
 }
 
+function obtenirFeatureProche(collection, longitude, latitude, seuilDegres = 0.00045) {
+  if (!Number.isFinite(longitude) || !Number.isFinite(latitude)) {
+    return null;
+  }
+
+  let meilleur = null;
+  let meilleureDistance = Infinity;
+  for (const feature of collection?.features || []) {
+    const [lng, lat] = feature?.geometry?.coordinates || [];
+    if (!Number.isFinite(lng) || !Number.isFinite(lat)) {
+      continue;
+    }
+    const distance = Math.hypot(lng - longitude, lat - latitude);
+    if (distance < meilleureDistance) {
+      meilleureDistance = distance;
+      meilleur = feature;
+    }
+  }
+
+  if (meilleureDistance <= seuilDegres) {
+    return meilleur;
+  }
+  return null;
+}
+
+function debugRechercheFiche(message, details = {}) {
+  if (!DEBUG_RECHERCHE_FICHE) {
+    return;
+  }
+  const texte = `[DEBUG fiche recherche] ${message}`;
+  console.warn(texte, details);
+  if (window.matchMedia("(max-width: 820px), (pointer: coarse)").matches) {
+    const resume = [
+      texte,
+      details?.type ? `type=${details.type}` : "",
+      Number.isFinite(details?.longitude) ? `lng=${details.longitude}` : "",
+      Number.isFinite(details?.latitude) ? `lat=${details.latitude}` : "",
+      `exact={postes:${Boolean(details.exactPostes)},acces:${Boolean(details.exactAcces)},app:${Boolean(details.exactAppareils)}}`,
+      `proche={postes:${Boolean(details.prochePostes)},acces:${Boolean(details.procheAcces)},app:${Boolean(details.procheAppareils)}}`
+    ]
+      .filter(Boolean)
+      .join("\n");
+    window.alert(resume);
+  }
+}
+
+function collecterEtatDebugOuverturePopup(longitude, latitude) {
+  const exactPostes = afficherPostes ? obtenirFeatureALaCoordonnee(donneesPostes, longitude, latitude) : null;
+  const exactAcces = afficherAcces ? obtenirFeatureALaCoordonnee(donneesAcces, longitude, latitude) : null;
+  const exactAppareils = afficherAppareils ? obtenirFeatureALaCoordonnee(donneesAppareils, longitude, latitude) : null;
+  const prochePostes = !exactPostes && afficherPostes ? obtenirFeatureProche(donneesPostes, longitude, latitude) : null;
+  const procheAcces = !exactAcces && afficherAcces ? obtenirFeatureProche(donneesAcces, longitude, latitude) : null;
+  const procheAppareils =
+    !exactAppareils && afficherAppareils ? obtenirFeatureProche(donneesAppareils, longitude, latitude) : null;
+
+  return {
+    exactPostes,
+    exactAcces,
+    exactAppareils,
+    prochePostes,
+    procheAcces,
+    procheAppareils
+  };
+}
+
 function construirePopupDepuisFeatures(longitude, latitude, featurePostes, featureAcces, featureAppareils) {
   const sections = [];
   let coordonneesNavigation = null;
@@ -3040,7 +3109,7 @@ function construirePopupDepuisFeatures(longitude, latitude, featurePostes, featu
     contenuVueAppareils = `<div class="popup-carte">${sectionAppareilsAssociesPoste}<section class="popup-section popup-section-itineraires"><div class="popup-section-titre"><span class="popup-badge popup-badge-itineraire">Fiche</span></div><div class="popup-itineraires"><button class="popup-bouton-itineraire" id="popup-retour-fiche-poste" type="button">↩ Retour à la fiche</button></div></section></div>`;
   }
 
-  fermerPopupCarte();
+  fermerPopupCarte({ preserveNavigationLock: conserverFichePendantNavigation });
   coordonneesDerniereFiche = [longitude, latitude];
   navigationInternePopup = sectionAppareilsAssociesPoste
     ? {
@@ -3067,9 +3136,20 @@ function construirePopupDepuisFeatures(longitude, latitude, featurePostes, featu
 }
 
 function ouvrirPopupDepuisCoordonnees(longitude, latitude) {
-  const featurePostes = afficherPostes ? obtenirFeatureALaCoordonnee(donneesPostes, longitude, latitude) : null;
-  const featureAcces = afficherAcces ? obtenirFeatureALaCoordonnee(donneesAcces, longitude, latitude) : null;
-  const featureAppareils = afficherAppareils ? obtenirFeatureALaCoordonnee(donneesAppareils, longitude, latitude) : null;
+  let featurePostes = afficherPostes ? obtenirFeatureALaCoordonnee(donneesPostes, longitude, latitude) : null;
+  let featureAcces = afficherAcces ? obtenirFeatureALaCoordonnee(donneesAcces, longitude, latitude) : null;
+  let featureAppareils = afficherAppareils ? obtenirFeatureALaCoordonnee(donneesAppareils, longitude, latitude) : null;
+
+  if (!featurePostes && afficherPostes) {
+    featurePostes = obtenirFeatureProche(donneesPostes, longitude, latitude);
+  }
+  if (!featureAcces && afficherAcces) {
+    featureAcces = obtenirFeatureProche(donneesAcces, longitude, latitude);
+  }
+  if (!featureAppareils && afficherAppareils) {
+    featureAppareils = obtenirFeatureProche(donneesAppareils, longitude, latitude);
+  }
+
   return construirePopupDepuisFeatures(longitude, latitude, featurePostes, featureAcces, featureAppareils);
 }
 
@@ -4043,7 +4123,17 @@ if (champRecherche && listeResultatsRecherche) {
       fermerMenuFiltres();
       fermerMenuFonds();
 
-      ouvrirPopupDepuisCoordonnees(longitude, latitude);
+      const ouvertureOk = ouvrirPopupDepuisCoordonnees(longitude, latitude);
+      if (!ouvertureOk) {
+        const etat = collecterEtatDebugOuverturePopup(longitude, latitude);
+        debugRechercheFiche("Echec ouverture fiche depuis recherche", {
+          type,
+          longitude,
+          latitude,
+          ...etat
+        });
+        return;
+      }
       setTimeout(() => {
         naviguerVersCoordonneesArrierePlan(longitude, latitude, {
           forceZoom: true,
