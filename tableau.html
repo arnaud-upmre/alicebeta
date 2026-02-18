@@ -2,7 +2,7 @@
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
-<title>Tableau Blanc – Nono Maps</title>
+<title>Tableau Blanc – ALICE</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <style>
@@ -92,14 +92,18 @@
 }
 
 .board-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
   font-size: 24px;
   font-weight: 800;
   letter-spacing: 0.2px;
 }
 
-.title-accent {
-  color: var(--accent);
-  font-weight: 900;
+.board-logo {
+  height: 28px;
+  width: auto;
+  display: block;
 }
 
 .board-meta {
@@ -251,7 +255,7 @@ body {
 /* Cartes / grille */
 .post-container {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
   gap: 20px;
 }
 
@@ -282,7 +286,7 @@ body {
 
 
 .card-title {
-  font-size: 18px;
+  font-size: 17px;
   font-weight: 700;
   margin-bottom: 14px;
 }
@@ -395,6 +399,33 @@ body {
   }
 }
 
+/* Desktop compact: densite proche de l'ancienne capture */
+@media (min-width: 1200px) {
+  .post-container {
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 16px;
+  }
+
+  .card {
+    padding: 12px;
+  }
+
+  .card-title {
+    font-size: 15px;
+    margin-bottom: 10px;
+  }
+
+  .pill,
+  .sat-pill,
+  .section-title {
+    font-size: 11px;
+  }
+
+  .type-pill {
+    font-size: 10px;
+  }
+}
+
  
 </style>
 
@@ -404,7 +435,8 @@ body {
 <div class="board-header">
   <div class="board-title-wrap">
     <div class="board-title">
-      Tableau blanc <span class="title-accent">Nono Maps</span>
+      <img src="alice.webp" alt="Logo ALICE" class="board-logo">
+      <span>Tableau blanc</span>
     </div>
 
   <div class="board-meta">

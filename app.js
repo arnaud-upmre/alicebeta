@@ -1124,10 +1124,11 @@ function calculerTotalPostesPourCompteur(donnees) {
   let total = 0;
   for (const feature of donnees.features) {
     const postesListe = extraireListeDepuisFeature(feature, "postes_liste_json");
-    for (const poste of postesListe) {
+    const postesACalculer = postesListe.length ? postesListe : [feature?.properties || {}];
+    for (const poste of postesACalculer) {
       const estHp = estHorsPatrimoine(poste?.hors_patrimoine);
       const estSpecial = estHorsPatrimoine(poste?.special);
-      if (estHp && estSpecial) {
+      if (estHp || estSpecial) {
         continue;
       }
       total += 1;
@@ -1525,8 +1526,8 @@ async function chargerDonneesPostes() {
         return reponse.json();
       })
       .then((geojson) => {
+        totalPostesBrut = calculerTotalPostesPourCompteur(geojson);
         donneesPostes = regrouperPostesParCoordonnees(geojson);
-        totalPostesBrut = calculerTotalPostesPourCompteur(donneesPostes);
         mettreAJourCompteursFiltres();
         return donneesPostes;
       })
