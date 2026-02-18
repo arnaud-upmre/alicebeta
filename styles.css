@@ -1488,8 +1488,8 @@ body {
   .bouton-itineraire,
   .bouton-carte-action,
   .maplibregl-ctrl-group button {
-    width: 44px;
-    height: 44px;
+    width: 36px;
+    height: 36px;
   }
 
   .recherche-champ-wrap {

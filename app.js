@@ -573,6 +573,7 @@ const carte = new maplibregl.Map({
   center: CENTRE_INITIAL,
   zoom: ZOOM_INITIAL,
   maxZoom: ZOOM_MAX,
+  attributionControl: false,
   prefetchZoomDelta: 0,
   fadeDuration: 0,
   refreshExpiredTiles: false,
@@ -581,6 +582,7 @@ const carte = new maplibregl.Map({
 
 carte.addControl(new maplibregl.NavigationControl({ showCompass: false }), "top-right");
 carte.addControl(new maplibregl.ScaleControl({ maxWidth: 120, unit: "metric" }), "bottom-left");
+carte.addControl(new maplibregl.AttributionControl({ compact: true }), "bottom-right");
 
 const controleFonds = document.getElementById("controle-fonds");
 const boutonFonds = document.getElementById("bouton-fonds");
