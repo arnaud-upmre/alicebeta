@@ -104,6 +104,8 @@ let mesureActive = false;
 let mesurePoints = [];
 let navigationInternePopup = null;
 let recadragePopupMobileEnCours = false;
+let navigationPopupProgrammatiqueEnCours = false;
+let restaurationStylePlanifiee = false;
 let contexteMenuPosition = {
   longitude: null,
   latitude: null
@@ -619,6 +621,12 @@ function actualiserPlaceholderRecherche() {
   champRecherche.placeholder = estMobile ? PLACEHOLDER_RECHERCHE_MOBILE : PLACEHOLDER_RECHERCHE_DESKTOP;
 }
 
+function planifierResizeCarte() {
+  window.requestAnimationFrame(() => {
+    carte.resize();
+  });
+}
+
 function obtenirDateLocaleDuJour() {
   const maintenant = new Date();
   const annee = maintenant.getFullYear();
@@ -705,6 +713,14 @@ function recadrerCartePourPopupMobile(longitude, latitude) {
     duration: 280,
     essential: true
   });
+}
+
+function demarrerNavigationPopupProgrammatique() {
+  navigationPopupProgrammatiqueEnCours = true;
+}
+
+function terminerNavigationPopupProgrammatique() {
+  navigationPopupProgrammatiqueEnCours = false;
 }
 
 function bloquerZoomTactileHorsCarte() {
@@ -1077,7 +1093,15 @@ if (boutonFermerFenetreAccueil) {
 }
 
 actualiserPlaceholderRecherche();
-window.addEventListener("resize", actualiserPlaceholderRecherche, { passive: true });
+window.addEventListener("resize", () => {
+  actualiserPlaceholderRecherche();
+  planifierResizeCarte();
+}, { passive: true });
+window.addEventListener("orientationchange", planifierResizeCarte, { passive: true });
+if (window.visualViewport) {
+  window.visualViewport.addEventListener("resize", planifierResizeCarte, { passive: true });
+  window.visualViewport.addEventListener("scroll", planifierResizeCarte, { passive: true });
+}
 
 function calculerTotalEntrees(donnees, cleCount) {
   if (!donnees?.features) {
@@ -2232,28 +2256,10 @@ function attacherActionsPopupInterne() {
         popupOuverte = true;
         ouvrirPopupDepuisCoordonnees(longitude, latitude);
       };
-
-      let temporisationFallbackPopup = null;
-      carte.once("moveend", () => {
-        if (temporisationFallbackPopup) {
-          clearTimeout(temporisationFallbackPopup);
-          temporisationFallbackPopup = null;
-        }
-        ouvrirPopup();
+      naviguerVersCoordonneesPuisOuvrirPopup(longitude, latitude, ouvrirPopup, {
+        zoomMin: 14.8,
+        durationDouxMs: 420
       });
-      carte.flyTo({
-        center: [longitude, latitude],
-        zoom: Math.max(carte.getZoom(), 15),
-        speed: 1.1,
-        curve: 1.2,
-        essential: true
-      });
-      temporisationFallbackPopup = setTimeout(() => {
-        if (carte.isMoving()) {
-          return;
-        }
-        ouvrirPopup();
-      }, 1400);
     });
   }
 
@@ -2285,28 +2291,10 @@ function attacherActionsPopupInterne() {
         popupOuverte = true;
         ouvrirPopupDepuisCoordonnees(longitude, latitude);
       };
-
-      let temporisationFallbackPopup = null;
-      carte.once("moveend", () => {
-        if (temporisationFallbackPopup) {
-          clearTimeout(temporisationFallbackPopup);
-          temporisationFallbackPopup = null;
-        }
-        ouvrirPopup();
+      naviguerVersCoordonneesPuisOuvrirPopup(longitude, latitude, ouvrirPopup, {
+        zoomMin: 14.8,
+        durationDouxMs: 420
       });
-      carte.flyTo({
-        center: [longitude, latitude],
-        zoom: Math.max(carte.getZoom(), 15),
-        speed: 1.1,
-        curve: 1.2,
-        essential: true
-      });
-      temporisationFallbackPopup = setTimeout(() => {
-        if (carte.isMoving()) {
-          return;
-        }
-        ouvrirPopup();
-      }, 1400);
     });
   }
 }
@@ -2641,6 +2629,76 @@ function ouvrirPopupDepuisCoordonnees(longitude, latitude) {
   return construirePopupDepuisFeatures(longitude, latitude, featurePostes, featureAcces, featureAppareils);
 }
 
+function calculerContexteDeplacement(longitude, latitude) {
+  const canvas = carte.getCanvas();
+  const largeur = canvas?.clientWidth || window.innerWidth;
+  const hauteur = canvas?.clientHeight || window.innerHeight;
+  const pointCible = carte.project([longitude, latitude]);
+  const pointCentre = carte.project(carte.getCenter());
+  const distancePixels = Math.hypot(pointCible.x - pointCentre.x, pointCible.y - pointCentre.y);
+
+  const margeHorizontale = Math.min(160, Math.max(90, largeur * 0.18));
+  const margeHaut = Math.min(190, Math.max(92, hauteur * 0.2));
+  const margeBas = Math.min(115, Math.max(62, hauteur * 0.13));
+  const cibleDansZoneConfort =
+    pointCible.x > margeHorizontale &&
+    pointCible.x < largeur - margeHorizontale &&
+    pointCible.y > margeHaut &&
+    pointCible.y < hauteur - margeBas;
+
+  return { distancePixels, cibleDansZoneConfort };
+}
+
+function naviguerVersCoordonneesPuisOuvrirPopup(longitude, latitude, ouvrirPopup, options = {}) {
+  if (!Number.isFinite(longitude) || !Number.isFinite(latitude) || typeof ouvrirPopup !== "function") {
+    return false;
+  }
+
+  const { distancePixels, cibleDansZoneConfort } = calculerContexteDeplacement(longitude, latitude);
+  if (cibleDansZoneConfort && distancePixels < 210) {
+    ouvrirPopup();
+    return true;
+  }
+
+  let temporisationFallbackPopup = null;
+  demarrerNavigationPopupProgrammatique();
+  carte.once("moveend", () => {
+    terminerNavigationPopupProgrammatique();
+    if (temporisationFallbackPopup) {
+      clearTimeout(temporisationFallbackPopup);
+      temporisationFallbackPopup = null;
+    }
+    ouvrirPopup();
+  });
+
+  if (distancePixels < 520) {
+    carte.easeTo({
+      center: [longitude, latitude],
+      duration: Number(options.durationDouxMs) || 460,
+      easing: (t) => 1 - Math.pow(1 - t, 3),
+      essential: true
+    });
+  } else {
+    carte.flyTo({
+      center: [longitude, latitude],
+      zoom: Math.max(carte.getZoom(), Number(options.zoomMin) || 14.2),
+      speed: Number(options.speed) || 1.05,
+      curve: Number(options.curve) || 1.15,
+      essential: true
+    });
+  }
+
+  temporisationFallbackPopup = setTimeout(() => {
+    if (carte.isMoving()) {
+      return;
+    }
+    terminerNavigationPopupProgrammatique();
+    ouvrirPopup();
+  }, Number(options.fallbackMs) || (distancePixels < 520 ? 980 : 1500));
+
+  return true;
+}
+
 function ouvrirPopupAvecAnimationDepuisObjets(objets, options = {}) {
   if (!Array.isArray(objets) || !objets.length) {
     return false;
@@ -2662,63 +2720,7 @@ function ouvrirPopupAvecAnimationDepuisObjets(objets, options = {}) {
     }
   };
 
-  const canvas = carte.getCanvas();
-  const largeur = canvas?.clientWidth || window.innerWidth;
-  const hauteur = canvas?.clientHeight || window.innerHeight;
-  const pointCible = carte.project([longitude, latitude]);
-  const pointCentre = carte.project(carte.getCenter());
-  const distancePixels = Math.hypot(pointCible.x - pointCentre.x, pointCible.y - pointCentre.y);
-
-  const margeHorizontale = Math.min(190, Math.max(120, largeur * 0.22));
-  const margeHaut = Math.min(250, Math.max(140, hauteur * 0.28));
-  const margeBas = Math.min(120, Math.max(70, hauteur * 0.14));
-  const cibleDansZoneConfort =
-    pointCible.x > margeHorizontale &&
-    pointCible.x < largeur - margeHorizontale &&
-    pointCible.y > margeHaut &&
-    pointCible.y < hauteur - margeBas;
-
-  // Si le point est deja bien visible et proche du centre, on evite toute animation.
-  if (cibleDansZoneConfort && distancePixels < 140) {
-    ouvrirPopup();
-    return true;
-  }
-
-  let temporisationFallbackPopup = null;
-  carte.once("moveend", () => {
-    if (temporisationFallbackPopup) {
-      clearTimeout(temporisationFallbackPopup);
-      temporisationFallbackPopup = null;
-    }
-    ouvrirPopup();
-  });
-
-  const deplacementDoux = distancePixels < 320;
-  if (deplacementDoux) {
-    carte.easeTo({
-      center: [longitude, latitude],
-      duration: Number(options.durationDouxMs) || 360,
-      easing: (t) => 1 - Math.pow(1 - t, 3),
-      essential: true
-    });
-  } else {
-    carte.flyTo({
-      center: [longitude, latitude],
-      zoom: Math.max(carte.getZoom(), Number(options.zoomMin) || 14.4),
-      speed: Number(options.speed) || 1.1,
-      curve: Number(options.curve) || 1.2,
-      essential: true
-    });
-  }
-
-  temporisationFallbackPopup = setTimeout(() => {
-    if (carte.isMoving()) {
-      return;
-    }
-    ouvrirPopup();
-  }, Number(options.fallbackMs) || (deplacementDoux ? 900 : 1400));
-
-  return true;
+  return naviguerVersCoordonneesPuisOuvrirPopup(longitude, latitude, ouvrirPopup, options);
 }
 
 function ouvrirPopupDepuisObjetsCarte(objets) {
@@ -2880,6 +2882,8 @@ function activerInteractionsCarte() {
     COUCHE_APPAREILS
   ];
   let temporisationAppuiLong = null;
+  let survolCurseurPlanifie = false;
+  let dernierPointCurseur = null;
 
   const recupererFeatureContexte = (point) => {
     if (!point) {
@@ -2961,21 +2965,28 @@ function activerInteractionsCarte() {
   });
 
   carte.on("mousemove", (event) => {
-    const couchesDisponibles = couchesInteractives.filter((id) => Boolean(carte.getLayer(id)));
-    if (!couchesDisponibles.length) {
-      carte.getCanvas().style.cursor = "";
+    dernierPointCurseur = event.point;
+    if (survolCurseurPlanifie) {
       return;
     }
-
-    const objets = carte.queryRenderedFeatures(event.point, {
-      layers: couchesDisponibles
+    survolCurseurPlanifie = true;
+    window.requestAnimationFrame(() => {
+      survolCurseurPlanifie = false;
+      const couchesDisponibles = couchesInteractives.filter((id) => Boolean(carte.getLayer(id)));
+      if (!couchesDisponibles.length || !dernierPointCurseur) {
+        carte.getCanvas().style.cursor = "";
+        return;
+      }
+      const objets = carte.queryRenderedFeatures(dernierPointCurseur, {
+        layers: couchesDisponibles
+      });
+      carte.getCanvas().style.cursor = objets.length ? "pointer" : "";
     });
-    carte.getCanvas().style.cursor = objets.length ? "pointer" : "";
   });
 
   carte.on("movestart", () => {
     fermerMenuContextuel();
-    if (!recadragePopupMobileEnCours) {
+    if (!recadragePopupMobileEnCours && !navigationPopupProgrammatiqueEnCours) {
       fermerPopupCarte();
     }
   });
@@ -3160,10 +3171,24 @@ if (carte.loaded()) {
 bloquerZoomTactileHorsCarte();
 
 carte.on("styledata", () => {
-  if ((afficherAppareils || afficherAcces || afficherPostes || afficherLignes || afficherVitesseLigne) && carte.isStyleLoaded()) {
+  if (!(afficherAppareils || afficherAcces || afficherPostes || afficherLignes || afficherVitesseLigne)) {
+    return;
+  }
+  if (!carte.isStyleLoaded()) {
+    return;
+  }
+  if (restaurationStylePlanifiee) {
+    return;
+  }
+  restaurationStylePlanifiee = true;
+  window.requestAnimationFrame(() => {
+    restaurationStylePlanifiee = false;
+    if (!carte.isStyleLoaded()) {
+      return;
+    }
     restaurerEtatFiltres();
     restaurerAffichageDonnees();
-  }
+  });
 });
 
 activerInteractionsCarte();
@@ -3457,17 +3482,10 @@ if (champRecherche && listeResultatsRecherche) {
         popupOuverte = true;
         ouvrirPopupDepuisCoordonnees(longitude, latitude);
       };
-
-      carte.once("moveend", ouvrirPopup);
-      carte.flyTo({
-        center: [longitude, latitude],
-        zoom: Math.max(carte.getZoom(), 14),
-        speed: 1.15,
-        curve: 1.2,
-        essential: true
+      naviguerVersCoordonneesPuisOuvrirPopup(longitude, latitude, ouvrirPopup, {
+        zoomMin: 14.1,
+        durationDouxMs: 430
       });
-
-      setTimeout(ouvrirPopup, 700);
     } catch (erreur) {
       console.error("Impossible d'ouvrir le resultat de recherche", erreur);
     }

@@ -33,6 +33,17 @@ body,
   font-family: "Manrope", "Avenir Next", "Segoe UI", sans-serif;
 }
 
+html,
+body {
+  overflow: hidden;
+  overscroll-behavior: none;
+}
+
+#map {
+  width: 100vw;
+  height: 100dvh;
+}
+
 #map {
   touch-action: none;
 }
