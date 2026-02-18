@@ -19,6 +19,8 @@ const SOURCE_MESURE = "mesure-source";
 const COUCHE_MESURE_LIGNES = "mesure-lignes";
 const COUCHE_MESURE_POINTS = "mesure-points";
 const COUCHE_MESURE_LABELS = "mesure-labels";
+const SOURCE_LOCALISATION = "localisation-source";
+const COUCHE_LOCALISATION_POINT = "localisation-point";
 const TABLES_RSS = window.RSS_TABLE_NUMBERS || {};
 const DUREE_APPUI_LONG_MENU_CONTEXTUEL_MS = 1000;
 const DELAI_DEMARRAGE_DONNEES_MS = 220;
@@ -104,6 +106,8 @@ let menuContextuelOuvert = false;
 let mesureActive = false;
 let mesurePoints = [];
 let navigationInternePopup = null;
+let minuterieClignotementLocalisation = null;
+let gestionnaireArretLocalisation = null;
 let recadragePopupMobileEnCours = false;
 let navigationPopupProgrammatiqueEnCours = false;
 let restaurationStylePlanifiee = false;
@@ -906,6 +910,108 @@ function formaterDistanceMetres(distanceMetres) {
     return `${distanceMetres.toFixed(1)} m`;
   }
   return `${(distanceMetres / 1000).toFixed(2)} km`;
+}
+
+function assurerSourceEtCoucheLocalisation() {
+  if (!carte.isStyleLoaded()) {
+    return false;
+  }
+
+  if (!carte.getSource(SOURCE_LOCALISATION)) {
+    carte.addSource(SOURCE_LOCALISATION, {
+      type: "geojson",
+      data: { type: "FeatureCollection", features: [] }
+    });
+  }
+
+  if (!carte.getLayer(COUCHE_LOCALISATION_POINT)) {
+    carte.addLayer({
+      id: COUCHE_LOCALISATION_POINT,
+      type: "circle",
+      source: SOURCE_LOCALISATION,
+      paint: {
+        "circle-radius": 10,
+        "circle-color": "#facc15",
+        "circle-opacity": 1,
+        "circle-stroke-width": 2.6,
+        "circle-stroke-color": "#0f172a",
+        "circle-stroke-opacity": 1
+      }
+    });
+  }
+
+  return true;
+}
+
+function definirPointLocalisation(longitude, latitude) {
+  if (!assurerSourceEtCoucheLocalisation()) {
+    return;
+  }
+  const source = carte.getSource(SOURCE_LOCALISATION);
+  if (!source) {
+    return;
+  }
+  source.setData({
+    type: "FeatureCollection",
+    features: [
+      {
+        type: "Feature",
+        geometry: {
+          type: "Point",
+          coordinates: [longitude, latitude]
+        },
+        properties: {}
+      }
+    ]
+  });
+}
+
+function arreterClignotementLocalisation() {
+  if (minuterieClignotementLocalisation) {
+    clearInterval(minuterieClignotementLocalisation);
+    minuterieClignotementLocalisation = null;
+  }
+  if (gestionnaireArretLocalisation) {
+    const evenements = ["movestart", "zoomstart", "dragstart", "rotatestart", "pitchstart", "click", "touchstart", "wheel"];
+    for (const evenement of evenements) {
+      carte.off(evenement, gestionnaireArretLocalisation);
+    }
+    gestionnaireArretLocalisation = null;
+  }
+  if (carte.getLayer(COUCHE_LOCALISATION_POINT)) {
+    carte.setPaintProperty(COUCHE_LOCALISATION_POINT, "circle-opacity", 1);
+    carte.setPaintProperty(COUCHE_LOCALISATION_POINT, "circle-stroke-opacity", 1);
+  }
+}
+
+function demarrerClignotementLocalisation(longitude, latitude) {
+  if (!Number.isFinite(longitude) || !Number.isFinite(latitude)) {
+    return;
+  }
+
+  arreterClignotementLocalisation();
+  definirPointLocalisation(longitude, latitude);
+  if (!carte.getLayer(COUCHE_LOCALISATION_POINT)) {
+    return;
+  }
+
+  let visible = true;
+  minuterieClignotementLocalisation = setInterval(() => {
+    visible = !visible;
+    if (!carte.getLayer(COUCHE_LOCALISATION_POINT)) {
+      return;
+    }
+    carte.setPaintProperty(COUCHE_LOCALISATION_POINT, "circle-opacity", visible ? 1 : 0.12);
+    carte.setPaintProperty(COUCHE_LOCALISATION_POINT, "circle-stroke-opacity", visible ? 1 : 0.2);
+  }, 390);
+
+  gestionnaireArretLocalisation = () => {
+    arreterClignotementLocalisation();
+  };
+  const evenements = ["movestart", "zoomstart", "dragstart", "rotatestart", "pitchstart", "click", "touchstart", "wheel"];
+  for (const evenement of evenements) {
+    carte.on(evenement, gestionnaireArretLocalisation);
+  }
 }
 
 function chargerScriptItineraire() {
@@ -2667,6 +2773,19 @@ function attacherActionsPopupInterne() {
       });
     });
   }
+
+  const boutonLocaliserCarte = racinePopup.querySelector("#popup-localiser-carte");
+  if (boutonLocaliserCarte) {
+    boutonLocaliserCarte.addEventListener("click", () => {
+      const longitude = Number(boutonLocaliserCarte.getAttribute("data-lng"));
+      const latitude = Number(boutonLocaliserCarte.getAttribute("data-lat"));
+      if (!Number.isFinite(longitude) || !Number.isFinite(latitude)) {
+        return;
+      }
+      fermerPopupCarte();
+      demarrerClignotementLocalisation(longitude, latitude);
+    });
+  }
 }
 
 function normaliserTexteRecherche(valeur) {
@@ -2963,7 +3082,8 @@ function construirePopupDepuisFeatures(longitude, latitude, featurePostes, featu
   const sectionRetourPoste = coordonneesRetourPosteDepuisAppareil
     ? `<section class="popup-section popup-section-itineraires"><div class="popup-section-titre"><span class="popup-badge popup-badge-itineraire">Poste</span></div><div class="popup-itineraires"><button class="popup-bouton-itineraire" id="popup-retour-poste-appareil" type="button" data-lng="${coordonneesRetourPosteDepuisAppareil[0]}" data-lat="${coordonneesRetourPosteDepuisAppareil[1]}">↩ Retour poste</button></div></section>`
     : "";
-  const contenuFiche = `<div class="popup-carte">${sections.join("")}${sectionPortail}${sectionRssAssocieDepuisAcces}${sectionItineraire}${sectionRetourPoste}</div>`;
+  const sectionLocaliser = `<section class="popup-section"><button class="popup-action-lien" id="popup-localiser-carte" type="button" data-lng="${longitude}" data-lat="${latitude}">📍 Localiser sur la carte</button></section>`;
+  const contenuFiche = `<div class="popup-carte">${sections.join("")}${sectionPortail}${sectionRssAssocieDepuisAcces}${sectionItineraire}${sectionRetourPoste}${sectionLocaliser}</div>`;
 
   let contenuVueAppareils = "";
   if (sectionAppareilsAssociesPoste) {
@@ -3899,15 +4019,8 @@ if (champRecherche && listeResultatsRecherche) {
       fermerMenuFiltres();
       fermerMenuFonds();
 
-      let popupOuverte = false;
-      const ouvrirPopup = () => {
-        if (popupOuverte) {
-          return;
-        }
-        popupOuverte = true;
-        ouvrirPopupDepuisCoordonnees(longitude, latitude);
-      };
-      naviguerVersCoordonneesPuisOuvrirPopup(longitude, latitude, ouvrirPopup, {
+      ouvrirPopupDepuisCoordonnees(longitude, latitude);
+      naviguerVersCoordonneesPuisOuvrirPopup(longitude, latitude, () => {}, {
         forceZoom: true,
         zoomMin: 14.1,
         durationDouxMs: 430
