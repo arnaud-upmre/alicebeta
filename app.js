@@ -85,8 +85,8 @@ const fondsCartographiques = {
 let fondActif = "satelliteIgn";
 let afficherAppareils = false;
 let afficherAcces = true;
-let afficherPostes = false;
-let afficherLignes = false;
+let afficherPostes = true;
+let afficherLignes = true;
 let afficherVitesseLigne = false;
 let donneesAppareils = null;
 let donneesAcces = null;
@@ -509,7 +509,8 @@ function regrouperPostesParCoordonnees(geojson) {
       lignes: propr.lignes || "",
       numero_ligne: propr.numero_ligne ?? "",
       pk: propr.pk || "",
-      hors_patrimoine: estHorsPatrimoine(propr.hors_patrimoine)
+      hors_patrimoine: estHorsPatrimoine(propr.hors_patrimoine),
+      special: estHorsPatrimoine(propr.special)
     };
 
     if (nomNormalise) {
@@ -1115,6 +1116,27 @@ function calculerTotalEntrees(donnees, cleCount) {
   }, 0);
 }
 
+function calculerTotalPostesPourCompteur(donnees) {
+  if (!donnees?.features) {
+    return 0;
+  }
+
+  let total = 0;
+  for (const feature of donnees.features) {
+    const postesListe = extraireListeDepuisFeature(feature, "postes_liste_json");
+    for (const poste of postesListe) {
+      const estHp = estHorsPatrimoine(poste?.hors_patrimoine);
+      const estSpecial = estHorsPatrimoine(poste?.special);
+      if (estHp && estSpecial) {
+        continue;
+      }
+      total += 1;
+    }
+  }
+
+  return total;
+}
+
 function mettreAJourCompteursFiltres() {
   if (compteurAppareils) {
     const totalAppareils = totalAppareilsBrut || calculerTotalEntrees(donneesAppareils, "appareils_count");
@@ -1124,7 +1146,7 @@ function mettreAJourCompteursFiltres() {
     compteurAcces.textContent = `(${calculerTotalEntrees(donneesAcces, "acces_count")})`;
   }
   if (compteurPostes) {
-    const totalPostes = totalPostesBrut || calculerTotalEntrees(donneesPostes, "postes_count");
+    const totalPostes = donneesPostes ? totalPostesBrut : calculerTotalEntrees(donneesPostes, "postes_count");
     compteurPostes.textContent = `(${totalPostes})`;
   }
 }
@@ -1504,7 +1526,7 @@ async function chargerDonneesPostes() {
       })
       .then((geojson) => {
         donneesPostes = regrouperPostesParCoordonnees(geojson);
-        totalPostesBrut = calculerTotalEntrees(donneesPostes, "postes_count");
+        totalPostesBrut = calculerTotalPostesPourCompteur(donneesPostes);
         mettreAJourCompteursFiltres();
         return donneesPostes;
       })
@@ -1613,7 +1635,7 @@ function construireSectionAppareils(feature, options = {}) {
   }
 
   if (Number(propr.appareils_count) > 1) {
-    const titresPostes = appareilsListe.map((a) => construireTitreNomTypeSat(a)).filter(Boolean);
+    const titresPostes = appareilsListe.map((a) => construireTitreNomTypeSatAcces(a)).filter(Boolean);
     const titresUniques = [...new Set(titresPostes)];
     const titrePosteCommun = titresUniques.length === 1 ? titresUniques[0] : "";
 
@@ -1623,8 +1645,10 @@ function construireSectionAppareils(feature, options = {}) {
         const tagHp = a.hors_patrimoine ? '<span class="popup-tag-hp">HP</span>' : "";
         const libelleAppareil = champCompletOuVide(a.appareil) || "Appareil inconnu";
         const descriptionAppareil = champCompletOuVide(a.description);
-        const titrePoste = construireTitreNomTypeSat(a);
-        const detailsPoste = !titrePosteCommun && titrePoste ? `<br/><span class="popup-poste-details">${echapperHtml(titrePoste)}</span>` : "";
+        const titrePosteHtml = construireTitreNomTypeSatAccesHtml(a);
+        const detailsPoste = !titrePosteCommun && titrePosteHtml
+          ? `<br/><span class="popup-poste-details">${titrePosteHtml}</span>`
+          : "";
         const detailsDescription = descriptionAppareil
           ? `<br/><span class="popup-poste-details">${echapperHtml(descriptionAppareil)}</span>`
           : "";
@@ -1633,19 +1657,19 @@ function construireSectionAppareils(feature, options = {}) {
       .join("");
 
     const lignePosteCommune = titrePosteCommun
-      ? `<p class="popup-poste-details popup-poste-details-centre">${echapperHtml(titrePosteCommun)}</p>`
+      ? `<p class="popup-acces-titre popup-poste-details-centre">${construireTitreNomTypeSatAccesHtml(appareilsListe[0] || {})}</p>`
       : "";
 
-    return `<section class="popup-section"><div class="popup-pill-ligne"><span class="popup-badge popup-badge-appareils">${echapperHtml(String(propr.appareils_count))} appareils</span></div><div class="popup-sous-titre-centre">sur le meme support</div>${lignePosteCommune}<ul>${lignes}</ul></section>`;
+    return `<section class="popup-section">${lignePosteCommune}<div class="popup-pill-ligne"><span class="popup-badge popup-badge-appareils">${echapperHtml(String(propr.appareils_count))} appareils</span></div><div class="popup-sous-titre-centre">sur le meme support</div><ul>${lignes}</ul></section>`;
   }
 
   const appareil = appareilsListe[0] || {};
-  const titre = construireTitreNomTypeSat(appareil);
+  const titreHtml = construireTitreNomTypeSatAccesHtml(appareil);
   const couleur = appareil.couleur_appareil || "#111111";
   const tagHp = appareil.hors_patrimoine ? '<span class="popup-tag-hp">HP</span>' : "";
   const libelleAppareil = champCompletOuVide(appareil.appareil) || "Appareil inconnu";
   const descriptionAppareil = champCompletOuVide(appareil.description);
-  const ligneTitre = options.masquerTitreLieu ? "" : `<p class="popup-acces-titre">${echapperHtml(titre || "Poste inconnu")}</p>`;
+  const ligneTitre = options.masquerTitreLieu ? "" : `<p class="popup-acces-titre">${titreHtml}</p>`;
   const ligneDescription = descriptionAppareil
     ? `<p class="popup-poste-details">${echapperHtml(descriptionAppareil)}</p>`
     : "";
