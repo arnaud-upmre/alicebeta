@@ -1478,8 +1478,8 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          "1.86175",
-          "50.93222"
+          1.86175,
+          50.93222
         ]
       },
       "properties": {
@@ -14744,7 +14744,7 @@
         "acces": "",
         "appareil": "T4",
         "description": "",
-        "hors_patrimoine": true
+        "hors_patrimoine": false
       }
     },
     {
@@ -14763,7 +14763,7 @@
         "acces": "",
         "appareil": "T3",
         "description": "",
-        "hors_patrimoine": true
+        "hors_patrimoine": false
       }
     },
     {
