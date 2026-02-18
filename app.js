@@ -622,6 +622,9 @@ const textePanneauMesure = document.getElementById("panneau-mesure-texte");
 const boutonSortieMesure = document.getElementById("bouton-sortie-mesure");
 const menuLegendeCarte = document.getElementById("menu-legende-carte");
 const boutonFermerLegende = document.getElementById("bouton-fermer-legende");
+const modalFiche = document.getElementById("modal-fiche");
+const modalFicheContenu = document.getElementById("modal-fiche-contenu");
+const boutonFermerModalFiche = document.getElementById("modal-fiche-fermer");
 const CLE_STOCKAGE_FENETRE_ACCUEIL = "alice.fenetre-accueil.derniere-date";
 let temporisationInfoVitesse = null;
 let moduleItineraire = null;
@@ -749,6 +752,61 @@ function fermerPopupCarte() {
   popupCarte.remove();
   popupCarte = null;
   navigationInternePopup = null;
+}
+
+function creerPopupFicheModale() {
+  const callbacksFermeture = [];
+  let estFermee = false;
+
+  const instance = {
+    setLngLat() {
+      return instance;
+    },
+    setHTML(html) {
+      if (modalFicheContenu) {
+        modalFicheContenu.innerHTML = html;
+      }
+      return instance;
+    },
+    addTo() {
+      if (modalFiche) {
+        modalFiche.classList.add("est-visible");
+        modalFiche.setAttribute("aria-hidden", "false");
+      }
+      return instance;
+    },
+    getElement() {
+      return modalFicheContenu;
+    },
+    on(event, callback) {
+      if (event === "close" && typeof callback === "function") {
+        callbacksFermeture.push(callback);
+      }
+      return instance;
+    },
+    remove() {
+      if (estFermee) {
+        return;
+      }
+      estFermee = true;
+      if (modalFiche) {
+        modalFiche.classList.remove("est-visible");
+        modalFiche.setAttribute("aria-hidden", "true");
+      }
+      if (modalFicheContenu) {
+        modalFicheContenu.innerHTML = "";
+      }
+      for (const callback of callbacksFermeture) {
+        try {
+          callback();
+        } catch {
+          // Ignore un callback de fermeture en erreur.
+        }
+      }
+    }
+  };
+
+  return instance;
 }
 
 function estContexteMobile() {
@@ -2920,7 +2978,7 @@ function construirePopupDepuisFeatures(longitude, latitude, featurePostes, featu
       }
     : null;
 
-  popupCarte = new maplibregl.Popup({ closeButton: true, closeOnClick: true })
+  popupCarte = creerPopupFicheModale()
     .setLngLat([longitude, latitude])
     .setHTML(contenuFiche)
     .addTo(carte);
@@ -3754,6 +3812,20 @@ if (boutonFermerLegende) {
   });
 }
 
+if (boutonFermerModalFiche) {
+  boutonFermerModalFiche.addEventListener("click", () => {
+    fermerPopupCarte();
+  });
+}
+
+if (modalFiche) {
+  modalFiche.addEventListener("click", (event) => {
+    if (event.target === modalFiche) {
+      fermerPopupCarte();
+    }
+  });
+}
+
 if (champRecherche && listeResultatsRecherche) {
   let temporisationRecherche = null;
 
@@ -4005,6 +4077,7 @@ document.addEventListener("click", (event) => {
 
 document.addEventListener("keydown", (event) => {
   if (event.key === "Escape") {
+    fermerPopupCarte();
     fermerFenetreAccueil();
     fermerMenuFonds();
     fermerMenuFiltres();
