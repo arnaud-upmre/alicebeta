@@ -136,27 +136,22 @@ body,
 .topbar-logo {
   display: flex;
   align-items: center;
-  gap: 8px;
+  justify-content: flex-start;
+  width: 150px;
   min-width: 0;
 }
 
 .topbar-logo-image {
-  width: 28px;
-  height: 28px;
-  border-radius: 8px;
+  width: auto;
+  height: 34px;
+  max-width: 140px;
+  border-radius: 0;
   object-fit: contain;
-  background: rgba(255, 255, 255, 0.9);
-}
-
-.topbar-logo-texte {
-  color: #0f172a;
-  font-size: 0.82rem;
-  font-weight: 700;
-  letter-spacing: 0.03em;
+  background: transparent;
 }
 
 .topbar-espace {
-  width: 36px;
+  width: 150px;
   height: 1px;
 }
 
@@ -246,6 +241,10 @@ body,
 }
 
 .recherche-resultats {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  width: 100%;
   margin: 8px 0 0;
   padding: 6px;
   border-radius: 12px;
@@ -1135,8 +1134,8 @@ body,
     display: none;
   }
 
-  .topbar-logo-texte {
-    font-size: 0.76rem;
+  .topbar-logo {
+    width: 130px;
   }
 
   .controle-recherche {
@@ -1205,13 +1204,8 @@ body,
   }
 
   .topbar-logo-image {
-    width: 24px;
-    height: 24px;
-    border-radius: 7px;
-  }
-
-  .topbar-logo-texte {
-    font-size: 0.72rem;
+    height: 28px;
+    max-width: 118px;
   }
 
   .controle-recherche {
