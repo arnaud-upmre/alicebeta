@@ -21,6 +21,7 @@ const COUCHE_MESURE_LIGNES = "mesure-lignes";
 const COUCHE_MESURE_POINTS = "mesure-points";
 const COUCHE_MESURE_LABELS = "mesure-labels";
 const TABLES_RSS = window.RSS_TABLE_NUMBERS || {};
+const DUREE_APPUI_LONG_MENU_CONTEXTUEL_MS = 2000;
 const APPAREILS_VIDE = { type: "FeatureCollection", features: [] };
 const ACCES_VIDE = { type: "FeatureCollection", features: [] };
 const POSTES_VIDE = { type: "FeatureCollection", features: [] };
@@ -658,6 +659,44 @@ function fermerPopupCarte() {
   navigationInternePopup = null;
 }
 
+function estContexteMobile() {
+  return window.matchMedia("(max-width: 820px), (pointer: coarse)").matches;
+}
+
+function recadrerCartePourPopupMobile(longitude, latitude) {
+  if (!estContexteMobile() || !Number.isFinite(longitude) || !Number.isFinite(latitude)) {
+    return;
+  }
+
+  const decalageVertical = Math.min(200, Math.round(window.innerHeight * 0.22));
+  carte.easeTo({
+    center: [longitude, latitude],
+    offset: [0, decalageVertical],
+    duration: 280,
+    essential: true
+  });
+}
+
+function bloquerZoomTactileHorsCarte() {
+  const estDansCanvasCarte = (cible) => {
+    return cible instanceof Node && carte.getCanvas().contains(cible);
+  };
+
+  const bloquerSiHorsCarte = (event) => {
+    if (!estDansCanvasCarte(event.target)) {
+      event.preventDefault();
+    }
+  };
+
+  document.addEventListener("gesturestart", bloquerSiHorsCarte, { passive: false });
+  document.addEventListener("gesturechange", bloquerSiHorsCarte, { passive: false });
+  document.addEventListener("touchmove", (event) => {
+    if (event.touches?.length > 1 && !estDansCanvasCarte(event.target)) {
+      event.preventDefault();
+    }
+  }, { passive: false });
+}
+
 function formaterCoordonneeMenu(valeur) {
   return Number(valeur).toFixed(5);
 }
@@ -1158,8 +1197,8 @@ function appliquerCouchesDonnees() {
       filter: ["==", ["get", "acces_count"], 1],
       paint: {
         "circle-radius": ["interpolate", ["linear"], ["zoom"], 6, 5, 12, 5.8, 18, 6.8],
-        "circle-color": ["case", ["==", ["get", "hors_patrimoine"], true], "#ef4444", "#7c3aed"],
-        "circle-opacity": ["case", ["==", ["get", "hors_patrimoine"], true], 0.82, 0.9],
+        "circle-color": "#7c3aed",
+        "circle-opacity": 0.9,
         "circle-stroke-color": "#ffffff",
         "circle-stroke-width": 1.1
       }
@@ -1174,8 +1213,8 @@ function appliquerCouchesDonnees() {
       filter: [">", ["get", "acces_count"], 1],
       paint: {
         "circle-radius": ["interpolate", ["linear"], ["get", "acces_count"], 2, 13, 5, 17, 10, 22],
-        "circle-color": ["case", [">", ["get", "hors_patrimoine_count"], 0], "#f87171", "#8b5cf6"],
-        "circle-opacity": ["case", [">", ["get", "hors_patrimoine_count"], 0], 0.38, 0.34],
+        "circle-color": "#8b5cf6",
+        "circle-opacity": 0.34,
         "circle-stroke-color": "#ffffff",
         "circle-stroke-width": 1.8
       }
@@ -1663,6 +1702,14 @@ function construireCleNomType(entree) {
   ].join("|");
 }
 
+function construireCleNomTypeSat(entree) {
+  return [
+    normaliserTexteRecherche(champCompletOuVide(entree?.nom)),
+    normaliserTexteRecherche(champCompletOuVide(entree?.type)),
+    normaliserTexteRecherche(champCompletOuVide(entree?.SAT))
+  ].join("|");
+}
+
 function extraireListeDepuisFeature(feature, cleJson) {
   try {
     return JSON.parse(feature?.properties?.[cleJson] || "[]");
@@ -1731,6 +1778,53 @@ function trouverCoordonneesAccesDepuisAppareils(featureAppareils) {
   }
 
   return null;
+}
+
+function trouverCoordonneesPosteDepuisAppareils(featureAppareils) {
+  if (!featureAppareils || !donneesPostes?.features?.length) {
+    return null;
+  }
+
+  const appareilsListe = extraireListeDepuisFeature(featureAppareils, "appareils_liste_json");
+  if (!appareilsListe.length) {
+    return null;
+  }
+
+  const clesNomTypeSat = new Set(appareilsListe.map((a) => construireCleNomTypeSat(a)).filter(Boolean));
+  const clesNomType = new Set(appareilsListe.map((a) => construireCleNomType(a)).filter(Boolean));
+  if (!clesNomType.size) {
+    return null;
+  }
+
+  let fallbackNomType = null;
+
+  for (const featurePostes of donneesPostes.features) {
+    const postesListe = extraireListeDepuisFeature(featurePostes, "postes_liste_json");
+    if (!postesListe.length) {
+      continue;
+    }
+
+    const matchSat = postesListe.some((poste) => clesNomTypeSat.has(construireCleNomTypeSat(poste)));
+    const matchNomType = postesListe.some((poste) => clesNomType.has(construireCleNomType(poste)));
+    if (!matchSat && !matchNomType) {
+      continue;
+    }
+
+    const [longitude, latitude] = featurePostes.geometry?.coordinates || [];
+    if (!Number.isFinite(longitude) || !Number.isFinite(latitude)) {
+      continue;
+    }
+
+    if (matchSat) {
+      return [longitude, latitude];
+    }
+
+    if (!fallbackNomType) {
+      fallbackNomType = [longitude, latitude];
+    }
+  }
+
+  return fallbackNomType;
 }
 
 function construireLignePkEtLigne(poste) {
@@ -2052,7 +2146,7 @@ function construireSectionPostes(feature) {
 }
 
 function attacherActionsPopupInterne() {
-  if (!popupCarte || !navigationInternePopup) {
+  if (!popupCarte) {
     return;
   }
 
@@ -2061,25 +2155,65 @@ function attacherActionsPopupInterne() {
     return;
   }
 
-  const boutonVoirAppareils = racinePopup.querySelector("#popup-voir-appareils-associes");
-  if (boutonVoirAppareils) {
-    boutonVoirAppareils.addEventListener("click", () => {
-      if (!popupCarte || !navigationInternePopup?.vueAppareils) {
-        return;
-      }
-      popupCarte.setHTML(navigationInternePopup.vueAppareils);
-      attacherActionsPopupInterne();
-    });
+  if (navigationInternePopup) {
+    const boutonVoirAppareils = racinePopup.querySelector("#popup-voir-appareils-associes");
+    if (boutonVoirAppareils) {
+      boutonVoirAppareils.addEventListener("click", () => {
+        if (!popupCarte || !navigationInternePopup?.vueAppareils) {
+          return;
+        }
+        popupCarte.setHTML(navigationInternePopup.vueAppareils);
+        attacherActionsPopupInterne();
+      });
+    }
+
+    const boutonRetourFiche = racinePopup.querySelector("#popup-retour-fiche-poste");
+    if (boutonRetourFiche) {
+      boutonRetourFiche.addEventListener("click", () => {
+        if (!popupCarte || !navigationInternePopup?.vueFiche) {
+          return;
+        }
+        popupCarte.setHTML(navigationInternePopup.vueFiche);
+        attacherActionsPopupInterne();
+      });
+    }
   }
 
-  const boutonRetourFiche = racinePopup.querySelector("#popup-retour-fiche-poste");
-  if (boutonRetourFiche) {
-    boutonRetourFiche.addEventListener("click", () => {
-      if (!popupCarte || !navigationInternePopup?.vueFiche) {
+  const boutonRetourPosteDepuisAppareil = racinePopup.querySelector("#popup-retour-poste-appareil");
+  if (boutonRetourPosteDepuisAppareil) {
+    boutonRetourPosteDepuisAppareil.addEventListener("click", async () => {
+      const longitude = Number(boutonRetourPosteDepuisAppareil.getAttribute("data-lng"));
+      const latitude = Number(boutonRetourPosteDepuisAppareil.getAttribute("data-lat"));
+      if (!Number.isFinite(longitude) || !Number.isFinite(latitude)) {
         return;
       }
-      popupCarte.setHTML(navigationInternePopup.vueFiche);
-      attacherActionsPopupInterne();
+
+      try {
+        await activerFiltrePourType("postes");
+        appliquerCouchesDonnees();
+        remonterCouchesDonnees();
+      } catch (erreur) {
+        console.error("Impossible d'activer la couche postes", erreur);
+      }
+
+      let popupOuverte = false;
+      const ouvrirPopup = () => {
+        if (popupOuverte) {
+          return;
+        }
+        popupOuverte = true;
+        ouvrirPopupDepuisCoordonnees(longitude, latitude);
+      };
+
+      carte.once("moveend", ouvrirPopup);
+      carte.flyTo({
+        center: [longitude, latitude],
+        zoom: Math.max(carte.getZoom(), 15),
+        speed: 1.1,
+        curve: 1.2,
+        essential: true
+      });
+      setTimeout(ouvrirPopup, 700);
     });
   }
 
@@ -2353,6 +2487,7 @@ function construirePopupDepuisFeatures(longitude, latitude, featurePostes, featu
   const sections = [];
   let coordonneesNavigation = null;
   let sectionAppareilsAssociesPoste = "";
+  let coordonneesRetourPosteDepuisAppareil = null;
 
   if (featurePostes) {
     const sectionPostes = construireSectionPostes(featurePostes);
@@ -2401,6 +2536,10 @@ function construirePopupDepuisFeatures(longitude, latitude, featurePostes, featu
     coordonneesNavigation = trouverCoordonneesAccesDepuisAppareils(featureAppareils);
   }
 
+  if (featureAppareils && !featurePostes) {
+    coordonneesRetourPosteDepuisAppareil = trouverCoordonneesPosteDepuisAppareils(featureAppareils);
+  }
+
   const sectionPortail = featureAcces
     ? construireSectionPortail(featureAcces, {
         afficherVide: true
@@ -2409,7 +2548,10 @@ function construirePopupDepuisFeatures(longitude, latitude, featurePostes, featu
   const sectionItineraire = coordonneesNavigation
     ? `<section class="popup-section popup-section-itineraires"><div class="popup-section-titre"><span class="popup-badge popup-badge-itineraire">Itineraire</span></div>${construireLiensItineraires(coordonneesNavigation[0], coordonneesNavigation[1])}</section>`
     : "";
-  const contenuFiche = `<div class="popup-carte">${sections.join("")}${sectionPortail}${sectionItineraire}</div>`;
+  const sectionRetourPoste = coordonneesRetourPosteDepuisAppareil
+    ? `<section class="popup-section popup-section-itineraires"><div class="popup-section-titre"><span class="popup-badge popup-badge-itineraire">Poste</span></div><div class="popup-itineraires"><button class="popup-bouton-itineraire" id="popup-retour-poste-appareil" type="button" data-lng="${coordonneesRetourPosteDepuisAppareil[0]}" data-lat="${coordonneesRetourPosteDepuisAppareil[1]}">↩ Retour poste</button></div></section>`
+    : "";
+  const contenuFiche = `<div class="popup-carte">${sections.join("")}${sectionPortail}${sectionItineraire}${sectionRetourPoste}</div>`;
 
   let contenuVueAppareils = "";
   if (sectionAppareilsAssociesPoste) {
@@ -2429,6 +2571,9 @@ function construirePopupDepuisFeatures(longitude, latitude, featurePostes, featu
     .setHTML(contenuFiche)
     .addTo(carte);
   attacherActionsPopupInterne();
+  setTimeout(() => {
+    recadrerCartePourPopupMobile(longitude, latitude);
+  }, 30);
   popupCarte.on("close", () => {
     popupCarte = null;
     navigationInternePopup = null;
@@ -2650,10 +2795,14 @@ function activerInteractionsCarte() {
     if (!event.lngLat) {
       return;
     }
+    const touches = event.originalEvent?.touches;
+    if (touches && touches.length > 1) {
+      return;
+    }
     temporisationAppuiLong = setTimeout(() => {
       const featureContexte = recupererFeatureContexte(event.point);
       ouvrirMenuContextuel(event, featureContexte);
-    }, 500);
+    }, DUREE_APPUI_LONG_MENU_CONTEXTUEL_MS);
   });
 
   carte.on("touchend", () => {
@@ -2872,6 +3021,7 @@ if (carte.isStyleLoaded()) {
 if (carte.loaded()) {
   lancerInitialisationDonneesSiNecessaire();
 }
+bloquerZoomTactileHorsCarte();
 
 carte.on("styledata", () => {
   if ((afficherAppareils || afficherAcces || afficherPostes || afficherLignes || afficherVitesseLigne) && carte.isStyleLoaded()) {

@@ -14727,6 +14727,152 @@
         "appareil": "I510",
         "description": "Bipolaire"
       }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1.6247210230703768,
+          50.683726636643975
+        ]
+      },
+      "properties": {
+        "nom": "Pont de briques",
+        "type": "SST",
+        "SAT": "",
+        "acces": "",
+        "appareil": "T4",
+        "description": "",
+        "hors_patrimoine": true
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1.624667388973813,
+          50.683758011620455
+        ]
+      },
+      "properties": {
+        "nom": "Pont de briques",
+        "type": "SST",
+        "SAT": "",
+        "acces": "",
+        "appareil": "T3",
+        "description": "",
+        "hors_patrimoine": true
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1.624667388973813,
+          50.683758011620455
+        ]
+      },
+      "properties": {
+        "nom": "Pont de briques",
+        "type": "SST",
+        "SAT": "",
+        "acces": "",
+        "appareil": "SDA",
+        "description": ""
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1.624667388973813,
+          50.683758011620455
+        ]
+      },
+      "properties": {
+        "nom": "Pont de briques",
+        "type": "SST",
+        "SAT": "",
+        "acces": "",
+        "appareil": "TT 5621",
+        "description": "S.sr Pont de briques - Dannes V1"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1.624568508841451,
+          50.683805030237494
+        ]
+      },
+      "properties": {
+        "nom": "Pont de briques",
+        "type": "SST",
+        "SAT": "",
+        "acces": "",
+        "appareil": "SIS",
+        "description": ""
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1.624568508841451,
+          50.683805030237494
+        ]
+      },
+      "properties": {
+        "nom": "Pont de briques",
+        "type": "SST",
+        "SAT": "",
+        "acces": "",
+        "appareil": "TT 5733",
+        "description": "S.sr Pont de briques - Hauteville V1"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1.6247210230703768,
+          50.683726636643975
+        ]
+      },
+      "properties": {
+        "nom": "Pont de briques",
+        "type": "SST",
+        "SAT": "",
+        "acces": "",
+        "appareil": "TT 5622",
+        "description": "S.sr Pont de briques - Dannes V2"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          1.6246046780514383,
+          50.6837768469079
+        ]
+      },
+      "properties": {
+        "nom": "Pont de briques",
+        "type": "SST",
+        "SAT": "",
+        "acces": "",
+        "appareil": "TT 5732",
+        "description": "S.sr Pont de briques - Hauteville V2"
+      }
     }
   ]
 }

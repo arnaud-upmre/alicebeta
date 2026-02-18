@@ -15,6 +15,21 @@ body,
   font-family: "Manrope", "Avenir Next", "Segoe UI", sans-serif;
 }
 
+#map {
+  touch-action: none;
+}
+
+.controle-recherche,
+.controle-filtres,
+.controle-fonds,
+.menu-contextuel-carte,
+.panneau-mesure,
+.bouton-sortie-mesure,
+.fenetre-accueil,
+.maplibregl-popup-content {
+  touch-action: pan-y;
+}
+
 .fenetre-accueil {
   position: fixed;
   inset: 0;
@@ -504,7 +519,8 @@ body,
   width: min(360px, calc(100vw - 34px));
   max-width: 100%;
   padding: 16px 16px 14px;
-  overflow: hidden;
+  max-height: min(78vh, 680px);
+  overflow: auto;
   box-sizing: border-box;
   background: linear-gradient(
     135deg,
@@ -1113,6 +1129,7 @@ body,
   .maplibregl-popup-content {
     width: min(340px, calc(100vw - 14px));
     padding: 14px 13px 12px;
+    max-height: min(70vh, 560px);
   }
 
   .popup-itineraires {
@@ -1151,6 +1168,13 @@ body,
   .popup-bouton-itineraire {
     font-size: 0.76rem;
     padding: 8px 4px;
+  }
+
+  .maplibregl-popup-content {
+    width: calc(100vw - 10px);
+    max-height: min(68vh, 520px);
+    padding: 12px 11px 11px;
+    border-radius: 16px;
   }
 
   .menu-contextuel-carte {
