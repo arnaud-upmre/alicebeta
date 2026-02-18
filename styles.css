@@ -660,8 +660,9 @@ body {
 }
 
 .popup-section ul {
-  margin: 0 0 0 15px;
+  margin: 0;
   padding: 0;
+  list-style: none;
   max-height: 200px;
   overflow: auto;
 }

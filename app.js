@@ -1651,8 +1651,20 @@ function construireSectionAcces(feature) {
   }
 
   const construireTitreAcces = (acces) => construireTitreNomTypeSatAcces(acces, { nomVilleDe: true });
-  const posteAssocie = trouverPosteAssocieDepuisAcces(feature);
-  const sectionRssAssocie = posteAssocie ? construireSectionRssPoste(posteAssocie) : "";
+  const clesAccesUniques = new Set(
+    accesListe
+      .map((a) =>
+        [champCompletOuVide(a?.acces), champCompletOuVide(a?.portail)]
+          .map((v) => normaliserTexteRecherche(v))
+          .join("|")
+      )
+      .filter(Boolean)
+  );
+  const clesPostesUniques = new Set(
+    accesListe
+      .map((a) => construireCleNomTypeSat(a))
+      .filter(Boolean)
+  );
 
   if (Number(propr.acces_count) > 1) {
     const lignes = accesListe
@@ -1662,13 +1674,19 @@ function construireSectionAcces(feature) {
         return `<li class="${classeHors}"><span class="popup-acces-ligne">${echapperHtml(titre || "Acces inconnu")}</span></li>`;
       })
       .join("");
-    return `<section class="popup-section"><div class="popup-pill-ligne"><span class="popup-badge popup-badge-acces">${echapperHtml(String(propr.acces_count))} acces voiture</span></div><ul>${lignes}</ul></section>${sectionRssAssocie}`;
+    const totalAccesUniques = Math.max(1, clesAccesUniques.size || Number(propr.acces_count) || 1);
+    const totalPostesUniques = clesPostesUniques.size;
+    const libelleBadge =
+      totalAccesUniques === 1 && totalPostesUniques > 1
+        ? `${totalPostesUniques} postes`
+        : `${totalAccesUniques} accès voiture`;
+    return `<section class="popup-section"><div class="popup-pill-ligne"><span class="popup-badge popup-badge-acces">${echapperHtml(libelleBadge)}</span></div><ul>${lignes}</ul></section>`;
   }
 
   const acces = accesListe[0] || {};
   const titre = construireTitreAcces(acces);
   const classeHors = acces.hors_patrimoine ? " popup-item-hors" : "";
-  return `<section class="popup-section"><p class="popup-acces-titre${classeHors}">🚗 ${echapperHtml(titre || "Acces inconnu")}</p></section>${sectionRssAssocie}`;
+  return `<section class="popup-section"><p class="popup-acces-titre${classeHors}">🚗 ${echapperHtml(titre || "Acces inconnu")}</p></section>`;
 }
 
 function construireSectionPortail(featureAcces, options = {}) {
@@ -1842,6 +1860,14 @@ function trouverPosteAssocieDepuisAcces(featureAcces) {
   }
 
   return fallbackNomType;
+}
+
+function construireSectionRssAssocieDepuisAcces(featureAcces) {
+  const posteAssocie = trouverPosteAssocieDepuisAcces(featureAcces);
+  if (!posteAssocie) {
+    return "";
+  }
+  return construireSectionRssPoste(posteAssocie);
 }
 
 function trouverCoordonneesAccesDepuisAppareils(featureAppareils) {
@@ -2571,6 +2597,7 @@ function construirePopupDepuisFeatures(longitude, latitude, featurePostes, featu
   let coordonneesNavigation = null;
   let sectionAppareilsAssociesPoste = "";
   let coordonneesRetourPosteDepuisAppareil = null;
+  let sectionRssAssocieDepuisAcces = "";
 
   if (featurePostes) {
     const sectionPostes = construireSectionPostes(featurePostes);
@@ -2591,6 +2618,7 @@ function construirePopupDepuisFeatures(longitude, latitude, featurePostes, featu
     const sectionAcces = construireSectionAcces(featureAcces);
     if (sectionAcces) {
       sections.push(sectionAcces);
+      sectionRssAssocieDepuisAcces = construireSectionRssAssocieDepuisAcces(featureAcces);
       const [lngAcces, latAcces] = featureAcces.geometry?.coordinates || [];
       if (Number.isFinite(lngAcces) && Number.isFinite(latAcces)) {
         coordonneesNavigation = [lngAcces, latAcces];
@@ -2634,7 +2662,7 @@ function construirePopupDepuisFeatures(longitude, latitude, featurePostes, featu
   const sectionRetourPoste = coordonneesRetourPosteDepuisAppareil
     ? `<section class="popup-section popup-section-itineraires"><div class="popup-section-titre"><span class="popup-badge popup-badge-itineraire">Poste</span></div><div class="popup-itineraires"><button class="popup-bouton-itineraire" id="popup-retour-poste-appareil" type="button" data-lng="${coordonneesRetourPosteDepuisAppareil[0]}" data-lat="${coordonneesRetourPosteDepuisAppareil[1]}">↩ Retour poste</button></div></section>`
     : "";
-  const contenuFiche = `<div class="popup-carte">${sections.join("")}${sectionPortail}${sectionItineraire}${sectionRetourPoste}</div>`;
+  const contenuFiche = `<div class="popup-carte">${sections.join("")}${sectionPortail}${sectionRssAssocieDepuisAcces}${sectionItineraire}${sectionRetourPoste}</div>`;
 
   let contenuVueAppareils = "";
   if (sectionAppareilsAssociesPoste) {
