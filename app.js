@@ -1565,11 +1565,25 @@ function construireTitreNomTypeSat(entree, options = {}) {
   return [nom, type, sat].filter(Boolean).join(SEPARATEUR_LIBELLE);
 }
 
-function construireTitreNomTypeSatAcces(entree, options = {}) {
+function construireFragmentsTitreAcces(entree, options = {}) {
   const nomTypeSat = construireTitreNomTypeSat(entree, options);
   const acces = champCompletOuVide(entree?.acces);
-  const accesLibelle = acces ? `Accès : ${acces}` : "";
+  return { nomTypeSat, acces };
+}
+
+function construireTitreNomTypeSatAcces(entree, options = {}) {
+  const { nomTypeSat, acces } = construireFragmentsTitreAcces(entree, options);
+  const accesLibelle = acces ? `(Accès : ${acces})` : "";
   return [nomTypeSat, accesLibelle].filter(Boolean).join(SEPARATEUR_LIBELLE);
+}
+
+function construireTitreNomTypeSatAccesHtml(entree, options = {}) {
+  const { nomTypeSat, acces } = construireFragmentsTitreAcces(entree, options);
+  const base = echapperHtml(nomTypeSat || "Acces inconnu");
+  if (!acces) {
+    return base;
+  }
+  return `${base} <span class="popup-acces-suffixe">(Accès : ${echapperHtml(acces)})</span>`;
 }
 
 function construireLiensItineraires(longitude, latitude) {
@@ -1651,7 +1665,7 @@ function construireSectionAcces(feature) {
     return "";
   }
 
-  const construireTitreAcces = (acces) => construireTitreNomTypeSatAcces(acces, { nomVilleDe: true });
+  const construireTitreAccesHtml = (acces) => construireTitreNomTypeSatAccesHtml(acces, { nomVilleDe: true });
   const clesAccesUniques = new Set(
     accesListe
       .map((a) =>
@@ -1670,9 +1684,9 @@ function construireSectionAcces(feature) {
   if (Number(propr.acces_count) > 1) {
     const lignes = accesListe
       .map((a) => {
-        const titre = construireTitreAcces(a);
+        const titreHtml = construireTitreAccesHtml(a);
         const classeHors = a.hors_patrimoine ? "popup-item-hors" : "";
-        return `<li class="${classeHors}"><span class="popup-acces-ligne">${echapperHtml(titre || "Acces inconnu")}</span></li>`;
+        return `<li class="${classeHors}"><span class="popup-acces-ligne">${titreHtml}</span></li>`;
       })
       .join("");
     const totalAccesUniques = Math.max(1, clesAccesUniques.size || Number(propr.acces_count) || 1);
@@ -1685,9 +1699,9 @@ function construireSectionAcces(feature) {
   }
 
   const acces = accesListe[0] || {};
-  const titre = construireTitreAcces(acces);
+  const titreHtml = construireTitreAccesHtml(acces);
   const classeHors = acces.hors_patrimoine ? " popup-item-hors" : "";
-  return `<section class="popup-section"><p class="popup-acces-titre${classeHors}">🚗 ${echapperHtml(titre || "Acces inconnu")}</p></section>`;
+  return `<section class="popup-section"><p class="popup-acces-titre${classeHors}">🚗 ${titreHtml}</p></section>`;
 }
 
 function construireSectionPortail(featureAcces, options = {}) {
