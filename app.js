@@ -24,6 +24,7 @@ const DUREE_APPUI_LONG_MENU_CONTEXTUEL_MS = 1000;
 const DELAI_DEMARRAGE_DONNEES_MS = 220;
 const PLACEHOLDER_RECHERCHE_DESKTOP = "Rechercher un poste, appareil, acces...";
 const PLACEHOLDER_RECHERCHE_MOBILE = "Rechercher...";
+const SEPARATEUR_LIBELLE = " ";
 const APPAREILS_VIDE = { type: "FeatureCollection", features: [] };
 const ACCES_VIDE = { type: "FeatureCollection", features: [] };
 const POSTES_VIDE = { type: "FeatureCollection", features: [] };
@@ -1561,14 +1562,14 @@ function construireTitreNomTypeSat(entree, options = {}) {
   const nom = entree?.hors_patrimoine && options.nomVilleDe && nomBase ? `${nomBase} (Ville De)` : nomBase;
   const type = normaliserChampTexte(entree?.type);
   const sat = champCompletOuVide(entree?.SAT);
-  return [nom, type, sat].filter(Boolean).join(" | ");
+  return [nom, type, sat].filter(Boolean).join(SEPARATEUR_LIBELLE);
 }
 
 function construireTitreNomTypeSatAcces(entree, options = {}) {
   const nomTypeSat = construireTitreNomTypeSat(entree, options);
   const acces = champCompletOuVide(entree?.acces);
   const accesLibelle = acces ? `Accès : ${acces}` : "";
-  return [nomTypeSat, accesLibelle].filter(Boolean).join(" | ");
+  return [nomTypeSat, accesLibelle].filter(Boolean).join(SEPARATEUR_LIBELLE);
 }
 
 function construireLiensItineraires(longitude, latitude) {
@@ -1986,7 +1987,7 @@ function construireDetailsPoste(poste) {
   if (codes.length) {
     details.push(codes.join(" "));
   }
-  return details.join(" | ");
+  return details.join(SEPARATEUR_LIBELLE);
 }
 
 function normaliserCleRss(valeur) {
@@ -2501,7 +2502,7 @@ function reconstruireIndexRecherche() {
       const contexteAppareil = [appareil.nom, appareil.type, appareil.SAT]
         .map((v) => champCompletOuVide(v))
         .filter(Boolean)
-        .join(" | ");
+        .join(SEPARATEUR_LIBELLE);
       groupe.appareilsLignes.push({
         code: appareilNom || "Appareil",
         contexte: contexteAppareil,
