@@ -25,15 +25,9 @@ const DELAI_DEMARRAGE_DONNEES_MS = 220;
 const PLACEHOLDER_RECHERCHE_DESKTOP = "Rechercher un poste, appareil, acces...";
 const PLACEHOLDER_RECHERCHE_MOBILE = "Rechercher...";
 const SEPARATEUR_LIBELLE = " ";
-const DEBUG_RECHERCHE_FICHE = true;
-const DEBUG_BUILD_ID = "debug-fiche-2026-02-18-22h15";
 const APPAREILS_VIDE = { type: "FeatureCollection", features: [] };
 const ACCES_VIDE = { type: "FeatureCollection", features: [] };
 const POSTES_VIDE = { type: "FeatureCollection", features: [] };
-
-if (DEBUG_RECHERCHE_FICHE) {
-  console.warn(`[ALICE DEBUG] build=${DEBUG_BUILD_ID}`);
-}
 
 // Style raster OSM (plan open).
 const stylePlanOsm = {
@@ -830,16 +824,6 @@ function creerPopupFicheModale() {
       if (modalFiche) {
         modalFiche.classList.add("est-visible");
         modalFiche.setAttribute("aria-hidden", "false");
-        debugRechercheFiche("Modal fiche addTo", {
-          phase: "addTo",
-          raison: "class est-visible appliquée"
-        });
-      } else {
-        debugRechercheFiche("Modal fiche absente dans le DOM", {
-          phase: "addTo",
-          raison: "element #modal-fiche introuvable",
-          alerteMobile: true
-        });
       }
       return instance;
     },
@@ -3041,50 +3025,6 @@ function obtenirFeatureProche(collection, longitude, latitude, seuilDegres = 0.0
   return null;
 }
 
-function debugRechercheFiche(message, details = {}) {
-  if (!DEBUG_RECHERCHE_FICHE) {
-    return;
-  }
-  const texte = `[DEBUG fiche recherche] ${message}`;
-  console.warn(texte, details);
-  if (window.matchMedia("(max-width: 820px), (pointer: coarse)").matches) {
-    const resume = [
-      texte,
-      details?.type ? `type=${details.type}` : "",
-      Number.isFinite(details?.longitude) ? `lng=${details.longitude}` : "",
-      Number.isFinite(details?.latitude) ? `lat=${details.latitude}` : "",
-      details?.phase ? `phase=${details.phase}` : "",
-      details?.raison ? `raison=${details.raison}` : "",
-      `exact={postes:${Boolean(details.exactPostes)},acces:${Boolean(details.exactAcces)},app:${Boolean(details.exactAppareils)}}`,
-      `proche={postes:${Boolean(details.prochePostes)},acces:${Boolean(details.procheAcces)},app:${Boolean(details.procheAppareils)}}`
-    ]
-      .filter(Boolean)
-      .join("\n");
-    if (details?.alerteMobile) {
-      window.alert(resume);
-    }
-  }
-}
-
-function collecterEtatDebugOuverturePopup(longitude, latitude) {
-  const exactPostes = afficherPostes ? obtenirFeatureALaCoordonnee(donneesPostes, longitude, latitude) : null;
-  const exactAcces = afficherAcces ? obtenirFeatureALaCoordonnee(donneesAcces, longitude, latitude) : null;
-  const exactAppareils = afficherAppareils ? obtenirFeatureALaCoordonnee(donneesAppareils, longitude, latitude) : null;
-  const prochePostes = !exactPostes && afficherPostes ? obtenirFeatureProche(donneesPostes, longitude, latitude) : null;
-  const procheAcces = !exactAcces && afficherAcces ? obtenirFeatureProche(donneesAcces, longitude, latitude) : null;
-  const procheAppareils =
-    !exactAppareils && afficherAppareils ? obtenirFeatureProche(donneesAppareils, longitude, latitude) : null;
-
-  return {
-    exactPostes,
-    exactAcces,
-    exactAppareils,
-    prochePostes,
-    procheAcces,
-    procheAppareils
-  };
-}
-
 function construirePopupDepuisFeatures(longitude, latitude, featurePostes, featureAcces, featureAppareils) {
   const sections = [];
   let coordonneesNavigation = null;
@@ -3636,13 +3576,6 @@ function activerInteractionsCarte() {
   carte.on("movestart", () => {
     fermerMenuContextuel();
     if (!recadragePopupMobileEnCours && !navigationPopupProgrammatiqueEnCours && !conserverFichePendantNavigation) {
-      if (popupCarte) {
-        debugRechercheFiche("Fermeture fiche sur movestart", {
-          phase: "movestart",
-          raison: "fermeture automatique activée",
-          alerteMobile: true
-        });
-      }
       fermerPopupCarte();
     }
   });
@@ -4182,35 +4115,14 @@ if (champRecherche && listeResultatsRecherche) {
 
       const ouvertureOk = ouvrirPopupDepuisCoordonnees(longitude, latitude);
       if (!ouvertureOk) {
-        const etat = collecterEtatDebugOuverturePopup(longitude, latitude);
-        debugRechercheFiche("Echec ouverture fiche depuis recherche", {
-          type,
-          longitude,
-          latitude,
-          ...etat,
-          alerteMobile: true
-        });
         return;
       }
-      debugRechercheFiche("Ouverture fiche OK depuis recherche", {
-        phase: "search-click",
-        type,
-        longitude,
-        latitude,
-        raison: modalFiche?.classList.contains("est-visible") ? "modal visible" : "modal non visible"
-      });
       setTimeout(() => {
         naviguerVersCoordonneesArrierePlan(longitude, latitude, {
           forceZoom: true,
           conserverPopupOuvert: true,
           zoomMin: 14.1,
           durationDouxMs: 430
-        });
-        debugRechercheFiche("Zoom arrière-plan lancé", {
-          phase: "search-click",
-          type,
-          longitude,
-          latitude
         });
       }, 40);
     } catch (erreur) {
