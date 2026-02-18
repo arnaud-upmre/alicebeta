@@ -22,6 +22,7 @@ const COUCHE_MESURE_POINTS = "mesure-points";
 const COUCHE_MESURE_LABELS = "mesure-labels";
 const TABLES_RSS = window.RSS_TABLE_NUMBERS || {};
 const DUREE_APPUI_LONG_MENU_CONTEXTUEL_MS = 1000;
+const DELAI_DEMARRAGE_DONNEES_MS = 220;
 const APPAREILS_VIDE = { type: "FeatureCollection", features: [] };
 const ACCES_VIDE = { type: "FeatureCollection", features: [] };
 const POSTES_VIDE = { type: "FeatureCollection", features: [] };
@@ -562,6 +563,9 @@ const carte = new maplibregl.Map({
   center: CENTRE_INITIAL,
   zoom: ZOOM_INITIAL,
   maxZoom: ZOOM_MAX,
+  prefetchZoomDelta: 0,
+  fadeDuration: 0,
+  refreshExpiredTiles: false,
   style: fondsCartographiques[fondActif]
 });
 
@@ -1389,7 +1393,7 @@ async function chargerDonneesAppareils() {
   }
 
   if (!promesseChargementAppareils) {
-    promesseChargementAppareils = fetch("./appareils.geojson", { cache: "no-store" })
+    promesseChargementAppareils = fetch("./appareils.geojson", { cache: "default" })
       .then((reponse) => {
         if (!reponse.ok) {
           throw new Error(`HTTP ${reponse.status}`);
@@ -1432,7 +1436,7 @@ async function chargerDonneesAcces() {
   }
 
   if (!promesseChargementAcces) {
-    promesseChargementAcces = fetch("./acces.geojson", { cache: "no-store" })
+    promesseChargementAcces = fetch("./acces.geojson", { cache: "default" })
       .then((reponse) => {
         if (!reponse.ok) {
           throw new Error(`HTTP ${reponse.status}`);
@@ -1459,7 +1463,7 @@ async function chargerDonneesPostes() {
   }
 
   if (!promesseChargementPostes) {
-    promesseChargementPostes = fetch("./postes.geojson", { cache: "no-store" })
+    promesseChargementPostes = fetch("./postes.geojson", { cache: "default" })
       .then((reponse) => {
         if (!reponse.ok) {
           throw new Error(`HTTP ${reponse.status}`);
@@ -2631,47 +2635,6 @@ function ouvrirPopupDepuisCoordonnees(longitude, latitude) {
   return construirePopupDepuisFeatures(longitude, latitude, featurePostes, featureAcces, featureAppareils);
 }
 
-function ouvrirPopupAvecAnimation(longitude, latitude, options = {}) {
-  if (!Number.isFinite(longitude) || !Number.isFinite(latitude)) {
-    return false;
-  }
-
-  let popupOuverte = false;
-  const ouvrirPopup = () => {
-    if (popupOuverte) {
-      return;
-    }
-    popupOuverte = true;
-    ouvrirPopupDepuisCoordonnees(longitude, latitude);
-  };
-
-  let temporisationFallbackPopup = null;
-  carte.once("moveend", () => {
-    if (temporisationFallbackPopup) {
-      clearTimeout(temporisationFallbackPopup);
-      temporisationFallbackPopup = null;
-    }
-    ouvrirPopup();
-  });
-
-  carte.flyTo({
-    center: [longitude, latitude],
-    zoom: Math.max(carte.getZoom(), Number(options.zoomMin) || 14.4),
-    speed: Number(options.speed) || 1.15,
-    curve: Number(options.curve) || 1.2,
-    essential: true
-  });
-
-  temporisationFallbackPopup = setTimeout(() => {
-    if (carte.isMoving()) {
-      return;
-    }
-    ouvrirPopup();
-  }, Number(options.fallbackMs) || 1400);
-
-  return true;
-}
-
 function ouvrirPopupAvecAnimationDepuisObjets(objets, options = {}) {
   if (!Array.isArray(objets) || !objets.length) {
     return false;
@@ -2693,6 +2656,28 @@ function ouvrirPopupAvecAnimationDepuisObjets(objets, options = {}) {
     }
   };
 
+  const canvas = carte.getCanvas();
+  const largeur = canvas?.clientWidth || window.innerWidth;
+  const hauteur = canvas?.clientHeight || window.innerHeight;
+  const pointCible = carte.project([longitude, latitude]);
+  const pointCentre = carte.project(carte.getCenter());
+  const distancePixels = Math.hypot(pointCible.x - pointCentre.x, pointCible.y - pointCentre.y);
+
+  const margeHorizontale = Math.min(190, Math.max(120, largeur * 0.22));
+  const margeHaut = Math.min(250, Math.max(140, hauteur * 0.28));
+  const margeBas = Math.min(120, Math.max(70, hauteur * 0.14));
+  const cibleDansZoneConfort =
+    pointCible.x > margeHorizontale &&
+    pointCible.x < largeur - margeHorizontale &&
+    pointCible.y > margeHaut &&
+    pointCible.y < hauteur - margeBas;
+
+  // Si le point est deja bien visible et proche du centre, on evite toute animation.
+  if (cibleDansZoneConfort && distancePixels < 140) {
+    ouvrirPopup();
+    return true;
+  }
+
   let temporisationFallbackPopup = null;
   carte.once("moveend", () => {
     if (temporisationFallbackPopup) {
@@ -2702,20 +2687,30 @@ function ouvrirPopupAvecAnimationDepuisObjets(objets, options = {}) {
     ouvrirPopup();
   });
 
-  carte.flyTo({
-    center: [longitude, latitude],
-    zoom: Math.max(carte.getZoom(), Number(options.zoomMin) || 14.4),
-    speed: Number(options.speed) || 1.15,
-    curve: Number(options.curve) || 1.2,
-    essential: true
-  });
+  const deplacementDoux = distancePixels < 320;
+  if (deplacementDoux) {
+    carte.easeTo({
+      center: [longitude, latitude],
+      duration: Number(options.durationDouxMs) || 360,
+      easing: (t) => 1 - Math.pow(1 - t, 3),
+      essential: true
+    });
+  } else {
+    carte.flyTo({
+      center: [longitude, latitude],
+      zoom: Math.max(carte.getZoom(), Number(options.zoomMin) || 14.4),
+      speed: Number(options.speed) || 1.1,
+      curve: Number(options.curve) || 1.2,
+      essential: true
+    });
+  }
 
   temporisationFallbackPopup = setTimeout(() => {
     if (carte.isMoving()) {
       return;
     }
     ouvrirPopup();
-  }, Number(options.fallbackMs) || 1400);
+  }, Number(options.fallbackMs) || (deplacementDoux ? 900 : 1400));
 
   return true;
 }
@@ -3354,9 +3349,19 @@ function lancerInitialisationDonneesSiNecessaire() {
     return;
   }
   initialisationDonneesLancee = true;
-  initialiserDonneesParDefaut().catch((erreur) => {
-    console.error("Impossible d'initialiser les donnees au demarrage", erreur);
-  });
+  const demarrer = () => {
+    initialiserDonneesParDefaut().catch((erreur) => {
+      console.error("Impossible d'initialiser les donnees au demarrage", erreur);
+    });
+  };
+
+  // Laisse le fond de carte prioritaire au premier affichage.
+  if (typeof window.requestIdleCallback === "function") {
+    window.requestIdleCallback(demarrer, { timeout: 1200 });
+    return;
+  }
+
+  window.setTimeout(demarrer, DELAI_DEMARRAGE_DONNEES_MS);
 }
 
 boutonFiltres.addEventListener("click", (event) => {
