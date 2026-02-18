@@ -1121,18 +1121,32 @@ function calculerTotalPostesPourCompteur(donnees) {
     return 0;
   }
 
-  let total = 0;
+  const hpKeys = new Set();
+  const postesUniques = new Set();
+
   for (const feature of donnees.features) {
-    const postesListe = extraireListeDepuisFeature(feature, "postes_liste_json");
-    const postesACalculer = postesListe.length ? postesListe : [feature?.properties || {}];
-    for (const poste of postesACalculer) {
-      const estHp = estHorsPatrimoine(poste?.hors_patrimoine);
-      const estSpecial = estHorsPatrimoine(poste?.special);
-      if (estHp || estSpecial) {
-        continue;
-      }
-      total += 1;
+    const propr = feature?.properties || {};
+    const nom = String(propr.nom || "").trim();
+    const type = String(propr.type || "").trim();
+    const cle = `${nom.toLowerCase()}__${type.toLowerCase()}`;
+
+    if (estHorsPatrimoine(propr.hors_patrimoine)) {
+      hpKeys.add(cle);
     }
+
+    if (estHorsPatrimoine(propr.special)) {
+      continue;
+    }
+
+    postesUniques.add(cle);
+  }
+
+  let total = 0;
+  for (const cle of postesUniques) {
+    if (hpKeys.has(cle)) {
+      continue;
+    }
+    total += 1;
   }
 
   return total;
