@@ -21,7 +21,7 @@ const COUCHE_MESURE_LIGNES = "mesure-lignes";
 const COUCHE_MESURE_POINTS = "mesure-points";
 const COUCHE_MESURE_LABELS = "mesure-labels";
 const TABLES_RSS = window.RSS_TABLE_NUMBERS || {};
-const DUREE_APPUI_LONG_MENU_CONTEXTUEL_MS = 2000;
+const DUREE_APPUI_LONG_MENU_CONTEXTUEL_MS = 1000;
 const APPAREILS_VIDE = { type: "FeatureCollection", features: [] };
 const ACCES_VIDE = { type: "FeatureCollection", features: [] };
 const POSTES_VIDE = { type: "FeatureCollection", features: [] };
@@ -2223,7 +2223,14 @@ function attacherActionsPopupInterne() {
         ouvrirPopupDepuisCoordonnees(longitude, latitude);
       };
 
-      carte.once("moveend", ouvrirPopup);
+      let temporisationFallbackPopup = null;
+      carte.once("moveend", () => {
+        if (temporisationFallbackPopup) {
+          clearTimeout(temporisationFallbackPopup);
+          temporisationFallbackPopup = null;
+        }
+        ouvrirPopup();
+      });
       carte.flyTo({
         center: [longitude, latitude],
         zoom: Math.max(carte.getZoom(), 15),
@@ -2231,7 +2238,12 @@ function attacherActionsPopupInterne() {
         curve: 1.2,
         essential: true
       });
-      setTimeout(ouvrirPopup, 700);
+      temporisationFallbackPopup = setTimeout(() => {
+        if (carte.isMoving()) {
+          return;
+        }
+        ouvrirPopup();
+      }, 1400);
     });
   }
 
@@ -2264,7 +2276,14 @@ function attacherActionsPopupInterne() {
         ouvrirPopupDepuisCoordonnees(longitude, latitude);
       };
 
-      carte.once("moveend", ouvrirPopup);
+      let temporisationFallbackPopup = null;
+      carte.once("moveend", () => {
+        if (temporisationFallbackPopup) {
+          clearTimeout(temporisationFallbackPopup);
+          temporisationFallbackPopup = null;
+        }
+        ouvrirPopup();
+      });
       carte.flyTo({
         center: [longitude, latitude],
         zoom: Math.max(carte.getZoom(), 15),
@@ -2272,7 +2291,12 @@ function attacherActionsPopupInterne() {
         curve: 1.2,
         essential: true
       });
-      setTimeout(ouvrirPopup, 700);
+      temporisationFallbackPopup = setTimeout(() => {
+        if (carte.isMoving()) {
+          return;
+        }
+        ouvrirPopup();
+      }, 1400);
     });
   }
 }
@@ -2607,6 +2631,47 @@ function ouvrirPopupDepuisCoordonnees(longitude, latitude) {
   return construirePopupDepuisFeatures(longitude, latitude, featurePostes, featureAcces, featureAppareils);
 }
 
+function ouvrirPopupAvecAnimation(longitude, latitude, options = {}) {
+  if (!Number.isFinite(longitude) || !Number.isFinite(latitude)) {
+    return false;
+  }
+
+  let popupOuverte = false;
+  const ouvrirPopup = () => {
+    if (popupOuverte) {
+      return;
+    }
+    popupOuverte = true;
+    ouvrirPopupDepuisCoordonnees(longitude, latitude);
+  };
+
+  let temporisationFallbackPopup = null;
+  carte.once("moveend", () => {
+    if (temporisationFallbackPopup) {
+      clearTimeout(temporisationFallbackPopup);
+      temporisationFallbackPopup = null;
+    }
+    ouvrirPopup();
+  });
+
+  carte.flyTo({
+    center: [longitude, latitude],
+    zoom: Math.max(carte.getZoom(), Number(options.zoomMin) || 14.4),
+    speed: Number(options.speed) || 1.15,
+    curve: Number(options.curve) || 1.2,
+    essential: true
+  });
+
+  temporisationFallbackPopup = setTimeout(() => {
+    if (carte.isMoving()) {
+      return;
+    }
+    ouvrirPopup();
+  }, Number(options.fallbackMs) || 1400);
+
+  return true;
+}
+
 function ouvrirPopupDepuisObjetsCarte(objets) {
   if (!Array.isArray(objets) || !objets.length) {
     return false;
@@ -2799,7 +2864,10 @@ function activerInteractionsCarte() {
       return;
     }
 
-    ouvrirPopupDepuisObjetsCarte(objets);
+    const [longitude, latitude] = objets[0]?.geometry?.coordinates || [];
+    if (!ouvrirPopupAvecAnimation(longitude, latitude)) {
+      ouvrirPopupDepuisObjetsCarte(objets);
+    }
   });
 
   carte.on("contextmenu", (event) => {
