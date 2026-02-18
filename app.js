@@ -110,6 +110,7 @@ let coordonneesDerniereFiche = null;
 let marqueurLocalisation = null;
 let recadragePopupMobileEnCours = false;
 let navigationPopupProgrammatiqueEnCours = false;
+let conserverFichePendantNavigation = false;
 let restaurationStylePlanifiee = false;
 let contexteMenuPosition = {
   longitude: null,
@@ -752,6 +753,7 @@ function afficherMessageInfoVitesseLigne() {
 function fermerPopupCarte(options = {}) {
   const { localiserPoint = false } = options;
   const coordonnees = Array.isArray(coordonneesDerniereFiche) ? [...coordonneesDerniereFiche] : null;
+  conserverFichePendantNavigation = false;
   if (!popupCarte) {
     if (localiserPoint && coordonnees) {
       demarrerClignotementLocalisation(coordonnees[0], coordonnees[1]);
@@ -3096,6 +3098,7 @@ function naviguerVersCoordonneesPuisOuvrirPopup(longitude, latitude, ouvrirPopup
     return false;
   }
 
+  const conserverPopupOuvert = Boolean(options.conserverPopupOuvert);
   const { distancePixels, cibleDansZoneConfort } = calculerContexteDeplacement(longitude, latitude);
   const forcerZoom = Boolean(options.forceZoom);
   if (!forcerZoom && cibleDansZoneConfort && distancePixels < 210) {
@@ -3104,9 +3107,15 @@ function naviguerVersCoordonneesPuisOuvrirPopup(longitude, latitude, ouvrirPopup
   }
 
   let temporisationFallbackPopup = null;
+  if (conserverPopupOuvert) {
+    conserverFichePendantNavigation = true;
+  }
   demarrerNavigationPopupProgrammatique();
   carte.once("moveend", () => {
     terminerNavigationPopupProgrammatique();
+    if (conserverPopupOuvert) {
+      conserverFichePendantNavigation = false;
+    }
     if (temporisationFallbackPopup) {
       clearTimeout(temporisationFallbackPopup);
       temporisationFallbackPopup = null;
@@ -3137,7 +3146,69 @@ function naviguerVersCoordonneesPuisOuvrirPopup(longitude, latitude, ouvrirPopup
       return;
     }
     terminerNavigationPopupProgrammatique();
+    if (conserverPopupOuvert) {
+      conserverFichePendantNavigation = false;
+    }
     ouvrirPopup();
+  }, Number(options.fallbackMs) || (distancePixels < 520 ? 980 : 1500));
+
+  return true;
+}
+
+function naviguerVersCoordonneesArrierePlan(longitude, latitude, options = {}) {
+  if (!Number.isFinite(longitude) || !Number.isFinite(latitude)) {
+    return false;
+  }
+
+  const { distancePixels, cibleDansZoneConfort } = calculerContexteDeplacement(longitude, latitude);
+  const forcerZoom = Boolean(options.forceZoom);
+  if (!forcerZoom && cibleDansZoneConfort && distancePixels < 210) {
+    return true;
+  }
+
+  const conserverPopupOuvert = Boolean(options.conserverPopupOuvert);
+  if (conserverPopupOuvert) {
+    conserverFichePendantNavigation = true;
+  }
+  demarrerNavigationPopupProgrammatique();
+
+  let fallback = null;
+  const terminer = () => {
+    terminerNavigationPopupProgrammatique();
+    if (conserverPopupOuvert) {
+      conserverFichePendantNavigation = false;
+    }
+    if (fallback) {
+      clearTimeout(fallback);
+      fallback = null;
+    }
+  };
+
+  carte.once("moveend", terminer);
+
+  if (distancePixels < 520) {
+    carte.easeTo({
+      center: [longitude, latitude],
+      zoom: forcerZoom ? Math.max(carte.getZoom(), Number(options.zoomMin) || 14.2) : carte.getZoom(),
+      duration: Number(options.durationDouxMs) || 460,
+      easing: (t) => 1 - Math.pow(1 - t, 3),
+      essential: true
+    });
+  } else {
+    carte.flyTo({
+      center: [longitude, latitude],
+      zoom: Math.max(carte.getZoom(), Number(options.zoomMin) || 14.2),
+      speed: Number(options.speed) || 1.05,
+      curve: Number(options.curve) || 1.15,
+      essential: true
+    });
+  }
+
+  fallback = setTimeout(() => {
+    if (carte.isMoving()) {
+      return;
+    }
+    terminer();
   }, Number(options.fallbackMs) || (distancePixels < 520 ? 980 : 1500));
 
   return true;
@@ -3430,7 +3501,7 @@ function activerInteractionsCarte() {
 
   carte.on("movestart", () => {
     fermerMenuContextuel();
-    if (!recadragePopupMobileEnCours && !navigationPopupProgrammatiqueEnCours) {
+    if (!recadragePopupMobileEnCours && !navigationPopupProgrammatiqueEnCours && !conserverFichePendantNavigation) {
       fermerPopupCarte();
     }
   });
@@ -3964,21 +4035,25 @@ if (champRecherche && listeResultatsRecherche) {
       appliquerCouchesDonnees();
       remonterCouchesDonnees();
 
+      // Sur mobile, le blur du champ peut déclencher un petit mouvement de viewport:
+      // on garde la fiche ouverte pendant toute la séquence "ouvrir puis zoom".
+      conserverFichePendantNavigation = true;
       fermerResultatsRecherche();
       champRecherche.blur();
       fermerMenuFiltres();
       fermerMenuFonds();
 
-      const ouvrirPopupRecherche = () => {
-        ouvrirPopupDepuisCoordonnees(longitude, latitude);
-      };
-      ouvrirPopupRecherche();
-      naviguerVersCoordonneesPuisOuvrirPopup(longitude, latitude, ouvrirPopupRecherche, {
-        forceZoom: true,
-        zoomMin: 14.1,
-        durationDouxMs: 430
-      });
+      ouvrirPopupDepuisCoordonnees(longitude, latitude);
+      setTimeout(() => {
+        naviguerVersCoordonneesArrierePlan(longitude, latitude, {
+          forceZoom: true,
+          conserverPopupOuvert: true,
+          zoomMin: 14.1,
+          durationDouxMs: 430
+        });
+      }, 40);
     } catch (erreur) {
+      conserverFichePendantNavigation = false;
       console.error("Impossible d'ouvrir le resultat de recherche", erreur);
     }
   });
