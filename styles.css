@@ -1657,6 +1657,10 @@ body {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
+  .popup-itineraires-localiser {
+    grid-template-columns: 1fr !important;
+  }
+
   .menu-contextuel-carte {
     min-width: min(280px, calc(100vw - 20px));
   }
@@ -1729,6 +1733,15 @@ body {
   .popup-bouton-itineraire {
     font-size: 0.76rem;
     padding: 8px 4px;
+  }
+
+  .popup-itineraires-localiser {
+    grid-template-columns: 1fr !important;
+  }
+
+  .popup-bouton-localiser {
+    width: 100%;
+    grid-column: 1 / -1;
   }
 
   .maplibregl-popup-content {

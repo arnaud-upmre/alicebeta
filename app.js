@@ -86,7 +86,7 @@ let fondActif = "satelliteIgn";
 let afficherAppareils = false;
 let afficherAcces = true;
 let afficherPostes = true;
-let afficherLignes = true;
+let afficherLignes = false;
 let afficherVitesseLigne = false;
 let donneesAppareils = null;
 let donneesAcces = null;
@@ -3969,8 +3969,11 @@ if (champRecherche && listeResultatsRecherche) {
       fermerMenuFiltres();
       fermerMenuFonds();
 
-      ouvrirPopupDepuisCoordonnees(longitude, latitude);
-      naviguerVersCoordonneesPuisOuvrirPopup(longitude, latitude, () => {}, {
+      const ouvrirPopupRecherche = () => {
+        ouvrirPopupDepuisCoordonnees(longitude, latitude);
+      };
+      ouvrirPopupRecherche();
+      naviguerVersCoordonneesPuisOuvrirPopup(longitude, latitude, ouvrirPopupRecherche, {
         forceZoom: true,
         zoomMin: 14.1,
         durationDouxMs: 430
