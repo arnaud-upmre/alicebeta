@@ -107,7 +107,8 @@ let mesureActive = false;
 let mesurePoints = [];
 let navigationInternePopup = null;
 let minuterieClignotementLocalisation = null;
-let gestionnaireArretLocalisation = null;
+let minuterieArretLocalisation = null;
+let coordonneesDerniereFiche = null;
 let recadragePopupMobileEnCours = false;
 let navigationPopupProgrammatiqueEnCours = false;
 let restaurationStylePlanifiee = false;
@@ -749,13 +750,21 @@ function afficherMessageInfoVitesseLigne() {
   }, 5200);
 }
 
-function fermerPopupCarte() {
+function fermerPopupCarte(options = {}) {
+  const { localiserPoint = false } = options;
+  const coordonnees = Array.isArray(coordonneesDerniereFiche) ? [...coordonneesDerniereFiche] : null;
   if (!popupCarte) {
+    if (localiserPoint && coordonnees) {
+      demarrerClignotementLocalisation(coordonnees[0], coordonnees[1]);
+    }
     return;
   }
   popupCarte.remove();
   popupCarte = null;
   navigationInternePopup = null;
+  if (localiserPoint && coordonnees) {
+    demarrerClignotementLocalisation(coordonnees[0], coordonnees[1]);
+  }
 }
 
 function creerPopupFicheModale() {
@@ -966,22 +975,34 @@ function definirPointLocalisation(longitude, latitude) {
   });
 }
 
+function supprimerPointLocalisation() {
+  if (!carte.isStyleLoaded()) {
+    return;
+  }
+  const source = carte.getSource(SOURCE_LOCALISATION);
+  if (!source) {
+    return;
+  }
+  source.setData({
+    type: "FeatureCollection",
+    features: []
+  });
+}
+
 function arreterClignotementLocalisation() {
   if (minuterieClignotementLocalisation) {
     clearInterval(minuterieClignotementLocalisation);
     minuterieClignotementLocalisation = null;
   }
-  if (gestionnaireArretLocalisation) {
-    const evenements = ["movestart", "zoomstart", "dragstart", "rotatestart", "pitchstart", "click", "touchstart", "wheel"];
-    for (const evenement of evenements) {
-      carte.off(evenement, gestionnaireArretLocalisation);
-    }
-    gestionnaireArretLocalisation = null;
+  if (minuterieArretLocalisation) {
+    clearTimeout(minuterieArretLocalisation);
+    minuterieArretLocalisation = null;
   }
   if (carte.getLayer(COUCHE_LOCALISATION_POINT)) {
     carte.setPaintProperty(COUCHE_LOCALISATION_POINT, "circle-opacity", 1);
     carte.setPaintProperty(COUCHE_LOCALISATION_POINT, "circle-stroke-opacity", 1);
   }
+  supprimerPointLocalisation();
 }
 
 function demarrerClignotementLocalisation(longitude, latitude) {
@@ -1004,14 +1025,9 @@ function demarrerClignotementLocalisation(longitude, latitude) {
     carte.setPaintProperty(COUCHE_LOCALISATION_POINT, "circle-opacity", visible ? 1 : 0.12);
     carte.setPaintProperty(COUCHE_LOCALISATION_POINT, "circle-stroke-opacity", visible ? 1 : 0.2);
   }, 390);
-
-  gestionnaireArretLocalisation = () => {
+  minuterieArretLocalisation = setTimeout(() => {
     arreterClignotementLocalisation();
-  };
-  const evenements = ["movestart", "zoomstart", "dragstart", "rotatestart", "pitchstart", "click", "touchstart", "wheel"];
-  for (const evenement of evenements) {
-    carte.on(evenement, gestionnaireArretLocalisation);
-  }
+  }, 5000);
 }
 
 function chargerScriptItineraire() {
@@ -3082,7 +3098,7 @@ function construirePopupDepuisFeatures(longitude, latitude, featurePostes, featu
   const sectionRetourPoste = coordonneesRetourPosteDepuisAppareil
     ? `<section class="popup-section popup-section-itineraires"><div class="popup-section-titre"><span class="popup-badge popup-badge-itineraire">Poste</span></div><div class="popup-itineraires"><button class="popup-bouton-itineraire" id="popup-retour-poste-appareil" type="button" data-lng="${coordonneesRetourPosteDepuisAppareil[0]}" data-lat="${coordonneesRetourPosteDepuisAppareil[1]}">↩ Retour poste</button></div></section>`
     : "";
-  const sectionLocaliser = `<section class="popup-section"><button class="popup-action-lien" id="popup-localiser-carte" type="button" data-lng="${longitude}" data-lat="${latitude}">📍 Localiser sur la carte</button></section>`;
+  const sectionLocaliser = `<section class="popup-section popup-section-localiser"><div class="popup-itineraires popup-itineraires-localiser"><button class="popup-bouton-itineraire popup-bouton-localiser" id="popup-localiser-carte" type="button" data-lng="${longitude}" data-lat="${latitude}">📍 Localiser sur la carte</button></div></section>`;
   const contenuFiche = `<div class="popup-carte">${sections.join("")}${sectionPortail}${sectionRssAssocieDepuisAcces}${sectionItineraire}${sectionRetourPoste}${sectionLocaliser}</div>`;
 
   let contenuVueAppareils = "";
@@ -3091,6 +3107,7 @@ function construirePopupDepuisFeatures(longitude, latitude, featurePostes, featu
   }
 
   fermerPopupCarte();
+  coordonneesDerniereFiche = [longitude, latitude];
   navigationInternePopup = sectionAppareilsAssociesPoste
     ? {
         vueFiche: contenuFiche,
@@ -3109,6 +3126,7 @@ function construirePopupDepuisFeatures(longitude, latitude, featurePostes, featu
   popupCarte.on("close", () => {
     popupCarte = null;
     navigationInternePopup = null;
+    coordonneesDerniereFiche = null;
   });
 
   return true;
@@ -3934,7 +3952,7 @@ if (boutonFermerLegende) {
 
 if (boutonFermerModalFiche) {
   boutonFermerModalFiche.addEventListener("click", () => {
-    fermerPopupCarte();
+    fermerPopupCarte({ localiserPoint: true });
   });
 }
 
