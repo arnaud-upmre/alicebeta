@@ -62,8 +62,8 @@
     const zoneResume = document.getElementById("itineraire-resume");
     const valeurDistance = document.getElementById("itineraire-distance");
     const valeurDuree = document.getElementById("itineraire-duree");
-    const boutonInverser = document.getElementById("itineraire-inverser");
     const boutonGoogle = document.getElementById("itineraire-google");
+    const boutonApple = document.getElementById("itineraire-apple");
     const boutonWaze = document.getElementById("itineraire-waze");
     const boutonToggleCarte = document.getElementById("itineraire-toggle-carte");
     const panneauCarte = document.getElementById("itineraire-apercu");
@@ -119,6 +119,7 @@
       if (valeurDistance) valeurDistance.textContent = "-";
       if (valeurDuree) valeurDuree.textContent = "-";
       marquerActionInactive(boutonGoogle, true);
+      marquerActionInactive(boutonApple, true);
       marquerActionInactive(boutonWaze, true);
 
       if (miniCarteChargee) {
@@ -220,6 +221,7 @@
       const destination = `${arrivee.latitude},${arrivee.longitude}`;
       return {
         google: `https://www.google.com/maps/dir/?api=1&origin=${encodeURIComponent(origine)}&destination=${encodeURIComponent(destination)}&travelmode=driving`,
+        apple: `https://maps.apple.com/?saddr=${encodeURIComponent(origine)}&daddr=${encodeURIComponent(destination)}&dirflg=d`,
         waze: `https://waze.com/ul?ll=${encodeURIComponent(destination)}&navigate=yes`
       };
     }
@@ -234,8 +236,10 @@
 
       const liens = construireLiensExternes(depart, arrivee);
       if (boutonGoogle) boutonGoogle.href = liens.google;
+      if (boutonApple) boutonApple.href = liens.apple;
       if (boutonWaze) boutonWaze.href = liens.waze;
       marquerActionInactive(boutonGoogle, false);
+      marquerActionInactive(boutonApple, false);
       marquerActionInactive(boutonWaze, false);
     }
 
@@ -537,20 +541,13 @@
       }
     });
 
-    boutonInverser?.addEventListener("click", () => {
-      if (!selectionDepart || !selectionArrivee) {
-        return;
-      }
-      const depart = selectionDepart;
-      selectionDepart = selectionArrivee;
-      selectionArrivee = depart;
-      if (champDepart) champDepart.value = selectionDepart.label;
-      if (champArrivee) champArrivee.value = selectionArrivee.label;
-      mettreAJourResume();
-    });
-
     boutonGoogle?.addEventListener("click", (event) => {
       if (boutonGoogle.classList.contains("est-inactif")) {
+        event.preventDefault();
+      }
+    });
+    boutonApple?.addEventListener("click", (event) => {
+      if (boutonApple.classList.contains("est-inactif")) {
         event.preventDefault();
       }
     });
