@@ -1668,11 +1668,21 @@ function construireSectionAcces(feature) {
   const construireTitreAccesHtml = (acces) => construireTitreNomTypeSatAccesHtml(acces, { nomVilleDe: true });
   const clesAccesUniques = new Set(
     accesListe
-      .map((a) =>
-        [champCompletOuVide(a?.acces), champCompletOuVide(a?.portail)]
-          .map((v) => normaliserTexteRecherche(v))
-          .join("|")
-      )
+      .map((a) => normaliserTexteRecherche(champCompletOuVide(a?.acces)))
+      .filter(Boolean)
+  );
+  // Fallback: si "acces" est vide, on deduit une cle route via nom/type/sat.
+  if (!clesAccesUniques.size) {
+    for (const acces of accesListe) {
+      const cleFallback = construireCleNomTypeSat(acces);
+      if (cleFallback) {
+        clesAccesUniques.add(cleFallback);
+      }
+    }
+  }
+  const clesAffichageLignes = new Set(
+    accesListe
+      .map((a) => normaliserTexteRecherche(champCompletOuVide(a?.acces)))
       .filter(Boolean)
   );
   const clesPostesUniques = new Set(
@@ -1685,16 +1695,17 @@ function construireSectionAcces(feature) {
     const lignes = accesListe
       .map((a) => {
         const titreHtml = construireTitreAccesHtml(a);
-        const classeHors = a.hors_patrimoine ? "popup-item-hors" : "";
-        return `<li class="${classeHors}"><span class="popup-acces-ligne">${titreHtml}</span></li>`;
+        const classeHp = a.hors_patrimoine ? " popup-acces-ligne-hp" : "";
+        return `<li><span class="popup-acces-ligne${classeHp}">${titreHtml}</span></li>`;
       })
       .join("");
     const totalAccesUniques = Math.max(1, clesAccesUniques.size || Number(propr.acces_count) || 1);
     const totalPostesUniques = clesPostesUniques.size;
+    const totalLignesUniques = Math.max(1, clesAffichageLignes.size || accesListe.length);
     const libelleBadge =
       totalAccesUniques === 1 && totalPostesUniques > 1
         ? `${totalPostesUniques} postes`
-        : `${totalAccesUniques} accès voiture`;
+        : `${totalLignesUniques} accès voiture`;
     return `<section class="popup-section"><div class="popup-pill-ligne"><span class="popup-badge popup-badge-acces">${echapperHtml(libelleBadge)}</span></div><ul>${lignes}</ul></section>`;
   }
 
