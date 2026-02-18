@@ -949,6 +949,11 @@ function assurerSourceEtCoucheLocalisation() {
     });
   }
 
+  // Garde le repère visible au-dessus des autres couches même après un nouveau remonterCouchesDonnees().
+  if (carte.getLayer(COUCHE_LOCALISATION_POINT)) {
+    carte.moveLayer(COUCHE_LOCALISATION_POINT);
+  }
+
   return true;
 }
 
