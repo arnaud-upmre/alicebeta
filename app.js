@@ -563,6 +563,11 @@ function regrouperPostesParCoordonnees(geojson) {
   };
 }
 
+let conteneurControleActionsCarte = null;
+let boutonLocaliserCarte = null;
+let boutonInfoCarte = null;
+let menuLegendeOuvert = false;
+
 const carte = new maplibregl.Map({
   container: "map",
   center: CENTRE_INITIAL,
@@ -574,7 +579,7 @@ const carte = new maplibregl.Map({
   style: fondsCartographiques[fondActif]
 });
 
-carte.addControl(new maplibregl.NavigationControl(), "top-right");
+carte.addControl(new maplibregl.NavigationControl({ showCompass: false }), "top-right");
 carte.addControl(new maplibregl.ScaleControl({ maxWidth: 120, unit: "metric" }), "bottom-left");
 
 const controleFonds = document.getElementById("controle-fonds");
@@ -612,8 +617,57 @@ const boutonCtxAjoutAppareil = document.getElementById("ctx-add-appareil");
 const panneauMesure = document.getElementById("panneau-mesure");
 const textePanneauMesure = document.getElementById("panneau-mesure-texte");
 const boutonSortieMesure = document.getElementById("bouton-sortie-mesure");
+const menuLegendeCarte = document.getElementById("menu-legende-carte");
+const boutonFermerLegende = document.getElementById("bouton-fermer-legende");
 const CLE_STOCKAGE_FENETRE_ACCUEIL = "alice.fenetre-accueil.derniere-date";
 let temporisationInfoVitesse = null;
+
+class ControleActionsCarte {
+  onAdd() {
+    const conteneur = document.createElement("div");
+    conteneur.className = "maplibregl-ctrl maplibregl-ctrl-group controle-actions-carte";
+
+    const boutonLocaliser = document.createElement("button");
+    boutonLocaliser.type = "button";
+    boutonLocaliser.className = "bouton-carte-action";
+    boutonLocaliser.setAttribute("aria-label", "Me localiser");
+    boutonLocaliser.innerHTML = `
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M12 8.8A3.2 3.2 0 1 0 12 15.2 3.2 3.2 0 1 0 12 8.8z"/>
+        <path d="M20.5 11h-1.64a6.94 6.94 0 0 0-5.86-5.86V3.5a1 1 0 1 0-2 0v1.64A6.94 6.94 0 0 0 5.14 11H3.5a1 1 0 1 0 0 2h1.64a6.94 6.94 0 0 0 5.86 5.86v1.64a1 1 0 1 0 2 0v-1.64A6.94 6.94 0 0 0 18.86 13h1.64a1 1 0 1 0 0-2zM12 17a5 5 0 1 1 0-10 5 5 0 0 1 0 10z"/>
+      </svg>
+    `;
+
+    const boutonInfo = document.createElement("button");
+    boutonInfo.type = "button";
+    boutonInfo.className = "bouton-carte-action";
+    boutonInfo.setAttribute("aria-label", "Afficher la légende");
+    boutonInfo.setAttribute("aria-expanded", "false");
+    boutonInfo.innerHTML = `
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M11 10h2v7h-2zM11 7h2v2h-2z"/>
+        <path d="M12 2.5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 12 2.5zm0 17a7.5 7.5 0 1 1 7.5-7.5 7.51 7.51 0 0 1-7.5 7.5z"/>
+      </svg>
+    `;
+
+    conteneur.append(boutonLocaliser, boutonInfo);
+    conteneurControleActionsCarte = conteneur;
+    boutonLocaliserCarte = boutonLocaliser;
+    boutonInfoCarte = boutonInfo;
+    return conteneur;
+  }
+
+  onRemove() {
+    if (conteneurControleActionsCarte?.parentNode) {
+      conteneurControleActionsCarte.parentNode.removeChild(conteneurControleActionsCarte);
+    }
+    conteneurControleActionsCarte = null;
+    boutonLocaliserCarte = null;
+    boutonInfoCarte = null;
+  }
+}
+
+carte.addControl(new ControleActionsCarte(), "top-right");
 
 function actualiserPlaceholderRecherche() {
   if (!champRecherche) {
@@ -1048,6 +1102,68 @@ function basculerSousMenuItineraire() {
   }
   sousMenuItin.classList.add("est-visible");
   sousMenuItin.setAttribute("aria-hidden", "false");
+}
+
+function fermerMenuLegende() {
+  if (!menuLegendeCarte || !menuLegendeOuvert) {
+    return;
+  }
+  menuLegendeCarte.classList.remove("est-visible");
+  menuLegendeCarte.setAttribute("aria-hidden", "true");
+  if (boutonInfoCarte) {
+    boutonInfoCarte.setAttribute("aria-expanded", "false");
+  }
+  menuLegendeOuvert = false;
+}
+
+function ouvrirMenuLegende() {
+  if (!menuLegendeCarte) {
+    return;
+  }
+  menuLegendeCarte.classList.add("est-visible");
+  menuLegendeCarte.setAttribute("aria-hidden", "false");
+  if (boutonInfoCarte) {
+    boutonInfoCarte.setAttribute("aria-expanded", "true");
+  }
+  menuLegendeOuvert = true;
+}
+
+function basculerMenuLegende() {
+  if (menuLegendeOuvert) {
+    fermerMenuLegende();
+    return;
+  }
+  ouvrirMenuLegende();
+}
+
+function localiserUtilisateurCarte() {
+  if (!navigator.geolocation) {
+    alert("La géolocalisation n'est pas disponible sur cet appareil.");
+    return;
+  }
+
+  navigator.geolocation.getCurrentPosition(
+    ({ coords }) => {
+      const longitude = Number(coords?.longitude);
+      const latitude = Number(coords?.latitude);
+      if (!Number.isFinite(longitude) || !Number.isFinite(latitude)) {
+        return;
+      }
+      carte.flyTo({
+        center: [longitude, latitude],
+        zoom: Math.max(carte.getZoom(), 15.5),
+        essential: true
+      });
+    },
+    () => {
+      alert("Impossible de récupérer votre position.");
+    },
+    {
+      enableHighAccuracy: true,
+      timeout: 10000,
+      maximumAge: 120000
+    }
+  );
 }
 
 async function partagerPositionContextuelle() {
@@ -3539,6 +3655,30 @@ boutonFiltres.addEventListener("click", (event) => {
   basculerMenuFiltres();
 });
 
+if (boutonLocaliserCarte) {
+  boutonLocaliserCarte.addEventListener("click", (event) => {
+    event.stopPropagation();
+    localiserUtilisateurCarte();
+  });
+}
+
+if (boutonInfoCarte) {
+  boutonInfoCarte.addEventListener("click", (event) => {
+    event.stopPropagation();
+    fermerMenuFonds();
+    fermerMenuFiltres();
+    fermerResultatsRecherche();
+    fermerMenuContextuel();
+    basculerMenuLegende();
+  });
+}
+
+if (boutonFermerLegende) {
+  boutonFermerLegende.addEventListener("click", () => {
+    fermerMenuLegende();
+  });
+}
+
 if (champRecherche && listeResultatsRecherche) {
   let temporisationRecherche = null;
 
@@ -3780,6 +3920,12 @@ document.addEventListener("click", (event) => {
   if (menuContextuelCarte && !menuContextuelCarte.contains(event.target)) {
     fermerMenuContextuel();
   }
+
+  const clicDansLegende = menuLegendeCarte?.contains(event.target);
+  const clicDansControleActions = conteneurControleActionsCarte?.contains(event.target);
+  if (!clicDansLegende && !clicDansControleActions) {
+    fermerMenuLegende();
+  }
 });
 
 document.addEventListener("keydown", (event) => {
@@ -3789,6 +3935,7 @@ document.addEventListener("keydown", (event) => {
     fermerMenuFiltres();
     fermerResultatsRecherche();
     fermerMenuContextuel();
+    fermerMenuLegende();
     if (mesureActive || mesurePoints.length) {
       quitterModeMesure();
     }
