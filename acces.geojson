@@ -286,7 +286,7 @@
         "type": "Point",
         "coordinates": [
           3.08902,
-          50.61520
+          50.6152
         ]
       }
     },
@@ -963,7 +963,7 @@
         "type": "SSP",
         "SAT": "",
         "acces": "",
-        "portail": "",
+        "portail": "Cadenas artillerie",
         "hors_patrimoine": false
       },
       "geometry": {
@@ -2392,7 +2392,7 @@
         "type": "Point",
         "coordinates": [
           2.87374,
-          50.29700
+          50.297
         ]
       }
     },
@@ -2410,7 +2410,7 @@
         "type": "Point",
         "coordinates": [
           2.87374,
-          50.29700
+          50.297
         ]
       }
     },
@@ -4354,7 +4354,7 @@
         "type": "Point",
         "coordinates": [
           2.764586,
-          50.250370
+          50.25037
         ]
       }
     },
@@ -4437,7 +4437,7 @@
         "type": "S",
         "SAT": "",
         "acces": "",
-        "portail": "",
+        "portail": "Clé 590",
         "hors_patrimoine": false
       },
       "geometry": {
@@ -4599,7 +4599,7 @@
         "type": "P",
         "SAT": "",
         "acces": "",
-        "portail": "",
+        "portail": "Clé 121",
         "hors_patrimoine": false
       },
       "geometry": {
@@ -4677,7 +4677,7 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          2.97160,
+          2.9716,
           50.46588
         ]
       }
@@ -4725,7 +4725,7 @@
         "type": "P",
         "SAT": "",
         "acces": "",
-        "portail": "",
+        "portail": "Badge Eurotunnel obligatoire",
         "hors_patrimoine": false
       },
       "geometry": {
@@ -4743,7 +4743,7 @@
         "type": "P",
         "SAT": "SAT1",
         "acces": "",
-        "portail": "",
+        "portail": "Badge Eurotunnel obligatoire",
         "hors_patrimoine": false
       },
       "geometry": {
@@ -4761,7 +4761,7 @@
         "type": "P",
         "SAT": "SAT2",
         "acces": "",
-        "portail": "",
+        "portail": "Badge Eurotunnel obligatoire",
         "hors_patrimoine": false
       },
       "geometry": {
@@ -4779,7 +4779,7 @@
         "type": "P",
         "SAT": "SAT3",
         "acces": "",
-        "portail": "",
+        "portail": "Badge Eurotunnel obligatoire",
         "hors_patrimoine": false
       },
       "geometry": {
@@ -4923,7 +4923,7 @@
         "type": "SST",
         "SAT": "",
         "acces": "",
-        "portail": "",
+        "portail": "Clé 121",
         "hors_patrimoine": false
       },
       "geometry": {
@@ -4941,7 +4941,7 @@
         "type": "SST",
         "SAT": "SAT1",
         "acces": "",
-        "portail": "",
+        "portail": "Pas de portail",
         "hors_patrimoine": false
       },
       "geometry": {
@@ -5031,7 +5031,7 @@
         "type": "SSP",
         "SAT": "",
         "acces": "",
-        "portail": "",
+        "portail": "Pas de portail",
         "hors_patrimoine": false
       },
       "geometry": {
@@ -5265,7 +5265,7 @@
         "type": "P",
         "SAT": "",
         "acces": "",
-        "portail": "",
+        "portail": "Clé 590",
         "hors_patrimoine": false
       },
       "geometry": {
@@ -5445,7 +5445,7 @@
         "type": "SST",
         "SAT": "",
         "acces": "",
-        "portail": "",
+        "portail": "Clé 121",
         "hors_patrimoine": false
       },
       "geometry": {
@@ -5668,7 +5668,7 @@
         "type": "Point",
         "coordinates": [
           3.08902,
-          50.61520
+          50.6152
         ]
       }
     },
@@ -5823,7 +5823,7 @@
         "type": "SSP",
         "SAT": "",
         "acces": "",
-        "portail": "",
+        "portail": "Clé 590 + 121",
         "hors_patrimoine": false
       },
       "geometry": {
@@ -5841,7 +5841,7 @@
         "type": "SP",
         "SAT": "",
         "acces": "",
-        "portail": "",
+        "portail": "Pas de portail",
         "hors_patrimoine": false
       },
       "geometry": {
@@ -5859,7 +5859,7 @@
         "type": "SP",
         "SAT": "SAT1",
         "acces": "",
-        "portail": "",
+        "portail": "Pas de portail",
         "hors_patrimoine": false
       },
       "geometry": {
@@ -5877,7 +5877,7 @@
         "type": "SP",
         "SAT": "SAT2",
         "acces": "",
-        "portail": "",
+        "portail": "Pas de portail",
         "hors_patrimoine": false
       },
       "geometry": {
@@ -5949,7 +5949,7 @@
         "type": "SP",
         "SAT": "",
         "acces": "",
-        "portail": "",
+        "portail": "Pas de portail",
         "hors_patrimoine": false
       },
       "geometry": {
@@ -5985,7 +5985,7 @@
         "type": "L-A",
         "SAT": "",
         "acces": "",
-        "portail": "",
+        "portail": "Appeler l'agent E",
         "hors_patrimoine": false
       },
       "geometry": {
@@ -6021,7 +6021,7 @@
         "type": "SP",
         "SAT": "",
         "acces": "",
-        "portail": "",
+        "portail": "Pas de portail",
         "hors_patrimoine": false
       },
       "geometry": {
@@ -6111,7 +6111,7 @@
         "type": "SST",
         "SAT": "",
         "acces": "",
-        "portail": "",
+        "portail": "Clé 121",
         "hors_patrimoine": false
       },
       "geometry": {
@@ -6129,7 +6129,7 @@
         "type": "SP",
         "SAT": "",
         "acces": "",
-        "portail": "",
+        "portail": "Pas de portail",
         "hors_patrimoine": false
       },
       "geometry": {
@@ -6255,7 +6255,7 @@
         "type": "P",
         "SAT": "",
         "acces": "",
-        "portail": "",
+        "portail": "Clé LGV + 121",
         "hors_patrimoine": false
       },
       "geometry": {
