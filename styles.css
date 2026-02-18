@@ -14,6 +14,10 @@
   --ui-text-secondary: #374151;
   --ui-text-muted: #6b7280;
   --ui-text-on-glass: #111827;
+  --ui-link-color: #1d4ed8;
+  --ui-link-hover: #1e40af;
+  --badge-postes-fg: #1e40af;
+  --badge-postes-bg: rgba(59, 130, 246, 0.2);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -32,6 +36,44 @@
     --ui-text-secondary: #d1d5db;
     --ui-text-muted: #9ca3af;
     --ui-text-on-glass: #f9fafb;
+    --ui-link-color: #93c5fd;
+    --ui-link-hover: #bfdbfe;
+    --badge-postes-fg: #dbeafe;
+    --badge-postes-bg: rgba(96, 165, 250, 0.3);
+  }
+
+  .bouton-filtres,
+  .bouton-fonds,
+  .maplibregl-ctrl-group button {
+    border-color: rgba(148, 163, 184, 0.26);
+    background: rgba(2, 6, 23, 0.9);
+    box-shadow: 0 8px 18px rgba(2, 6, 23, 0.55);
+    color: #e5e7eb;
+  }
+
+  .icone-burger,
+  .icone-couches {
+    fill: #e5e7eb;
+  }
+
+  .menu-filtres,
+  .menu-fonds {
+    border-color: rgba(148, 163, 184, 0.22);
+    background: rgba(2, 6, 23, 0.92);
+    box-shadow: 0 16px 28px rgba(2, 6, 23, 0.6);
+  }
+
+  .option-filtre,
+  .option-fond {
+    color: #e5e7eb;
+  }
+
+  .filtre-compteur {
+    color: #cbd5e1;
+  }
+
+  .maplibregl-ctrl-group button:hover {
+    background: rgba(15, 23, 42, 0.95);
   }
 }
 
@@ -633,8 +675,8 @@ body,
 }
 
 .popup-badge-postes {
-  color: #1e40af;
-  background: rgba(59, 130, 246, 0.2);
+  color: var(--badge-postes-fg);
+  background: var(--badge-postes-bg);
 }
 
 .popup-badge-poste-nom {
@@ -823,7 +865,7 @@ body,
 }
 
 .popup-poste-appareil-lien {
-  color: #1d4ed8;
+  color: var(--ui-link-color);
   border: 0;
   background: transparent;
   padding: 0;
@@ -837,7 +879,7 @@ body,
 
 .popup-poste-appareil-lien:hover,
 .popup-poste-appareil-lien:focus-visible {
-  color: #1e40af;
+  color: var(--ui-link-hover);
   outline: none;
 }
 
@@ -847,7 +889,7 @@ body,
   background: transparent;
   padding: 0;
   margin: 0;
-  color: #1d4ed8;
+  color: var(--ui-link-color);
   font-family: "Manrope", "Avenir Next", "Segoe UI", sans-serif;
   font-size: 0.88rem;
   font-weight: 600;
@@ -860,7 +902,7 @@ body,
 
 .popup-action-lien:hover,
 .popup-action-lien:focus-visible {
-  color: #1e40af;
+  color: var(--ui-link-hover);
   outline: none;
 }
 
