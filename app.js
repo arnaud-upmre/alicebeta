@@ -22,6 +22,8 @@ const COUCHE_MESURE_LABELS = "mesure-labels";
 const TABLES_RSS = window.RSS_TABLE_NUMBERS || {};
 const DUREE_APPUI_LONG_MENU_CONTEXTUEL_MS = 1000;
 const DELAI_DEMARRAGE_DONNEES_MS = 220;
+const PLACEHOLDER_RECHERCHE_DESKTOP = "Rechercher un poste, appareil, acces...";
+const PLACEHOLDER_RECHERCHE_MOBILE = "Rechercher...";
 const APPAREILS_VIDE = { type: "FeatureCollection", features: [] };
 const ACCES_VIDE = { type: "FeatureCollection", features: [] };
 const POSTES_VIDE = { type: "FeatureCollection", features: [] };
@@ -609,6 +611,14 @@ const boutonSortieMesure = document.getElementById("bouton-sortie-mesure");
 const CLE_STOCKAGE_FENETRE_ACCUEIL = "alice.fenetre-accueil.derniere-date";
 let temporisationInfoVitesse = null;
 
+function actualiserPlaceholderRecherche() {
+  if (!champRecherche) {
+    return;
+  }
+  const estMobile = window.matchMedia("(max-width: 720px), (pointer: coarse)").matches;
+  champRecherche.placeholder = estMobile ? PLACEHOLDER_RECHERCHE_MOBILE : PLACEHOLDER_RECHERCHE_DESKTOP;
+}
+
 function obtenirDateLocaleDuJour() {
   const maintenant = new Date();
   const annee = maintenant.getFullYear();
@@ -1065,6 +1075,9 @@ if (boutonFermerFenetreAccueil) {
     fermerFenetreAccueil();
   });
 }
+
+actualiserPlaceholderRecherche();
+window.addEventListener("resize", actualiserPlaceholderRecherche, { passive: true });
 
 function calculerTotalEntrees(donnees, cleCount) {
   if (!donnees?.features) {

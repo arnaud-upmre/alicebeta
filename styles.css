@@ -1077,7 +1077,11 @@ body,
 
 @media (max-width: 720px) {
   .controle-recherche {
-    width: min(260px, calc(100vw - 122px - env(safe-area-inset-left) - env(safe-area-inset-right)));
+    width: clamp(
+      210px,
+      calc(100vw - 86px - env(safe-area-inset-left) - env(safe-area-inset-right)),
+      320px
+    );
   }
 
   .recherche-resultats {
@@ -1133,7 +1137,11 @@ body,
 
 @media (max-width: 520px) {
   .controle-recherche {
-    width: min(248px, calc(100vw - 124px - env(safe-area-inset-left) - env(safe-area-inset-right)));
+    width: clamp(
+      190px,
+      calc(100vw - 88px - env(safe-area-inset-left) - env(safe-area-inset-right)),
+      290px
+    );
   }
 
   .recherche-logo {
