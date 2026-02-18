@@ -55,6 +55,15 @@
     </div>
 
     <div class="controle-filtres" id="controle-filtres">
+      <button
+        class="bouton-filtres bouton-itineraire"
+        id="bouton-itineraire"
+        type="button"
+        aria-label="Comparer deux postes"
+        title="Comparer 2 postes"
+      >
+        <span class="icone-itineraire" aria-hidden="true">&lt;&gt;</span>
+      </button>
       <a
         class="bouton-filtres bouton-tableau"
         id="bouton-tableau"
@@ -182,6 +191,65 @@
       <button class="menu-contextuel-item" id="ctx-imajnet" type="button">🛣️ Imajnet</button>
       <div class="menu-contextuel-separateur"></div>
       <button class="menu-contextuel-item" id="ctx-add-appareil" type="button">📍 Ajouter un appareil ici</button>
+    </div>
+    <div
+      class="modal-itineraire"
+      id="modal-itineraire"
+      role="dialog"
+      aria-modal="true"
+      aria-label="Calculer un trajet"
+      aria-hidden="true"
+    >
+      <div class="modal-itineraire-carte">
+        <button class="modal-itineraire-fermer" id="modal-itineraire-fermer" type="button" aria-label="Fermer le calcul trajet">×</button>
+        <h2 class="modal-itineraire-titre">Calculer un trajet</h2>
+        <p class="modal-itineraire-sous-titre">Sélectionnez un départ et une arrivée</p>
+
+        <div class="modal-itineraire-champs">
+          <div class="modal-itineraire-champ">
+            <label for="itineraire-depart">Départ</label>
+            <input id="itineraire-depart" type="search" autocomplete="off" placeholder="Rechercher un poste ou accès" />
+            <ul class="modal-itineraire-resultats" id="itineraire-depart-resultats" aria-label="Résultats départ"></ul>
+          </div>
+          <div class="modal-itineraire-champ">
+            <label for="itineraire-arrivee">Arrivée</label>
+            <input id="itineraire-arrivee" type="search" autocomplete="off" placeholder="Rechercher un poste ou accès" />
+            <ul class="modal-itineraire-resultats" id="itineraire-arrivee-resultats" aria-label="Résultats arrivée"></ul>
+          </div>
+        </div>
+
+        <div class="modal-itineraire-etat" id="itineraire-etat">Choisissez un départ et une arrivée.</div>
+
+        <section class="modal-itineraire-resume" id="itineraire-resume" aria-live="polite">
+          <div class="modal-itineraire-resume-tete">
+            <strong>Résumé du trajet</strong>
+            <span>Temps et distance estimés</span>
+          </div>
+          <div class="modal-itineraire-cartes">
+            <div class="modal-itineraire-carte-kpi">
+              <strong id="itineraire-distance">-</strong>
+              <span>Distance</span>
+            </div>
+            <div class="modal-itineraire-carte-kpi">
+              <strong id="itineraire-duree">-</strong>
+              <span>Temps estimé</span>
+            </div>
+          </div>
+        </section>
+
+        <div class="modal-itineraire-actions">
+          <button class="popup-bouton-itineraire" id="itineraire-inverser" type="button">↔ Inverser</button>
+          <a class="popup-bouton-itineraire" id="itineraire-google" href="#" target="_blank" rel="noopener noreferrer">🗺️ Google Maps</a>
+          <a class="popup-bouton-itineraire" id="itineraire-waze" href="#" target="_blank" rel="noopener noreferrer">🚗 Waze</a>
+        </div>
+
+        <button class="modal-itineraire-toggle-carte" id="itineraire-toggle-carte" type="button" aria-expanded="false">
+          Afficher la carte
+        </button>
+        <div class="modal-itineraire-apercu" id="itineraire-apercu" aria-hidden="true">
+          <div id="itineraire-carte"></div>
+        </div>
+      </div>
     </div>
 
     <script src="https://unpkg.com/maplibre-gl@5.1.0/dist/maplibre-gl.js"></script>

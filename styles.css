@@ -55,6 +55,7 @@ body {
 .panneau-mesure,
 .bouton-sortie-mesure,
 .fenetre-accueil,
+.modal-itineraire,
 .maplibregl-popup-content {
   touch-action: pan-y;
 }
@@ -114,6 +115,252 @@ body {
   font-size: 0.95rem;
   line-height: 1.35;
   font-weight: 500;
+}
+
+.modal-itineraire {
+  position: fixed;
+  inset: 0;
+  z-index: 21;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  background: rgba(15, 23, 42, 0.32);
+}
+
+.modal-itineraire.est-visible {
+  display: flex;
+}
+
+.modal-itineraire-carte {
+  position: relative;
+  width: min(540px, calc(100vw - 28px));
+  max-height: min(92vh, 820px);
+  overflow: auto;
+  padding: 16px 16px 14px;
+  border-radius: 16px;
+  border: 1px solid rgba(31, 41, 55, 0.15);
+  background: rgba(255, 255, 255, 0.98);
+  box-shadow: 0 18px 38px rgba(15, 23, 42, 0.32);
+}
+
+.modal-itineraire-fermer {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 30px;
+  height: 30px;
+  border: 0;
+  border-radius: 999px;
+  background: rgba(15, 23, 42, 0.08);
+  color: #0f172a;
+  font-size: 1.2rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.modal-itineraire-fermer:hover {
+  background: rgba(15, 23, 42, 0.16);
+}
+
+.modal-itineraire-titre {
+  margin: 0;
+  color: #0f172a;
+  font-size: 1.25rem;
+}
+
+.modal-itineraire-sous-titre {
+  margin: 4px 0 12px;
+  color: #64748b;
+  font-size: 0.84rem;
+}
+
+.modal-itineraire-champs {
+  display: grid;
+  gap: 8px;
+}
+
+.modal-itineraire-champ {
+  position: relative;
+}
+
+.modal-itineraire-champ label {
+  display: block;
+  margin-bottom: 4px;
+  color: #334155;
+  font-size: 0.84rem;
+  font-weight: 600;
+}
+
+.modal-itineraire-champ input {
+  width: 100%;
+  border-radius: 10px;
+  border: 1px solid rgba(15, 23, 42, 0.16);
+  background: #fff;
+  color: #0f172a;
+  font-family: "Manrope", "Avenir Next", "Segoe UI", sans-serif;
+  font-size: 0.92rem;
+  padding: 10px 11px;
+}
+
+.modal-itineraire-champ input:focus-visible {
+  outline: 2px solid #2563eb;
+  outline-offset: 1px;
+}
+
+.modal-itineraire-resultats {
+  display: none;
+  position: absolute;
+  z-index: 2;
+  left: 0;
+  right: 0;
+  top: calc(100% + 4px);
+  margin: 0;
+  padding: 6px;
+  list-style: none;
+  border-radius: 12px;
+  border: 1px solid rgba(31, 41, 55, 0.12);
+  background: rgba(255, 255, 255, 0.99);
+  box-shadow: 0 12px 24px rgba(15, 23, 42, 0.2);
+  max-height: min(220px, 42vh);
+  overflow: auto;
+}
+
+.modal-itineraire-resultats.est-visible {
+  display: block;
+}
+
+.modal-itineraire-resultat {
+  width: 100%;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: #0f172a;
+  text-align: left;
+  font-family: "Manrope", "Avenir Next", "Segoe UI", sans-serif;
+  font-size: 0.84rem;
+  padding: 8px 9px;
+  cursor: pointer;
+}
+
+.modal-itineraire-resultat:hover,
+.modal-itineraire-resultat:focus-visible {
+  background: #eff6ff;
+  outline: none;
+}
+
+.modal-itineraire-resultat-vide {
+  padding: 8px 9px;
+  font-size: 0.82rem;
+  color: #64748b;
+}
+
+.modal-itineraire-etat {
+  margin: 10px 0;
+  font-size: 0.83rem;
+  color: #475569;
+}
+
+.modal-itineraire-resume {
+  display: none;
+  border: 1px solid rgba(34, 197, 94, 0.38);
+  border-radius: 14px;
+  padding: 10px;
+  background: rgba(240, 253, 244, 0.45);
+}
+
+.modal-itineraire-resume.est-visible {
+  display: block;
+}
+
+.modal-itineraire-resume-tete {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+
+.modal-itineraire-resume-tete strong {
+  font-size: 0.98rem;
+  color: #1f2937;
+}
+
+.modal-itineraire-resume-tete span {
+  color: #64748b;
+  font-size: 0.8rem;
+}
+
+.modal-itineraire-cartes {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.modal-itineraire-carte-kpi {
+  border: 1px dashed rgba(34, 197, 94, 0.5);
+  border-radius: 10px;
+  padding: 8px;
+  text-align: center;
+}
+
+.modal-itineraire-carte-kpi strong {
+  display: block;
+  color: #111827;
+  font-size: 1.45rem;
+  line-height: 1.1;
+}
+
+.modal-itineraire-carte-kpi span {
+  font-size: 0.88rem;
+  color: #334155;
+}
+
+.modal-itineraire-actions {
+  margin-top: 9px;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 7px;
+}
+
+.modal-itineraire-actions .est-inactif {
+  opacity: 0.45;
+  pointer-events: none;
+}
+
+.modal-itineraire-toggle-carte {
+  margin-top: 9px;
+  width: 100%;
+  border: 1px solid rgba(15, 23, 42, 0.16);
+  border-radius: 10px;
+  background: #f8fafc;
+  color: #0f172a;
+  font-family: "Manrope", "Avenir Next", "Segoe UI", sans-serif;
+  font-size: 0.84rem;
+  font-weight: 600;
+  padding: 9px 10px;
+  cursor: pointer;
+}
+
+.modal-itineraire-toggle-carte:hover {
+  background: #eff6ff;
+}
+
+.modal-itineraire-apercu {
+  display: none;
+  margin-top: 8px;
+  border: 1px solid rgba(31, 41, 55, 0.12);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.modal-itineraire-apercu.est-visible {
+  display: block;
+}
+
+#itineraire-carte {
+  width: 100%;
+  height: 230px;
 }
 
 .controle-fonds {
@@ -402,6 +649,13 @@ body {
   width: 19px;
   height: 19px;
   fill: #2f3742;
+}
+
+.icone-itineraire {
+  font-size: 0.9rem;
+  letter-spacing: 0.02em;
+  font-weight: 800;
+  color: #2f3742;
 }
 
 .menu-filtres {
@@ -1231,6 +1485,7 @@ body {
   .bouton-fonds,
   .bouton-filtres,
   .bouton-tableau,
+  .bouton-itineraire,
   .bouton-carte-action,
   .maplibregl-ctrl-group button {
     width: 44px;
@@ -1331,6 +1586,20 @@ body {
   .menu-contextuel-item {
     font-size: 0.95rem;
   }
+
+  .modal-itineraire-carte {
+    width: min(520px, calc(100vw - 18px));
+    max-height: min(94vh, 820px);
+    padding: 14px 13px 12px;
+  }
+
+  .modal-itineraire-actions {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  #itineraire-carte {
+    height: 210px;
+  }
 }
 
 @media (max-width: 520px) {
@@ -1394,5 +1663,30 @@ body {
     width: calc(100vw - 20px - env(safe-area-inset-left) - env(safe-area-inset-right));
     max-width: 330px;
     padding: 13px 14px;
+  }
+
+  .modal-itineraire {
+    padding: 0;
+    align-items: stretch;
+  }
+
+  .modal-itineraire-carte {
+    width: 100vw;
+    max-height: 100vh;
+    border-radius: 0;
+    border: 0;
+    padding: calc(14px + env(safe-area-inset-top)) 11px calc(12px + env(safe-area-inset-bottom));
+  }
+
+  .modal-itineraire-titre {
+    font-size: 1.1rem;
+  }
+
+  .modal-itineraire-cartes {
+    grid-template-columns: 1fr;
+  }
+
+  #itineraire-carte {
+    height: min(40vh, 260px);
   }
 }

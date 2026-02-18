@@ -587,6 +587,7 @@ const boutonFonds = document.getElementById("bouton-fonds");
 const optionsFond = Array.from(document.querySelectorAll('input[name="fond"]'));
 const controleFiltres = document.getElementById("controle-filtres");
 const boutonFiltres = document.getElementById("bouton-filtres");
+const boutonItineraire = document.getElementById("bouton-itineraire");
 const caseAppareils = document.querySelector('input[name="filtre-appareils"]');
 const caseAcces = document.querySelector('input[name="filtre-acces"]');
 const casePostes = document.querySelector('input[name="filtre-postes"]');
@@ -621,6 +622,8 @@ const menuLegendeCarte = document.getElementById("menu-legende-carte");
 const boutonFermerLegende = document.getElementById("bouton-fermer-legende");
 const CLE_STOCKAGE_FENETRE_ACCUEIL = "alice.fenetre-accueil.derniere-date";
 let temporisationInfoVitesse = null;
+let moduleItineraire = null;
+let promesseChargementModuleItineraire = null;
 
 class ControleActionsCarte {
   onAdd() {
@@ -843,6 +846,67 @@ function formaterDistanceMetres(distanceMetres) {
     return `${distanceMetres.toFixed(1)} m`;
   }
   return `${(distanceMetres / 1000).toFixed(2)} km`;
+}
+
+function chargerScriptItineraire() {
+  if (window.creerModuleItineraireAlice) {
+    return Promise.resolve(window.creerModuleItineraireAlice);
+  }
+  if (promesseChargementModuleItineraire) {
+    return promesseChargementModuleItineraire;
+  }
+
+  promesseChargementModuleItineraire = new Promise((resolve, reject) => {
+    const script = document.createElement("script");
+    script.src = "./itineraire.js";
+    script.async = true;
+    script.onload = () => {
+      if (typeof window.creerModuleItineraireAlice === "function") {
+        resolve(window.creerModuleItineraireAlice);
+      } else {
+        reject(new Error("Module itinéraire introuvable après chargement."));
+      }
+    };
+    script.onerror = () => {
+      reject(new Error("Impossible de charger itineraire.js"));
+    };
+    document.head.appendChild(script);
+  }).finally(() => {
+    promesseChargementModuleItineraire = null;
+  });
+
+  return promesseChargementModuleItineraire;
+}
+
+async function obtenirModuleItineraire() {
+  if (moduleItineraire) {
+    return moduleItineraire;
+  }
+
+  const creerModule = await chargerScriptItineraire();
+  moduleItineraire = creerModule({
+    maplibre: maplibregl,
+    centreInitial: CENTRE_INITIAL,
+    chargerDonneesAcces,
+    chargerDonneesPostes,
+    getDonneesAcces: () => donneesAcces,
+    getDonneesPostes: () => donneesPostes,
+    normaliserTexteRecherche,
+    champCompletOuVide,
+    extraireListeDepuisFeature,
+    construireTitrePoste,
+    construireTitreNomTypeSatAcces,
+    echapperHtml,
+    obtenirDistanceMetres,
+    fermerMenusGlobalement: () => {
+      fermerMenuFonds();
+      fermerMenuFiltres();
+      fermerResultatsRecherche();
+      fermerMenuContextuel();
+      fermerMenuLegende();
+    }
+  });
+  return moduleItineraire;
 }
 
 function construireDonneesSourceMesure() {
@@ -3654,6 +3718,19 @@ boutonFiltres.addEventListener("click", (event) => {
   fermerMenuFonds();
   basculerMenuFiltres();
 });
+
+if (boutonItineraire) {
+  boutonItineraire.addEventListener("click", async (event) => {
+    event.stopPropagation();
+    try {
+      const module = await obtenirModuleItineraire();
+      module?.ouvrir?.();
+    } catch (erreur) {
+      console.error("Impossible d'ouvrir le module itinéraire", erreur);
+      alert("Impossible d'ouvrir le calcul d'itinéraire.");
+    }
+  });
+}
 
 if (boutonLocaliserCarte) {
   boutonLocaliserCarte.addEventListener("click", (event) => {
