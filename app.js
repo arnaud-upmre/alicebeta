@@ -202,6 +202,13 @@ function construireIdIconeGroupeAppareils(couleurs, horsPatrimoine) {
   return `appareils-groupe-${palette || "111111"}${suffixeHp}`;
 }
 
+function determinerCouleurCarteAppareil(appareil) {
+  if (appareil?.hors_patrimoine) {
+    return "#ef4444";
+  }
+  return normaliserCouleurHex(appareil?.couleur_appareil || "#111111");
+}
+
 function creerImageIconeGroupeAppareils(couleurs, horsPatrimoine) {
   const canvas = document.createElement("canvas");
   canvas.width = DIAMETRE_ICONE_GROUPE_APPAREILS;
@@ -267,7 +274,7 @@ function enregistrerIconesGroupesAppareils() {
 
     let couleurs = [];
     try {
-      couleurs = JSON.parse(propr.appareils_couleurs_json || "[]");
+      couleurs = JSON.parse(propr.appareils_couleurs_carte_json || propr.appareils_couleurs_json || "[]");
     } catch {
       couleurs = [];
     }
@@ -344,22 +351,25 @@ function regrouperAppareilsParCoordonnees(geojson) {
         type: "Point",
         coordinates: [groupe.longitude, groupe.latitude]
       },
-        properties: {
-          icone_groupe_appareils: construireIdIconeGroupeAppareils(
-            groupe.appareils.map((a) => a.couleur_appareil || "#111111"),
-            groupe.appareils.some((a) => a.hors_patrimoine)
-          ),
+      properties: {
+        icone_groupe_appareils: construireIdIconeGroupeAppareils(
+          groupe.appareils.map((a) => determinerCouleurCarteAppareil(a)),
+          groupe.appareils.some((a) => a.hors_patrimoine)
+        ),
+        appareils_couleurs_carte_json: JSON.stringify(
+          groupe.appareils.map((a) => determinerCouleurCarteAppareil(a))
+        ),
         appareils_couleurs_json: JSON.stringify(
           groupe.appareils.map((a) => normaliserCouleurHex(a.couleur_appareil || "#111111"))
         ),
-          appareils_count: total,
-          hors_patrimoine_count: groupe.appareils.filter((a) => a.hors_patrimoine).length,
-          hors_patrimoine: groupe.appareils.some((a) => a.hors_patrimoine),
-          imajnet:
-            groupe.appareils.find((a) => String(a.imajnet || "").trim())?.imajnet || "",
-          appareils_liste_json: JSON.stringify(groupe.appareils)
-        }
-      });
+        appareils_count: total,
+        hors_patrimoine_count: groupe.appareils.filter((a) => a.hors_patrimoine).length,
+        hors_patrimoine: groupe.appareils.some((a) => a.hors_patrimoine),
+        imajnet:
+          groupe.appareils.find((a) => String(a.imajnet || "").trim())?.imajnet || "",
+        appareils_liste_json: JSON.stringify(groupe.appareils)
+      }
+    });
   }
 
   return {
