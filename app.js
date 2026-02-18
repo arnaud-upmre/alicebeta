@@ -26,9 +26,14 @@ const PLACEHOLDER_RECHERCHE_DESKTOP = "Rechercher un poste, appareil, acces...";
 const PLACEHOLDER_RECHERCHE_MOBILE = "Rechercher...";
 const SEPARATEUR_LIBELLE = " ";
 const DEBUG_RECHERCHE_FICHE = true;
+const DEBUG_BUILD_ID = "debug-fiche-2026-02-18-22h15";
 const APPAREILS_VIDE = { type: "FeatureCollection", features: [] };
 const ACCES_VIDE = { type: "FeatureCollection", features: [] };
 const POSTES_VIDE = { type: "FeatureCollection", features: [] };
+
+if (DEBUG_RECHERCHE_FICHE) {
+  console.warn(`[ALICE DEBUG] build=${DEBUG_BUILD_ID}`);
+}
 
 // Style raster OSM (plan open).
 const stylePlanOsm = {
@@ -628,9 +633,9 @@ const textePanneauMesure = document.getElementById("panneau-mesure-texte");
 const boutonSortieMesure = document.getElementById("bouton-sortie-mesure");
 const menuLegendeCarte = document.getElementById("menu-legende-carte");
 const boutonFermerLegende = document.getElementById("bouton-fermer-legende");
-const modalFiche = document.getElementById("modal-fiche");
-const modalFicheContenu = document.getElementById("modal-fiche-contenu");
-const boutonFermerModalFiche = document.getElementById("modal-fiche-fermer");
+let modalFiche = document.getElementById("modal-fiche");
+let modalFicheContenu = document.getElementById("modal-fiche-contenu");
+let boutonFermerModalFiche = document.getElementById("modal-fiche-fermer");
 const CLE_STOCKAGE_FENETRE_ACCUEIL = "alice.fenetre-accueil.derniere-date";
 let temporisationInfoVitesse = null;
 let moduleItineraire = null;
@@ -772,7 +777,42 @@ function fermerPopupCarte(options = {}) {
   }
 }
 
+function assurerElementsModalFiche() {
+  if (modalFiche && modalFicheContenu && boutonFermerModalFiche) {
+    return true;
+  }
+
+  const existante = document.getElementById("modal-fiche");
+  if (existante) {
+    modalFiche = existante;
+    modalFicheContenu = document.getElementById("modal-fiche-contenu");
+    boutonFermerModalFiche = document.getElementById("modal-fiche-fermer");
+    return Boolean(modalFicheContenu && boutonFermerModalFiche);
+  }
+
+  const racine = document.createElement("div");
+  racine.className = "modal-fiche";
+  racine.id = "modal-fiche";
+  racine.setAttribute("role", "dialog");
+  racine.setAttribute("aria-modal", "true");
+  racine.setAttribute("aria-label", "Fiche");
+  racine.setAttribute("aria-hidden", "true");
+  racine.innerHTML = `
+    <div class="modal-fiche-carte">
+      <button class="modal-fiche-fermer" id="modal-fiche-fermer" type="button" aria-label="Fermer la fiche">×</button>
+      <div class="modal-fiche-contenu maplibregl-popup-content" id="modal-fiche-contenu"></div>
+    </div>
+  `;
+  document.body.appendChild(racine);
+
+  modalFiche = racine;
+  modalFicheContenu = document.getElementById("modal-fiche-contenu");
+  boutonFermerModalFiche = document.getElementById("modal-fiche-fermer");
+  return Boolean(modalFicheContenu && boutonFermerModalFiche);
+}
+
 function creerPopupFicheModale() {
+  assurerElementsModalFiche();
   const callbacksFermeture = [];
   let estFermee = false;
 
@@ -790,6 +830,16 @@ function creerPopupFicheModale() {
       if (modalFiche) {
         modalFiche.classList.add("est-visible");
         modalFiche.setAttribute("aria-hidden", "false");
+        debugRechercheFiche("Modal fiche addTo", {
+          phase: "addTo",
+          raison: "class est-visible appliquée"
+        });
+      } else {
+        debugRechercheFiche("Modal fiche absente dans le DOM", {
+          phase: "addTo",
+          raison: "element #modal-fiche introuvable",
+          alerteMobile: true
+        });
       }
       return instance;
     },
@@ -3003,12 +3053,16 @@ function debugRechercheFiche(message, details = {}) {
       details?.type ? `type=${details.type}` : "",
       Number.isFinite(details?.longitude) ? `lng=${details.longitude}` : "",
       Number.isFinite(details?.latitude) ? `lat=${details.latitude}` : "",
+      details?.phase ? `phase=${details.phase}` : "",
+      details?.raison ? `raison=${details.raison}` : "",
       `exact={postes:${Boolean(details.exactPostes)},acces:${Boolean(details.exactAcces)},app:${Boolean(details.exactAppareils)}}`,
       `proche={postes:${Boolean(details.prochePostes)},acces:${Boolean(details.procheAcces)},app:${Boolean(details.procheAppareils)}}`
     ]
       .filter(Boolean)
       .join("\n");
-    window.alert(resume);
+    if (details?.alerteMobile) {
+      window.alert(resume);
+    }
   }
 }
 
@@ -3582,6 +3636,13 @@ function activerInteractionsCarte() {
   carte.on("movestart", () => {
     fermerMenuContextuel();
     if (!recadragePopupMobileEnCours && !navigationPopupProgrammatiqueEnCours && !conserverFichePendantNavigation) {
+      if (popupCarte) {
+        debugRechercheFiche("Fermeture fiche sur movestart", {
+          phase: "movestart",
+          raison: "fermeture automatique activée",
+          alerteMobile: true
+        });
+      }
       fermerPopupCarte();
     }
   });
@@ -4033,19 +4094,15 @@ if (boutonFermerLegende) {
   });
 }
 
-if (boutonFermerModalFiche) {
-  boutonFermerModalFiche.addEventListener("click", () => {
+document.addEventListener("click", (event) => {
+  if (event.target instanceof Element && event.target.closest("#modal-fiche-fermer")) {
     fermerPopupCarte({ localiserPoint: true });
-  });
-}
-
-if (modalFiche) {
-  modalFiche.addEventListener("click", (event) => {
-    if (event.target === modalFiche) {
-      fermerPopupCarte();
-    }
-  });
-}
+    return;
+  }
+  if (modalFiche && event.target === modalFiche) {
+    fermerPopupCarte();
+  }
+});
 
 if (champRecherche && listeResultatsRecherche) {
   let temporisationRecherche = null;
@@ -4130,16 +4187,30 @@ if (champRecherche && listeResultatsRecherche) {
           type,
           longitude,
           latitude,
-          ...etat
+          ...etat,
+          alerteMobile: true
         });
         return;
       }
+      debugRechercheFiche("Ouverture fiche OK depuis recherche", {
+        phase: "search-click",
+        type,
+        longitude,
+        latitude,
+        raison: modalFiche?.classList.contains("est-visible") ? "modal visible" : "modal non visible"
+      });
       setTimeout(() => {
         naviguerVersCoordonneesArrierePlan(longitude, latitude, {
           forceZoom: true,
           conserverPopupOuvert: true,
           zoomMin: 14.1,
           durationDouxMs: 430
+        });
+        debugRechercheFiche("Zoom arrière-plan lancé", {
+          phase: "search-click",
+          type,
+          longitude,
+          latitude
         });
       }, 40);
     } catch (erreur) {
