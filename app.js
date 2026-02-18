@@ -2623,7 +2623,7 @@ function reconstruireIndexRecherche() {
     for (const poste of postesListe) {
       const titre = construireTitrePoste(poste) || "Poste";
       const details = construireDetailsPoste(poste);
-      const motsCles = [titre, details, poste.nom, poste.type, poste.SAT, poste.acces, poste.rss, poste.pk, poste.contact]
+      const motsCles = [titre, details, poste.nom, poste.SAT, poste.acces, poste.rss, poste.pk, poste.contact]
         .filter(Boolean)
         .join(" ");
 
@@ -2656,7 +2656,7 @@ function reconstruireIndexRecherche() {
     for (const appareil of appareilsListe) {
       const titre = construireTitreNomTypeSatAcces(appareil) || "Appareil";
       const appareilNom = champCompletOuVide(appareil.appareil) || "";
-      const motsCles = [titre, appareilNom, appareil.nom, appareil.type, appareil.SAT, appareil.acces]
+      const motsCles = [titre, appareilNom, appareil.nom, appareil.SAT, appareil.acces]
         .filter(Boolean)
         .join(" ");
       const cle = `${titre}|${longitude}|${latitude}`;
@@ -2725,7 +2725,7 @@ function reconstruireIndexRecherche() {
 
     for (const acces of accesListe) {
       const titre = construireTitreNomTypeSatAcces(acces, { nomVilleDe: true }) || "Acces";
-      const motsCles = [titre, acces.nom, acces.type, acces.SAT, acces.acces]
+      const motsCles = [titre, acces.nom, acces.SAT, acces.acces]
         .filter(Boolean)
         .join(" ");
 
