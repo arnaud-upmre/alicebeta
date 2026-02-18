@@ -2,7 +2,6 @@
 const CENTRE_INITIAL = [2.35, 48.85];
 const ZOOM_INITIAL = 6;
 const ZOOM_MAX = 19;
-const VERSION_APP = "V1.2.24";
 const SOURCE_APPAREILS = "appareils-source";
 const COUCHE_APPAREILS = "appareils-points";
 const COUCHE_APPAREILS_GROUPES = "appareils-groupes";
@@ -585,7 +584,6 @@ const caseVitesseLigne = document.querySelector('input[name="filtre-vitesse-lign
 const compteurAppareils = document.getElementById("compteur-appareils");
 const compteurAcces = document.getElementById("compteur-acces");
 const compteurPostes = document.getElementById("compteur-postes");
-const badgeVersion = document.getElementById("version-app");
 const controleRecherche = document.getElementById("controle-recherche");
 const champRecherche = document.getElementById("champ-recherche");
 const listeResultatsRecherche = document.getElementById("recherche-resultats");
@@ -1066,11 +1064,6 @@ if (boutonFermerFenetreAccueil) {
   boutonFermerFenetreAccueil.addEventListener("click", () => {
     fermerFenetreAccueil();
   });
-}
-
-if (badgeVersion) {
-  badgeVersion.textContent = VERSION_APP;
-  badgeVersion.setAttribute("aria-label", "Version de l'application");
 }
 
 function calculerTotalEntrees(donnees, cleCount) {
