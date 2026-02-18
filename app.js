@@ -101,6 +101,7 @@ let menuContextuelOuvert = false;
 let mesureActive = false;
 let mesurePoints = [];
 let navigationInternePopup = null;
+let recadragePopupMobileEnCours = false;
 let contexteMenuPosition = {
   longitude: null,
   latitude: null
@@ -669,6 +670,13 @@ function recadrerCartePourPopupMobile(longitude, latitude) {
   }
 
   const decalageVertical = Math.min(200, Math.round(window.innerHeight * 0.22));
+  recadragePopupMobileEnCours = true;
+  carte.once("moveend", () => {
+    recadragePopupMobileEnCours = false;
+  });
+  setTimeout(() => {
+    recadragePopupMobileEnCours = false;
+  }, 700);
   carte.easeTo({
     center: [longitude, latitude],
     offset: [0, decalageVertical],
@@ -2555,7 +2563,7 @@ function construirePopupDepuisFeatures(longitude, latitude, featurePostes, featu
 
   let contenuVueAppareils = "";
   if (sectionAppareilsAssociesPoste) {
-    contenuVueAppareils = `<div class="popup-carte">${sectionAppareilsAssociesPoste}<section class="popup-section"><button class="popup-action-lien" id="popup-retour-fiche-poste" type="button">↩ Retour à la fiche</button></section></div>`;
+    contenuVueAppareils = `<div class="popup-carte">${sectionAppareilsAssociesPoste}<section class="popup-section popup-section-itineraires"><div class="popup-section-titre"><span class="popup-badge popup-badge-itineraire">Fiche</span></div><div class="popup-itineraires"><button class="popup-bouton-itineraire" id="popup-retour-fiche-poste" type="button">↩ Retour à la fiche</button></div></section></div>`;
   }
 
   fermerPopupCarte();
@@ -2841,7 +2849,9 @@ function activerInteractionsCarte() {
 
   carte.on("movestart", () => {
     fermerMenuContextuel();
-    fermerPopupCarte();
+    if (!recadragePopupMobileEnCours) {
+      fermerPopupCarte();
+    }
   });
 
   carte.on("zoomstart", () => {
