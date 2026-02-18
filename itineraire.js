@@ -43,14 +43,10 @@
       maplibre,
       centreInitial,
       chargerDonneesAcces,
-      chargerDonneesPostes,
       getDonneesAcces,
-      getDonneesPostes,
       normaliserTexteRecherche,
       champCompletOuVide,
       extraireListeDepuisFeature,
-      construireTitrePoste,
-      construireTitreNomTypeSatAcces,
       echapperHtml,
       obtenirDistanceMetres,
       fermerMenusGlobalement
@@ -135,6 +131,14 @@
       const resultat = [];
       const cles = new Set();
 
+      const construireLabelAcces = (acces) => {
+        const nom = champCompletOuVide(acces?.nom);
+        const type = champCompletOuVide(acces?.type);
+        const sat = champCompletOuVide(acces?.SAT);
+        const libelleAcces = champCompletOuVide(acces?.acces);
+        return [nom, type, sat, libelleAcces].filter(Boolean).join(" ");
+      };
+
       const ajouter = (type, label, longitude, latitude, entree) => {
         if (!label || !Number.isFinite(longitude) || !Number.isFinite(latitude)) {
           return;
@@ -165,19 +169,11 @@
         });
       };
 
-      for (const feature of getDonneesPostes()?.features || []) {
-        const [longitude, latitude] = feature?.geometry?.coordinates || [];
-        const liste = extraireListeDepuisFeature(feature, "postes_liste_json");
-        for (const poste of liste) {
-          ajouter("poste", construireTitrePoste(poste) || "Poste", longitude, latitude, poste);
-        }
-      }
-
       for (const feature of getDonneesAcces()?.features || []) {
         const [longitude, latitude] = feature?.geometry?.coordinates || [];
         const liste = extraireListeDepuisFeature(feature, "acces_liste_json");
         for (const acces of liste) {
-          ajouter("acces", construireTitreNomTypeSatAcces(acces, { nomVilleDe: true }) || "Accès", longitude, latitude, acces);
+          ajouter("acces", construireLabelAcces(acces) || "Accès", longitude, latitude, acces);
         }
       }
 
@@ -201,7 +197,7 @@
       return trouves.slice(0, 16);
     }
 
-    function rendreSuggestions(listeElement, items, cible) {
+    function rendreSuggestions(listeElement, items) {
       if (!listeElement) {
         return;
       }
@@ -213,7 +209,7 @@
       listeElement.innerHTML = items
         .map(
           (option) =>
-            `<li><button class="modal-itineraire-resultat" type="button" data-cible="${echapperHtml(cible)}" data-id="${echapperHtml(option.id)}">${echapperHtml(option.label)} · ${option.type === "acces" ? "Accès" : "Poste"}</button></li>`
+            `<li><button class="modal-itineraire-resultat" type="button" data-id="${echapperHtml(option.id)}">${echapperHtml(option.label)}</button></li>`
         )
         .join("");
       listeElement.classList.add("est-visible");
@@ -448,6 +444,21 @@
       }
       modal.classList.remove("est-visible");
       modal.setAttribute("aria-hidden", "true");
+      selectionDepart = null;
+      selectionArrivee = null;
+      compteurRequete += 1;
+      if (champDepart) champDepart.value = "";
+      if (champArrivee) champArrivee.value = "";
+      reinitialiserResume();
+      definirEtat("Choisissez un départ et une arrivée.");
+      if (panneauCarte?.classList.contains("est-visible")) {
+        panneauCarte.classList.remove("est-visible");
+        panneauCarte.setAttribute("aria-hidden", "true");
+      }
+      if (boutonToggleCarte) {
+        boutonToggleCarte.setAttribute("aria-expanded", "false");
+        boutonToggleCarte.textContent = "Afficher la carte";
+      }
       viderSuggestions();
     }
 
@@ -465,7 +476,7 @@
     }
 
     async function initialiserOptions() {
-      await Promise.all([chargerDonneesAcces(), chargerDonneesPostes()]);
+      await chargerDonneesAcces();
       construireOptions();
     }
 
@@ -484,10 +495,10 @@
           }
           mettreAJourResume();
         }
-        rendreSuggestions(liste, suggestions(valeur), cible);
+        rendreSuggestions(liste, suggestions(valeur));
       });
       champ.addEventListener("focus", () => {
-        rendreSuggestions(liste, suggestions(champ.value.trim()), cible);
+        rendreSuggestions(liste, suggestions(champ.value.trim()));
       });
       champ.addEventListener("keydown", (event) => {
         if (event.key !== "Enter") {
