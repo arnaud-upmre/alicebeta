@@ -17,6 +17,31 @@
   </head>
   <body>
     <div id="map"></div>
+    <header class="topbar" aria-label="En-tete carte ALICE">
+      <div class="topbar-logo" aria-label="ALICE">
+        <img
+          src="./alice.webp"
+          alt="Logo ALICE"
+          class="topbar-logo-image"
+          onerror="this.style.display='none';"
+        />
+        <span class="topbar-logo-texte">ALICE</span>
+      </div>
+      <div class="controle-recherche" id="controle-recherche">
+        <label class="recherche-champ-wrap" for="champ-recherche">
+          <input
+            id="champ-recherche"
+            class="recherche-champ"
+            type="search"
+            autocomplete="off"
+            placeholder="Rechercher un poste, appareil, acces..."
+            aria-label="Rechercher un poste, un appareil ou un acces"
+          />
+        </label>
+        <ul class="recherche-resultats" id="recherche-resultats" aria-label="Resultats de recherche"></ul>
+      </div>
+      <div class="topbar-espace" aria-hidden="true"></div>
+    </header>
     <div class="fenetre-accueil" id="fenetre-accueil" role="dialog" aria-modal="true" aria-label="Message de bienvenue">
       <div class="fenetre-accueil-carte">
         <button
@@ -37,19 +62,6 @@
     <div class="version-app" id="version-app" aria-label="Version de l'application"></div>
     <div class="info-vitesse-ligne" id="info-vitesse-ligne" aria-live="polite" aria-hidden="true">
       ⚠️ Vitesse affichée à titre indicatif. Se référer aux documents réglementaires internes pour les vitesses de ligne applicables.
-    </div>
-    <div class="controle-recherche" id="controle-recherche">
-      <label class="recherche-champ-wrap" for="champ-recherche">
-        <input
-          id="champ-recherche"
-          class="recherche-champ"
-          type="search"
-          autocomplete="off"
-          placeholder="Rechercher un poste, appareil, acces..."
-          aria-label="Rechercher un poste, un appareil ou un acces"
-        />
-      </label>
-      <ul class="recherche-resultats" id="recherche-resultats" aria-label="Resultats de recherche"></ul>
     </div>
 
     <div class="controle-filtres" id="controle-filtres">
