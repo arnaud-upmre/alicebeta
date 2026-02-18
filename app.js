@@ -19,8 +19,6 @@ const SOURCE_MESURE = "mesure-source";
 const COUCHE_MESURE_LIGNES = "mesure-lignes";
 const COUCHE_MESURE_POINTS = "mesure-points";
 const COUCHE_MESURE_LABELS = "mesure-labels";
-const SOURCE_LOCALISATION = "localisation-source";
-const COUCHE_LOCALISATION_POINT = "localisation-point";
 const TABLES_RSS = window.RSS_TABLE_NUMBERS || {};
 const DUREE_APPUI_LONG_MENU_CONTEXTUEL_MS = 1000;
 const DELAI_DEMARRAGE_DONNEES_MS = 220;
@@ -109,6 +107,7 @@ let navigationInternePopup = null;
 let minuterieClignotementLocalisation = null;
 let minuterieArretLocalisation = null;
 let coordonneesDerniereFiche = null;
+let marqueurLocalisation = null;
 let recadragePopupMobileEnCours = false;
 let navigationPopupProgrammatiqueEnCours = false;
 let restaurationStylePlanifiee = false;
@@ -921,77 +920,11 @@ function formaterDistanceMetres(distanceMetres) {
   return `${(distanceMetres / 1000).toFixed(2)} km`;
 }
 
-function assurerSourceEtCoucheLocalisation() {
-  if (!carte.isStyleLoaded()) {
-    return false;
-  }
-
-  if (!carte.getSource(SOURCE_LOCALISATION)) {
-    carte.addSource(SOURCE_LOCALISATION, {
-      type: "geojson",
-      data: { type: "FeatureCollection", features: [] }
-    });
-  }
-
-  if (!carte.getLayer(COUCHE_LOCALISATION_POINT)) {
-    carte.addLayer({
-      id: COUCHE_LOCALISATION_POINT,
-      type: "circle",
-      source: SOURCE_LOCALISATION,
-      paint: {
-        "circle-radius": 10,
-        "circle-color": "#facc15",
-        "circle-opacity": 1,
-        "circle-stroke-width": 2.6,
-        "circle-stroke-color": "#0f172a",
-        "circle-stroke-opacity": 1
-      }
-    });
-  }
-
-  // Garde le repère visible au-dessus des autres couches même après un nouveau remonterCouchesDonnees().
-  if (carte.getLayer(COUCHE_LOCALISATION_POINT)) {
-    carte.moveLayer(COUCHE_LOCALISATION_POINT);
-  }
-
-  return true;
-}
-
-function definirPointLocalisation(longitude, latitude) {
-  if (!assurerSourceEtCoucheLocalisation()) {
-    return;
-  }
-  const source = carte.getSource(SOURCE_LOCALISATION);
-  if (!source) {
-    return;
-  }
-  source.setData({
-    type: "FeatureCollection",
-    features: [
-      {
-        type: "Feature",
-        geometry: {
-          type: "Point",
-          coordinates: [longitude, latitude]
-        },
-        properties: {}
-      }
-    ]
-  });
-}
-
 function supprimerPointLocalisation() {
-  if (!carte.isStyleLoaded()) {
-    return;
+  if (marqueurLocalisation) {
+    marqueurLocalisation.remove();
+    marqueurLocalisation = null;
   }
-  const source = carte.getSource(SOURCE_LOCALISATION);
-  if (!source) {
-    return;
-  }
-  source.setData({
-    type: "FeatureCollection",
-    features: []
-  });
 }
 
 function arreterClignotementLocalisation() {
@@ -1003,10 +936,6 @@ function arreterClignotementLocalisation() {
     clearTimeout(minuterieArretLocalisation);
     minuterieArretLocalisation = null;
   }
-  if (carte.getLayer(COUCHE_LOCALISATION_POINT)) {
-    carte.setPaintProperty(COUCHE_LOCALISATION_POINT, "circle-opacity", 1);
-    carte.setPaintProperty(COUCHE_LOCALISATION_POINT, "circle-stroke-opacity", 1);
-  }
   supprimerPointLocalisation();
 }
 
@@ -1016,19 +945,17 @@ function demarrerClignotementLocalisation(longitude, latitude) {
   }
 
   arreterClignotementLocalisation();
-  definirPointLocalisation(longitude, latitude);
-  if (!carte.getLayer(COUCHE_LOCALISATION_POINT)) {
-    return;
-  }
+  const element = document.createElement("div");
+  element.className = "point-localisation-clignotant";
+  marqueurLocalisation = new maplibregl.Marker({ element, anchor: "center" }).setLngLat([longitude, latitude]).addTo(carte);
 
   let visible = true;
   minuterieClignotementLocalisation = setInterval(() => {
     visible = !visible;
-    if (!carte.getLayer(COUCHE_LOCALISATION_POINT)) {
+    if (!element) {
       return;
     }
-    carte.setPaintProperty(COUCHE_LOCALISATION_POINT, "circle-opacity", visible ? 1 : 0.12);
-    carte.setPaintProperty(COUCHE_LOCALISATION_POINT, "circle-stroke-opacity", visible ? 1 : 0.2);
+    element.style.opacity = visible ? "1" : "0.15";
   }, 390);
   minuterieArretLocalisation = setTimeout(() => {
     arreterClignotementLocalisation();

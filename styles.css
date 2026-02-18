@@ -408,6 +408,16 @@ body {
   background: #eff6ff;
 }
 
+.point-localisation-clignotant {
+  width: 20px;
+  height: 20px;
+  border-radius: 999px;
+  border: 3px solid rgba(15, 23, 42, 0.92);
+  background: #facc15;
+  box-shadow: 0 0 0 4px rgba(250, 204, 21, 0.38);
+  transition: opacity 140ms linear;
+}
+
 .modal-itineraire-apercu {
   display: none;
   margin-top: 8px;
