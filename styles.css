@@ -10,8 +10,10 @@
     inset 0 1px 4px rgba(255, 255, 255, 0.4),
     0 8px 24px rgba(0, 0, 0, 0.24);
   --ui-tip-color: rgba(238, 238, 238, 0.88);
-  --ui-text-primary: #0f172a;
-  --ui-text-on-glass: #f8fafc;
+  --ui-text-primary: #111827;
+  --ui-text-secondary: #374151;
+  --ui-text-muted: #6b7280;
+  --ui-text-on-glass: #111827;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -26,8 +28,10 @@
       inset 0 1px 4px rgba(148, 163, 184, 0.16),
       0 10px 26px rgba(2, 6, 23, 0.55);
     --ui-tip-color: rgba(15, 23, 42, 0.9);
-    --ui-text-primary: #e2e8f0;
-    --ui-text-on-glass: #e2e8f0;
+    --ui-text-primary: #f3f4f6;
+    --ui-text-secondary: #d1d5db;
+    --ui-text-muted: #9ca3af;
+    --ui-text-on-glass: #f9fafb;
   }
 }
 
@@ -536,7 +540,7 @@ body,
   max-width: none;
   width: 100%;
   color: var(--ui-text-primary);
-  font-size: 0.88rem;
+  font-size: 0.84rem;
   overflow-wrap: anywhere;
 }
 
@@ -584,7 +588,7 @@ body,
   right: 9px;
   width: 28px;
   height: 28px;
-  color: #6b7280;
+  color: var(--ui-text-muted);
   font-size: 40px;
   line-height: 20px;
   font-weight: 600;
@@ -593,7 +597,7 @@ body,
 
 .maplibregl-popup-close-button:hover {
   background: transparent;
-  color: #4b5563;
+  color: var(--ui-text-secondary);
 }
 
 .popup-section + .popup-section {
@@ -682,15 +686,15 @@ body,
   font-size: 0.84rem;
   line-height: 1.3;
   font-weight: 600;
-  color: #1f2937;
+  color: var(--ui-text-primary);
 }
 
 .popup-acces-titre {
   margin: 0;
-  font-size: 1rem;
+  font-size: 0.95rem;
   line-height: 1.25;
   font-weight: 700;
-  color: #1f2937;
+  color: var(--ui-text-primary);
 }
 
 .popup-portail-ligne {
@@ -698,16 +702,16 @@ body,
   font-size: 0.83rem;
   line-height: 1.35;
   font-weight: 700;
-  color: #1f2937;
+  color: var(--ui-text-primary);
 }
 
 .popup-portail-valeur {
   font-weight: 600;
-  color: #334155;
+  color: var(--ui-text-secondary);
 }
 
 .popup-portail-vide {
-  color: #6b7280;
+  color: var(--ui-text-muted);
   font-style: italic;
 }
 
@@ -716,7 +720,7 @@ body,
   margin-top: 3px;
   font-size: 0.75rem;
   line-height: 1.25;
-  color: #475569;
+  color: var(--ui-text-secondary);
 }
 
 .popup-poste-details-centre {
@@ -752,9 +756,9 @@ body,
 
 .popup-poste-rss-titre {
   margin: 0 0 10px;
-  font-size: 0.82rem;
+  font-size: 0.78rem;
   font-weight: 700;
-  color: #3f3f46;
+  color: var(--ui-text-secondary);
 }
 
 .popup-poste-rss-pills {
@@ -785,10 +789,10 @@ body,
 
 .popup-poste-ligne {
   margin: 0;
-  font-size: 0.88rem;
+  font-size: 0.84rem;
   line-height: 1.35;
   font-weight: 500;
-  color: #3f3f46;
+  color: var(--ui-text-secondary);
 }
 
 .popup-poste-contact-numero {
@@ -801,16 +805,16 @@ body,
 
 .popup-poste-appareils-titre {
   margin: 0 0 8px;
-  font-size: 0.88rem;
+  font-size: 0.84rem;
   font-weight: 700;
-  color: #3f3f46;
+  color: var(--ui-text-secondary);
 }
 
 .popup-poste-appareils-ligne {
   margin: 0;
-  font-size: 0.88rem;
+  font-size: 0.84rem;
   line-height: 1.42;
-  color: #3f3f46;
+  color: var(--ui-text-secondary);
   overflow-wrap: anywhere;
 }
 
@@ -994,10 +998,10 @@ body,
   z-index: 9;
   display: none;
   flex-direction: column;
-  min-width: 260px;
-  max-width: min(360px, calc(100vw - 20px));
-  padding: 10px 0;
-  border-radius: 16px;
+  min-width: 242px;
+  max-width: min(336px, calc(100vw - 20px));
+  padding: 8px 0;
+  border-radius: 14px;
   border: 1px solid var(--ui-glass-border);
   background: var(--ui-glass-bg);
   box-shadow: var(--ui-glass-shadow);
@@ -1015,13 +1019,13 @@ body,
   gap: 10px;
   width: 100%;
   margin: 0;
-  padding: 12px 16px;
+  padding: 10px 14px;
   border: 0;
   background: transparent;
   color: var(--ui-text-on-glass);
   text-align: left;
   font-family: "Manrope", "Avenir Next", "Segoe UI", sans-serif;
-  font-size: 1.02rem;
+  font-size: 0.93rem;
   font-weight: 500;
   line-height: 1.2;
   cursor: pointer;
@@ -1059,13 +1063,13 @@ body,
 .menu-contextuel-sousitem {
   width: 100%;
   margin: 0;
-  padding: 10px 16px 10px 24px;
+  padding: 9px 14px 9px 20px;
   border: 0;
   background: transparent;
   color: var(--ui-text-on-glass);
   text-align: left;
   font-family: "Manrope", "Avenir Next", "Segoe UI", sans-serif;
-  font-size: 0.94rem;
+  font-size: 0.86rem;
   font-weight: 500;
   line-height: 1.2;
   cursor: pointer;
@@ -1164,7 +1168,7 @@ body,
   }
 
   .menu-contextuel-item {
-    font-size: 1.02rem;
+    font-size: 0.95rem;
   }
 }
 
@@ -1206,7 +1210,7 @@ body,
   }
 
   .menu-contextuel-item {
-    padding: 10px 14px;
+    padding: 9px 12px;
   }
 
   .bouton-sortie-mesure {
