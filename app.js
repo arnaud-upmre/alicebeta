@@ -53,6 +53,12 @@ const stylePlanOsm = {
 const styleSatelliteIgn = {
   version: 8,
   sources: {
+    osm: {
+      type: "raster",
+      tiles: ["https://tile.openstreetmap.org/{z}/{x}/{y}.png"],
+      tileSize: 256,
+      attribution: "© OpenStreetMap contributors"
+    },
     satelliteIgn: {
       type: "raster",
       tiles: [
@@ -60,10 +66,15 @@ const styleSatelliteIgn = {
       ],
       tileSize: 256,
       maxzoom: 18,
-      attribution: "© IGN"
+      attribution: "© IGN, © OpenStreetMap contributors"
     }
   },
   layers: [
+    {
+      id: "osm-fallback",
+      type: "raster",
+      source: "osm"
+    },
     {
       id: "satelliteIgn",
       type: "raster",
@@ -3575,9 +3586,6 @@ function activerInteractionsCarte() {
 
   carte.on("movestart", () => {
     fermerMenuContextuel();
-    if (!recadragePopupMobileEnCours && !navigationPopupProgrammatiqueEnCours && !conserverFichePendantNavigation) {
-      fermerPopupCarte();
-    }
   });
 
   carte.on("zoomstart", () => {
