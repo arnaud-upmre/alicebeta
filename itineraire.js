@@ -183,8 +183,8 @@
 
     function suggestions(texte) {
       const terme = normaliserTexteRecherche(texte);
-      if (!terme) {
-        return options.slice(0, 14);
+      if (!terme || terme.length < 2) {
+        return [];
       }
       const trouves = [];
       for (const option of options) {
@@ -495,10 +495,19 @@
           }
           mettreAJourResume();
         }
+        if (valeur.length < 2) {
+          viderSuggestions();
+          return;
+        }
         rendreSuggestions(liste, suggestions(valeur));
       });
       champ.addEventListener("focus", () => {
-        rendreSuggestions(liste, suggestions(champ.value.trim()));
+        const valeur = champ.value.trim();
+        if (valeur.length < 2) {
+          viderSuggestions();
+          return;
+        }
+        rendreSuggestions(liste, suggestions(valeur));
       });
       champ.addEventListener("keydown", (event) => {
         if (event.key !== "Enter") {
