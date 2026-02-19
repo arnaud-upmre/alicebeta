@@ -2668,7 +2668,10 @@ function attacherActionsPopupInterne() {
     if (!url) {
       return;
     }
-    window.open(url, "_blank", "noopener,noreferrer");
+    const nouvelleFenetre = window.open(url, "_blank", "noopener");
+    if (!nouvelleFenetre) {
+      window.location.assign(url);
+    }
   };
 
   if (navigationInternePopup) {
