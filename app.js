@@ -2646,13 +2646,6 @@ function attacherActionsPopupInterne() {
     if (!url) {
       return;
     }
-    const ua = navigator.userAgent || "";
-    const estIOS = /iPad|iPhone|iPod/.test(ua);
-    if (estIOS) {
-      // iOS bloque souvent window.open depuis un <select>, on navigue dans l'onglet courant.
-      window.location.href = url;
-      return;
-    }
     const nouvelleFenetre = window.open(url, "_blank", "noopener,noreferrer");
     if (!nouvelleFenetre) {
       window.location.href = url;
@@ -3331,6 +3324,72 @@ function ouvrirPopupAvecAnimationDepuisObjets(objets, options = {}) {
   return naviguerVersCoordonneesPuisOuvrirPopup(longitude, latitude, ouvrirPopup, options);
 }
 
+function normaliserIdNavigation(valeur) {
+  return String(valeur || "")
+    .trim()
+    .replace(/\s+/g, " ")
+    .toLowerCase();
+}
+
+function construireIdPosteDepuisEntree(poste) {
+  return [champCompletOuVide(poste?.nom), champCompletOuVide(poste?.type)].filter(Boolean).join(" ");
+}
+
+function construireIdSatDepuisEntree(poste) {
+  return [champCompletOuVide(poste?.nom), champCompletOuVide(poste?.type), champCompletOuVide(poste?.SAT)]
+    .filter(Boolean)
+    .join(" ");
+}
+
+function construireIdAppareilDepuisEntree(appareil) {
+  return [
+    champCompletOuVide(appareil?.appareil),
+    champCompletOuVide(appareil?.nom),
+    champCompletOuVide(appareil?.type),
+    champCompletOuVide(appareil?.SAT)
+  ]
+    .filter(Boolean)
+    .join(" ");
+}
+
+function trouverNavigationDepuisId(identifiant) {
+  const idNormalise = normaliserIdNavigation(identifiant);
+  if (!idNormalise) {
+    return null;
+  }
+
+  for (const feature of donneesAppareils?.features || []) {
+    const [longitude, latitude] = feature.geometry?.coordinates || [];
+    if (!Number.isFinite(longitude) || !Number.isFinite(latitude)) {
+      continue;
+    }
+    const appareilsListe = extraireListeDepuisFeature(feature, "appareils_liste_json");
+    for (const appareil of appareilsListe) {
+      if (normaliserIdNavigation(construireIdAppareilDepuisEntree(appareil)) === idNormalise) {
+        return { type: "appareils", longitude, latitude };
+      }
+    }
+  }
+
+  for (const feature of donneesPostes?.features || []) {
+    const [longitude, latitude] = feature.geometry?.coordinates || [];
+    if (!Number.isFinite(longitude) || !Number.isFinite(latitude)) {
+      continue;
+    }
+    const postesListe = extraireListeDepuisFeature(feature, "postes_liste_json");
+    for (const poste of postesListe) {
+      if (normaliserIdNavigation(construireIdSatDepuisEntree(poste)) === idNormalise) {
+        return { type: "postes", longitude, latitude };
+      }
+      if (normaliserIdNavigation(construireIdPosteDepuisEntree(poste)) === idNormalise) {
+        return { type: "postes", longitude, latitude };
+      }
+    }
+  }
+
+  return null;
+}
+
 function ouvrirPopupDepuisObjetsCarte(objets) {
   if (!Array.isArray(objets) || !objets.length) {
     return false;
@@ -3362,6 +3421,48 @@ function ouvrirPopupDepuisObjetsCarte(objets) {
     uniquesParCouche.get(COUCHE_APPAREILS_GROUPES) || uniquesParCouche.get(COUCHE_APPAREILS) || null;
 
   return construirePopupDepuisFeatures(longitude, latitude, featurePostes, featureAcces, featureAppareils);
+}
+
+async function ouvrirFicheDepuisParametreId() {
+  const params = new URLSearchParams(window.location.search);
+  const identifiant = String(params.get("id") || "").trim();
+  if (!identifiant) {
+    return;
+  }
+
+  try {
+    await Promise.all([chargerDonneesPostes(), chargerDonneesAppareils()]);
+    if (!carte.loaded()) {
+      await new Promise((resolve) => {
+        carte.once("load", resolve);
+      });
+    }
+    const cible = trouverNavigationDepuisId(identifiant);
+    if (!cible) {
+      return;
+    }
+
+    await activerFiltrePourType(cible.type);
+    appliquerCouchesDonnees();
+    remonterCouchesDonnees();
+
+    let popupOuverte = false;
+    const ouvrirPopup = () => {
+      if (popupOuverte) {
+        return;
+      }
+      popupOuverte = true;
+      ouvrirPopupDepuisCoordonnees(cible.longitude, cible.latitude);
+    };
+
+    naviguerVersCoordonneesPuisOuvrirPopup(cible.longitude, cible.latitude, ouvrirPopup, {
+      forceZoom: true,
+      zoomMin: 14.4,
+      durationDouxMs: 430
+    });
+  } catch (erreur) {
+    console.error("Impossible d'ouvrir la fiche depuis le parametre id", erreur);
+  }
 }
 
 async function activerFiltrePourType(type) {
@@ -4280,6 +4381,8 @@ if (boutonCtxAjoutAppareil) {
     fermerMenuContextuel();
   });
 }
+
+ouvrirFicheDepuisParametreId();
 
 document.addEventListener("click", (event) => {
   if (!controleFonds.contains(event.target)) {
