@@ -2718,7 +2718,7 @@ function attacherActionsPopupInterne() {
           return;
         }
         popupOuverte = true;
-        ouvrirPopupDepuisCoordonnees(longitude, latitude);
+        ouvrirPopupDepuisCoordonneesPourType("postes", longitude, latitude, { fallbackGenerique: false });
       };
       naviguerVersCoordonneesPuisOuvrirPopup(longitude, latitude, ouvrirPopup, {
         zoomMin: 14.8,
@@ -2788,7 +2788,7 @@ function attacherActionsPopupInterne() {
           return;
         }
         popupOuverte = true;
-        ouvrirPopupDepuisCoordonnees(longitude, latitude);
+        ouvrirPopupDepuisCoordonneesPourType("appareils", longitude, latitude, { fallbackGenerique: false });
       };
       naviguerVersCoordonneesPuisOuvrirPopup(longitude, latitude, ouvrirPopup, {
         zoomMin: 14.8,
@@ -3182,24 +3182,35 @@ function ouvrirPopupDepuisCoordonnees(longitude, latitude) {
   return construirePopupDepuisFeatures(longitude, latitude, featurePostes, featureAcces, featureAppareils);
 }
 
-function ouvrirPopupDepuisResultatRecherche(type, longitude, latitude) {
-  let featurePostes = null;
-  let featureAcces = null;
-  let featureAppareils = null;
+function ouvrirPopupDepuisCoordonneesPourType(type, longitude, latitude, options = {}) {
+  let feature = null;
 
   if (type === "postes") {
-    featurePostes = obtenirFeatureALaCoordonnee(donneesPostes, longitude, latitude);
+    feature = obtenirFeatureALaCoordonnee(donneesPostes, longitude, latitude) || obtenirFeatureProche(donneesPostes, longitude, latitude);
+    if (feature) {
+      return construirePopupDepuisFeatures(longitude, latitude, feature, null, null);
+    }
   } else if (type === "appareils") {
-    featureAppareils = obtenirFeatureALaCoordonnee(donneesAppareils, longitude, latitude);
-  } else {
-    featureAcces = obtenirFeatureALaCoordonnee(donneesAcces, longitude, latitude);
+    feature =
+      obtenirFeatureALaCoordonnee(donneesAppareils, longitude, latitude) || obtenirFeatureProche(donneesAppareils, longitude, latitude);
+    if (feature) {
+      return construirePopupDepuisFeatures(longitude, latitude, null, null, feature);
+    }
+  } else if (type === "acces") {
+    feature = obtenirFeatureALaCoordonnee(donneesAcces, longitude, latitude) || obtenirFeatureProche(donneesAcces, longitude, latitude);
+    if (feature) {
+      return construirePopupDepuisFeatures(longitude, latitude, null, feature, null);
+    }
   }
 
-  if (featurePostes || featureAcces || featureAppareils) {
-    return construirePopupDepuisFeatures(longitude, latitude, featurePostes, featureAcces, featureAppareils);
+  if (options.fallbackGenerique === false) {
+    return false;
   }
-
   return ouvrirPopupDepuisCoordonnees(longitude, latitude);
+}
+
+function ouvrirPopupDepuisResultatRecherche(type, longitude, latitude) {
+  return ouvrirPopupDepuisCoordonneesPourType(type, longitude, latitude, { fallbackGenerique: false });
 }
 
 function calculerContexteDeplacement(longitude, latitude) {
@@ -3491,7 +3502,7 @@ async function ouvrirFicheDepuisParametreId() {
         return;
       }
       popupOuverte = true;
-      ouvrirPopupDepuisCoordonnees(cible.longitude, cible.latitude);
+      ouvrirPopupDepuisCoordonneesPourType(cible.type, cible.longitude, cible.latitude, { fallbackGenerique: false });
     };
 
     naviguerVersCoordonneesPuisOuvrirPopup(cible.longitude, cible.latitude, ouvrirPopup, {
