@@ -2054,22 +2054,38 @@ function construireSectionAcces(feature) {
     }
     clesVues.add(cle);
 
-    const base = [nom, type, sat].filter(Boolean).join(" ") || "Accès";
+    const base = [nom, type, sat].filter(Boolean).join(" ").trim();
+    if (!base) {
+      continue;
+    }
     const suffixeAcces = accesVoiture ? ` (accès ${accesVoiture})` : "";
     const libelle = `🔐 ${base}${suffixeAcces}`;
     const codeActif = estCodeDisponible(acces?.code);
-    if (codeActif) {
-      const url = construireLienCodesAcces(acces);
-      lignes.push(
-        `<li class="popup-infos-acces-item"><button class="popup-bouton-itineraire popup-bouton-infos-acces-option" type="button" data-url="${echapperHtml(url)}">${echapperHtml(libelle)}</button></li>`
-      );
-    } else {
-      lignes.push(`<li class="popup-infos-acces-item">${echapperHtml(libelle)}</li>`);
+    if (!codeActif) {
+      continue;
     }
+    const url = construireLienCodesAcces(acces);
+    lignes.push(
+      `<li class="popup-infos-acces-item"><button class="popup-bouton-itineraire popup-bouton-infos-acces-option" type="button" data-url="${echapperHtml(url)}">${echapperHtml(libelle)}</button></li>`
+    );
   }
 
   if (!lignes.length) {
     return "";
+  }
+
+  if (lignes.length === 1) {
+    const accesUnique = accesListe.find((acces) => {
+      const nom = champCompletOuVide(acces?.nom);
+      const type = champCompletOuVide(acces?.type);
+      const sat = champCompletOuVide(acces?.SAT);
+      const base = [nom, type, sat].filter(Boolean).join(" ").trim();
+      return base && estCodeDisponible(acces?.code);
+    });
+    if (accesUnique) {
+      const url = construireLienCodesAcces(accesUnique);
+      return `<section class="popup-section popup-section-infos-acces"><button class="popup-bouton-itineraire popup-bouton-infos-acces" id="popup-infos-acces-direct" type="button" data-url="${echapperHtml(url)}">🔐 Informations d’accès</button></section>`;
+    }
   }
 
   return `<section class="popup-section popup-section-infos-acces"><button class="popup-bouton-itineraire popup-bouton-infos-acces" id="popup-toggle-infos-acces" type="button">🔐 Informations d’accès</button><ul class="popup-liste-infos-acces" id="popup-liste-infos-acces" hidden>${lignes.join("")}</ul></section>`;
@@ -2702,6 +2718,17 @@ function attacherActionsPopupInterne() {
       } else {
         listeInfosAcces.removeAttribute("hidden");
       }
+    });
+  }
+
+  const boutonInfosAccesDirect = racinePopup.querySelector("#popup-infos-acces-direct");
+  if (boutonInfosAccesDirect) {
+    boutonInfosAccesDirect.addEventListener("click", () => {
+      const url = boutonInfosAccesDirect.getAttribute("data-url");
+      if (!url) {
+        return;
+      }
+      window.open(url, "_blank", "noopener,noreferrer");
     });
   }
 
