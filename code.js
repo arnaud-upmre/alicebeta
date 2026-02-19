@@ -52,11 +52,13 @@
 
   function construireLibelleChoixAcces(acces) {
     const champCompletOuVide = global.champCompletOuVide || fallbackChampCompletOuVide;
-    const nom = champCompletOuVide(acces?.nom) || "Poste inconnu";
-    const type = champCompletOuVide(acces?.type) || "-";
-    const sat = champCompletOuVide(acces?.SAT) || "-";
-    const accesAppareil = champCompletOuVide(acces?.acces) || "-";
-    return `${nom} | ${type} | SAT ${sat} | Accès ${accesAppareil}`;
+    const nom = champCompletOuVide(acces?.nom);
+    const type = champCompletOuVide(acces?.type);
+    const sat = champCompletOuVide(acces?.SAT);
+    const accesAppareil = champCompletOuVide(acces?.acces);
+    const base = [nom, type, sat].filter(Boolean).join(" ").trim() || "Accès";
+    const suffixeAcces = accesAppareil ? ` (accès ${accesAppareil})` : "";
+    return `🔐 ${base}${suffixeAcces}`;
   }
 
   function dedoublonnerChoixAcces(accesListe) {
@@ -101,16 +103,16 @@
     }
 
     if (choix.length === 1) {
-      return `<section class="popup-section popup-section-codes"><button class="popup-bouton-itineraire popup-bouton-codes" id="popup-afficher-codes-acces" type="button" data-mode="direct" data-url="${echapperHtml(choix[0].url)}">🔐 Afficher les codes d’accès</button></section>`;
+      return `<section class="popup-section popup-section-codes"><button class="popup-bouton-itineraire popup-bouton-codes" id="popup-afficher-codes-acces" type="button" data-mode="direct" data-url="${echapperHtml(choix[0].url)}">🔐 Informations d’accès</button></section>`;
     }
 
     const boutonsChoix = choix
       .map(
-        (option, index) =>
-          `<button class="popup-bouton-itineraire popup-bouton-codes-option" type="button" data-url="${echapperHtml(option.url)}">${index + 1}. ${echapperHtml(option.label)}</button>`
+        (option) =>
+          `<button class="popup-bouton-itineraire popup-bouton-codes-option" type="button" data-url="${echapperHtml(option.url)}">${echapperHtml(option.label)}</button>`
       )
       .join("");
-    return `<section class="popup-section popup-section-codes"><button class="popup-bouton-itineraire popup-bouton-codes" id="popup-afficher-codes-acces" type="button" data-mode="choix">🔐 Afficher les codes d’accès</button><div class="popup-codes-choix" id="popup-codes-choix" hidden>${boutonsChoix}</div></section>`;
+    return `<section class="popup-section popup-section-codes"><button class="popup-bouton-itineraire popup-bouton-codes" id="popup-afficher-codes-acces" type="button" data-mode="choix">🔐 Informations d’accès</button><div class="popup-codes-choix" id="popup-codes-choix" hidden>${boutonsChoix}</div></section>`;
   }
 
   global.URL_POWERAPPS_CODES = global.URL_POWERAPPS_CODES || DEFAULT_POWERAPPS_CODES_URL;
