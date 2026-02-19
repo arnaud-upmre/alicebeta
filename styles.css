@@ -1365,9 +1365,8 @@ body {
 
 .popup-bouton-localiser {
   width: 100%;
-  min-height: 40px;
-  font-size: 0.88rem;
-  font-weight: 700;
+  min-height: 44px;
+  padding: 0 10px;
 }
 
 .popup-bouton-itineraire {
@@ -1375,7 +1374,8 @@ body {
   align-items: center;
   justify-content: center;
   min-width: 0;
-  padding: 7px 4px;
+  min-height: 44px;
+  padding: 0 10px;
   border-radius: 10px;
   background: linear-gradient(180deg, #ffffff 0%, #f3f4f6 100%);
   border: 1px solid rgba(15, 23, 42, 0.14);
@@ -1397,16 +1397,14 @@ body {
 
 .popup-bouton-codes {
   width: 100%;
-  min-height: 42px;
-  font-size: 0.86rem;
-  font-weight: 700;
+  min-height: 44px;
+  padding: 0 10px;
 }
 
 .popup-bouton-infos-acces {
   width: 100%;
-  min-height: 40px;
-  font-size: 0.72rem;
-  font-weight: 500;
+  min-height: 44px;
+  padding: 0 10px;
 }
 
 .popup-liste-infos-acces {
@@ -1443,18 +1441,46 @@ body {
 }
 
 .popup-codes-choix {
-  margin-top: 8px;
+  margin-top: 6px;
   display: grid;
-  grid-template-columns: 1fr;
   gap: 6px;
+}
+
+.popup-codes-choix[hidden] {
+  display: none !important;
+}
+
+.popup-codes-choix-label {
+  margin: 0;
+  color: var(--ui-text-secondary);
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.popup-codes-select {
+  width: 100%;
+  min-height: 44px;
+  border-radius: 10px;
+  border: 1px solid rgba(15, 23, 42, 0.14);
+  background: linear-gradient(180deg, #ffffff 0%, #f3f4f6 100%);
+  color: #0f172a;
+  font-family: "Manrope", "Avenir Next", "Segoe UI", sans-serif;
+  font-size: 0.79rem;
+  font-weight: 600;
+  padding: 0 10px;
+}
+
+.popup-codes-select:focus-visible {
+  outline: 2px solid #3b82f6;
+  outline-offset: 1px;
 }
 
 .popup-bouton-codes-option {
   width: 100%;
   justify-content: flex-start;
   text-align: left;
-  padding: 8px 10px;
-  font-size: 0.75rem;
+  padding: 6px 8px;
+  font-size: 0.72rem;
   font-weight: 600;
 }
 
@@ -1777,7 +1803,8 @@ body {
 
   .popup-bouton-itineraire {
     font-size: 0.76rem;
-    padding: 8px 4px;
+    min-height: 46px;
+    padding: 0 8px;
   }
 
   .popup-itineraires-localiser {
@@ -1787,6 +1814,13 @@ body {
   .popup-bouton-localiser {
     width: 100%;
     grid-column: 1 / -1;
+    min-height: 46px;
+  }
+
+  .popup-bouton-codes,
+  .popup-bouton-infos-acces,
+  .popup-codes-select {
+    min-height: 46px;
   }
 
   .maplibregl-popup-content {

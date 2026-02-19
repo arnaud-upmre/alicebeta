@@ -106,13 +106,13 @@
       return `<section class="popup-section popup-section-codes"><button class="popup-bouton-itineraire popup-bouton-codes" id="popup-afficher-codes-acces" type="button" data-mode="direct" data-url="${echapperHtml(choix[0].url)}">🔐 Informations d’accès</button></section>`;
     }
 
-    const boutonsChoix = choix
+    const optionsChoix = choix
       .map(
         (option) =>
-          `<button class="popup-bouton-itineraire popup-bouton-codes-option" type="button" data-url="${echapperHtml(option.url)}">${echapperHtml(option.label)}</button>`
+          `<option value="${echapperHtml(option.url)}">${echapperHtml(option.label)}</option>`
       )
       .join("");
-    return `<section class="popup-section popup-section-codes"><button class="popup-bouton-itineraire popup-bouton-codes" id="popup-afficher-codes-acces" type="button" data-mode="choix">🔐 Informations d’accès</button><div class="popup-codes-choix" id="popup-codes-choix" hidden>${boutonsChoix}</div></section>`;
+    return `<section class="popup-section popup-section-codes"><button class="popup-bouton-itineraire popup-bouton-codes" id="popup-afficher-codes-acces" type="button" data-mode="choix" data-label-default="🔐 Informations d’accès" data-label-open="🔐 Choisir un poste" aria-expanded="false">🔐 Informations d’accès</button><div class="popup-codes-choix" id="popup-codes-choix" hidden><label class="popup-codes-choix-label" for="popup-codes-select">Choisir un poste</label><select class="popup-codes-select" id="popup-codes-select"><option value="">Selectionner...</option>${optionsChoix}</select></div></section>`;
   }
 
   global.URL_POWERAPPS_CODES = global.URL_POWERAPPS_CODES || DEFAULT_POWERAPPS_CODES_URL;

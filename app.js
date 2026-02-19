@@ -2719,8 +2719,18 @@ function attacherActionsPopupInterne() {
           const estVisible = !blocChoix.hasAttribute("hidden");
           if (estVisible) {
             blocChoix.setAttribute("hidden", "hidden");
+            boutonAfficherCodes.setAttribute("aria-expanded", "false");
+            const texteDefaut = boutonAfficherCodes.getAttribute("data-label-default");
+            if (texteDefaut) {
+              boutonAfficherCodes.textContent = texteDefaut;
+            }
           } else {
             blocChoix.removeAttribute("hidden");
+            boutonAfficherCodes.setAttribute("aria-expanded", "true");
+            const texteOuvert = boutonAfficherCodes.getAttribute("data-label-open");
+            if (texteOuvert) {
+              boutonAfficherCodes.textContent = texteOuvert;
+            }
           }
         }
         return;
@@ -2730,6 +2740,18 @@ function attacherActionsPopupInterne() {
       if (url) {
         window.open(url, "_blank", "noopener,noreferrer");
       }
+    });
+  }
+
+  const selectChoixCodes = racinePopup.querySelector("#popup-codes-select");
+  if (selectChoixCodes) {
+    selectChoixCodes.addEventListener("change", () => {
+      const url = selectChoixCodes.value;
+      if (!url) {
+        return;
+      }
+      window.open(url, "_blank", "noopener,noreferrer");
+      selectChoixCodes.value = "";
     });
   }
 
