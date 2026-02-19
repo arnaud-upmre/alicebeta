@@ -95,9 +95,44 @@
     }));
   }
 
+  function construireChoixCodesPostes(featurePostes) {
+    const extraireListeDepuisFeature = global.extraireListeDepuisFeature;
+    if (typeof extraireListeDepuisFeature !== "function") {
+      return [];
+    }
+
+    const postesListe = extraireListeDepuisFeature(featurePostes, "postes_liste_json");
+    const eligibles = postesListe.filter((poste) => estCodeDisponible(poste?.code));
+    const uniques = dedoublonnerChoixAcces(eligibles);
+    return uniques.map((poste) => ({
+      label: construireLibelleChoixAcces(poste),
+      url: construireLienCodesAcces(poste)
+    }));
+  }
+
   function construireSectionBoutonCodes(featureAcces) {
     const echapperHtml = global.echapperHtml || fallbackEchapperHtml;
     const choix = construireChoixCodes(featureAcces);
+    if (!choix.length) {
+      return "";
+    }
+
+    if (choix.length === 1) {
+      return `<section class="popup-section popup-section-codes"><button class="popup-bouton-itineraire popup-bouton-codes" id="popup-afficher-codes-acces" type="button" data-mode="direct" data-url="${echapperHtml(choix[0].url)}">🔐 Informations d’accès</button></section>`;
+    }
+
+    const optionsChoix = choix
+      .map(
+        (option) =>
+          `<option value="${echapperHtml(option.url)}">${echapperHtml(option.label)}</option>`
+      )
+      .join("");
+    return `<section class="popup-section popup-section-codes"><button class="popup-bouton-itineraire popup-bouton-codes" id="popup-afficher-codes-acces" type="button" data-mode="choix">🔐 Informations d’accès</button><select class="popup-codes-select" id="popup-codes-select" hidden><option value="">🔐 Choisir un poste</option>${optionsChoix}</select></section>`;
+  }
+
+  function construireSectionBoutonCodesPostes(featurePostes) {
+    const echapperHtml = global.echapperHtml || fallbackEchapperHtml;
+    const choix = construireChoixCodesPostes(featurePostes);
     if (!choix.length) {
       return "";
     }
@@ -119,5 +154,7 @@
   global.estCodeDisponible = estCodeDisponible;
   global.construireLienCodesAcces = construireLienCodesAcces;
   global.construireChoixCodes = construireChoixCodes;
+  global.construireChoixCodesPostes = construireChoixCodesPostes;
   global.construireSectionBoutonCodes = construireSectionBoutonCodes;
+  global.construireSectionBoutonCodesPostes = construireSectionBoutonCodesPostes;
 })(window);

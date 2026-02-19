@@ -15,7 +15,8 @@
         "contact": "",
         "lignes": "GONESSE à LILLE-FRONTIERE (LGV)",
         "numero_ligne": 226000,
-        "pk": "107,989"
+        "pk": "107,989",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -38,7 +39,8 @@
         "contact": "",
         "lignes": "BUSIGNY à SOMAIN",
         "numero_ligne": 250000,
-        "pk": "230,460"
+        "pk": "230,460",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -61,7 +63,8 @@
         "contact": "",
         "lignes": "PARIS-NORD à LILLE",
         "numero_ligne": 272000,
-        "pk": "174,758"
+        "pk": "174,758",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -84,13 +87,14 @@
         "contact": "",
         "lignes": "PARIS-NORD à LILLE",
         "numero_ligne": 272000,
-        "pk": ""
+        "pk": "",
+        "code": false
       },
       "geometry": {
         "type": "Point",
         "coordinates": [
           2.780311,
-          50.128810
+          50.12881
         ]
       }
     },
@@ -109,7 +113,8 @@
         "contact": "",
         "lignes": "FRETIN à FRÉTHUN (LGV)",
         "numero_ligne": 216000,
-        "pk": "114,400"
+        "pk": "114,400",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -132,7 +137,8 @@
         "contact": "",
         "lignes": "",
         "numero_ligne": "",
-        "pk": ""
+        "pk": "",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -155,7 +161,8 @@
         "contact": "",
         "lignes": "",
         "numero_ligne": "",
-        "pk": ""
+        "pk": "",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -178,7 +185,8 @@
         "contact": "",
         "lignes": "",
         "numero_ligne": "",
-        "pk": ""
+        "pk": "",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -201,7 +209,8 @@
         "contact": "",
         "lignes": "",
         "numero_ligne": "",
-        "pk": ""
+        "pk": "",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -224,7 +233,8 @@
         "lignes": "",
         "numero_ligne": "",
         "pk": "",
-        "special": true
+        "special": true,
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -245,7 +255,8 @@
         "contact": "",
         "lignes": "LILLE à LES FONTINETTES",
         "numero_ligne": 295000,
-        "pk": "20,240"
+        "pk": "20,240",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -266,7 +277,8 @@
         "contact": "",
         "lignes": "ARRAS à DUNKERQUE",
         "numero_ligne": 301000,
-        "pk": "280,901"
+        "pk": "280,901",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -287,7 +299,8 @@
         "contact": "",
         "lignes": "LILLE à LES FONTINETTES",
         "numero_ligne": 295000,
-        "pk": "62,755"
+        "pk": "62,755",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -308,7 +321,8 @@
         "secure": "https://sncf.sharepoint.com/:w:/s/NonoMapsGrpO3652/EQHLnJC-VopPpZZ-lr3_8VQBSf7V_one6vt6bKlfDo4LQg?e=QsfHXP",
         "lignes": "FIVES à ABBEVILLE",
         "numero_ligne": 289000,
-        "pk": "250,300"
+        "pk": "250,300",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -329,7 +343,8 @@
         "secure": "https://sncf.sharepoint.com/:w:/s/NonoMapsGrpO3652/IQCOhP3H6oVQTocln3szH5OtAWksPvdRn8ezHmu84qgE70o?e=nVNePb",
         "lignes": "ARRAS à DUNKERQUE",
         "numero_ligne": 301000,
-        "pk": "211,0200"
+        "pk": "211,0200",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -350,7 +365,8 @@
         "contact": "",
         "lignes": "LILLE à LES FONTINETTES",
         "numero_ligne": 295000,
-        "pk": "85,166"
+        "pk": "85,166",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -373,7 +389,8 @@
         "contact": "",
         "lignes": "ARRAS à DUNKERQUE",
         "numero_ligne": 301000,
-        "pk": "200,290"
+        "pk": "200,290",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -396,7 +413,8 @@
         "contact": "",
         "lignes": "FIVES à BAISIEUX",
         "numero_ligne": 269000,
-        "pk": "14,602"
+        "pk": "14,602",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -419,7 +437,8 @@
         "contact": "",
         "lignes": "FIVES à HIRSON ",
         "numero_ligne": 267000,
-        "pk": "77,312"
+        "pk": "77,312",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -441,7 +460,8 @@
         "contact": "Agent E : 03 21 57 31 72",
         "lignes": "ARRAS à DUNKERQUE",
         "numero_ligne": 301000,
-        "pk": "229,0700"
+        "pk": "229,0700",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -464,7 +484,8 @@
         "contact": "",
         "lignes": "ARRAS à DUNKERQUE",
         "numero_ligne": 301000,
-        "pk": "230,760"
+        "pk": "230,760",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -487,7 +508,8 @@
         "contact": "Agent E : 03 21 57 31 72",
         "lignes": "FIVES à ABBEVILLE",
         "numero_ligne": 289000,
-        "pk": "40,006"
+        "pk": "40,006",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -510,7 +532,8 @@
         "contact": "",
         "lignes": "FIVES à ABBEVILLE",
         "numero_ligne": 289000,
-        "pk": "35,465"
+        "pk": "35,465",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -531,7 +554,8 @@
         "contact": "",
         "lignes": "LILLE à LES FONTINETTES",
         "numero_ligne": 295000,
-        "pk": "103,900"
+        "pk": "103,900",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -553,7 +577,8 @@
         "contact": "",
         "lignes": "COUDEKERQUE-BRANCHE à LES FONTINETTES",
         "numero_ligne": 304000,
-        "pk": "14,900"
+        "pk": "14,900",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -576,7 +601,8 @@
         "contact": "",
         "lignes": "COUDEKERQUE-BRANCHE à LES FONTINETTES",
         "numero_ligne": 304000,
-        "pk": "10,375"
+        "pk": "10,375",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -599,7 +625,8 @@
         "contact": "",
         "lignes": "LENS à OSTRICOURT",
         "numero_ligne": 284000,
-        "pk": "215,547"
+        "pk": "215,547",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -622,7 +649,8 @@
         "contact": "",
         "lignes": "PARIS-NORD à LILLE",
         "numero_ligne": 272000,
-        "pk": "200,0290"
+        "pk": "200,0290",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -645,7 +673,8 @@
         "contact": "",
         "lignes": "PARIS-NORD à LILLE",
         "numero_ligne": 272000,
-        "pk": ""
+        "pk": "",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -668,7 +697,8 @@
         "contact": "",
         "lignes": "PARIS-NORD à LILLE",
         "numero_ligne": 272000,
-        "pk": ""
+        "pk": "",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -691,7 +721,8 @@
         "contact": "",
         "lignes": "PARIS-NORD à LILLE",
         "numero_ligne": 272000,
-        "pk": ""
+        "pk": "",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -712,7 +743,8 @@
         "contact": "",
         "lignes": "ARRAS à DUNKERQUE",
         "numero_ligne": 301000,
-        "pk": "211,700"
+        "pk": "211,700",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -735,7 +767,8 @@
         "contact": "",
         "lignes": "GONESSE à LILLE-FRONTIERE (LGV)",
         "numero_ligne": 226000,
-        "pk": "183,687"
+        "pk": "183,687",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -758,7 +791,8 @@
         "contact": "",
         "lignes": "COUDEKERQUE-BRANCHE à LES FONTINETTES",
         "numero_ligne": 304000,
-        "pk": "18,450"
+        "pk": "18,450",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -779,7 +813,8 @@
         "contact": "",
         "lignes": "FRETIN à FRÉTHUN (LGV)",
         "numero_ligne": 216000,
-        "pk": "53,547"
+        "pk": "53,547",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -800,7 +835,8 @@
         "contact": "",
         "lignes": "FRETIN à FRÉTHUN (LGV)",
         "numero_ligne": 216000,
-        "pk": "68,359"
+        "pk": "68,359",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -823,7 +859,8 @@
         "contact": "",
         "lignes": "CREIL à JEUMONT",
         "numero_ligne": 242000,
-        "pk": "182,251"
+        "pk": "182,251",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -846,7 +883,8 @@
         "contact": "",
         "lignes": "BOULOGNE-VILLE à CALAIS MARITIME",
         "numero_ligne": 314000,
-        "pk": "277,710"
+        "pk": "277,710",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -869,7 +907,8 @@
         "contact": "",
         "lignes": "BOULOGNE-VILLE à CALAIS MARITIME",
         "numero_ligne": 314000,
-        "pk": "278,220"
+        "pk": "278,220",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -892,7 +931,8 @@
         "contact": "",
         "lignes": "BOULOGNE-VILLE à CALAIS MARITIME",
         "numero_ligne": 314000,
-        "pk": "278,860"
+        "pk": "278,860",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -915,7 +955,8 @@
         "contact": "",
         "lignes": "FRETIN à FRÉTHUN (LGV)",
         "numero_ligne": 216000,
-        "pk": "59,146"
+        "pk": "59,146",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -938,7 +979,8 @@
         "contact": "",
         "lignes": "FRETIN à FRÉTHUN (LGV)",
         "numero_ligne": 216000,
-        "pk": ""
+        "pk": "",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -961,7 +1003,8 @@
         "contact": "",
         "lignes": "FRETIN à FRÉTHUN (LGV)",
         "numero_ligne": 216000,
-        "pk": ""
+        "pk": "",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -984,7 +1027,8 @@
         "contact": "",
         "lignes": "BOULOGNE-VILLE à CALAIS MARITIME",
         "numero_ligne": 314000,
-        "pk": "290,0500"
+        "pk": "290,0500",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -1007,7 +1051,8 @@
         "contact": "",
         "lignes": "BOULOGNE-VILLE à CALAIS MARITIME",
         "numero_ligne": 314000,
-        "pk": ""
+        "pk": "",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -1030,7 +1075,8 @@
         "contact": "",
         "lignes": "BOULOGNE-VILLE à CALAIS MARITIME",
         "numero_ligne": 314000,
-        "pk": ""
+        "pk": "",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -1053,7 +1099,8 @@
         "contact": "",
         "lignes": "BOULOGNE-VILLE à CALAIS MARITIME",
         "numero_ligne": 314000,
-        "pk": ""
+        "pk": "",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -1076,7 +1123,8 @@
         "contact": "",
         "lignes": "BOULOGNE-VILLE à CALAIS MARITIME",
         "numero_ligne": 314000,
-        "pk": ""
+        "pk": "",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -1099,7 +1147,8 @@
         "contact": "",
         "lignes": "BOULOGNE-VILLE à CALAIS MARITIME",
         "numero_ligne": 314000,
-        "pk": ""
+        "pk": "",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -1120,7 +1169,8 @@
         "contact": "",
         "lignes": "ARRAS à DUNKERQUE",
         "numero_ligne": 301000,
-        "pk": "300,521"
+        "pk": "300,521",
+        "code": true
       },
       "geometry": {
         "type": "Point",
@@ -1143,7 +1193,8 @@
         "contact": "",
         "lignes": "ARRAS à DUNKERQUE",
         "numero_ligne": 301000,
-        "pk": ""
+        "pk": "",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -1166,7 +1217,8 @@
         "contact": "",
         "lignes": "ARRAS à DUNKERQUE",
         "numero_ligne": 301000,
-        "pk": ""
+        "pk": "",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -1189,7 +1241,8 @@
         "contact": "",
         "lignes": "LILLE à LES FONTINETTES",
         "numero_ligne": 295000,
-        "pk": "103,900"
+        "pk": "103,900",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -1212,7 +1265,8 @@
         "contact": "",
         "lignes": "LILLE à LES FONTINETTES",
         "numero_ligne": 295000,
-        "pk": ""
+        "pk": "",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -1235,7 +1289,8 @@
         "contact": "",
         "lignes": "LILLE à LES FONTINETTES",
         "numero_ligne": 295000,
-        "pk": ""
+        "pk": "",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -1258,7 +1313,8 @@
         "contact": "",
         "lignes": "LILLE à LES FONTINETTES",
         "numero_ligne": 295000,
-        "pk": ""
+        "pk": "",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -1281,7 +1337,8 @@
         "contact": "",
         "lignes": "LILLE à LES FONTINETTES",
         "numero_ligne": 295000,
-        "pk": ""
+        "pk": "",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -1304,7 +1361,8 @@
         "contact": "",
         "lignes": "LILLE à LES FONTINETTES",
         "numero_ligne": 295000,
-        "pk": ""
+        "pk": "",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -1327,7 +1385,8 @@
         "contact": "",
         "lignes": "LILLE à LES FONTINETTES",
         "numero_ligne": 295000,
-        "pk": ""
+        "pk": "",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -1350,7 +1409,8 @@
         "contact": "",
         "lignes": "LILLE à LES FONTINETTES",
         "numero_ligne": 295000,
-        "pk": ""
+        "pk": "",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -1373,7 +1433,8 @@
         "contact": "",
         "lignes": "LILLE à LES FONTINETTES",
         "numero_ligne": 295000,
-        "pk": "104,810"
+        "pk": "104,810",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -1396,7 +1457,8 @@
         "contact": "",
         "lignes": "LILLE à LES FONTINETTES",
         "numero_ligne": 295000,
-        "pk": ""
+        "pk": "",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -1419,7 +1481,8 @@
         "contact": "",
         "lignes": "LILLE à LES FONTINETTES",
         "numero_ligne": 295000,
-        "pk": ""
+        "pk": "",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -1442,7 +1505,8 @@
         "contact": "",
         "lignes": "LILLE à LES FONTINETTES",
         "numero_ligne": 295000,
-        "pk": ""
+        "pk": "",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -1465,7 +1529,8 @@
         "contact": "",
         "lignes": "LILLE à LES FONTINETTES",
         "numero_ligne": 295000,
-        "pk": ""
+        "pk": "",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -1488,7 +1553,8 @@
         "contact": "",
         "lignes": "LONGUEAU à BOULOGNE-VILLE",
         "numero_ligne": 311000,
-        "pk": "234,000"
+        "pk": "234,000",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -1512,7 +1578,8 @@
         "secure": "https://sncf.sharepoint.com/:w:/s/NonoMapsGrpO3652/ETCmzTe1tkxBpe-eNXbD9uYBLNKLW6iZnYpVpQVb-cslog?e=PR72lg",
         "lignes": "HAUBOURDIN à SAINT-ANDRÉ",
         "numero_ligne": 292000,
-        "pk": "14,869"
+        "pk": "14,869",
+        "code": true
       },
       "geometry": {
         "type": "Point",
@@ -1535,7 +1602,8 @@
         "contact": "",
         "lignes": "LOURCHES à VALENCIENNES",
         "numero_ligne": 254000,
-        "pk": "230,298"
+        "pk": "230,298",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -1558,7 +1626,8 @@
         "contact": "",
         "lignes": "FIVES à ABBEVILLE",
         "numero_ligne": 289000,
-        "pk": "18,850"
+        "pk": "18,850",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -1581,7 +1650,8 @@
         "contact": "",
         "lignes": "",
         "numero_ligne": "",
-        "pk": ""
+        "pk": "",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -1604,7 +1674,8 @@
         "contact": "",
         "lignes": "",
         "numero_ligne": "",
-        "pk": ""
+        "pk": "",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -1627,7 +1698,8 @@
         "contact": "",
         "lignes": "",
         "numero_ligne": "",
-        "pk": ""
+        "pk": "",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -1650,7 +1722,8 @@
         "contact": "",
         "lignes": "PARIS-NORD à LILLE",
         "numero_ligne": 272000,
-        "pk": "217,750"
+        "pk": "217,750",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -1673,7 +1746,8 @@
         "contact": "Agent E : 03 28 24 81 77",
         "lignes": "ARRAS à DUNKERQUE",
         "numero_ligne": 301000,
-        "pk": "304,572"
+        "pk": "304,572",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -1693,7 +1767,8 @@
         "contact": "",
         "lignes": "FRETIN à FRÉTHUN (LGV)",
         "numero_ligne": 216000,
-        "pk": "31,503"
+        "pk": "31,503",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -1716,7 +1791,8 @@
         "contact": "",
         "lignes": "ARRAS à DUNKERQUE",
         "numero_ligne": 301000,
-        "pk": "287,404"
+        "pk": "287,404",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -1739,7 +1815,8 @@
         "contact": "",
         "lignes": "LONGUEAU à BOULOGNE-VILLE",
         "numero_ligne": 311000,
-        "pk": "226,900"
+        "pk": "226,900",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -1762,7 +1839,8 @@
         "contact": "",
         "lignes": "LONGUEAU à BOULOGNE-VILLE",
         "numero_ligne": 311000,
-        "pk": ""
+        "pk": "",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -1785,7 +1863,8 @@
         "contact": "",
         "lignes": "LONGUEAU à BOULOGNE-VILLE",
         "numero_ligne": 311000,
-        "pk": ""
+        "pk": "",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -1806,7 +1885,8 @@
         "contact": "",
         "lignes": "GONESSE à LILLE-FRONTIERE (LGV)",
         "numero_ligne": 226000,
-        "pk": "164,195"
+        "pk": "164,195",
+        "code": true
       },
       "geometry": {
         "type": "Point",
@@ -1829,7 +1909,8 @@
         "contact": "",
         "lignes": "Raccordement d'Arras-Nord",
         "numero_ligne": 226309,
-        "pk": "0,245"
+        "pk": "0,245",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -1852,7 +1933,8 @@
         "contact": "",
         "lignes": "PARIS-NORD à LILLE",
         "numero_ligne": 272000,
-        "pk": "198,500"
+        "pk": "198,500",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -1875,7 +1957,8 @@
         "contact": "",
         "lignes": "PARIS-NORD à LILLE",
         "numero_ligne": 272000,
-        "pk": "199,255"
+        "pk": "199,255",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -1899,7 +1982,8 @@
         "secure": "https://sncf.sharepoint.com/:w:/r/sites/NonoMapsGrpO3652/Document/Fives.docx?d=wb5e6241634fe45fe8c9c9761c5491320&csf=1&web=1&e=OkSPum",
         "lignes": "PARIS-NORD à LILLE",
         "numero_ligne": 272000,
-        "pk": "248,006"
+        "pk": "248,006",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -1923,7 +2007,8 @@
         "secure": "https://sncf.sharepoint.com/:w:/r/sites/NonoMapsGrpO3652/Document/Fives.docx?d=wb5e6241634fe45fe8c9c9761c5491320&csf=1&web=1&e=OkSPum",
         "lignes": "PARIS-NORD à LILLE",
         "numero_ligne": 272000,
-        "pk": ""
+        "pk": "",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -1947,7 +2032,8 @@
         "secure": "https://sncf.sharepoint.com/:w:/r/sites/NonoMapsGrpO3652/Document/Fives.docx?d=wb5e6241634fe45fe8c9c9761c5491320&csf=1&web=1&e=OkSPum",
         "lignes": "PARIS-NORD à LILLE",
         "numero_ligne": 272000,
-        "pk": ""
+        "pk": "",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -1970,7 +2056,8 @@
         "contact": "",
         "lignes": "PARIS-NORD à LILLE",
         "numero_ligne": 272000,
-        "pk": ""
+        "pk": "",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -1993,7 +2080,8 @@
         "contact": "",
         "lignes": "PARIS-NORD à LILLE",
         "numero_ligne": 272000,
-        "pk": ""
+        "pk": "",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -2017,7 +2105,8 @@
         "": "",
         "lignes": "PARIS-NORD à LILLE",
         "numero_ligne": 272000,
-        "pk": ""
+        "pk": "",
+        "code": true
       },
       "geometry": {
         "type": "Point",
@@ -2040,7 +2129,8 @@
         "contact": "",
         "lignes": "PARIS-NORD à LILLE",
         "numero_ligne": 272000,
-        "pk": ""
+        "pk": "",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -2064,7 +2154,8 @@
         "secure": "https://sncf.sharepoint.com/:w:/r/sites/NonoMapsGrpO3652/Document/Fives.docx?d=wb5e6241634fe45fe8c9c9761c5491320&csf=1&web=1&e=OkSPum",
         "lignes": "PARIS-NORD à LILLE",
         "numero_ligne": 272000,
-        "pk": ""
+        "pk": "",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -2087,7 +2178,8 @@
         "contact": "Agent E Lille :  03 28 55 71 07",
         "lignes": "PARIS-NORD à LILLE",
         "numero_ligne": 272000,
-        "pk": ""
+        "pk": "",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -2110,7 +2202,8 @@
         "contact": "",
         "lignes": "FRETIN à FRÉTHUN (LGV)",
         "numero_ligne": 216000,
-        "pk": "25,795"
+        "pk": "25,795",
+        "code": true
       },
       "geometry": {
         "type": "Point",
@@ -2133,7 +2226,8 @@
         "contact": "",
         "lignes": "Saint-Roch à Darnétal-Bifurcation",
         "numero_ligne": 321000,
-        "pk": "043,700"
+        "pk": "043,700",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -2156,7 +2250,8 @@
         "contact": "",
         "lignes": "FIVES à HIRSON",
         "numero_ligne": 267000,
-        "pk": "108,934"
+        "pk": "108,934",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -2179,7 +2274,8 @@
         "contact": "",
         "lignes": "PARIS-NORD à LILLE",
         "numero_ligne": 272000,
-        "pk": "89,088"
+        "pk": "89,088",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -2201,7 +2297,8 @@
         "contact": "Agent E de Dunkerque 8 au 0328248177",
         "lignes": "COUDEKERQUE-BRANCHE à LES FONTINETTES",
         "numero_ligne": 304000,
-        "pk": "6,760"
+        "pk": "6,760",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -2224,7 +2321,8 @@
         "contact": "Agent E  Fréthun 03 21 46 82 34",
         "lignes": "COUDEKERQUE-BRANCHE à LES FONTINETTES",
         "numero_ligne": 304000,
-        "pk": "23,700"
+        "pk": "23,700",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -2247,7 +2345,8 @@
         "contact": "",
         "lignes": "COUDEKERQUE-BRANCHE à LES FONTINETTES",
         "numero_ligne": 304000,
-        "pk": "23,170"
+        "pk": "23,170",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -2270,7 +2369,8 @@
         "contact": "",
         "lignes": "COUDEKERQUE-BRANCHE à LES FONTINETTES",
         "numero_ligne": 304000,
-        "pk": "23,882"
+        "pk": "23,882",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -2293,7 +2393,8 @@
         "contact": "",
         "lignes": "COUDEKERQUE-BRANCHE à LES FONTINETTES",
         "numero_ligne": 304000,
-        "pk": "24,870"
+        "pk": "24,870",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -2316,7 +2417,8 @@
         "contact": "",
         "lignes": "FRETIN à FRÉTHUN (LGV)",
         "numero_ligne": 216000,
-        "pk": "106,0712"
+        "pk": "106,0712",
+        "code": true
       },
       "geometry": {
         "type": "Point",
@@ -2339,7 +2441,8 @@
         "contact": "Agent E Dourges PIVOS : 0321695992",
         "lignes": "PARIS-NORD à LILLE",
         "numero_ligne": 272000,
-        "pk": "228,600"
+        "pk": "228,600",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -2362,7 +2465,8 @@
         "contact": "",
         "lignes": "PARIS-NORD à LILLE",
         "numero_ligne": 272000,
-        "pk": "228,600"
+        "pk": "228,600",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -2385,7 +2489,8 @@
         "contact": "",
         "lignes": "LILLE à Les FONTINETTES",
         "numero_ligne": 295000,
-        "pk": "48,772"
+        "pk": "48,772",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -2408,7 +2513,8 @@
         "contact": "",
         "lignes": "LILLE à Les FONTINETTES",
         "numero_ligne": 295000,
-        "pk": ""
+        "pk": "",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -2431,7 +2537,8 @@
         "contact": "Agent E : 03 91 90 13 17",
         "lignes": "BOULOGNE-VILLE à CALAIS MARITIME",
         "numero_ligne": 314000,
-        "pk": "254,140"
+        "pk": "254,140",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -2454,7 +2561,8 @@
         "contact": "Agent E : 03 91 90 13 17",
         "lignes": "BOULOGNE-VILLE à CALAIS MARITIME",
         "numero_ligne": 314000,
-        "pk": ""
+        "pk": "",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -2478,7 +2586,8 @@
         "secure": "https://sncf.sharepoint.com/:w:/s/NonoMapsGrpO3652/EdJda7x_wGNMttoIIW3XvZQBGT6oubBAuTxWv2O2Ft4-Cw?e=FJPTEX",
         "lignes": "BOULOGNE-VILLE à CALAIS MARITIME",
         "numero_ligne": 314000,
-        "pk": ""
+        "pk": "",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -2502,7 +2611,8 @@
         "secure": "https://sncf.sharepoint.com/:w:/s/NonoMapsGrpO3652/EdJda7x_wGNMttoIIW3XvZQBGT6oubBAuTxWv2O2Ft4-Cw?e=FJPTEX",
         "lignes": "BOULOGNE-VILLE à CALAIS MARITIME",
         "numero_ligne": 314000,
-        "pk": ""
+        "pk": "",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -2525,7 +2635,8 @@
         "contact": "",
         "lignes": "CREIL à JEUMONT",
         "numero_ligne": 242000,
-        "pk": "225,591"
+        "pk": "225,591",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -2541,7 +2652,8 @@
         "nom": "Hazebrouck (Équipe)",
         "description": "",
         "contact": "Arnaud : 06 99 16 77 66",
-        "special": true
+        "special": true,
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -2568,7 +2680,8 @@
         "contact": "Agent E : 03 28 43 77 57",
         "lignes": "ARRAS à DUNKERQUE",
         "numero_ligne": 301000,
-        "pk": "263,430"
+        "pk": "263,430",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -2591,7 +2704,8 @@
         "contact": "",
         "lignes": "GONESSE à LILLE-FRONTIERE (LGV)",
         "numero_ligne": 226000,
-        "pk": "6,695"
+        "pk": "6,695",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -2614,7 +2728,8 @@
         "contact": "",
         "lignes": "HIRSON à AMAGNE-LUCQUY",
         "numero_ligne": 212000,
-        "pk": "0,783"
+        "pk": "0,783",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -2636,7 +2751,8 @@
         "contact": "",
         "lignes": "FRETIN à FRÉTHUN (LGV)",
         "numero_ligne": 216000,
-        "pk": "56,214"
+        "pk": "56,214",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -2658,7 +2774,8 @@
         "contact": "",
         "lignes": "FRETIN à FRÉTHUN (LGV)",
         "numero_ligne": 216000,
-        "pk": ""
+        "pk": "",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -2680,7 +2797,8 @@
         "contact": "",
         "lignes": "FRETIN à FRÉTHUN (LGV)",
         "numero_ligne": 216000,
-        "pk": ""
+        "pk": "",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -2703,7 +2821,8 @@
         "contact": "",
         "lignes": "CREIL à JEUMONT",
         "numero_ligne": 242000,
-        "pk": "183,0313"
+        "pk": "183,0313",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -2726,7 +2845,8 @@
         "contact": "",
         "lignes": "FIVES à ABBEVILLE",
         "numero_ligne": 289000,
-        "pk": "3,905"
+        "pk": "3,905",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -2749,7 +2869,8 @@
         "contact": "",
         "lignes": "FIVES à ABBEVILLE",
         "numero_ligne": 289000,
-        "pk": "4,900"
+        "pk": "4,900",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -2772,7 +2893,8 @@
         "contact": "",
         "lignes": "",
         "numero_ligne": "",
-        "pk": ""
+        "pk": "",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -2795,7 +2917,8 @@
         "contact": "",
         "lignes": "LILLE à Les FONTINETTES",
         "numero_ligne": 295000,
-        "pk": "5,805"
+        "pk": "5,805",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -2818,7 +2941,8 @@
         "contact": "",
         "lignes": "LILLE à Les FONTINETTES",
         "numero_ligne": 295000,
-        "pk": ""
+        "pk": "",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -2838,7 +2962,8 @@
         "contact": "",
         "lignes": "LILLE à Les FONTINETTES",
         "numero_ligne": 295000,
-        "pk": ""
+        "pk": "",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -2861,7 +2986,8 @@
         "contact": "",
         "lignes": "FIVES à ABBEVILLE",
         "numero_ligne": 289000,
-        "pk": "11,940"
+        "pk": "11,940",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -2885,7 +3011,8 @@
         "secure": "https://sncf.sharepoint.com/:w:/s/NonoMapsGrpO3652/EdP81maRqTNDvoK6gZzr-FgB5ereRCPZ6IC5SIbLIHIdUw?e=NnnkKX",
         "lignes": "FRETIN à FRÉTHUN (LGV)",
         "numero_ligne": 216000,
-        "pk": "16,123"
+        "pk": "16,123",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -2908,7 +3035,8 @@
         "secure": "https://sncf.sharepoint.com/:w:/s/NonoMapsGrpO3652/EdP81maRqTNDvoK6gZzr-FgB5ereRCPZ6IC5SIbLIHIdUw?e=NnnkKX",
         "lignes": "",
         "numero_ligne": "",
-        "pk": ""
+        "pk": "",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -2930,7 +3058,8 @@
         "contact": "",
         "lignes": "FRETIN à FRÉTHUN (LGV)",
         "numero_ligne": 216000,
-        "pk": ""
+        "pk": "",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -2952,7 +3081,8 @@
         "contact": "",
         "lignes": "FRETIN à FRÉTHUN (LGV)",
         "numero_ligne": 216000,
-        "pk": ""
+        "pk": "",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -2976,7 +3106,8 @@
         "secure": "https://sncf.sharepoint.com/:w:/s/NonoMapsGrpO3652/EdP81maRqTNDvoK6gZzr-FgB5ereRCPZ6IC5SIbLIHIdUw?e=NnnkKX",
         "lignes": "LILLE à Les FONTINETTES",
         "numero_ligne": 295000,
-        "pk": "9,503"
+        "pk": "9,503",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -2999,7 +3130,8 @@
         "contact": "",
         "lignes": "",
         "numero_ligne": "",
-        "pk": ""
+        "pk": "",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -3022,7 +3154,8 @@
         "contact": "",
         "lignes": "",
         "numero_ligne": "",
-        "pk": ""
+        "pk": "",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -3045,7 +3178,8 @@
         "contact": "",
         "lignes": "PARIS-NORD à LILLE",
         "numero_ligne": 272000,
-        "pk": "132,232"
+        "pk": "132,232",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -3068,7 +3202,8 @@
         "contact": "",
         "lignes": "GONESSE à LILLE-FRONTIERE (LGV)",
         "numero_ligne": 226000,
-        "pk": "192,491"
+        "pk": "192,491",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -3091,7 +3226,8 @@
         "contact": "",
         "lignes": "FRETIN à FRÉTHUN (LGV)",
         "numero_ligne": 216000,
-        "pk": "39,986"
+        "pk": "39,986",
+        "code": true
       },
       "geometry": {
         "type": "Point",
@@ -3114,7 +3250,8 @@
         "secure": "https://sncf.sharepoint.com/:w:/r/sites/NonoMapsGrpO3652/Document/Lens%20A.docx?d=w73c6e4ae420c4801ad7433db61a94a34&csf=1&web=1&e=AnOXRA",
         "lignes": "ARRAS à DUNKERQUE",
         "numero_ligne": 301000,
-        "pk": "210,820"
+        "pk": "210,820",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -3137,7 +3274,8 @@
         "contact": "",
         "lignes": "ARRAS à DUNKERQUE",
         "numero_ligne": 301000,
-        "pk": "210,0310"
+        "pk": "210,0310",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -3160,7 +3298,8 @@
         "contact": "",
         "lignes": "FIVES à HIRSON",
         "numero_ligne": 267000,
-        "pk": "4,930"
+        "pk": "4,930",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -3183,7 +3322,8 @@
         "contact": "",
         "lignes": "FIVES à HIRSON",
         "numero_ligne": 267000,
-        "pk": "4,930"
+        "pk": "4,930",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -3206,7 +3346,8 @@
         "contact": "",
         "lignes": "FIVES à HIRSON",
         "numero_ligne": 267000,
-        "pk": ""
+        "pk": "",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -3229,7 +3370,8 @@
         "contact": "",
         "lignes": "FIVES à HIRSON",
         "numero_ligne": 267000,
-        "pk": ""
+        "pk": "",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -3252,7 +3394,8 @@
         "contact": "",
         "lignes": "FIVES à HIRSON",
         "numero_ligne": 267000,
-        "pk": ""
+        "pk": "",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -3275,7 +3418,8 @@
         "contact": "",
         "lignes": "FIVES à HIRSON",
         "numero_ligne": 267000,
-        "pk": "83,398"
+        "pk": "83,398",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -3298,7 +3442,8 @@
         "secure": "https://sncf.sharepoint.com/:w:/s/NonoMapsGrpO3652/Eed-LEigEfVHrmwVjlwWT38Bt4h8ufe4rAp6KOB_JvRJtw?e=RiGZdL",
         "lignes": "FRETIN à FRÉTHUN (LGV)",
         "numero_ligne": 216000,
-        "pk": "010,694"
+        "pk": "010,694",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -3318,7 +3463,8 @@
         "contact": "Agent E : 03 28 55 71 07",
         "lignes": "PARIS-NORD à LILLE",
         "numero_ligne": 272000,
-        "pk": "250,300"
+        "pk": "250,300",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -3341,7 +3487,8 @@
         "contact": "Agent E : 03 28 55 71 07",
         "lignes": "PARIS-NORD à LILLE",
         "numero_ligne": 272000,
-        "pk": ""
+        "pk": "",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -3364,7 +3511,8 @@
         "contact": "",
         "lignes": "FIVES à ABBEVILLE",
         "numero_ligne": 289000,
-        "pk": "5,890"
+        "pk": "5,890",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -3388,7 +3536,8 @@
         "secure": "https://sncf.sharepoint.com/:w:/s/NonoMapsGrpO3652/EURPe44Z-btNn-ro_rZdgaoBaTat7716eG2tNpcuPN7AGQ?e=cINyHp",
         "lignes": "FRETIN à FRÉTHUN (LGV)",
         "numero_ligne": 216000,
-        "pk": "10,841"
+        "pk": "10,841",
+        "code": true
       },
       "geometry": {
         "type": "Point",
@@ -3411,7 +3560,8 @@
         "contact": "",
         "lignes": "ARRAS à DUNKERQUE",
         "numero_ligne": 301000,
-        "pk": "242,616"
+        "pk": "242,616",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -3434,7 +3584,8 @@
         "contact": "",
         "lignes": "FIVES à MOUSCRON",
         "numero_ligne": 278000,
-        "pk": "2,526"
+        "pk": "2,526",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -3457,7 +3608,8 @@
         "contact": "",
         "lignes": "FIVES à MOUSCRON",
         "numero_ligne": 278000,
-        "pk": ""
+        "pk": "",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -3480,7 +3632,8 @@
         "contact": "",
         "lignes": "FIVES à MOUSCRON",
         "numero_ligne": 278000,
-        "pk": ""
+        "pk": "",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -3503,7 +3656,8 @@
         "contact": "",
         "lignes": "FIVES à MOUSCRON",
         "numero_ligne": 278000,
-        "pk": ""
+        "pk": "",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -3526,7 +3680,8 @@
         "contact": "",
         "lignes": "LENS à DON-SAINGHIN",
         "numero_ligne": "286000",
-        "pk": "214,998"
+        "pk": "214,998",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -3549,7 +3704,8 @@
         "contact": "",
         "lignes": "HAUBOURDIN à SAINT-ANDRÉ",
         "numero_ligne": 292000,
-        "pk": "18,290"
+        "pk": "18,290",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -3572,7 +3728,8 @@
         "contact": "",
         "lignes": "",
         "numero_ligne": "",
-        "pk": ""
+        "pk": "",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -3595,7 +3752,8 @@
         "contact": "",
         "lignes": "FIVES à HIRSON",
         "numero_ligne": 267000,
-        "pk": "53,370"
+        "pk": "53,370",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -3618,7 +3776,8 @@
         "contact": "",
         "lignes": "LENS à OSTRICOURT",
         "numero_ligne": 284000,
-        "pk": "223,000"
+        "pk": "223,000",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -3641,7 +3800,8 @@
         "contact": "",
         "lignes": "LENS à OSTRICOURT",
         "numero_ligne": 284000,
-        "pk": ""
+        "pk": "",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -3664,7 +3824,8 @@
         "contact": "",
         "lignes": "LENS à OSTRICOURT",
         "numero_ligne": 284000,
-        "pk": ""
+        "pk": "",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -3687,7 +3848,8 @@
         "contact": "",
         "lignes": "LENS à OSTRICOURT",
         "numero_ligne": 284000,
-        "pk": ""
+        "pk": "",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -3710,7 +3872,8 @@
         "contact": "",
         "lignes": "LENS à OSTRICOURT",
         "numero_ligne": 284000,
-        "pk": ""
+        "pk": "",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -3733,12 +3896,13 @@
         "contact": "",
         "lignes": "LENS à OSTRICOURT",
         "numero_ligne": 284000,
-        "pk": ""
+        "pk": "",
+        "code": false
       },
       "geometry": {
         "type": "Point",
         "coordinates": [
-          3.017250,
+          3.01725,
           50.445722
         ]
       }
@@ -3754,7 +3918,8 @@
         "contact": "",
         "lignes": "BOULOGNE-VILLE à CALAIS MARITIME",
         "numero_ligne": "314000",
-        "pk": "269,803"
+        "pk": "269,803",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -3777,7 +3942,8 @@
         "contact": "",
         "lignes": "BOULOGNE-VILLE à CALAIS MARITIME",
         "numero_ligne": "314000",
-        "pk": "270,487"
+        "pk": "270,487",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -3800,7 +3966,8 @@
         "contact": "",
         "lignes": "BOULOGNE-VILLE à CALAIS MARITIME",
         "numero_ligne": "314000",
-        "pk": "270,836"
+        "pk": "270,836",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -3823,7 +3990,8 @@
         "contact": "",
         "lignes": "Raccordement d'ARRAS-SUD",
         "numero_ligne": "226306",
-        "pk": "8,055"
+        "pk": "8,055",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -3846,7 +4014,8 @@
         "contact": "",
         "lignes": "Raccordement d'ARRAS-SUD",
         "numero_ligne": "226306",
-        "pk": ""
+        "pk": "",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -3869,7 +4038,8 @@
         "contact": "",
         "lignes": "Raccordement d'ARRAS-SUD",
         "numero_ligne": "226306",
-        "pk": ""
+        "pk": "",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -3893,7 +4063,8 @@
         "secure": "https://sncf.sharepoint.com/:w:/s/NonoMapsGrpO3652/EYmaaLtGs6NFt9O1NqGokYABQpNM3sXq0dZ6TBQd2Ybu6g?e=rfH2Qa",
         "lignes": "Raccordement d'ARRAS-SUD",
         "numero_ligne": "226306",
-        "pk": ""
+        "pk": "",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -3916,7 +4087,8 @@
         "contact": "",
         "lignes": "FRETIN à FRÉTHUN (LGV)",
         "numero_ligne": 216000,
-        "pk": "111,146"
+        "pk": "111,146",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -3939,7 +4111,8 @@
         "contact": "",
         "lignes": "FRETIN à FRÉTHUN (LGV)",
         "numero_ligne": 216000,
-        "pk": "112.4"
+        "pk": "112.4",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -3962,7 +4135,8 @@
         "contact": "",
         "lignes": "FRETIN à FRÉTHUN (LGV)",
         "numero_ligne": 216000,
-        "pk": "112.4"
+        "pk": "112.4",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -3985,7 +4159,8 @@
         "contact": "",
         "lignes": "FRETIN à FRÉTHUN (LGV)",
         "numero_ligne": 216000,
-        "pk": "111"
+        "pk": "111",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -4008,7 +4183,8 @@
         "contact": "",
         "lignes": "BOULOGNE-VILLE à CALAIS MARITIME",
         "numero_ligne": 314000,
-        "pk": "285,421"
+        "pk": "285,421",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -4031,7 +4207,8 @@
         "contact": "",
         "lignes": "FRETIN à FRÉTHUN (LGV)",
         "numero_ligne": 216000,
-        "pk": "111"
+        "pk": "111",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -4054,7 +4231,8 @@
         "contact": "",
         "lignes": "FRETIN à FRÉTHUN (LGV)",
         "numero_ligne": 216000,
-        "pk": "111.5"
+        "pk": "111.5",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -4077,7 +4255,8 @@
         "contact": "",
         "lignes": "FRETIN à FRÉTHUN (LGV)",
         "numero_ligne": 216000,
-        "pk": "110.2"
+        "pk": "110.2",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -4100,7 +4279,8 @@
         "contact": "",
         "lignes": "LILLE à LES FONTINETTES ",
         "numero_ligne": 295000,
-        "pk": "89,433"
+        "pk": "89,433",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -4123,7 +4303,8 @@
         "contact": "",
         "lignes": "GONESSE à LILLE-FRONTIERE (LGV)",
         "numero_ligne": 226000,
-        "pk": "175,135"
+        "pk": "175,135",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -4145,7 +4326,8 @@
         "contact": "",
         "lignes": "GONESSE à LILLE-FRONTIERE (LGV)",
         "numero_ligne": 226000,
-        "pk": "182,0539"
+        "pk": "182,0539",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -4167,7 +4349,8 @@
         "contact": "",
         "lignes": "GONESSE à LILLE-FRONTIERE (LGV)",
         "numero_ligne": 226000,
-        "pk": "182,0539"
+        "pk": "182,0539",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -4190,7 +4373,8 @@
         "contact": "",
         "lignes": "FIVES à HIRSON",
         "numero_ligne": 267000,
-        "pk": "20,912"
+        "pk": "20,912",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -4213,7 +4397,8 @@
         "contact": "",
         "lignes": "PARIS-NORD à LILLE",
         "numero_ligne": 272000,
-        "pk": "227,400"
+        "pk": "227,400",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -4236,7 +4421,8 @@
         "contact": "",
         "lignes": "FRETIN à FRÉTHUN (LGV)",
         "numero_ligne": 216000,
-        "pk": "113,453"
+        "pk": "113,453",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -4259,7 +4445,8 @@
         "contact": "",
         "lignes": "FRETIN à FRÉTHUN (LGV)",
         "numero_ligne": 216000,
-        "pk": "113"
+        "pk": "113",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -4282,7 +4469,8 @@
         "contact": "",
         "lignes": "BOULOGNE-VILLE à CALAIS MARITIME",
         "numero_ligne": 314000,
-        "pk": "287,528"
+        "pk": "287,528",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -4305,7 +4493,8 @@
         "contact": "",
         "lignes": "Raccordement nord de Frethun",
         "numero_ligne": "216312",
-        "pk": "xx"
+        "pk": "xx",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -4328,7 +4517,8 @@
         "contact": "",
         "lignes": "COUDEKERQUE-BRANCHE à LES FONTINETTES",
         "numero_ligne": 304000,
-        "pk": "14,938"
+        "pk": "14,938",
+        "code": true
       },
       "geometry": {
         "type": "Point",
@@ -4351,7 +4541,8 @@
         "contact": "",
         "lignes": "COUDEKERQUE-BRANCHE à LES FONTINETTES",
         "numero_ligne": 304000,
-        "pk": "9,418"
+        "pk": "9,418",
+        "code": true
       },
       "geometry": {
         "type": "Point",
@@ -4374,7 +4565,8 @@
         "contact": "",
         "lignes": "COUDEKERQUE-BRANCHE à LES FONTINETTES",
         "numero_ligne": 304000,
-        "pk": "10,480"
+        "pk": "10,480",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -4397,7 +4589,8 @@
         "contact": "",
         "lignes": "COUDEKERQUE-BRANCHE à LES FONTINETTES",
         "numero_ligne": 304000,
-        "pk": "10,480"
+        "pk": "10,480",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -4420,7 +4613,8 @@
         "contact": "",
         "lignes": "PARIS-NORD à LILLE",
         "numero_ligne": 272000,
-        "pk": "236,0522"
+        "pk": "236,0522",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -4443,7 +4637,8 @@
         "contact": "",
         "lignes": "LONGUEAU à BOULOGNE-VILLE",
         "numero_ligne": 311000,
-        "pk": "248,536"
+        "pk": "248,536",
+        "code": true
       },
       "geometry": {
         "type": "Point",
@@ -4466,7 +4661,8 @@
         "contact": "",
         "lignes": "LONGUEAU à BOULOGNE-VILLE",
         "numero_ligne": 311000,
-        "pk": "248,817"
+        "pk": "248,817",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -4489,7 +4685,8 @@
         "contact": "",
         "lignes": "COUDEKERQUE-BRANCHE à LES FONTINETTES",
         "numero_ligne": 304000,
-        "pk": "9,388"
+        "pk": "9,388",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -4512,7 +4709,8 @@
         "contact": "",
         "lignes": "HAUTMONT à FEIGNIES (Frontière) et MONS",
         "numero_ligne": "247000",
-        "pk": "233,017"
+        "pk": "233,017",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -4534,7 +4732,8 @@
         "contact": "",
         "lignes": "FRETIN à FRÉTHUN (LGV)",
         "numero_ligne": 216000,
-        "pk": "80,849"
+        "pk": "80,849",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -4556,7 +4755,8 @@
         "contact": "",
         "lignes": "FRETIN à FRÉTHUN (LGV)",
         "numero_ligne": 216000,
-        "pk": ""
+        "pk": "",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -4579,7 +4779,8 @@
         "contact": "",
         "lignes": "LONGUEAU à BOULOGNE-VILLE",
         "numero_ligne": 311000,
-        "pk": "215,200"
+        "pk": "215,200",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -4602,7 +4803,8 @@
         "contact": "",
         "lignes": "BOULOGNE-VILLE à CALAIS MARITIME",
         "numero_ligne": 314000,
-        "pk": "291,503"
+        "pk": "291,503",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -4625,7 +4827,8 @@
         "contact": "",
         "lignes": "BOULOGNE-VILLE à CALAIS MARITIME",
         "numero_ligne": 314000,
-        "pk": "291,429"
+        "pk": "291,429",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -4648,7 +4851,8 @@
         "contact": "",
         "lignes": "BOULOGNE-VILLE à CALAIS MARITIME",
         "numero_ligne": 314000,
-        "pk": "291,668"
+        "pk": "291,668",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -4670,7 +4874,8 @@
         "contact": "",
         "lignes": "FRETIN à FRÉTHUN (LGV)",
         "numero_ligne": 216000,
-        "pk": "100,188"
+        "pk": "100,188",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -4692,7 +4897,8 @@
         "contact": "",
         "lignes": "FRETIN à FRÉTHUN (LGV)",
         "numero_ligne": 216000,
-        "pk": "100,188"
+        "pk": "100,188",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -4714,7 +4920,8 @@
         "contact": "",
         "lignes": "FRETIN à FRÉTHUN (LGV)",
         "numero_ligne": 216000,
-        "pk": "100,188"
+        "pk": "100,188",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -4736,7 +4943,8 @@
         "contact": "",
         "lignes": "FRETIN à FRÉTHUN (LGV)",
         "numero_ligne": 216000,
-        "pk": "100,188"
+        "pk": "100,188",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -4758,7 +4966,8 @@
         "contact": "",
         "lignes": "GONESSE à LILLE-FRONTIERE (LGV)",
         "numero_ligne": 226000,
-        "pk": "162,019"
+        "pk": "162,019",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -4780,7 +4989,8 @@
         "contact": "",
         "lignes": "GONESSE à LILLE-FRONTIERE (LGV)",
         "numero_ligne": 226000,
-        "pk": "162,019"
+        "pk": "162,019",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -4802,7 +5012,8 @@
         "contact": "",
         "lignes": "GONESSE à LILLE-FRONTIERE (LGV)",
         "numero_ligne": 226000,
-        "pk": "162,019"
+        "pk": "162,019",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -4824,7 +5035,8 @@
         "contact": "",
         "lignes": "GONESSE à LILLE-FRONTIERE (LGV)",
         "numero_ligne": 226000,
-        "pk": "162,019"
+        "pk": "162,019",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -4847,7 +5059,8 @@
         "contact": "",
         "lignes": "PARIS-NORD à LILLE",
         "numero_ligne": 272000,
-        "pk": "201,0230"
+        "pk": "201,0230",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -4870,7 +5083,8 @@
         "contact": "",
         "lignes": "PARIS-NORD à LILLE",
         "numero_ligne": 272000,
-        "pk": "247,400"
+        "pk": "247,400",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -4894,7 +5108,8 @@
         "secure": "https://sncf.sharepoint.com/:w:/s/NonoMapsGrpO3652/Ee22dE0W0FlMihELlYoFdOABXKGjNG69Iwo9IArFtJ545w?e=sBoMCh",
         "lignes": "PARIS-NORD à LILLE",
         "numero_ligne": 272000,
-        "pk": "247,616"
+        "pk": "247,616",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -4917,7 +5132,8 @@
         "contact": "",
         "lignes": "FIVES à MOUSCRON",
         "numero_ligne": 278000,
-        "pk": "11,450"
+        "pk": "11,450",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -4940,7 +5156,8 @@
         "contact": "",
         "lignes": "BOULOGNE-VILLE à CALAIS MARITIME",
         "numero_ligne": 314000,
-        "pk": "289,500"
+        "pk": "289,500",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -4963,7 +5180,8 @@
         "contact": "",
         "lignes": "BOULOGNE-VILLE à CALAIS MARITIME",
         "numero_ligne": 314000,
-        "pk": "288,348"
+        "pk": "288,348",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -4986,7 +5204,8 @@
         "contact": "",
         "lignes": "BOULOGNE-VILLE à CALAIS MARITIME",
         "numero_ligne": 314000,
-        "pk": "288,415"
+        "pk": "288,415",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -5009,7 +5228,8 @@
         "contact": "",
         "lignes": "BOULOGNE-VILLE à CALAIS MARITIME",
         "numero_ligne": 314000,
-        "pk": "288,687"
+        "pk": "288,687",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -5032,7 +5252,8 @@
         "contact": "",
         "lignes": "BOULOGNE-VILLE à CALAIS MARITIME",
         "numero_ligne": 314000,
-        "pk": "288,898"
+        "pk": "288,898",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -5055,7 +5276,8 @@
         "contact": "",
         "lignes": "BOULOGNE-VILLE à CALAIS MARITIME",
         "numero_ligne": 314000,
-        "pk": "288,910"
+        "pk": "288,910",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -5078,7 +5300,8 @@
         "contact": "",
         "lignes": "GONESSE à LILLE-FRONTIERE (LGV)",
         "numero_ligne": 226000,
-        "pk": "209,0705"
+        "pk": "209,0705",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -5101,7 +5324,8 @@
         "contact": "",
         "lignes": "FRETIN à FRÉTHUN (LGV)",
         "numero_ligne": 216000,
-        "pk": "80,584"
+        "pk": "80,584",
+        "code": true
       },
       "geometry": {
         "type": "Point",
@@ -5124,7 +5348,8 @@
         "contact": "",
         "lignes": "PARIS-NORD à LILLE",
         "numero_ligne": 272000,
-        "pk": "215,0440"
+        "pk": "215,0440",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -5147,7 +5372,8 @@
         "contact": "",
         "lignes": "PARIS-NORD à LILLE",
         "numero_ligne": 272000,
-        "pk": "214,257"
+        "pk": "214,257",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -5170,7 +5396,8 @@
         "contact": "",
         "lignes": "LILLE à LES FONTINETTES",
         "numero_ligne": 295000,
-        "pk": "66,0352"
+        "pk": "66,0352",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -5193,7 +5420,8 @@
         "contact": "",
         "lignes": "LILLE à LES FONTINETTES",
         "numero_ligne": 295000,
-        "pk": "65,624"
+        "pk": "65,624",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -5216,7 +5444,8 @@
         "contact": "",
         "lignes": "LILLE à LES FONTINETTES",
         "numero_ligne": 295000,
-        "pk": "65,904"
+        "pk": "65,904",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -5239,7 +5468,8 @@
         "contact": "",
         "lignes": "LILLE à LES FONTINETTES",
         "numero_ligne": 295000,
-        "pk": "67,182"
+        "pk": "67,182",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -5261,7 +5491,8 @@
         "contact": "Agent E : 03 28 55 71 08",
         "lignes": "PARIS-NORD à LILLE",
         "numero_ligne": 272000,
-        "pk": "248,0200"
+        "pk": "248,0200",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -5284,7 +5515,8 @@
         "contact": "",
         "lignes": "PARIS-NORD à LILLE",
         "numero_ligne": 272000,
-        "pk": "249,001"
+        "pk": "249,001",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -5307,7 +5539,8 @@
         "contact": "",
         "lignes": "CREIL à JEUMONT",
         "numero_ligne": 242000,
-        "pk": "213,0812"
+        "pk": "213,0812",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -5331,7 +5564,8 @@
         "secure": "https://sncf.sharepoint.com/:w:/s/NonoMapsGrpO3652/EQ3LJ153xT1Phwztrur8T1wBM6oKnJVpjtz65OKqrQI_RQ?e=uQtLhu",
         "lignes": "PARIS-NORD à LILLE",
         "numero_ligne": 272000,
-        "pk": "239,0366"
+        "pk": "239,0366",
+        "code": true
       },
       "geometry": {
         "type": "Point",
@@ -5352,7 +5586,8 @@
         "lignes": "",
         "numero_ligne": "",
         "pk": "",
-        "hors_patrimoine": true
+        "hors_patrimoine": true,
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -5370,7 +5605,8 @@
         "lignes": "",
         "numero_ligne": "",
         "pk": "",
-        "hors_patrimoine": true
+        "hors_patrimoine": true,
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -5388,7 +5624,8 @@
         "lignes": "",
         "numero_ligne": "",
         "pk": "",
-        "hors_patrimoine": true
+        "hors_patrimoine": true,
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -5408,7 +5645,8 @@
         "contact": "",
         "lignes": "SAINT-JUST à DOUAI",
         "numero_ligne": "259000",
-        "pk": "217,0016"
+        "pk": "217,0016",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -5431,7 +5669,8 @@
         "contact": "",
         "lignes": "DOUAI à BLANC-MISSERON",
         "numero_ligne": "262000",
-        "pk": "229,450"
+        "pk": "229,450",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -5454,7 +5693,8 @@
         "contact": "",
         "lignes": "LILLE à LES FONTINETTES",
         "numero_ligne": 295000,
-        "pk": "27,544"
+        "pk": "27,544",
+        "code": true
       },
       "geometry": {
         "type": "Point",
@@ -5477,7 +5717,8 @@
         "contact": "",
         "lignes": "LILLE à LES FONTINETTES",
         "numero_ligne": 295000,
-        "pk": "36,523"
+        "pk": "36,523",
+        "code": true
       },
       "geometry": {
         "type": "Point",
@@ -5500,7 +5741,8 @@
         "contact": "",
         "lignes": "LILLE à LES FONTINETTES",
         "numero_ligne": 295000,
-        "pk": "36,745"
+        "pk": "36,745",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -5523,7 +5765,8 @@
         "contact": "",
         "lignes": "LILLE à LES FONTINETTES",
         "numero_ligne": 295000,
-        "pk": "36,022"
+        "pk": "36,022",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -5546,7 +5789,8 @@
         "contact": "",
         "lignes": "CREIL à JEUMONT",
         "numero_ligne": 242000,
-        "pk": "130,450"
+        "pk": "130,450",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -5569,7 +5813,8 @@
         "contact": "",
         "lignes": "DOUAI à BLANC-MISSERON",
         "numero_ligne": "262000",
-        "pk": "219,154"
+        "pk": "219,154",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -5592,7 +5837,8 @@
         "contact": "",
         "lignes": "ARRAS à DUNKERQUE",
         "numero_ligne": 301000,
-        "pk": "253,0935"
+        "pk": "253,0935",
+        "code": true
       },
       "geometry": {
         "type": "Point",
@@ -5616,7 +5862,8 @@
         "secure": "https://sncf.sharepoint.com/:w:/s/NonoMapsGrpO3652/IQCLyVRbE3UzQ68fr1PSN2A0AeZix-TuReKCpVRo7GBCT3Y?e=ut7lkN",
         "lignes": "FIVES à MOUSCRON",
         "numero_ligne": 278000,
-        "pk": "13,090"
+        "pk": "13,090",
+        "code": true
       },
       "geometry": {
         "type": "Point",
@@ -5639,7 +5886,8 @@
         "contact": "",
         "lignes": "FIVES à MOUSCRON",
         "numero_ligne": 278000,
-        "pk": "14,394"
+        "pk": "14,394",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -5662,7 +5910,8 @@
         "contact": "",
         "lignes": "BOULOGNE-VILLE à CALAIS MARITIME",
         "numero_ligne": 314000,
-        "pk": "284,612"
+        "pk": "284,612",
+        "code": true
       },
       "geometry": {
         "type": "Point",
@@ -5678,7 +5927,8 @@
         "nom": "Valenciennes (Équipe)",
         "description": "",
         "contact": "",
-        "special": true
+        "special": true,
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -5702,7 +5952,8 @@
         "secure": "https://sncf.sharepoint.com/:w:/s/NonoMapsGrpO3652/EXSy0I7kI41EsscWigQYAy0Bm1zfH7E_YnXUMz4dy5Qeew?e=fGtyPM",
         "lignes": "FIVES à HIRSON",
         "numero_ligne": 267000,
-        "pk": "45,854"
+        "pk": "45,854",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -5725,7 +5976,8 @@
         "contact": "",
         "lignes": "FIVES à HIRSON",
         "numero_ligne": 267000,
-        "pk": "45,854"
+        "pk": "45,854",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -5748,7 +6000,8 @@
         "contact": "",
         "lignes": "ARRAS à DUNKERQUE",
         "numero_ligne": 301000,
-        "pk": "226,556"
+        "pk": "226,556",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -5771,7 +6024,8 @@
         "contact": "",
         "lignes": "ARRAS à DUNKERQUE",
         "numero_ligne": 301000,
-        "pk": "269,607"
+        "pk": "269,607",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -5794,7 +6048,8 @@
         "contact": "",
         "lignes": "GONESSE à LILLE-FRONTIERE (LGV)",
         "numero_ligne": 226000,
-        "pk": "153,586"
+        "pk": "153,586",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -5816,7 +6071,8 @@
         "contact": "",
         "lignes": "GONESSE à LILLE-FRONTIERE (LGV)",
         "numero_ligne": 226000,
-        "pk": "208,699"
+        "pk": "208,699",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -5837,7 +6093,8 @@
         "contact": "",
         "lignes": "GONESSE à LILLE-FRONTIERE (LGV)",
         "numero_ligne": 226000,
-        "pk": "208,699"
+        "pk": "208,699",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -5858,7 +6115,8 @@
         "contact": "",
         "lignes": "GONESSE à LILLE-FRONTIERE (LGV)",
         "numero_ligne": 226000,
-        "pk": "208,699"
+        "pk": "208,699",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -5881,7 +6139,8 @@
         "contact": "",
         "lignes": "PARIS-NORD à LILLE",
         "numero_ligne": 272000,
-        "pk": "244,860"
+        "pk": "244,860",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -5904,7 +6163,8 @@
         "contact": "",
         "lignes": "PARIS-NORD à LILLE",
         "numero_ligne": 272000,
-        "pk": "244,860"
+        "pk": "244,860",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -5927,13 +6187,14 @@
         "contact": "",
         "lignes": "FRETIN à FRÉTHUN (LGV)",
         "numero_ligne": 216000,
-        "pk": "96,684"
+        "pk": "96,684",
+        "code": false
       },
       "geometry": {
         "type": "Point",
         "coordinates": [
           1.97678,
-          50.81890
+          50.8189
         ]
       }
     },
@@ -5950,7 +6211,8 @@
         "contact": "",
         "lignes": "HIRSON à AMAGNE-LUCQUY",
         "numero_ligne": 212000,
-        "pk": "22,516"
+        "pk": "22,516",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -5973,7 +6235,8 @@
         "contact": "",
         "lignes": "FRETIN à FRÉTHUN (LGV)",
         "numero_ligne": 216000,
-        "pk": "3,850"
+        "pk": "3,850",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -5996,7 +6259,8 @@
         "contact": "",
         "lignes": "GONESSE à LILLE-FRONTIERE (LGV)",
         "numero_ligne": 226000,
-        "pk": "118,130"
+        "pk": "118,130",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -6018,7 +6282,8 @@
         "contact": "",
         "lignes": "GONESSE à LILLE-FRONTIERE (LGV)",
         "numero_ligne": 226000,
-        "pk": "110,0820"
+        "pk": "110,0820",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -6040,7 +6305,8 @@
         "contact": "",
         "lignes": "GONESSE à LILLE-FRONTIERE (LGV)",
         "numero_ligne": 226000,
-        "pk": "128,150"
+        "pk": "128,150",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -6063,7 +6329,8 @@
         "contact": "",
         "lignes": "GONESSE à LILLE-FRONTIERE (LGV)",
         "numero_ligne": 226000,
-        "pk": "141,044"
+        "pk": "141,044",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -6085,7 +6352,8 @@
         "contact": "",
         "lignes": "GONESSE à LILLE-FRONTIERE (LGV)",
         "numero_ligne": 226000,
-        "pk": "87,500"
+        "pk": "87,500",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -6108,7 +6376,8 @@
         "contact": "",
         "lignes": "GONESSE à LILLE-FRONTIERE (LGV)",
         "numero_ligne": 226000,
-        "pk": "96,000"
+        "pk": "96,000",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -6130,7 +6399,8 @@
         "contact": "",
         "lignes": "GONESSE à LILLE-FRONTIERE (LGV)",
         "numero_ligne": 226000,
-        "pk": "143,321"
+        "pk": "143,321",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -6152,7 +6422,8 @@
         "contact": "",
         "lignes": "GONESSE à LILLE-FRONTIERE (LGV)",
         "numero_ligne": 226000,
-        "pk": "149,208"
+        "pk": "149,208",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -6174,7 +6445,8 @@
         "contact": "",
         "lignes": "GONESSE à LILLE-FRONTIERE (LGV)",
         "numero_ligne": 226000,
-        "pk": "167,482"
+        "pk": "167,482",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -6196,7 +6468,8 @@
         "contact": "",
         "lignes": "Saint-Roch à Darnétal-Bifurcation",
         "numero_ligne": 321000,
-        "pk": "57,852"
+        "pk": "57,852",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -6218,7 +6491,8 @@
         "contact": "",
         "lignes": "Saint-Roch à Darnétal-Bifurcation",
         "numero_ligne": 321000,
-        "pk": "50,500"
+        "pk": "50,500",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -6241,7 +6515,8 @@
         "secure": "",
         "lignes": "Saint-Roch à Darnétal-Bifurcation",
         "numero_ligne": 321000,
-        "pk": "49,330"
+        "pk": "49,330",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -6264,7 +6539,8 @@
         "secure": "",
         "lignes": "Saint-Roch à Darnétal-Bifurcation",
         "numero_ligne": 321000,
-        "pk": "51,457"
+        "pk": "51,457",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -6287,7 +6563,8 @@
         "secure": "",
         "lignes": "Saint-Roch à Darnétal-Bifurcation",
         "numero_ligne": 321000,
-        "pk": "52,856"
+        "pk": "52,856",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -6310,7 +6587,8 @@
         "secure": "",
         "lignes": "Saint-Roch à Darnétal-Bifurcation",
         "numero_ligne": 321000,
-        "pk": "0,090"
+        "pk": "0,090",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -6332,7 +6610,8 @@
         "contact": "Agent E du technicentre : 06 17 01 92 65",
         "lignes": "FIVES à HIRSON ",
         "numero_ligne": 267000,
-        "pk": "003,0000"
+        "pk": "003,0000",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -6355,7 +6634,8 @@
         "contact": "",
         "lignes": "PARIS-NORD à LILLE",
         "numero_ligne": 272000,
-        "pk": "242,999"
+        "pk": "242,999",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -6378,7 +6658,8 @@
         "contact": "",
         "lignes": "GONESSE à LILLE-FRONTIERE (LGV)",
         "numero_ligne": 226000,
-        "pk": "209,703"
+        "pk": "209,703",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -6401,7 +6682,8 @@
         "contact": "",
         "lignes": "GONESSE à LILLE-FRONTIERE (LGV)",
         "numero_ligne": 226000,
-        "pk": "207,301"
+        "pk": "207,301",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -6423,7 +6705,8 @@
         "contact": "",
         "lignes": "GONESSE à LILLE-FRONTIERE (LGV)",
         "numero_ligne": 226000,
-        "pk": "201,394"
+        "pk": "201,394",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -6447,7 +6730,8 @@
         "secure": "https://sncf.sharepoint.com/:w:/s/NonoMapsGrpO3652/EUYkxXpPebpJr7ssA_qAfn0BhHp0DRJSSiPNslb9eoVJHA?e=cSbPN7",
         "lignes": "CREIL à JEUMONT",
         "numero_ligne": 242000,
-        "pk": "237,867"
+        "pk": "237,867",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -6469,7 +6753,8 @@
         "contact": "",
         "lignes": "CREIL à JEUMONT",
         "numero_ligne": 242000,
-        "pk": "219,684"
+        "pk": "219,684",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -6492,7 +6777,8 @@
         "contact": "",
         "lignes": "FIVES à HIRSON ",
         "numero_ligne": 267000,
-        "pk": "93,707"
+        "pk": "93,707",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -6514,7 +6800,8 @@
         "contact": "",
         "lignes": "CREIL à JEUMONT",
         "numero_ligne": 242000,
-        "pk": "217,203"
+        "pk": "217,203",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -6537,7 +6824,8 @@
         "contact": "",
         "lignes": "CREIL à JEUMONT",
         "numero_ligne": 242000,
-        "pk": "215,499"
+        "pk": "215,499",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -6560,7 +6848,8 @@
         "contact": "",
         "lignes": "CREIL à JEUMONT",
         "numero_ligne": 242000,
-        "pk": "199,837"
+        "pk": "199,837",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -6582,7 +6871,8 @@
         "contact": "",
         "lignes": "FIVES à HIRSON ",
         "numero_ligne": 267000,
-        "pk": "47,000"
+        "pk": "47,000",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -6605,7 +6895,8 @@
         "contact": "",
         "lignes": "CREIL à JEUMONT",
         "numero_ligne": 242000,
-        "pk": "107,500"
+        "pk": "107,500",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -6628,7 +6919,8 @@
         "contact": "",
         "lignes": "CREIL à JEUMONT",
         "numero_ligne": 242000,
-        "pk": "115,300"
+        "pk": "115,300",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -6651,7 +6943,8 @@
         "contact": "",
         "lignes": "PARIS-NORD à LILLE",
         "numero_ligne": 272000,
-        "pk": "80,500"
+        "pk": "80,500",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -6674,7 +6967,8 @@
         "contact": "",
         "lignes": "PARIS-NORD à LILLE",
         "numero_ligne": 272000,
-        "pk": "102,800"
+        "pk": "102,800",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -6697,7 +6991,8 @@
         "contact": "",
         "lignes": "PARIS-NORD à LILLE",
         "numero_ligne": 272000,
-        "pk": "111,160"
+        "pk": "111,160",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -6719,7 +7014,8 @@
         "contact": "",
         "lignes": "PARIS-NORD à LILLE",
         "numero_ligne": 272000,
-        "pk": "124,500"
+        "pk": "124,500",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -6742,7 +7038,8 @@
         "contact": "",
         "lignes": "CREIL à JEUMONT",
         "numero_ligne": 242000,
-        "pk": "153,200"
+        "pk": "153,200",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -6765,7 +7062,8 @@
         "contact": "",
         "lignes": "CREIL à JEUMONT",
         "numero_ligne": 242000,
-        "pk": "156,700"
+        "pk": "156,700",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -6788,7 +7086,8 @@
         "contact": "",
         "lignes": "CREIL à JEUMONT",
         "numero_ligne": 242000,
-        "pk": "171,400"
+        "pk": "171,400",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -6811,7 +7110,8 @@
         "contact": "",
         "lignes": "BUSIGNY à SOMAIN",
         "numero_ligne": 250000,
-        "pk": "212,185"
+        "pk": "212,185",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -6834,7 +7134,8 @@
         "contact": "",
         "lignes": "BUSIGNY à SOMAIN",
         "numero_ligne": 250000,
-        "pk": "204,620"
+        "pk": "204,620",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -6857,7 +7158,8 @@
         "contact": "",
         "lignes": "Raccordement de Cambrai-Nord ",
         "numero_ligne": 250311,
-        "pk": "205,191"
+        "pk": "205,191",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -6880,7 +7182,8 @@
         "contact": "",
         "lignes": "BUSIGNY à SOMAIN",
         "numero_ligne": 250000,
-        "pk": "205,892"
+        "pk": "205,892",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -6903,7 +7206,8 @@
         "contact": "",
         "lignes": "LOURCHES à VALENCIENNES",
         "numero_ligne": 254000,
-        "pk": "224,242"
+        "pk": "224,242",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -6926,7 +7230,8 @@
         "contact": "",
         "lignes": "BUSIGNY à SOMAIN",
         "numero_ligne": 250000,
-        "pk": "223,710"
+        "pk": "223,710",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -6949,7 +7254,8 @@
         "contact": "",
         "lignes": "BUSIGNY à SOMAIN",
         "numero_ligne": 250000,
-        "pk": "222,850"
+        "pk": "222,850",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -6965,7 +7271,8 @@
         "nom": "Siege Exploitation Eurotunnel",
         "description": "Service badge",
         "contact": "",
-        "special": true
+        "special": true,
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -6988,7 +7295,8 @@
         "contact": "",
         "lignes": "PARIS-NORD à LILLE",
         "numero_ligne": 272000,
-        "pk": "195,001"
+        "pk": "195,001",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -7011,7 +7319,8 @@
         "contact": "",
         "lignes": "PARIS-NORD à LILLE",
         "numero_ligne": 272000,
-        "pk": "195,000"
+        "pk": "195,000",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -7034,7 +7343,8 @@
         "contact": "",
         "lignes": "PARIS-NORD à LILLE",
         "numero_ligne": 272000,
-        "pk": "146,800"
+        "pk": "146,800",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -7057,7 +7367,8 @@
         "contact": "",
         "lignes": "PARIS-NORD à LILLE",
         "numero_ligne": 272000,
-        "pk": "232,557"
+        "pk": "232,557",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -7080,7 +7391,8 @@
         "contact": "",
         "lignes": "FIVES à HIRSON ",
         "numero_ligne": 267000,
-        "pk": "48,000"
+        "pk": "48,000",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -7103,7 +7415,8 @@
         "contact": "",
         "lignes": "FIVES à HIRSON ",
         "numero_ligne": 267000,
-        "pk": "65,890"
+        "pk": "65,890",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -7126,7 +7439,8 @@
         "contact": "",
         "lignes": "PARIS-NORD à LILLE",
         "numero_ligne": 272000,
-        "pk": "139,400"
+        "pk": "139,400",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -7149,7 +7463,8 @@
         "contact": "",
         "lignes": "PARIS-NORD à LILLE",
         "numero_ligne": 272000,
-        "pk": "159,0800"
+        "pk": "159,0800",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -7172,7 +7487,8 @@
         "contact": "",
         "lignes": "PARIS-NORD à LILLE",
         "numero_ligne": 272000,
-        "pk": "159,258"
+        "pk": "159,258",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -7195,7 +7511,8 @@
         "contact": "",
         "lignes": "PARIS-NORD à LILLE",
         "numero_ligne": 272000,
-        "pk": "191,0912"
+        "pk": "191,0912",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -7212,7 +7529,8 @@
         "description": "",
         "contact": "",
         "secure": "https://sncf.sharepoint.com/:w:/s/NonoMapsGrpO3652/EdZKj_CiL6JPtZGtZgMZ0KsBPoKWnNA72JHqx04EIdc3og?e=uCoe4j",
-        "special": true
+        "special": true,
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -7229,7 +7547,8 @@
         "description": "Accès salle de formation",
         "contact": "",
         "secure": "https://sncf.sharepoint.com/:w:/s/NonoMapsGrpO3652/EbqmDvvMwWNPu59i6Qxcn08BLedLJZswUxroIOMLKS4j5w?e=3EZur7",
-        "special": true
+        "special": true,
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -7249,7 +7568,8 @@
         "contact": "",
         "lignes": "Saint-Roch à Darnétal-Bifurcation",
         "numero_ligne": 321000,
-        "pk": "018,0400"
+        "pk": "018,0400",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -7272,7 +7592,8 @@
         "contact": "",
         "lignes": "BUSIGNY à SOMAIN",
         "numero_ligne": 250000,
-        "pk": "183,210"
+        "pk": "183,210",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -7295,7 +7616,8 @@
         "contact": "",
         "lignes": "GONESSE à LILLE-FRONTIERE (LGV)",
         "numero_ligne": 226000,
-        "pk": "129,900"
+        "pk": "129,900",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -7318,7 +7640,8 @@
         "contact": "",
         "lignes": "CREIL à JEUMONT",
         "numero_ligne": 242000,
-        "pk": "143,900"
+        "pk": "143,900",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -7342,7 +7665,8 @@
         "secure": "https://sncf.sharepoint.com/:w:/s/NonoMapsGrpO3652/EaqevJIFoK9HppfuCNzjExQBR1v29v0jleC_1DauReq-5Q?e=AB6LQo",
         "lignes": "PARIS-NORD à LILLE",
         "numero_ligne": 272000,
-        "pk": "129,316"
+        "pk": "129,316",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -7365,7 +7689,8 @@
         "contact": "",
         "lignes": "PARIS-NORD à LILLE",
         "numero_ligne": 272000,
-        "pk": "128,000"
+        "pk": "128,000",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -7388,7 +7713,8 @@
         "contact": "",
         "lignes": "Saint-Roch à Darnétal-Bifurcation",
         "numero_ligne": 321000,
-        "pk": "30,300"
+        "pk": "30,300",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -7411,7 +7737,8 @@
         "contact": "",
         "lignes": "Saint-Roch à Darnétal-Bifurcation",
         "numero_ligne": 321000,
-        "pk": "30,022"
+        "pk": "30,022",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -7435,13 +7762,14 @@
         "secure": "https://sncf.sharepoint.com/:w:/s/NonoMapsGrpO3652/ERuLOJrADLRPpJS4PVe4Ac8B43amjLpbfMzGkCg80tGDcw?e=4pJ9md",
         "lignes": "Saint-Roch à Darnétal-Bifurcation",
         "numero_ligne": 321000,
-        "pk": "1,900"
+        "pk": "1,900",
+        "code": false
       },
       "geometry": {
         "type": "Point",
         "coordinates": [
           2.285882,
-          49.892510
+          49.89251
         ]
       }
     },
@@ -7459,7 +7787,8 @@
         "secure": "",
         "lignes": "Saint-Roch à Darnétal-Bifurcation",
         "numero_ligne": 321000,
-        "pk": "131,238"
+        "pk": "131,238",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -7483,13 +7812,14 @@
         "secure": "",
         "lignes": "CREIL à JEUMONT",
         "numero_ligne": 242000,
-        "pk": "162,230"
+        "pk": "162,230",
+        "code": false
       },
       "geometry": {
         "type": "Point",
         "coordinates": [
           3.366077,
-          49.897510
+          49.89751
         ]
       }
     },
@@ -7507,7 +7837,8 @@
         "secure": "",
         "lignes": "SAINT-JUST à DOUAI",
         "numero_ligne": "259000",
-        "pk": "200,525"
+        "pk": "200,525",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -7524,7 +7855,8 @@
         "description": "",
         "rss": "A",
         "contact": "Agent E : 03 28 24 81 77",
-        "special": true
+        "special": true,
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -7541,7 +7873,8 @@
         "description": "",
         "rss": "B",
         "contact": "Agent E : 03 28 55 72 28",
-        "special": true
+        "special": true,
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -7558,7 +7891,8 @@
         "description": "",
         "rss": "A",
         "contact": "Agent E : 03 21 46 82 34",
-        "special": true
+        "special": true,
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -7575,7 +7909,8 @@
         "description": "",
         "rss": "A",
         "contact": "Agent E : 03.28.43.77.57",
-        "special": true
+        "special": true,
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -7592,7 +7927,8 @@
         "description": "Pour la manoeuvre de l'IA2 et du SIA2 de Fives SSP / SAT4",
         "rss": "A",
         "contact": "Agent E : 06 17 01 92 65",
-        "special": true
+        "special": true,
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -7609,7 +7945,8 @@
         "description": "Autre nom : Champs de Mars",
         "rss": "A",
         "contact": "Agent E : 03 28 55 71 08",
-        "special": true
+        "special": true,
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -7627,7 +7964,8 @@
         "rss": "A",
         "contact": "Agent E : 03 20 11 68 07  03 20 11 68 20",
         "secure": "https://sncf.sharepoint.com/:w:/s/NonoMapsGrpO3652/IQCLyVRbE3UzQ68fr1PSN2A0AeZix-TuReKCpVRo7GBCT3Y?e=ut7lkN",
-        "special": true
+        "special": true,
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -7643,7 +7981,8 @@
         "nom": "Siège UP",
         "description": "",
         "contact": "",
-        "special": true
+        "special": true,
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -7665,7 +8004,8 @@
         "contact": "",
         "lignes": "LONGUEAU à BOULOGNE-VILLE",
         "numero_ligne": 311000,
-        "pk": "130,268"
+        "pk": "130,268",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -7687,7 +8027,8 @@
         "contact": "",
         "lignes": "LONGUEAU à BOULOGNE-VILLE",
         "numero_ligne": 311000,
-        "pk": "130,021"
+        "pk": "130,021",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -7708,7 +8049,8 @@
         "lignes": "ARRAS à DUNKERQUE",
         "numero_ligne": 301000,
         "pk": "263,303",
-        "hors_patrimoine": true
+        "hors_patrimoine": true,
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -7728,7 +8070,8 @@
         "contact": "",
         "lignes": "CREIL à JEUMONT",
         "numero_ligne": 242000,
-        "pk": "174,0453"
+        "pk": "174,0453",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -7751,13 +8094,14 @@
         "contact": "",
         "lignes": "Ligne de Saint-Just-en-Chaussée à Douai",
         "numero_ligne": 259000,
-        "pk": "209,0034"
+        "pk": "209,0034",
+        "code": false
       },
       "geometry": {
         "type": "Point",
         "coordinates": [
           3.15938,
-          50.27050
+          50.2705
         ]
       }
     },
@@ -7774,7 +8118,8 @@
         "contact": "",
         "lignes": "GONESSE à LILLE-FRONTIERE (LGV)",
         "numero_ligne": 226000,
-        "pk": "193,998"
+        "pk": "193,998",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -7797,7 +8142,8 @@
         "contact": "",
         "lignes": "GONESSE à LILLE-FRONTIERE (LGV)",
         "numero_ligne": 226000,
-        "pk": "246,820"
+        "pk": "246,820",
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -7819,7 +8165,8 @@
         "lignes": "",
         "numero_ligne": "",
         "pk": "",
-        "hors_patrimoine": true
+        "hors_patrimoine": true,
+        "code": false
       },
       "geometry": {
         "type": "Point",
@@ -7832,13 +8179,14 @@
         "nom": "Cabinet Medical de Dunkerque",
         "description": "",
         "contact": "0328248169",
-        "special": true
+        "special": true,
+        "code": false
       },
       "geometry": {
         "type": "Point",
         "coordinates": [
           2.36629,
-          51.03090
+          51.0309
         ]
       }
     }

@@ -125,7 +125,7 @@
         "acces": "",
         "portail": "",
         "hors_patrimoine": false,
-        "code": false
+        "code": true
       },
       "geometry": {
         "type": "Point",
@@ -163,7 +163,7 @@
         "acces": "",
         "portail": "121",
         "hors_patrimoine": false,
-        "code": false
+        "code": true
       },
       "geometry": {
         "type": "Point",
@@ -334,7 +334,7 @@
         "acces": "",
         "portail": "Clé Nord",
         "hors_patrimoine": false,
-        "code": false
+        "code": true
       },
       "geometry": {
         "type": "Point",
@@ -353,7 +353,7 @@
         "acces": "",
         "portail": "Badge Eurotunnel obligatoire",
         "hors_patrimoine": false,
-        "code": false
+        "code": true
       },
       "geometry": {
         "type": "Point",
@@ -372,7 +372,7 @@
         "acces": "",
         "portail": "Badge Eurotunnel obligatoire",
         "hors_patrimoine": false,
-        "code": false
+        "code": true
       },
       "geometry": {
         "type": "Point",
@@ -391,7 +391,7 @@
         "acces": "",
         "portail": "Badge Eurotunnel obligatoire",
         "hors_patrimoine": false,
-        "code": false
+        "code": true
       },
       "geometry": {
         "type": "Point",
@@ -410,7 +410,7 @@
         "acces": "",
         "portail": "Badge Eurotunnel obligatoire",
         "hors_patrimoine": false,
-        "code": false
+        "code": true
       },
       "geometry": {
         "type": "Point",
@@ -429,7 +429,7 @@
         "acces": "",
         "portail": "Badge Eurotunnel obligatoire",
         "hors_patrimoine": false,
-        "code": false
+        "code": true
       },
       "geometry": {
         "type": "Point",
@@ -448,7 +448,7 @@
         "acces": "",
         "portail": "Accès par Carmillon",
         "hors_patrimoine": false,
-        "code": false
+        "code": true
       },
       "geometry": {
         "type": "Point",
@@ -467,7 +467,7 @@
         "acces": "",
         "portail": "Accès par Carmillon",
         "hors_patrimoine": false,
-        "code": false
+        "code": true
       },
       "geometry": {
         "type": "Point",
@@ -511,7 +511,7 @@
         "type": "Point",
         "coordinates": [
           2.326579,
-          49.888860
+          49.88886
         ]
       }
     },
@@ -562,7 +562,7 @@
         "acces": "",
         "portail": "Triangle",
         "hors_patrimoine": false,
-        "code": false
+        "code": true
       },
       "geometry": {
         "type": "Point",
@@ -923,7 +923,7 @@
         "acces": "",
         "portail": "Contacter l’agent E pour ouverture du portail.",
         "hors_patrimoine": false,
-        "code": false
+        "code": true
       },
       "geometry": {
         "type": "Point",
@@ -980,7 +980,7 @@
         "acces": "",
         "portail": "Contacter l’agent E pour ouverture du portail.",
         "hors_patrimoine": false,
-        "code": false
+        "code": true
       },
       "geometry": {
         "type": "Point",
@@ -999,7 +999,7 @@
         "acces": "",
         "portail": "LGV",
         "hors_patrimoine": false,
-        "code": false
+        "code": true
       },
       "geometry": {
         "type": "Point",
@@ -1018,7 +1018,7 @@
         "acces": "",
         "portail": "Cadenas artillerie",
         "hors_patrimoine": false,
-        "code": false
+        "code": true
       },
       "geometry": {
         "type": "Point",
@@ -1037,7 +1037,7 @@
         "acces": "",
         "portail": "LGV",
         "hors_patrimoine": false,
-        "code": false
+        "code": true
       },
       "geometry": {
         "type": "Point",
@@ -1075,7 +1075,7 @@
         "acces": "",
         "portail": "clé 590",
         "hors_patrimoine": false,
-        "code": false
+        "code": true
       },
       "geometry": {
         "type": "Point",
@@ -1151,7 +1151,7 @@
         "acces": "",
         "portail": "Clé spécifique",
         "hors_patrimoine": false,
-        "code": false
+        "code": true
       },
       "geometry": {
         "type": "Point",
@@ -1170,7 +1170,7 @@
         "acces": "",
         "portail": "Clé spécifique",
         "hors_patrimoine": false,
-        "code": false
+        "code": true
       },
       "geometry": {
         "type": "Point",
@@ -1246,7 +1246,7 @@
         "acces": "",
         "portail": "Clé spécifique",
         "hors_patrimoine": false,
-        "code": false
+        "code": true
       },
       "geometry": {
         "type": "Point",
@@ -1360,7 +1360,7 @@
         "acces": "",
         "portail": "Clé LGV + 121",
         "hors_patrimoine": false,
-        "code": false
+        "code": true
       },
       "geometry": {
         "type": "Point",
@@ -1379,7 +1379,7 @@
         "acces": "",
         "portail": "Clé LGV + 121",
         "hors_patrimoine": false,
-        "code": false
+        "code": true
       },
       "geometry": {
         "type": "Point",
@@ -1664,7 +1664,7 @@
         "acces": "",
         "portail": "Badge Eurotunnel obligatoire",
         "hors_patrimoine": false,
-        "code": false
+        "code": true
       },
       "geometry": {
         "type": "Point",
@@ -1683,7 +1683,7 @@
         "acces": "",
         "portail": "Badge Eurotunnel obligatoire",
         "hors_patrimoine": false,
-        "code": false
+        "code": true
       },
       "geometry": {
         "type": "Point",
@@ -1702,7 +1702,7 @@
         "acces": "",
         "portail": "Badge Eurotunnel obligatoire",
         "hors_patrimoine": false,
-        "code": false
+        "code": true
       },
       "geometry": {
         "type": "Point",
@@ -1721,7 +1721,7 @@
         "acces": "",
         "portail": "Badge Eurotunnel obligatoire",
         "hors_patrimoine": false,
-        "code": false
+        "code": true
       },
       "geometry": {
         "type": "Point",
@@ -1740,7 +1740,7 @@
         "acces": "",
         "portail": "Badge Eurotunnel obligatoire",
         "hors_patrimoine": false,
-        "code": false
+        "code": true
       },
       "geometry": {
         "type": "Point",
@@ -1759,7 +1759,7 @@
         "acces": "",
         "portail": "Badge Eurotunnel obligatoire",
         "hors_patrimoine": false,
-        "code": false
+        "code": true
       },
       "geometry": {
         "type": "Point",
@@ -1797,7 +1797,7 @@
         "acces": "",
         "portail": "",
         "hors_patrimoine": false,
-        "code": false
+        "code": true
       },
       "geometry": {
         "type": "Point",
@@ -1854,7 +1854,7 @@
         "acces": "",
         "portail": "",
         "hors_patrimoine": false,
-        "code": false
+        "code": true
       },
       "geometry": {
         "type": "Point",
@@ -1911,7 +1911,7 @@
         "acces": "",
         "portail": "Clé 590",
         "hors_patrimoine": false,
-        "code": false
+        "code": true
       },
       "geometry": {
         "type": "Point",
@@ -1930,7 +1930,7 @@
         "acces": "I5429",
         "portail": "Clé 590",
         "hors_patrimoine": false,
-        "code": false
+        "code": true
       },
       "geometry": {
         "type": "Point",
@@ -2006,7 +2006,7 @@
         "acces": "",
         "portail": "Clé Nord et 121",
         "hors_patrimoine": false,
-        "code": false
+        "code": true
       },
       "geometry": {
         "type": "Point",
@@ -2120,7 +2120,7 @@
         "acces": "",
         "portail": "",
         "hors_patrimoine": false,
-        "code": false
+        "code": true
       },
       "geometry": {
         "type": "Point",
@@ -2177,7 +2177,7 @@
         "acces": "",
         "portail": "590 et 121",
         "hors_patrimoine": false,
-        "code": false
+        "code": true
       },
       "geometry": {
         "type": "Point",
@@ -2291,7 +2291,7 @@
         "acces": "",
         "portail": "Carmillon",
         "hors_patrimoine": false,
-        "code": false
+        "code": true
       },
       "geometry": {
         "type": "Point",
@@ -2329,7 +2329,7 @@
         "acces": "",
         "portail": "LGV",
         "hors_patrimoine": false,
-        "code": false
+        "code": true
       },
       "geometry": {
         "type": "Point",
@@ -2386,7 +2386,7 @@
         "acces": "",
         "portail": "",
         "hors_patrimoine": false,
-        "code": false
+        "code": true
       },
       "geometry": {
         "type": "Point",
@@ -2405,7 +2405,7 @@
         "acces": "",
         "portail": "Clé 121",
         "hors_patrimoine": false,
-        "code": false
+        "code": true
       },
       "geometry": {
         "type": "Point",
@@ -2443,7 +2443,7 @@
         "acces": "",
         "portail": "",
         "hors_patrimoine": false,
-        "code": false
+        "code": true
       },
       "geometry": {
         "type": "Point",
@@ -2462,7 +2462,7 @@
         "acces": "",
         "portail": "",
         "hors_patrimoine": false,
-        "code": false
+        "code": true
       },
       "geometry": {
         "type": "Point",
@@ -2481,7 +2481,7 @@
         "acces": "",
         "portail": "",
         "hors_patrimoine": false,
-        "code": false
+        "code": true
       },
       "geometry": {
         "type": "Point",
@@ -2595,7 +2595,7 @@
         "acces": "S5064-358",
         "portail": "",
         "hors_patrimoine": false,
-        "code": false
+        "code": true
       },
       "geometry": {
         "type": "Point",
@@ -2747,7 +2747,7 @@
         "acces": "",
         "portail": "Badge d'accès obligatoire - clé spécifique pour ouvrir le 1er portail",
         "hors_patrimoine": false,
-        "code": false
+        "code": true
       },
       "geometry": {
         "type": "Point",
@@ -2823,7 +2823,7 @@
         "acces": "",
         "portail": "121",
         "hors_patrimoine": false,
-        "code": false
+        "code": true
       },
       "geometry": {
         "type": "Point",
@@ -2842,7 +2842,7 @@
         "acces": "",
         "portail": "LGV + 121",
         "hors_patrimoine": false,
-        "code": false
+        "code": true
       },
       "geometry": {
         "type": "Point",
@@ -2880,7 +2880,7 @@
         "acces": "",
         "portail": "121",
         "hors_patrimoine": false,
-        "code": false
+        "code": true
       },
       "geometry": {
         "type": "Point",
@@ -2994,7 +2994,7 @@
         "acces": "",
         "portail": "",
         "hors_patrimoine": false,
-        "code": false
+        "code": true
       },
       "geometry": {
         "type": "Point",
@@ -3241,7 +3241,7 @@
         "acces": "",
         "portail": "",
         "hors_patrimoine": false,
-        "code": false
+        "code": true
       },
       "geometry": {
         "type": "Point",
@@ -3488,7 +3488,7 @@
         "acces": "",
         "portail": "Triangle",
         "hors_patrimoine": false,
-        "code": false
+        "code": true
       },
       "geometry": {
         "type": "Point",
@@ -3564,7 +3564,7 @@
         "acces": "",
         "portail": "Clé 590",
         "hors_patrimoine": false,
-        "code": false
+        "code": true
       },
       "geometry": {
         "type": "Point",
@@ -3716,7 +3716,7 @@
         "acces": "",
         "portail": "121",
         "hors_patrimoine": false,
-        "code": false
+        "code": true
       },
       "geometry": {
         "type": "Point",
@@ -3792,7 +3792,7 @@
         "acces": "",
         "portail": "",
         "hors_patrimoine": false,
-        "code": false
+        "code": true
       },
       "geometry": {
         "type": "Point",
@@ -4039,7 +4039,7 @@
         "acces": "",
         "portail": "LGV",
         "hors_patrimoine": false,
-        "code": false
+        "code": true
       },
       "geometry": {
         "type": "Point",
@@ -4476,7 +4476,7 @@
         "acces": "",
         "portail": "Portail clé 590",
         "hors_patrimoine": false,
-        "code": false
+        "code": true
       },
       "geometry": {
         "type": "Point",
@@ -4685,7 +4685,7 @@
         "acces": "",
         "portail": "Clé 590",
         "hors_patrimoine": false,
-        "code": false
+        "code": true
       },
       "geometry": {
         "type": "Point",
@@ -4856,7 +4856,7 @@
         "acces": "",
         "portail": "Clé 121",
         "hors_patrimoine": false,
-        "code": false
+        "code": true
       },
       "geometry": {
         "type": "Point",
@@ -4894,7 +4894,7 @@
         "acces": "",
         "portail": "",
         "hors_patrimoine": false,
-        "code": false
+        "code": true
       },
       "geometry": {
         "type": "Point",
@@ -4989,7 +4989,7 @@
         "acces": "",
         "portail": "Badge Eurotunnel obligatoire",
         "hors_patrimoine": false,
-        "code": false
+        "code": true
       },
       "geometry": {
         "type": "Point",
@@ -5008,7 +5008,7 @@
         "acces": "",
         "portail": "Badge Eurotunnel obligatoire",
         "hors_patrimoine": false,
-        "code": false
+        "code": true
       },
       "geometry": {
         "type": "Point",
@@ -5027,7 +5027,7 @@
         "acces": "",
         "portail": "Badge Eurotunnel obligatoire",
         "hors_patrimoine": false,
-        "code": false
+        "code": true
       },
       "geometry": {
         "type": "Point",
@@ -5046,7 +5046,7 @@
         "acces": "",
         "portail": "Badge Eurotunnel obligatoire",
         "hors_patrimoine": false,
-        "code": false
+        "code": true
       },
       "geometry": {
         "type": "Point",
@@ -5184,8 +5184,8 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          1.99480,
-          49.77550
+          1.9948,
+          49.7755
         ]
       }
     },
@@ -5198,7 +5198,7 @@
         "acces": "",
         "portail": "Clé 121",
         "hors_patrimoine": false,
-        "code": false
+        "code": true
       },
       "geometry": {
         "type": "Point",
@@ -5236,7 +5236,7 @@
         "acces": "",
         "portail": "Clé spécifique pour ouvrir la guérite",
         "hors_patrimoine": false,
-        "code": false
+        "code": true
       },
       "geometry": {
         "type": "Point",
@@ -5274,7 +5274,7 @@
         "acces": "",
         "portail": "LGV",
         "hors_patrimoine": false,
-        "code": false
+        "code": true
       },
       "geometry": {
         "type": "Point",
@@ -5293,7 +5293,7 @@
         "acces": "I625",
         "portail": "LGV",
         "hors_patrimoine": false,
-        "code": false
+        "code": true
       },
       "geometry": {
         "type": "Point",
@@ -5388,7 +5388,7 @@
         "acces": "I628",
         "portail": "LGV",
         "hors_patrimoine": false,
-        "code": false
+        "code": true
       },
       "geometry": {
         "type": "Point",
@@ -5407,7 +5407,7 @@
         "acces": "I629",
         "portail": "LGV",
         "hors_patrimoine": false,
-        "code": false
+        "code": true
       },
       "geometry": {
         "type": "Point",
@@ -5426,7 +5426,7 @@
         "acces": "TT629",
         "portail": "LGV",
         "hors_patrimoine": false,
-        "code": false
+        "code": true
       },
       "geometry": {
         "type": "Point",
@@ -5445,7 +5445,7 @@
         "acces": "I631",
         "portail": "LGV",
         "hors_patrimoine": false,
-        "code": false
+        "code": true
       },
       "geometry": {
         "type": "Point",
@@ -5559,7 +5559,7 @@
         "acces": "",
         "portail": "Clé 590",
         "hors_patrimoine": false,
-        "code": false
+        "code": true
       },
       "geometry": {
         "type": "Point",
@@ -5616,7 +5616,7 @@
         "acces": "",
         "portail": "Badge Eurotunnel obligatoire",
         "hors_patrimoine": false,
-        "code": false
+        "code": true
       },
       "geometry": {
         "type": "Point",
@@ -5635,7 +5635,7 @@
         "acces": "",
         "portail": "Badge Eurotunnel obligatoire",
         "hors_patrimoine": false,
-        "code": false
+        "code": true
       },
       "geometry": {
         "type": "Point",
@@ -5654,7 +5654,7 @@
         "acces": "",
         "portail": "Badge Eurotunnel obligatoire",
         "hors_patrimoine": false,
-        "code": false
+        "code": true
       },
       "geometry": {
         "type": "Point",
@@ -5673,7 +5673,7 @@
         "acces": "",
         "portail": "Badge Eurotunnel obligatoire",
         "hors_patrimoine": false,
-        "code": false
+        "code": true
       },
       "geometry": {
         "type": "Point",
@@ -5692,7 +5692,7 @@
         "acces": "",
         "portail": "Badge Eurotunnel obligatoire",
         "hors_patrimoine": false,
-        "code": false
+        "code": true
       },
       "geometry": {
         "type": "Point",
@@ -5711,7 +5711,7 @@
         "acces": "",
         "portail": "Badge Eurotunnel obligatoire",
         "hors_patrimoine": false,
-        "code": false
+        "code": true
       },
       "geometry": {
         "type": "Point",
@@ -5749,7 +5749,7 @@
         "acces": "",
         "portail": "Clé 121",
         "hors_patrimoine": false,
-        "code": false
+        "code": true
       },
       "geometry": {
         "type": "Point",
@@ -5768,7 +5768,7 @@
         "acces": "",
         "portail": "LGV",
         "hors_patrimoine": false,
-        "code": false
+        "code": true
       },
       "geometry": {
         "type": "Point",
@@ -5958,7 +5958,7 @@
         "acces": "",
         "portail": "Par parc public, grille ouverte.",
         "hors_patrimoine": false,
-        "code": false
+        "code": true
       },
       "geometry": {
         "type": "Point",
@@ -5977,7 +5977,7 @@
         "acces": "",
         "portail": "Contacter l’agent E pour ouverture du portail.",
         "hors_patrimoine": false,
-        "code": false
+        "code": true
       },
       "geometry": {
         "type": "Point",
@@ -6148,7 +6148,7 @@
         "acces": "",
         "portail": "Clé 590 + 121",
         "hors_patrimoine": false,
-        "code": false
+        "code": true
       },
       "geometry": {
         "type": "Point",
@@ -6243,7 +6243,7 @@
         "acces": "",
         "portail": "",
         "hors_patrimoine": false,
-        "code": false
+        "code": true
       },
       "geometry": {
         "type": "Point",
@@ -6338,12 +6338,12 @@
         "acces": "",
         "portail": "Clef Nord",
         "hors_patrimoine": false,
-        "code": false
+        "code": true
       },
       "geometry": {
         "type": "Point",
         "coordinates": [
-          2.872410,
+          2.87241,
           50.051312
         ]
       }
@@ -6452,7 +6452,7 @@
         "acces": "",
         "portail": "Clé 121",
         "hors_patrimoine": false,
-        "code": false
+        "code": true
       },
       "geometry": {
         "type": "Point",
@@ -6490,7 +6490,7 @@
         "acces": "",
         "portail": "",
         "hors_patrimoine": false,
-        "code": false
+        "code": true
       },
       "geometry": {
         "type": "Point",
@@ -6509,7 +6509,7 @@
         "acces": "",
         "portail": "LGV",
         "hors_patrimoine": false,
-        "code": false
+        "code": true
       },
       "geometry": {
         "type": "Point",
@@ -6528,7 +6528,7 @@
         "acces": "TT513",
         "portail": "LGV",
         "hors_patrimoine": false,
-        "code": false
+        "code": true
       },
       "geometry": {
         "type": "Point",
@@ -6547,7 +6547,7 @@
         "acces": "I510",
         "portail": "LGV",
         "hors_patrimoine": false,
-        "code": false
+        "code": true
       },
       "geometry": {
         "type": "Point",
@@ -6604,7 +6604,7 @@
         "acces": "",
         "portail": "Clé LGV + 121",
         "hors_patrimoine": false,
-        "code": false
+        "code": true
       },
       "geometry": {
         "type": "Point",

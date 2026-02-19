@@ -508,6 +508,7 @@ function regrouperPostesParCoordonnees(geojson) {
       type: propr.type || "",
       SAT: propr.SAT || "",
       acces: propr.acces || "",
+      code: estCodeDisponible(propr.code),
       description: propr.description || "",
       description_telecommande: propr.description_telecommande || "",
       rss: propr.rss || "",
@@ -2156,7 +2157,7 @@ function extraireListeDepuisFeature(feature, cleJson) {
   }
 }
 
-function trouverCoordonneesAccesDepuisPostes(featurePostes) {
+function trouverFeatureAccesDepuisPostes(featurePostes) {
   if (!featurePostes || !donneesAcces?.features?.length) {
     return null;
   }
@@ -2166,24 +2167,45 @@ function trouverCoordonneesAccesDepuisPostes(featurePostes) {
     return null;
   }
 
-  const clesPostes = new Set(postesListe.map((poste) => construireCleCorrespondance(poste)).filter(Boolean));
-  if (!clesPostes.size) {
+  const clesCorrespondance = new Set(postesListe.map((poste) => construireCleCorrespondance(poste)).filter(Boolean));
+  const clesNomType = new Set(postesListe.map((poste) => construireCleNomType(poste)).filter(Boolean));
+  if (!clesCorrespondance.size && !clesNomType.size) {
     return null;
   }
 
+  let fallbackNomType = null;
   for (const featureAcces of donneesAcces.features) {
     const accesListe = extraireListeDepuisFeature(featureAcces, "acces_liste_json");
-    const correspond = accesListe.some((acces) => clesPostes.has(construireCleCorrespondance(acces)));
-    if (!correspond) {
+    if (!accesListe.length) {
       continue;
     }
 
-    const [longitude, latitude] = featureAcces.geometry?.coordinates || [];
-    if (Number.isFinite(longitude) && Number.isFinite(latitude)) {
-      return [longitude, latitude];
+    const correspond = accesListe.some((acces) => clesCorrespondance.has(construireCleCorrespondance(acces)));
+    if (correspond) {
+      return featureAcces;
+    }
+
+    if (!fallbackNomType) {
+      const matchNomType = accesListe.some((acces) => clesNomType.has(construireCleNomType(acces)));
+      if (matchNomType) {
+        fallbackNomType = featureAcces;
+      }
     }
   }
 
+  return fallbackNomType;
+}
+
+function trouverCoordonneesAccesDepuisPostes(featurePostes) {
+  const featureAcces = trouverFeatureAccesDepuisPostes(featurePostes);
+  if (!featureAcces) {
+    return null;
+  }
+
+  const [longitude, latitude] = featureAcces.geometry?.coordinates || [];
+  if (Number.isFinite(longitude) && Number.isFinite(latitude)) {
+    return [longitude, latitude];
+  }
   return null;
 }
 
@@ -3100,7 +3122,11 @@ function construirePopupDepuisFeatures(longitude, latitude, featurePostes, featu
     coordonneesRetourPosteDepuisAppareil = trouverCoordonneesPosteDepuisAppareils(featureAppareils);
   }
 
-  const sectionCodes = featureAcces ? construireSectionBoutonCodes(featureAcces) : "";
+  const sectionCodes = featurePostes
+    ? construireSectionBoutonCodesPostes(featurePostes)
+    : featureAcces
+      ? construireSectionBoutonCodes(featureAcces)
+      : "";
   const sectionItineraire = coordonneesNavigation
     ? `<section class="popup-section popup-section-itineraires"><div class="popup-section-titre"><span class="popup-badge popup-badge-itineraire">Itineraire</span></div>${construireLiensItineraires(coordonneesNavigation[0], coordonneesNavigation[1])}</section>`
     : "";
