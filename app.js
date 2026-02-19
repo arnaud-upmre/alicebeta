@@ -2742,7 +2742,31 @@ function attacherActionsPopupInterne() {
   const boutonAfficherCodes = racinePopup.querySelector("#popup-afficher-codes-acces");
   if (boutonAfficherCodes) {
     boutonAfficherCodes.addEventListener("click", () => {
+      const mode = boutonAfficherCodes.getAttribute("data-mode") || "direct";
+      if (mode === "choix") {
+        const blocChoix = racinePopup.querySelector("#popup-codes-choix");
+        if (blocChoix) {
+          const estVisible = !blocChoix.hasAttribute("hidden");
+          if (estVisible) {
+            blocChoix.setAttribute("hidden", "hidden");
+          } else {
+            blocChoix.removeAttribute("hidden");
+          }
+        }
+        return;
+      }
+
       const url = boutonAfficherCodes.getAttribute("data-url");
+      if (url) {
+        window.open(url, "_blank", "noopener,noreferrer");
+      }
+    });
+  }
+
+  const boutonsChoixCodes = racinePopup.querySelectorAll(".popup-bouton-codes-option[data-url]");
+  for (const bouton of boutonsChoixCodes) {
+    bouton.addEventListener("click", () => {
+      const url = bouton.getAttribute("data-url");
       if (!url) {
         return;
       }

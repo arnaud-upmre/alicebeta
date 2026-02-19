@@ -1413,6 +1413,29 @@ body {
   border-color: rgba(79, 70, 229, 0.28);
 }
 
+.popup-bouton-codes {
+  width: 100%;
+  min-height: 42px;
+  font-size: 0.86rem;
+  font-weight: 700;
+}
+
+.popup-codes-choix {
+  margin-top: 8px;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 6px;
+}
+
+.popup-bouton-codes-option {
+  width: 100%;
+  justify-content: flex-start;
+  text-align: left;
+  padding: 8px 10px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
 .panneau-mesure {
   position: absolute;
   left: calc(10px + env(safe-area-inset-left));

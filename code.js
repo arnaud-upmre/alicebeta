@@ -50,24 +50,72 @@
     return url.toString();
   }
 
-  function construireSectionBoutonCodes(featureAcces) {
+  function construireLibelleChoixAcces(acces) {
+    const champCompletOuVide = global.champCompletOuVide || fallbackChampCompletOuVide;
+    const nom = champCompletOuVide(acces?.nom) || "Poste inconnu";
+    const type = champCompletOuVide(acces?.type) || "-";
+    const sat = champCompletOuVide(acces?.SAT) || "-";
+    const accesAppareil = champCompletOuVide(acces?.acces) || "-";
+    return `${nom} | ${type} | SAT ${sat} | Accès ${accesAppareil}`;
+  }
+
+  function dedoublonnerChoixAcces(accesListe) {
+    const uniques = [];
+    const vus = new Set();
+    for (const acces of accesListe) {
+      const cle = [
+        String(acces?.nom || "").trim().toLowerCase(),
+        String(acces?.type || "").trim().toLowerCase(),
+        String(acces?.SAT || "").trim().toLowerCase(),
+        String(acces?.acces || "").trim().toLowerCase()
+      ].join("|");
+      if (vus.has(cle)) {
+        continue;
+      }
+      vus.add(cle);
+      uniques.push(acces);
+    }
+    return uniques;
+  }
+
+  function construireChoixCodes(featureAcces) {
     const extraireListeDepuisFeature = global.extraireListeDepuisFeature;
     if (typeof extraireListeDepuisFeature !== "function") {
+      return [];
+    }
+
+    const accesListe = extraireListeDepuisFeature(featureAcces, "acces_liste_json");
+    const eligibles = accesListe.filter((acces) => estCodeDisponible(acces?.code));
+    const uniques = dedoublonnerChoixAcces(eligibles);
+    return uniques.map((acces) => ({
+      label: construireLibelleChoixAcces(acces),
+      url: construireLienCodesAcces(acces)
+    }));
+  }
+
+  function construireSectionBoutonCodes(featureAcces) {
+    const echapperHtml = global.echapperHtml || fallbackEchapperHtml;
+    const choix = construireChoixCodes(featureAcces);
+    if (!choix.length) {
       return "";
     }
 
-    const echapperHtml = global.echapperHtml || fallbackEchapperHtml;
-    const accesListe = extraireListeDepuisFeature(featureAcces, "acces_liste_json");
-    const accesAvecCode = accesListe.find((acces) => estCodeDisponible(acces?.code));
-    if (!accesAvecCode) {
-      return "";
+    if (choix.length === 1) {
+      return `<section class="popup-section popup-section-codes"><button class="popup-bouton-itineraire popup-bouton-codes" id="popup-afficher-codes-acces" type="button" data-mode="direct" data-url="${echapperHtml(choix[0].url)}">🔐 Afficher les codes d’accès</button></section>`;
     }
-    const urlCodes = construireLienCodesAcces(accesAvecCode);
-    return `<section class="popup-section popup-section-codes"><button class="popup-action-lien" id="popup-afficher-codes-acces" type="button" data-url="${echapperHtml(urlCodes)}">🔐 Afficher les codes d’accès</button></section>`;
+
+    const boutonsChoix = choix
+      .map(
+        (option, index) =>
+          `<button class="popup-bouton-itineraire popup-bouton-codes-option" type="button" data-url="${echapperHtml(option.url)}">${index + 1}. ${echapperHtml(option.label)}</button>`
+      )
+      .join("");
+    return `<section class="popup-section popup-section-codes"><button class="popup-bouton-itineraire popup-bouton-codes" id="popup-afficher-codes-acces" type="button" data-mode="choix">🔐 Afficher les codes d’accès</button><div class="popup-codes-choix" id="popup-codes-choix" hidden>${boutonsChoix}</div></section>`;
   }
 
   global.URL_POWERAPPS_CODES = global.URL_POWERAPPS_CODES || DEFAULT_POWERAPPS_CODES_URL;
   global.estCodeDisponible = estCodeDisponible;
   global.construireLienCodesAcces = construireLienCodesAcces;
+  global.construireChoixCodes = construireChoixCodes;
   global.construireSectionBoutonCodes = construireSectionBoutonCodes;
 })(window);
