@@ -2668,12 +2668,22 @@ function attacherActionsPopupInterne() {
     if (!url) {
       return;
     }
-    const nouvelOnglet = window.open("", "_blank");
-    if (!nouvelOnglet) {
+    const nouvelOnglet = window.open(url, "_blank");
+    if (nouvelOnglet) {
+      nouvelOnglet.opener = null;
       return;
     }
-    nouvelOnglet.opener = null;
-    nouvelOnglet.location.replace(url);
+
+    // Fallback Safari iOS: certains contextes bloquent window.open,
+    // mais acceptent encore un clic programmatique sur une ancre _blank.
+    const lien = document.createElement("a");
+    lien.href = url;
+    lien.target = "_blank";
+    lien.rel = "noopener";
+    lien.style.display = "none";
+    document.body.appendChild(lien);
+    lien.click();
+    lien.remove();
   };
 
   if (navigationInternePopup) {
