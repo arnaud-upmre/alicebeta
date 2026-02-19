@@ -2668,10 +2668,7 @@ function attacherActionsPopupInterne() {
     if (!url) {
       return;
     }
-    const nouvelleFenetre = window.open(url, "_blank", "noopener,noreferrer");
-    if (!nouvelleFenetre) {
-      window.location.href = url;
-    }
+    window.open(url, "_blank", "noopener,noreferrer");
   };
 
   if (navigationInternePopup) {
