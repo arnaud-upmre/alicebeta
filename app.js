@@ -53,12 +53,6 @@ const stylePlanOsm = {
 const styleSatelliteIgn = {
   version: 8,
   sources: {
-    osm: {
-      type: "raster",
-      tiles: ["https://tile.openstreetmap.org/{z}/{x}/{y}.png"],
-      tileSize: 256,
-      attribution: "© OpenStreetMap contributors"
-    },
     satelliteIgn: {
       type: "raster",
       tiles: [
@@ -70,11 +64,6 @@ const styleSatelliteIgn = {
     }
   },
   layers: [
-    {
-      id: "osm-fallback",
-      type: "raster",
-      source: "osm"
-    },
     {
       id: "satelliteIgn",
       type: "raster",
@@ -2714,24 +2703,11 @@ function attacherActionsPopupInterne() {
     boutonAfficherCodes.addEventListener("click", () => {
       const mode = boutonAfficherCodes.getAttribute("data-mode") || "direct";
       if (mode === "choix") {
-        const blocChoix = racinePopup.querySelector("#popup-codes-choix");
-        if (blocChoix) {
-          const estVisible = !blocChoix.hasAttribute("hidden");
-          if (estVisible) {
-            blocChoix.setAttribute("hidden", "hidden");
-            boutonAfficherCodes.setAttribute("aria-expanded", "false");
-            const texteDefaut = boutonAfficherCodes.getAttribute("data-label-default");
-            if (texteDefaut) {
-              boutonAfficherCodes.textContent = texteDefaut;
-            }
-          } else {
-            blocChoix.removeAttribute("hidden");
-            boutonAfficherCodes.setAttribute("aria-expanded", "true");
-            const texteOuvert = boutonAfficherCodes.getAttribute("data-label-open");
-            if (texteOuvert) {
-              boutonAfficherCodes.textContent = texteOuvert;
-            }
-          }
+        const selectChoix = racinePopup.querySelector("#popup-codes-select");
+        if (selectChoix) {
+          boutonAfficherCodes.setAttribute("hidden", "hidden");
+          selectChoix.removeAttribute("hidden");
+          selectChoix.focus();
         }
         return;
       }
@@ -2752,17 +2728,10 @@ function attacherActionsPopupInterne() {
       }
       window.open(url, "_blank", "noopener,noreferrer");
       selectChoixCodes.value = "";
-    });
-  }
-
-  const boutonsChoixCodes = racinePopup.querySelectorAll(".popup-bouton-codes-option[data-url]");
-  for (const bouton of boutonsChoixCodes) {
-    bouton.addEventListener("click", () => {
-      const url = bouton.getAttribute("data-url");
-      if (!url) {
-        return;
+      selectChoixCodes.setAttribute("hidden", "hidden");
+      if (boutonAfficherCodes) {
+        boutonAfficherCodes.removeAttribute("hidden");
       }
-      window.open(url, "_blank", "noopener,noreferrer");
     });
   }
 
@@ -3131,7 +3100,7 @@ function construirePopupDepuisFeatures(longitude, latitude, featurePostes, featu
     ? `<section class="popup-section popup-section-itineraires"><div class="popup-section-titre"><span class="popup-badge popup-badge-itineraire">Poste</span></div><div class="popup-itineraires"><button class="popup-bouton-itineraire" id="popup-retour-poste-appareil" type="button" data-lng="${coordonneesRetourPosteDepuisAppareil[0]}" data-lat="${coordonneesRetourPosteDepuisAppareil[1]}">↩ Retour poste</button></div></section>`
     : "";
   const sectionLocaliser = `<section class="popup-section popup-section-localiser"><div class="popup-itineraires popup-itineraires-localiser"><button class="popup-bouton-itineraire popup-bouton-localiser" id="popup-localiser-carte" type="button" data-lng="${longitude}" data-lat="${latitude}">📍 Localiser sur la carte</button></div></section>`;
-  const contenuFiche = `<div class="popup-carte">${sections.join("")}${sectionCodes}${sectionRssAssocieDepuisAcces}${sectionItineraire}${sectionRetourPoste}${sectionLocaliser}</div>`;
+  const contenuFiche = `<div class="popup-carte">${sections.join("")}${sectionRssAssocieDepuisAcces}${sectionItineraire}${sectionRetourPoste}${sectionCodes}${sectionLocaliser}</div>`;
 
   let contenuVueAppareils = "";
   if (sectionAppareilsAssociesPoste) {

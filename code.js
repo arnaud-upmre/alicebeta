@@ -112,7 +112,7 @@
           `<option value="${echapperHtml(option.url)}">${echapperHtml(option.label)}</option>`
       )
       .join("");
-    return `<section class="popup-section popup-section-codes"><button class="popup-bouton-itineraire popup-bouton-codes" id="popup-afficher-codes-acces" type="button" data-mode="choix" data-label-default="🔐 Informations d’accès" data-label-open="🔐 Choisir un poste" aria-expanded="false">🔐 Informations d’accès</button><div class="popup-codes-choix" id="popup-codes-choix" hidden><label class="popup-codes-choix-label" for="popup-codes-select">Choisir un poste</label><select class="popup-codes-select" id="popup-codes-select"><option value="">Selectionner...</option>${optionsChoix}</select></div></section>`;
+    return `<section class="popup-section popup-section-codes"><button class="popup-bouton-itineraire popup-bouton-codes" id="popup-afficher-codes-acces" type="button" data-mode="choix">🔐 Informations d’accès</button><select class="popup-codes-select" id="popup-codes-select" hidden><option value="">🔐 Choisir un poste</option>${optionsChoix}</select></section>`;
   }
 
   global.URL_POWERAPPS_CODES = global.URL_POWERAPPS_CODES || DEFAULT_POWERAPPS_CODES_URL;
