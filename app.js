@@ -2642,6 +2642,23 @@ function attacherActionsPopupInterne() {
     return;
   }
 
+  const ouvrirLienCodes = (url) => {
+    if (!url) {
+      return;
+    }
+    const ua = navigator.userAgent || "";
+    const estIOS = /iPad|iPhone|iPod/.test(ua);
+    if (estIOS) {
+      // iOS bloque souvent window.open depuis un <select>, on navigue dans l'onglet courant.
+      window.location.href = url;
+      return;
+    }
+    const nouvelleFenetre = window.open(url, "_blank", "noopener,noreferrer");
+    if (!nouvelleFenetre) {
+      window.location.href = url;
+    }
+  };
+
   if (navigationInternePopup) {
     const boutonVoirAppareils = racinePopup.querySelector("#popup-voir-appareils-associes");
     if (boutonVoirAppareils) {
@@ -2713,9 +2730,7 @@ function attacherActionsPopupInterne() {
       }
 
       const url = boutonAfficherCodes.getAttribute("data-url");
-      if (url) {
-        window.open(url, "_blank", "noopener,noreferrer");
-      }
+      ouvrirLienCodes(url);
     });
   }
 
@@ -2726,7 +2741,7 @@ function attacherActionsPopupInterne() {
       if (!url) {
         return;
       }
-      window.open(url, "_blank", "noopener,noreferrer");
+      ouvrirLienCodes(url);
       selectChoixCodes.value = "";
       selectChoixCodes.setAttribute("hidden", "hidden");
       if (boutonAfficherCodes) {

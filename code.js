@@ -1,6 +1,6 @@
 (function (global) {
   const DEFAULT_POWERAPPS_CODES_URL =
-    "https://apps.powerapps.com/play/e/91a9a793-eabc-4be4-b4f4-d19d551f0072/a/a11716b8-c506-4cd0-b3fe-e473f5cac6df?tenantId=4a7c8238-5799-4b16-9fc6-9ad8fce5a7d9";
+    "https://apps.powerapps.com/play/e/91a9a793-eabc-4be4-b4f4-d19d551f0072/a/a11716b8-c506-4cd0-b3fe-e473f5cac6df?tenantId=4a7c8238-5799-4b16-9fc6-9ad8fce5a7d9&hint=df125c6d-1cef-40a0-b374-ded8ad732cca";
 
   function fallbackChampCompletOuVide(valeur) {
     return String(valeur || "").trim();
