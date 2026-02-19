@@ -1193,24 +1193,6 @@ body {
   color: var(--ui-text-secondary);
 }
 
-.popup-portail-ligne {
-  margin: 0;
-  font-size: 0.83rem;
-  line-height: 1.35;
-  font-weight: 700;
-  color: var(--ui-text-primary);
-}
-
-.popup-portail-valeur {
-  font-weight: 600;
-  color: var(--ui-text-secondary);
-}
-
-.popup-portail-vide {
-  color: var(--ui-text-muted);
-  font-style: italic;
-}
-
 .popup-poste-details {
   display: inline-block;
   margin-top: 3px;
@@ -1418,6 +1400,42 @@ body {
   min-height: 42px;
   font-size: 0.86rem;
   font-weight: 700;
+}
+
+.popup-bouton-infos-acces {
+  width: 100%;
+  min-height: 40px;
+  font-size: 0.72rem;
+  font-weight: 500;
+}
+
+.popup-liste-infos-acces {
+  margin: 8px 0 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 6px;
+}
+
+.popup-infos-acces-item {
+  margin: 0;
+  padding: 8px 10px;
+  border-radius: 10px;
+  border: 1px solid rgba(15, 23, 42, 0.12);
+  background: linear-gradient(180deg, #ffffff 0%, #f7f8fa 100%);
+  color: #0f172a;
+  font-size: 0.79rem;
+  font-weight: 600;
+  line-height: 1.25;
+}
+
+.popup-bouton-infos-acces-option {
+  width: 100%;
+  justify-content: flex-start;
+  text-align: left;
+  padding: 8px 10px;
+  font-size: 0.79rem;
+  font-weight: 600;
 }
 
 .popup-codes-choix {

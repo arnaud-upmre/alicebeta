@@ -2034,95 +2034,45 @@ function construireSectionAppareils(feature, options = {}) {
 }
 
 function construireSectionAcces(feature) {
-  const propr = feature.properties || {};
-  let accesListe = [];
-  try {
-    accesListe = JSON.parse(propr.acces_liste_json || "[]");
-  } catch {
-    accesListe = [];
-  }
-
+  const accesListe = extraireListeDepuisFeature(feature, "acces_liste_json");
   if (!accesListe.length) {
     return "";
   }
 
-  const construireTitreAccesHtml = (acces) => construireTitreNomTypeSatAccesHtml(acces, { nomVilleDe: true });
-  const clesAccesUniques = new Set(
-    accesListe
-      .map((a) => normaliserTexteRecherche(champCompletOuVide(a?.acces)))
-      .filter(Boolean)
-  );
-  // Fallback: si "acces" est vide, on deduit une cle route via nom/type/sat.
-  if (!clesAccesUniques.size) {
-    for (const acces of accesListe) {
-      const cleFallback = construireCleNomTypeSat(acces);
-      if (cleFallback) {
-        clesAccesUniques.add(cleFallback);
-      }
-    }
-  }
-  const clesAffichageLignes = new Set(
-    accesListe
-      .map((a) => normaliserTexteRecherche(champCompletOuVide(a?.acces)))
-      .filter(Boolean)
-  );
-  const clesPostesUniques = new Set(
-    accesListe
-      .map((a) => construireCleNomTypeSat(a))
-      .filter(Boolean)
-  );
-
-  if (Number(propr.acces_count) > 1) {
-    const lignes = accesListe
-      .map((a) => {
-        const titreHtml = construireTitreAccesHtml(a);
-        const classeHp = a.hors_patrimoine ? " popup-acces-ligne-hp" : "";
-        return `<li><span class="popup-acces-ligne${classeHp}">${titreHtml}</span></li>`;
-      })
-      .join("");
-    const totalAccesUniques = Math.max(1, clesAccesUniques.size || Number(propr.acces_count) || 1);
-    const totalPostesUniques = clesPostesUniques.size;
-    const totalLignesUniques = Math.max(1, clesAffichageLignes.size || accesListe.length);
-    const libelleBadge =
-      totalAccesUniques === 1 && totalPostesUniques > 1
-        ? `${totalPostesUniques} postes`
-        : `${totalLignesUniques} accès voiture`;
-    return `<section class="popup-section"><div class="popup-pill-ligne"><span class="popup-badge popup-badge-acces">${echapperHtml(libelleBadge)}</span></div><ul>${lignes}</ul></section>`;
-  }
-
-  const acces = accesListe[0] || {};
-  const titreHtml = construireTitreAccesHtml(acces);
-  const classeHors = acces.hors_patrimoine ? " popup-item-hors" : "";
-  return `<section class="popup-section"><p class="popup-acces-titre${classeHors}">🚗 ${titreHtml}</p></section>`;
-}
-
-function construireSectionPortail(featureAcces, options = {}) {
-  const afficherVide = Boolean(options.afficherVide);
-  const accesListe = extraireListeDepuisFeature(featureAcces, "acces_liste_json");
-  const portails = [];
-  const dejaVu = new Set();
-
+  const clesVues = new Set();
+  const lignes = [];
   for (const acces of accesListe) {
-    const portail = champCompletOuVide(acces?.portail);
-    if (!portail) {
+    const nom = champCompletOuVide(acces?.nom);
+    const type = champCompletOuVide(acces?.type);
+    const sat = champCompletOuVide(acces?.SAT);
+    const accesVoiture = champCompletOuVide(acces?.acces);
+    const cle = [nom, type, sat, accesVoiture]
+      .map((v) => normaliserTexteRecherche(v))
+      .join("|");
+    if (clesVues.has(cle)) {
       continue;
     }
-    const cle = portail.toLowerCase();
-    if (dejaVu.has(cle)) {
-      continue;
+    clesVues.add(cle);
+
+    const base = [nom, type, sat].filter(Boolean).join(" ") || "Accès";
+    const suffixeAcces = accesVoiture ? ` (accès ${accesVoiture})` : "";
+    const libelle = `🔐 ${base}${suffixeAcces}`;
+    const codeActif = estCodeDisponible(acces?.code);
+    if (codeActif) {
+      const url = construireLienCodesAcces(acces);
+      lignes.push(
+        `<li class="popup-infos-acces-item"><button class="popup-bouton-itineraire popup-bouton-infos-acces-option" type="button" data-url="${echapperHtml(url)}">${echapperHtml(libelle)}</button></li>`
+      );
+    } else {
+      lignes.push(`<li class="popup-infos-acces-item">${echapperHtml(libelle)}</li>`);
     }
-    dejaVu.add(cle);
-    portails.push(portail);
   }
 
-  if (!portails.length && !afficherVide) {
+  if (!lignes.length) {
     return "";
   }
 
-  const contenu = portails.length
-    ? portails.map((texte) => echapperHtml(texte)).join(" • ")
-    : '<span class="popup-portail-vide">(non renseigné)</span>';
-  return `<section class="popup-section popup-section-portail"><p class="popup-portail-ligne">🔐 Portail : <span class="popup-portail-valeur">${contenu}</span></p></section>`;
+  return `<section class="popup-section popup-section-infos-acces"><button class="popup-bouton-itineraire popup-bouton-infos-acces" id="popup-toggle-infos-acces" type="button">🔐 Informations d’accès</button><ul class="popup-liste-infos-acces" id="popup-liste-infos-acces" hidden>${lignes.join("")}</ul></section>`;
 }
 
 function construireTitrePoste(poste) {
@@ -2739,32 +2689,24 @@ function attacherActionsPopupInterne() {
     });
   }
 
-  const boutonAfficherCodes = racinePopup.querySelector("#popup-afficher-codes-acces");
-  if (boutonAfficherCodes) {
-    boutonAfficherCodes.addEventListener("click", () => {
-      const mode = boutonAfficherCodes.getAttribute("data-mode") || "direct";
-      if (mode === "choix") {
-        const blocChoix = racinePopup.querySelector("#popup-codes-choix");
-        if (blocChoix) {
-          const estVisible = !blocChoix.hasAttribute("hidden");
-          if (estVisible) {
-            blocChoix.setAttribute("hidden", "hidden");
-          } else {
-            blocChoix.removeAttribute("hidden");
-          }
-        }
+  const boutonInfosAcces = racinePopup.querySelector("#popup-toggle-infos-acces");
+  if (boutonInfosAcces) {
+    boutonInfosAcces.addEventListener("click", () => {
+      const listeInfosAcces = racinePopup.querySelector("#popup-liste-infos-acces");
+      if (!listeInfosAcces) {
         return;
       }
-
-      const url = boutonAfficherCodes.getAttribute("data-url");
-      if (url) {
-        window.open(url, "_blank", "noopener,noreferrer");
+      const estVisible = !listeInfosAcces.hasAttribute("hidden");
+      if (estVisible) {
+        listeInfosAcces.setAttribute("hidden", "hidden");
+      } else {
+        listeInfosAcces.removeAttribute("hidden");
       }
     });
   }
 
-  const boutonsChoixCodes = racinePopup.querySelectorAll(".popup-bouton-codes-option[data-url]");
-  for (const bouton of boutonsChoixCodes) {
+  const boutonsInfosAcces = racinePopup.querySelectorAll(".popup-bouton-infos-acces-option[data-url]");
+  for (const bouton of boutonsInfosAcces) {
     bouton.addEventListener("click", () => {
       const url = bouton.getAttribute("data-url");
       if (!url) {
@@ -3131,12 +3073,6 @@ function construirePopupDepuisFeatures(longitude, latitude, featurePostes, featu
     coordonneesRetourPosteDepuisAppareil = trouverCoordonneesPosteDepuisAppareils(featureAppareils);
   }
 
-  const sectionPortail = featureAcces
-    ? construireSectionPortail(featureAcces, {
-        afficherVide: true
-      })
-    : "";
-  const sectionCodes = featureAcces ? construireSectionBoutonCodes(featureAcces) : "";
   const sectionItineraire = coordonneesNavigation
     ? `<section class="popup-section popup-section-itineraires"><div class="popup-section-titre"><span class="popup-badge popup-badge-itineraire">Itineraire</span></div>${construireLiensItineraires(coordonneesNavigation[0], coordonneesNavigation[1])}</section>`
     : "";
@@ -3144,7 +3080,7 @@ function construirePopupDepuisFeatures(longitude, latitude, featurePostes, featu
     ? `<section class="popup-section popup-section-itineraires"><div class="popup-section-titre"><span class="popup-badge popup-badge-itineraire">Poste</span></div><div class="popup-itineraires"><button class="popup-bouton-itineraire" id="popup-retour-poste-appareil" type="button" data-lng="${coordonneesRetourPosteDepuisAppareil[0]}" data-lat="${coordonneesRetourPosteDepuisAppareil[1]}">↩ Retour poste</button></div></section>`
     : "";
   const sectionLocaliser = `<section class="popup-section popup-section-localiser"><div class="popup-itineraires popup-itineraires-localiser"><button class="popup-bouton-itineraire popup-bouton-localiser" id="popup-localiser-carte" type="button" data-lng="${longitude}" data-lat="${latitude}">📍 Localiser sur la carte</button></div></section>`;
-  const contenuFiche = `<div class="popup-carte">${sections.join("")}${sectionPortail}${sectionCodes}${sectionRssAssocieDepuisAcces}${sectionItineraire}${sectionRetourPoste}${sectionLocaliser}</div>`;
+  const contenuFiche = `<div class="popup-carte">${sections.join("")}${sectionRssAssocieDepuisAcces}${sectionItineraire}${sectionRetourPoste}${sectionLocaliser}</div>`;
 
   let contenuVueAppareils = "";
   if (sectionAppareilsAssociesPoste) {
