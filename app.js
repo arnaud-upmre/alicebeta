@@ -423,6 +423,7 @@ function regrouperAccesParCoordonnees(geojson) {
       SAT: propr.SAT || "",
       acces: champAcces,
       portail: champPortail,
+      code: estCodeDisponible(propr.code),
       hors_patrimoine: horsPatrimoine
     };
 
@@ -2738,6 +2739,17 @@ function attacherActionsPopupInterne() {
     });
   }
 
+  const boutonAfficherCodes = racinePopup.querySelector("#popup-afficher-codes-acces");
+  if (boutonAfficherCodes) {
+    boutonAfficherCodes.addEventListener("click", () => {
+      const url = boutonAfficherCodes.getAttribute("data-url");
+      if (!url) {
+        return;
+      }
+      window.open(url, "_blank", "noopener,noreferrer");
+    });
+  }
+
   const boutonsAppareilsAssocies = racinePopup.querySelectorAll(".popup-poste-appareil-lien[data-lng][data-lat]");
   for (const bouton of boutonsAppareilsAssocies) {
     bouton.addEventListener("click", async () => {
@@ -3100,6 +3112,7 @@ function construirePopupDepuisFeatures(longitude, latitude, featurePostes, featu
         afficherVide: true
       })
     : "";
+  const sectionCodes = featureAcces ? construireSectionBoutonCodes(featureAcces) : "";
   const sectionItineraire = coordonneesNavigation
     ? `<section class="popup-section popup-section-itineraires"><div class="popup-section-titre"><span class="popup-badge popup-badge-itineraire">Itineraire</span></div>${construireLiensItineraires(coordonneesNavigation[0], coordonneesNavigation[1])}</section>`
     : "";
@@ -3107,7 +3120,7 @@ function construirePopupDepuisFeatures(longitude, latitude, featurePostes, featu
     ? `<section class="popup-section popup-section-itineraires"><div class="popup-section-titre"><span class="popup-badge popup-badge-itineraire">Poste</span></div><div class="popup-itineraires"><button class="popup-bouton-itineraire" id="popup-retour-poste-appareil" type="button" data-lng="${coordonneesRetourPosteDepuisAppareil[0]}" data-lat="${coordonneesRetourPosteDepuisAppareil[1]}">↩ Retour poste</button></div></section>`
     : "";
   const sectionLocaliser = `<section class="popup-section popup-section-localiser"><div class="popup-itineraires popup-itineraires-localiser"><button class="popup-bouton-itineraire popup-bouton-localiser" id="popup-localiser-carte" type="button" data-lng="${longitude}" data-lat="${latitude}">📍 Localiser sur la carte</button></div></section>`;
-  const contenuFiche = `<div class="popup-carte">${sections.join("")}${sectionPortail}${sectionRssAssocieDepuisAcces}${sectionItineraire}${sectionRetourPoste}${sectionLocaliser}</div>`;
+  const contenuFiche = `<div class="popup-carte">${sections.join("")}${sectionPortail}${sectionCodes}${sectionRssAssocieDepuisAcces}${sectionItineraire}${sectionRetourPoste}${sectionLocaliser}</div>`;
 
   let contenuVueAppareils = "";
   if (sectionAppareilsAssociesPoste) {
