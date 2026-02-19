@@ -2088,7 +2088,8 @@ function construireSectionAcces(feature) {
     }
   }
 
-  return `<section class="popup-section popup-section-infos-acces"><button class="popup-bouton-itineraire popup-bouton-infos-acces" id="popup-toggle-infos-acces" type="button">🔐 Informations d’accès</button><ul class="popup-liste-infos-acces" id="popup-liste-infos-acces" hidden>${lignes.join("")}</ul></section>`;
+  const titreBouton = `🔐 Informations d’accès (${lignes.length} postes)`;
+  return `<section class="popup-section popup-section-infos-acces"><button class="popup-bouton-itineraire popup-bouton-infos-acces" id="popup-toggle-infos-acces" type="button">${echapperHtml(titreBouton)}</button><ul class="popup-liste-infos-acces" id="popup-liste-infos-acces" hidden>${lignes.join("")}</ul></section>`;
 }
 
 function construireTitrePoste(poste) {

@@ -1417,6 +1417,10 @@ body {
   gap: 6px;
 }
 
+.popup-liste-infos-acces[hidden] {
+  display: none !important;
+}
+
 .popup-infos-acces-item {
   margin: 0;
   padding: 8px 10px;
