@@ -3185,6 +3185,26 @@ function ouvrirPopupDepuisCoordonnees(longitude, latitude) {
   return construirePopupDepuisFeatures(longitude, latitude, featurePostes, featureAcces, featureAppareils);
 }
 
+function ouvrirPopupDepuisResultatRecherche(type, longitude, latitude) {
+  let featurePostes = null;
+  let featureAcces = null;
+  let featureAppareils = null;
+
+  if (type === "postes") {
+    featurePostes = obtenirFeatureALaCoordonnee(donneesPostes, longitude, latitude);
+  } else if (type === "appareils") {
+    featureAppareils = obtenirFeatureALaCoordonnee(donneesAppareils, longitude, latitude);
+  } else {
+    featureAcces = obtenirFeatureALaCoordonnee(donneesAcces, longitude, latitude);
+  }
+
+  if (featurePostes || featureAcces || featureAppareils) {
+    return construirePopupDepuisFeatures(longitude, latitude, featurePostes, featureAcces, featureAppareils);
+  }
+
+  return ouvrirPopupDepuisCoordonnees(longitude, latitude);
+}
+
 function calculerContexteDeplacement(longitude, latitude) {
   const canvas = carte.getCanvas();
   const largeur = canvas?.clientWidth || window.innerWidth;
@@ -3427,24 +3447,20 @@ function ouvrirPopupDepuisObjetsCarte(objets) {
     return false;
   }
 
-  const cle = `${longitude}|${latitude}`;
-  const uniquesParCouche = new Map();
+  const idCoucheCliquee = objet.layer?.id;
+  let featurePostes = null;
+  let featureAcces = null;
+  let featureAppareils = null;
 
-  for (const feature of objets) {
-    const coord = feature.geometry?.coordinates || [];
-    if (`${coord[0]}|${coord[1]}` !== cle) {
-      continue;
-    }
-    const idCouche = feature.layer?.id;
-    if (idCouche && !uniquesParCouche.has(idCouche)) {
-      uniquesParCouche.set(idCouche, feature);
-    }
+  if (idCoucheCliquee === COUCHE_POSTES || idCoucheCliquee === COUCHE_POSTES_GROUPES) {
+    featurePostes = objet;
+  } else if (idCoucheCliquee === COUCHE_ACCES || idCoucheCliquee === COUCHE_ACCES_GROUPES) {
+    featureAcces = objet;
+  } else if (idCoucheCliquee === COUCHE_APPAREILS || idCoucheCliquee === COUCHE_APPAREILS_GROUPES) {
+    featureAppareils = objet;
+  } else {
+    return false;
   }
-
-  const featurePostes = uniquesParCouche.get(COUCHE_POSTES_GROUPES) || uniquesParCouche.get(COUCHE_POSTES) || null;
-  const featureAcces = uniquesParCouche.get(COUCHE_ACCES_GROUPES) || uniquesParCouche.get(COUCHE_ACCES) || null;
-  const featureAppareils =
-    uniquesParCouche.get(COUCHE_APPAREILS_GROUPES) || uniquesParCouche.get(COUCHE_APPAREILS) || null;
 
   return construirePopupDepuisFeatures(longitude, latitude, featurePostes, featureAcces, featureAppareils);
 }
@@ -4256,7 +4272,7 @@ if (champRecherche && listeResultatsRecherche) {
       fermerMenuFiltres();
       fermerMenuFonds();
 
-      const ouvertureOk = ouvrirPopupDepuisCoordonnees(longitude, latitude);
+      const ouvertureOk = ouvrirPopupDepuisResultatRecherche(type, longitude, latitude);
       if (!ouvertureOk) {
         return;
       }
