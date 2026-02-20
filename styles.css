@@ -1158,8 +1158,10 @@ body {
 }
 
 .popup-badge-appareils-multi {
-  font-size: 0.86rem;
-  padding: 6px 14px;
+  font-size: 0.68rem;
+  font-weight: 700;
+  line-height: 1;
+  padding: 1px 6px;
 }
 
 .popup-appareils-multi-lieu {
@@ -1168,15 +1170,19 @@ body {
   line-height: 1.3;
   font-weight: 700;
   color: var(--ui-text-primary);
+  text-align: center;
 }
 
 .popup-appareils-multi-item {
-  margin-top: 10px;
-  padding-top: 10px;
-  border-top: 1px solid rgba(156, 163, 175, 0.45);
+  margin-top: 8px;
+  padding-top: 0;
+  border-top: 0;
 }
 
 .popup-appareils-multi-code {
+  display: flex;
+  align-items: center;
+  gap: 6px;
   margin: 0;
   font-size: 1rem;
   line-height: 1.2;

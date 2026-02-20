@@ -2008,10 +2008,11 @@ function construireSectionAppareils(feature, options = {}) {
     const contexteLieu = construireContexteNomTypeSat(appareilsListe[0] || {});
     const sectionsAppareils = appareilsListe
       .map((a) => {
+        const couleur = a.couleur_appareil || "#111111";
         const tagHp = a.hors_patrimoine ? '<span class="popup-tag-hp">HP</span>' : "";
         const libelleAppareil = champCompletOuVide(a.appareil) || "Appareil inconnu";
         const descriptionHtml = convertirDescriptionAppareilEnHtml(a.description);
-        return `<section class="popup-appareils-multi-item"><p class="popup-appareils-multi-code">${echapperHtml(libelleAppareil)}${tagHp}</p>${descriptionHtml ? `<p class="popup-appareils-multi-description">${descriptionHtml}</p>` : ""}</section>`;
+        return `<section class="popup-appareils-multi-item"><p class="popup-appareils-multi-code"><span class="popup-point-couleur" style="background:${echapperHtml(couleur)}"></span>${echapperHtml(libelleAppareil)}${tagHp}</p>${descriptionHtml ? `<p class="popup-appareils-multi-description">${descriptionHtml}</p>` : ""}</section>`;
       })
       .join("");
     return `<section class="popup-section"><div class="popup-pill-ligne"><span class="popup-badge popup-badge-itineraire popup-badge-appareils-multi">${echapperHtml(String(propr.appareils_count))} appareils sur le meme support</span></div>${contexteLieu ? `<p class="popup-appareils-multi-lieu">📍 ${echapperHtml(contexteLieu)}</p>` : ""}${sectionsAppareils}</section>`;
