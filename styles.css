@@ -1093,6 +1093,10 @@ body {
   margin-bottom: 6px;
 }
 
+.popup-section-titre-gauche {
+  justify-content: flex-start;
+}
+
 .popup-badge {
   display: inline-block;
   padding: 2px 7px;
@@ -1222,8 +1226,36 @@ body {
   color: var(--ui-text-secondary);
 }
 
+.popup-appareil-telecommande-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 8px;
+}
+
+.popup-appareil-telecommande-pill {
+  display: inline-flex;
+  align-items: center;
+  margin: 0;
+  padding: 1px 8px;
+  border-radius: 999px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: #1d4ed8;
+  background: rgba(37, 99, 235, 0.16);
+  border: 1px solid rgba(37, 99, 235, 0.22);
+  transition: transform 120ms ease, box-shadow 120ms ease;
+}
+
+.popup-appareil-telecommande-pill:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 3px 8px rgba(15, 23, 42, 0.16);
+}
+
 .popup-appareil-infos {
   margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px solid rgba(156, 163, 175, 0.45);
 }
 
 .popup-appareil-infos-titre {

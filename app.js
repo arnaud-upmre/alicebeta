@@ -2031,14 +2031,20 @@ function construireSectionAppareils(feature, options = {}) {
   const libelleAppareil = champCompletOuVide(appareil.appareil) || "Appareil inconnu";
   const contexteAppareil = construireContexteNomTypeSat(appareil);
   const descriptionAppareil = champCompletOuVide(appareil.description);
+  const codesTelecommande = extraireCodesTelecommande(options?.posteAssocie?.description_telecommande);
+  const pillsTelecommande = codesTelecommande.length
+    ? `<div class="popup-appareil-telecommande-pills">${codesTelecommande
+        .map((code) => `<span class="popup-appareil-telecommande-pill">${echapperHtml(code)}</span>`)
+        .join("")}</div>`
+    : "";
   const ligneTitre = options.masquerTitreLieu
     ? ""
     : `<p class="popup-appareil-titre"><span class="popup-point-couleur popup-point-couleur-titre-appareil" style="background:${echapperHtml(couleur)}"></span><span class="popup-appareil-code">${echapperHtml(libelleAppareil)}</span>${contexteAppareil ? `<span class="popup-appareil-contexte">(${echapperHtml(contexteAppareil)})</span>` : ""}${tagHp}</p>`;
   const ligneDescription = descriptionAppareil
-    ? `<div class="popup-appareil-infos"><p class="popup-appareil-infos-titre">Information sur l'appareil :</p><p class="popup-appareil-infos-description">${echapperHtml(descriptionAppareil)}</p></div>`
+    ? `<div class="popup-appareil-infos"><div class="popup-section-titre popup-section-titre-gauche"><span class="popup-badge popup-badge-itineraire">Information sur l'appareil</span></div><p class="popup-appareil-infos-description">${echapperHtml(descriptionAppareil)}</p></div>`
     : "";
   const ligneCode = options.masquerTitreLieu ? `<p><span class="popup-point-couleur" style="background:${echapperHtml(couleur)}"></span>${echapperHtml(libelleAppareil)}${tagHp}</p>` : "";
-  return `<section class="popup-section">${ligneTitre}${ligneCode}${ligneDescription}</section>`;
+  return `<section class="popup-section">${ligneTitre}${ligneCode}${pillsTelecommande}${ligneDescription}</section>`;
 }
 
 function construireSectionAcces(feature) {
@@ -2114,7 +2120,7 @@ function extraireCodesTelecommande(valeur) {
   }
 
   const segments = brut
-    .split(/[|,;()]+/)
+    .split(/[|,;()\/]+/)
     .flatMap((partie) => String(partie).split(/\s+/))
     .map((element) => String(element || "").trim())
     .filter(Boolean);
@@ -2403,6 +2409,45 @@ function trouverCoordonneesPosteDepuisAppareils(featureAppareils) {
 
     if (!fallbackNomType) {
       fallbackNomType = [longitude, latitude];
+    }
+  }
+
+  return fallbackNomType;
+}
+
+function trouverPosteAssocieDepuisAppareils(featureAppareils) {
+  if (!featureAppareils || !donneesPostes?.features?.length) {
+    return null;
+  }
+
+  const appareilsListe = extraireListeDepuisFeature(featureAppareils, "appareils_liste_json");
+  if (!appareilsListe.length) {
+    return null;
+  }
+
+  const clesNomTypeSat = new Set(appareilsListe.map((a) => construireCleNomTypeSat(a)).filter(Boolean));
+  const clesNomType = new Set(appareilsListe.map((a) => construireCleNomType(a)).filter(Boolean));
+  if (!clesNomType.size) {
+    return null;
+  }
+
+  let fallbackNomType = null;
+  for (const featurePostes of donneesPostes.features) {
+    const postesListe = extraireListeDepuisFeature(featurePostes, "postes_liste_json");
+    if (!postesListe.length) {
+      continue;
+    }
+
+    const posteSat = postesListe.find((poste) => clesNomTypeSat.has(construireCleNomTypeSat(poste)));
+    if (posteSat) {
+      return posteSat;
+    }
+
+    if (!fallbackNomType) {
+      const posteNomType = postesListe.find((poste) => clesNomType.has(construireCleNomType(poste)));
+      if (posteNomType) {
+        fallbackNomType = posteNomType;
+      }
     }
   }
 
@@ -3153,6 +3198,7 @@ function construirePopupDepuisFeatures(longitude, latitude, featurePostes, featu
   let coordonneesNavigation = null;
   let sectionAppareilsAssociesPoste = "";
   let coordonneesRetourPosteDepuisAppareil = null;
+  let posteAssocieDepuisAppareil = null;
   let sectionRssAssocieDepuisAcces = "";
 
   if (featurePostes) {
@@ -3182,9 +3228,14 @@ function construirePopupDepuisFeatures(longitude, latitude, featurePostes, featu
     }
   }
 
+  if (featureAppareils && !featurePostes) {
+    posteAssocieDepuisAppareil = trouverPosteAssocieDepuisAppareils(featureAppareils);
+  }
+
   if (featureAppareils) {
     const sectionAppareils = construireSectionAppareils(featureAppareils, {
-      masquerTitreLieu: Boolean(featurePostes)
+      masquerTitreLieu: Boolean(featurePostes),
+      posteAssocie: posteAssocieDepuisAppareil
     });
     if (sectionAppareils) {
       sections.push(sectionAppareils);
@@ -3215,12 +3266,12 @@ function construirePopupDepuisFeatures(longitude, latitude, featurePostes, featu
       : "";
   const sectionItineraire = coordonneesNavigation
     ? estVueAppareilsSeule
-      ? `<section class="popup-section popup-section-itineraires">${construireLiensItineraires(coordonneesNavigation[0], coordonneesNavigation[1])}</section>`
+      ? `<section class="popup-section popup-section-itineraires"><div class="popup-section-titre popup-section-titre-gauche"><span class="popup-badge popup-badge-itineraire">Créer un itineraire</span></div>${construireLiensItineraires(coordonneesNavigation[0], coordonneesNavigation[1])}</section>`
       : `<section class="popup-section popup-section-itineraires"><div class="popup-section-titre"><span class="popup-badge popup-badge-itineraire">Itineraire</span></div>${construireLiensItineraires(coordonneesNavigation[0], coordonneesNavigation[1])}</section>`
     : "";
   const libelleRetourPoste = estVueAppareilsSeule ? determinerLibelleRetourPosteDepuisAppareil(featureAppareils) : "Consulter la fiche du poste";
   const sectionRetourPoste = coordonneesRetourPosteDepuisAppareil
-    ? `<section class="popup-section popup-section-localiser"><div class="popup-itineraires popup-itineraires-localiser"><button class="popup-bouton-itineraire popup-bouton-localiser" id="popup-retour-poste-appareil" type="button" data-lng="${coordonneesRetourPosteDepuisAppareil[0]}" data-lat="${coordonneesRetourPosteDepuisAppareil[1]}">${echapperHtml(libelleRetourPoste)}</button></div></section>`
+    ? `<section class="popup-section popup-section-localiser"><div class="popup-itineraires popup-itineraires-localiser"><button class="popup-bouton-itineraire popup-bouton-localiser" id="popup-retour-poste-appareil" type="button" data-lng="${coordonneesRetourPosteDepuisAppareil[0]}" data-lat="${coordonneesRetourPosteDepuisAppareil[1]}">📄 ${echapperHtml(libelleRetourPoste)}</button></div></section>`
     : "";
   const sectionLocaliser = `<section class="popup-section popup-section-localiser"><div class="popup-itineraires popup-itineraires-localiser"><button class="popup-bouton-itineraire popup-bouton-localiser" id="popup-localiser-carte" type="button" data-lng="${longitude}" data-lat="${latitude}">📍 Localiser sur la carte</button></div></section>`;
   const contenuFiche = `<div class="popup-carte">${sections.join("")}${sectionRssAssocieDepuisAcces}${sectionItineraire}${sectionCodes}${sectionLocaliser}${sectionRetourPoste}</div>`;
