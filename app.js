@@ -1973,9 +1973,9 @@ function determinerLibelleRetourPosteDepuisAppareil(featureAppareils) {
   const appareilsListe = extraireListeDepuisFeature(featureAppareils, "appareils_liste_json");
   const sat = champCompletOuVide(appareilsListe[0]?.SAT);
   if (sat) {
-    return "Consulter la fiche du SAT";
+    return "Consulter la fiche de l'accès voiture";
   }
-  return "Consulter la fiche du poste";
+  return "Consulter la fiche de l'accès voiture";
 }
 
 function construireLienImajnet(longitude, latitude) {
@@ -3306,10 +3306,13 @@ function construirePopupDepuisFeatures(longitude, latitude, featurePostes, featu
   const lienImajnet = featurePostes ? construireLienImajnet(longitude, latitude) : "";
   const nombreActionsPoste = Number(Boolean(lienImajnet)) + Number(Boolean(sectionAppareilsAssociesPoste));
   const classeActionsPoste = nombreActionsPoste > 1 ? "popup-itineraires-poste-actions" : "popup-itineraires-localiser";
+  const libelleSectionActionsPoste = nombreActionsPoste > 1 ? "Explorer les équipements" : "Vue terrain";
   const sectionActionsPoste = featurePostes && (lienImajnet || sectionAppareilsAssociesPoste)
-    ? `<section class="popup-section popup-section-itineraires"><div class="popup-itineraires ${classeActionsPoste}">${lienImajnet ? `<a class="popup-bouton-itineraire" href="${echapperHtml(lienImajnet)}" target="_blank" rel="noopener noreferrer">🛤️ Imajnet</a>` : ""}${sectionAppareilsAssociesPoste ? '<button class="popup-bouton-itineraire" id="popup-voir-appareils-associes" type="button">💡 Afficher les appareils</button>' : ""}</div></section>`
+    ? `<section class="popup-section popup-section-itineraires"><div class="popup-section-titre popup-section-titre-gauche"><span class="popup-badge popup-badge-itineraire">${echapperHtml(libelleSectionActionsPoste)}</span></div><div class="popup-itineraires ${classeActionsPoste}">${lienImajnet ? `<a class="popup-bouton-itineraire" href="${echapperHtml(lienImajnet)}" target="_blank" rel="noopener noreferrer">🛤️ Imajnet</a>` : ""}${sectionAppareilsAssociesPoste ? '<button class="popup-bouton-itineraire" id="popup-voir-appareils-associes" type="button">💡 Afficher les appareils</button>' : ""}</div></section>`
     : "";
-  const libelleRetourPoste = estVueAppareilsSeule ? determinerLibelleRetourPosteDepuisAppareil(featureAppareils) : "Consulter la fiche du poste";
+  const libelleRetourPoste = estVueAppareilsSeule
+    ? determinerLibelleRetourPosteDepuisAppareil(featureAppareils)
+    : "Consulter la fiche de l'accès voiture";
   const sectionRetourPoste = coordonneesRetourPosteDepuisAppareil
     ? `<section class="popup-section popup-section-localiser"><div class="popup-itineraires popup-itineraires-localiser"><button class="popup-bouton-itineraire popup-bouton-localiser" id="popup-retour-poste-appareil" type="button" data-lng="${coordonneesRetourPosteDepuisAppareil[0]}" data-lat="${coordonneesRetourPosteDepuisAppareil[1]}">📄 ${echapperHtml(libelleRetourPoste)}</button></div></section>`
     : "";
