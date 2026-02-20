@@ -2032,19 +2032,19 @@ function construireSectionAppareils(feature, options = {}) {
   const contexteAppareil = construireContexteNomTypeSat(appareil);
   const descriptionAppareil = champCompletOuVide(appareil.description);
   const codesTelecommande = extraireCodesTelecommande(options?.posteAssocie?.description_telecommande);
-  const pillsTelecommande = codesTelecommande.length
-    ? `<div class="popup-appareil-telecommande-pills">${codesTelecommande
-        .map((code) => `<span class="popup-appareil-telecommande-pill">${echapperHtml(code)}</span>`)
-        .join("")}</div>`
+  const tagsTelecommande = codesTelecommande.length
+    ? codesTelecommande
+        .map((code) => `<span class="popup-tag-hp popup-tag-telecommande">${echapperHtml(code)}</span>`)
+        .join("")
     : "";
   const ligneTitre = options.masquerTitreLieu
     ? ""
-    : `<p class="popup-appareil-titre"><span class="popup-point-couleur popup-point-couleur-titre-appareil" style="background:${echapperHtml(couleur)}"></span><span class="popup-appareil-code">${echapperHtml(libelleAppareil)}</span>${contexteAppareil ? `<span class="popup-appareil-contexte">(${echapperHtml(contexteAppareil)})</span>` : ""}${tagHp}</p>`;
+    : `<p class="popup-appareil-titre"><span class="popup-point-couleur popup-point-couleur-titre-appareil" style="background:${echapperHtml(couleur)}"></span><span class="popup-appareil-code">${echapperHtml(libelleAppareil)}</span>${contexteAppareil ? `<span class="popup-appareil-contexte">(${echapperHtml(contexteAppareil)})</span>` : ""}${tagHp}${tagsTelecommande}</p>`;
   const ligneDescription = descriptionAppareil
     ? `<div class="popup-appareil-infos"><div class="popup-section-titre popup-section-titre-gauche"><span class="popup-badge popup-badge-itineraire">Information sur l'appareil</span></div><p class="popup-appareil-infos-description">${echapperHtml(descriptionAppareil)}</p></div>`
     : "";
   const ligneCode = options.masquerTitreLieu ? `<p><span class="popup-point-couleur" style="background:${echapperHtml(couleur)}"></span>${echapperHtml(libelleAppareil)}${tagHp}</p>` : "";
-  return `<section class="popup-section">${ligneTitre}${ligneCode}${pillsTelecommande}${ligneDescription}</section>`;
+  return `<section class="popup-section">${ligneTitre}${ligneCode}${ligneDescription}</section>`;
 }
 
 function construireSectionAcces(feature) {
