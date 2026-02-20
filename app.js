@@ -1978,6 +1978,13 @@ function determinerLibelleRetourPosteDepuisAppareil(featureAppareils) {
   return "Consulter la fiche du poste";
 }
 
+function construireLienImajnet(longitude, latitude) {
+  if (!Number.isFinite(longitude) || !Number.isFinite(latitude)) {
+    return "";
+  }
+  return `https://gecko.imajnet.net/#map=OSM;zoom=18;loc=${latitude},${longitude};`;
+}
+
 function construireLiensItineraires(longitude, latitude) {
   if (!Number.isFinite(longitude) || !Number.isFinite(latitude)) {
     return "";
@@ -2763,12 +2770,18 @@ function construireSectionPostes(feature) {
   const poste = postesListe[0] || {};
   const titre = construireTitrePoste(poste) || "Poste inconnu";
   const classeHors = poste.hors_patrimoine ? " popup-item-hors" : "";
+  const codesTelecommande = extraireCodesTelecommande(poste.description_telecommande);
+  const pillsTelecommande = codesTelecommande.length
+    ? `<div class="popup-poste-pills">${codesTelecommande
+        .map((code) => `<span class="popup-poste-pill">${echapperHtml(code)}</span>`)
+        .join("")}</div>`
+    : "";
   const sectionRss = construireSectionRssPoste(poste);
   const sectionPk = construireSectionPkPoste(poste);
   const sectionInformations = construireSectionInformationsPoste(poste);
   const sectionContact = construireSectionContactPoste(poste);
 
-  return `<section class="popup-section${classeHors}"><div class="popup-pill-ligne"><span class="popup-badge popup-badge-postes popup-badge-poste-nom">${echapperHtml(titre)}</span></div></section>${sectionRss}${sectionPk}${sectionInformations}${sectionContact}`;
+  return `<section class="popup-section${classeHors}"><p class="popup-poste-entete-principal">📍 ${echapperHtml(titre)}</p>${pillsTelecommande}</section>${sectionRss}${sectionPk}${sectionInformations}${sectionContact}`;
 }
 
 function attacherActionsPopupInterne() {
@@ -3208,11 +3221,6 @@ function construirePopupDepuisFeatures(longitude, latitude, featurePostes, featu
 
     const postesListe = extraireListeDepuisFeature(featurePostes, "postes_liste_json");
     sectionAppareilsAssociesPoste = construireSectionAppareilsAssociesDepuisPostes(postesListe);
-    if (sectionAppareilsAssociesPoste) {
-      sections.push(
-        '<section class="popup-section"><button class="popup-action-lien" id="popup-voir-appareils-associes" type="button">🧩 Voir les appareils associés</button></section>'
-      );
-    }
   }
 
   if (featureAcces) {
@@ -3268,12 +3276,18 @@ function construirePopupDepuisFeatures(longitude, latitude, featurePostes, featu
       ? `<section class="popup-section popup-section-itineraires"><div class="popup-section-titre popup-section-titre-gauche"><span class="popup-badge popup-badge-itineraire">Créer un itineraire</span></div>${construireLiensItineraires(coordonneesNavigation[0], coordonneesNavigation[1])}</section>`
       : `<section class="popup-section popup-section-itineraires"><div class="popup-section-titre"><span class="popup-badge popup-badge-itineraire">Itineraire</span></div>${construireLiensItineraires(coordonneesNavigation[0], coordonneesNavigation[1])}</section>`
     : "";
+  const lienImajnet = featurePostes ? construireLienImajnet(longitude, latitude) : "";
+  const nombreActionsPoste = Number(Boolean(lienImajnet)) + Number(Boolean(sectionAppareilsAssociesPoste));
+  const classeActionsPoste = nombreActionsPoste > 1 ? "popup-itineraires-poste-actions" : "popup-itineraires-localiser";
+  const sectionActionsPoste = featurePostes && (lienImajnet || sectionAppareilsAssociesPoste)
+    ? `<section class="popup-section popup-section-itineraires"><div class="popup-itineraires ${classeActionsPoste}">${lienImajnet ? `<a class="popup-bouton-itineraire" href="${echapperHtml(lienImajnet)}" target="_blank" rel="noopener noreferrer">🛤️ Imajnet</a>` : ""}${sectionAppareilsAssociesPoste ? '<button class="popup-bouton-itineraire" id="popup-voir-appareils-associes" type="button">💡 Afficher les appareils</button>' : ""}</div></section>`
+    : "";
   const libelleRetourPoste = estVueAppareilsSeule ? determinerLibelleRetourPosteDepuisAppareil(featureAppareils) : "Consulter la fiche du poste";
   const sectionRetourPoste = coordonneesRetourPosteDepuisAppareil
     ? `<section class="popup-section popup-section-localiser"><div class="popup-itineraires popup-itineraires-localiser"><button class="popup-bouton-itineraire popup-bouton-localiser" id="popup-retour-poste-appareil" type="button" data-lng="${coordonneesRetourPosteDepuisAppareil[0]}" data-lat="${coordonneesRetourPosteDepuisAppareil[1]}">📄 ${echapperHtml(libelleRetourPoste)}</button></div></section>`
     : "";
   const sectionLocaliser = `<section class="popup-section popup-section-localiser"><div class="popup-itineraires popup-itineraires-localiser"><button class="popup-bouton-itineraire popup-bouton-localiser" id="popup-localiser-carte" type="button" data-lng="${longitude}" data-lat="${latitude}">📍 Localiser sur la carte</button></div></section>`;
-  const contenuFiche = `<div class="popup-carte">${sections.join("")}${sectionRssAssocieDepuisAcces}${sectionItineraire}${sectionCodes}${sectionLocaliser}${sectionRetourPoste}</div>`;
+  const contenuFiche = `<div class="popup-carte">${sections.join("")}${sectionRssAssocieDepuisAcces}${sectionItineraire}${sectionActionsPoste}${sectionCodes}${sectionLocaliser}${sectionRetourPoste}</div>`;
 
   let contenuVueAppareils = "";
   if (sectionAppareilsAssociesPoste) {

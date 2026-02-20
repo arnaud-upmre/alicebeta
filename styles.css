@@ -1309,6 +1309,15 @@ body {
   text-align: center;
 }
 
+.popup-poste-entete-principal {
+  margin: 0 0 8px;
+  font-size: 1rem;
+  line-height: 1.3;
+  font-weight: 700;
+  color: var(--ui-text-primary);
+  text-align: center;
+}
+
 .popup-poste-pills {
   display: flex;
   justify-content: center;
@@ -1470,6 +1479,10 @@ body {
 }
 
 .popup-itineraires-rss {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.popup-itineraires-poste-actions {
   grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
@@ -1901,6 +1914,10 @@ body {
   .popup-poste-ligne,
   .popup-poste-appareils-ligne {
     font-size: 0.84rem;
+  }
+
+  .popup-poste-entete-principal {
+    font-size: 1rem;
   }
 
   .popup-bouton-itineraire {
