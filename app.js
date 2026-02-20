@@ -2484,6 +2484,30 @@ function construireLignePkEtLigne(poste) {
   return elements.join(" ");
 }
 
+function construireLignePkEtLigneHtml(poste) {
+  const pk = champCompletOuVide(poste?.pk);
+  const numeroLigne = poste?.numero_ligne !== "" && poste?.numero_ligne !== null && poste?.numero_ligne !== undefined
+    ? String(poste.numero_ligne).trim()
+    : "";
+  const lignes = champCompletOuVide(poste?.lignes);
+
+  const elements = [];
+  if (pk) {
+    elements.push(`<strong>PK ${echapperHtml(pk)}</strong>`);
+  }
+  if (numeroLigne || lignes) {
+    const partieLigne = [
+      numeroLigne ? `sur la ligne <strong>n°${echapperHtml(numeroLigne)}</strong>` : "",
+      lignes ? echapperHtml(lignes) : ""
+    ]
+      .filter(Boolean)
+      .join(" – ");
+    elements.push(partieLigne);
+  }
+
+  return elements.join(" ");
+}
+
 function construireDetailsPoste(poste) {
   const details = [];
   const lignePk = construireLignePkEtLigne(poste);
@@ -2597,11 +2621,11 @@ function construireSectionRssPoste(poste) {
 }
 
 function construireSectionPkPoste(poste) {
-  const lignePk = construireLignePkEtLigne(poste);
-  if (!lignePk) {
+  const lignePkHtml = construireLignePkEtLigneHtml(poste);
+  if (!lignePkHtml) {
     return "";
   }
-  return `<section class="popup-section"><p class="popup-poste-ligne">🚆 ${echapperHtml(lignePk)}</p></section>`;
+  return `<section class="popup-section"><p class="popup-poste-ligne">🚆 ${lignePkHtml}</p></section>`;
 }
 
 function construireSectionInformationsPoste(poste) {
@@ -2752,16 +2776,16 @@ function construireSectionPostes(feature) {
     const lignes = postesListe
       .map((p) => {
         const titre = construireTitrePoste(p) || "Poste inconnu";
-        const infoLigne = construireLignePkEtLigne(p);
+        const infoLigneHtml = construireLignePkEtLigneHtml(p);
         const rss = champCompletOuVide(p.rss);
         const codesTelecommande = extraireCodesTelecommande(p.description_telecommande);
         const pillsTelecommande = codesTelecommande.length
-          ? `<div class="popup-poste-pills">${codesTelecommande
-              .map((code) => `<span class="popup-poste-pill">${echapperHtml(code)}</span>`)
+          ? `<div class="popup-appareils-multi-telecommande">${codesTelecommande
+              .map((code) => `<span class="popup-tag-hp popup-tag-telecommande">${echapperHtml(code)}</span>`)
               .join("")}</div>`
           : "";
         const classeHors = p.hors_patrimoine ? "popup-item-hors" : "";
-        return `<li class="${classeHors}"><span class="popup-acces-ligne">${echapperHtml(titre)}</span>${pillsTelecommande}${infoLigne ? `<br/><span class="popup-poste-details">${echapperHtml(infoLigne)}</span>` : ""}${rss ? `<br/><span class="popup-poste-details">RSS: ${echapperHtml(rss)}</span>` : ""}</li>`;
+        return `<li class="${classeHors}"><span class="popup-acces-ligne">${echapperHtml(titre)}</span>${pillsTelecommande}${infoLigneHtml ? `<br/><span class="popup-poste-details">${infoLigneHtml}</span>` : ""}${rss ? `<br/><span class="popup-poste-details">RSS: ${echapperHtml(rss)}</span>` : ""}</li>`;
       })
       .join("");
     return `<section class="popup-section"><div class="popup-pill-ligne"><span class="popup-badge popup-badge-postes">${echapperHtml(String(propr.postes_count))} postes</span></div><ul>${lignes}</ul></section>`;
@@ -2772,8 +2796,8 @@ function construireSectionPostes(feature) {
   const classeHors = poste.hors_patrimoine ? " popup-item-hors" : "";
   const codesTelecommande = extraireCodesTelecommande(poste.description_telecommande);
   const pillsTelecommande = codesTelecommande.length
-    ? `<div class="popup-poste-pills">${codesTelecommande
-        .map((code) => `<span class="popup-poste-pill">${echapperHtml(code)}</span>`)
+    ? `<div class="popup-appareils-multi-telecommande">${codesTelecommande
+        .map((code) => `<span class="popup-tag-hp popup-tag-telecommande">${echapperHtml(code)}</span>`)
         .join("")}</div>`
     : "";
   const sectionRss = construireSectionRssPoste(poste);
@@ -3266,15 +3290,18 @@ function construirePopupDepuisFeatures(longitude, latitude, featurePostes, featu
   }
   const estVueAppareilsSeule = Boolean(featureAppareils && !featurePostes);
 
-  const sectionCodes = featurePostes
-    ? construireSectionBoutonCodesPostes(featurePostes)
-    : featureAcces
-      ? construireSectionBoutonCodes(featureAcces)
-      : "";
+  const sectionCodes = (() => {
+    if (featurePostes) {
+      return construireSectionBoutonCodesPostes(featurePostes);
+    }
+
+    if (featureAcces) {
+      return construireSectionBoutonCodes(featureAcces);
+    }
+    return "";
+  })();
   const sectionItineraire = coordonneesNavigation
-    ? estVueAppareilsSeule
-      ? `<section class="popup-section popup-section-itineraires"><div class="popup-section-titre popup-section-titre-gauche"><span class="popup-badge popup-badge-itineraire">Créer un itineraire</span></div>${construireLiensItineraires(coordonneesNavigation[0], coordonneesNavigation[1])}</section>`
-      : `<section class="popup-section popup-section-itineraires"><div class="popup-section-titre"><span class="popup-badge popup-badge-itineraire">Itineraire</span></div>${construireLiensItineraires(coordonneesNavigation[0], coordonneesNavigation[1])}</section>`
+    ? `<section class="popup-section popup-section-itineraires"><div class="popup-section-titre popup-section-titre-gauche"><span class="popup-badge popup-badge-itineraire">Créer un itineraire</span></div>${construireLiensItineraires(coordonneesNavigation[0], coordonneesNavigation[1])}</section>`
     : "";
   const lienImajnet = featurePostes ? construireLienImajnet(longitude, latitude) : "";
   const nombreActionsPoste = Number(Boolean(lienImajnet)) + Number(Boolean(sectionAppareilsAssociesPoste));
