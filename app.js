@@ -2168,11 +2168,13 @@ function trouverFeatureAccesDepuisPostes(featurePostes) {
   }
 
   const clesCorrespondance = new Set(postesListe.map((poste) => construireCleCorrespondance(poste)).filter(Boolean));
+  const clesNomTypeSat = new Set(postesListe.map((poste) => construireCleNomTypeSat(poste)).filter(Boolean));
   const clesNomType = new Set(postesListe.map((poste) => construireCleNomType(poste)).filter(Boolean));
-  if (!clesCorrespondance.size && !clesNomType.size) {
+  if (!clesCorrespondance.size && !clesNomTypeSat.size && !clesNomType.size) {
     return null;
   }
 
+  let fallbackNomTypeSat = null;
   let fallbackNomType = null;
   for (const featureAcces of donneesAcces.features) {
     const accesListe = extraireListeDepuisFeature(featureAcces, "acces_liste_json");
@@ -2185,6 +2187,13 @@ function trouverFeatureAccesDepuisPostes(featurePostes) {
       return featureAcces;
     }
 
+    if (!fallbackNomTypeSat) {
+      const matchNomTypeSat = accesListe.some((acces) => clesNomTypeSat.has(construireCleNomTypeSat(acces)));
+      if (matchNomTypeSat) {
+        fallbackNomTypeSat = featureAcces;
+      }
+    }
+
     if (!fallbackNomType) {
       const matchNomType = accesListe.some((acces) => clesNomType.has(construireCleNomType(acces)));
       if (matchNomType) {
@@ -2193,7 +2202,7 @@ function trouverFeatureAccesDepuisPostes(featurePostes) {
     }
   }
 
-  return fallbackNomType;
+  return fallbackNomTypeSat || fallbackNomType;
 }
 
 function trouverCoordonneesAccesDepuisPostes(featurePostes) {
@@ -2220,11 +2229,13 @@ function trouverPosteAssocieDepuisAcces(featureAcces) {
   }
 
   const clesCorrespondance = new Set(accesListe.map((acces) => construireCleCorrespondance(acces)).filter(Boolean));
+  const clesNomTypeSat = new Set(accesListe.map((acces) => construireCleNomTypeSat(acces)).filter(Boolean));
   const clesNomType = new Set(accesListe.map((acces) => construireCleNomType(acces)).filter(Boolean));
-  if (!clesCorrespondance.size && !clesNomType.size) {
+  if (!clesCorrespondance.size && !clesNomTypeSat.size && !clesNomType.size) {
     return null;
   }
 
+  let fallbackNomTypeSat = null;
   let fallbackNomType = null;
   for (const featurePostes of donneesPostes.features) {
     const postesListe = extraireListeDepuisFeature(featurePostes, "postes_liste_json");
@@ -2238,6 +2249,14 @@ function trouverPosteAssocieDepuisAcces(featureAcces) {
       return posteAvecRss || matchesCorrespondance[0];
     }
 
+    if (!fallbackNomTypeSat) {
+      const matchesNomTypeSat = postesListe.filter((poste) => clesNomTypeSat.has(construireCleNomTypeSat(poste)));
+      if (matchesNomTypeSat.length) {
+        const posteAvecRss = matchesNomTypeSat.find((poste) => Boolean(champCompletOuVide(poste?.rss)));
+        fallbackNomTypeSat = posteAvecRss || matchesNomTypeSat[0];
+      }
+    }
+
     if (!fallbackNomType) {
       const matchesNomType = postesListe.filter((poste) => clesNomType.has(construireCleNomType(poste)));
       if (matchesNomType.length) {
@@ -2247,7 +2266,7 @@ function trouverPosteAssocieDepuisAcces(featureAcces) {
     }
   }
 
-  return fallbackNomType;
+  return fallbackNomTypeSat || fallbackNomType;
 }
 
 function construireSectionRssAssocieDepuisAcces(featureAcces) {
