@@ -2006,6 +2006,12 @@ function construireSectionAppareils(feature, options = {}) {
 
   if (Number(propr.appareils_count) > 1) {
     const contexteLieu = construireContexteNomTypeSat(appareilsListe[0] || {});
+    const codesTelecommandeMulti = extraireCodesTelecommande(options?.posteAssocie?.description_telecommande);
+    const pillsTelecommandeMulti = codesTelecommandeMulti.length
+      ? `<div class="popup-appareils-multi-telecommande">${codesTelecommandeMulti
+          .map((code) => `<span class="popup-tag-hp popup-tag-telecommande">${echapperHtml(code)}</span>`)
+          .join("")}</div>`
+      : "";
     const sectionsAppareils = appareilsListe
       .map((a) => {
         const couleur = a.couleur_appareil || "#111111";
@@ -2015,7 +2021,7 @@ function construireSectionAppareils(feature, options = {}) {
         return `<section class="popup-appareils-multi-item"><p class="popup-appareils-multi-code"><span class="popup-point-couleur" style="background:${echapperHtml(couleur)}"></span>${echapperHtml(libelleAppareil)}${tagHp}</p>${descriptionHtml ? `<p class="popup-appareils-multi-description">${descriptionHtml}</p>` : ""}</section>`;
       })
       .join("");
-    return `<section class="popup-section"><div class="popup-pill-ligne"><span class="popup-badge popup-badge-itineraire">${echapperHtml(String(propr.appareils_count))} appareils sur le meme support</span></div>${contexteLieu ? `<p class="popup-appareils-multi-lieu">📍 ${echapperHtml(contexteLieu)}</p>` : ""}${sectionsAppareils}</section>`;
+    return `<section class="popup-section"><div class="popup-pill-ligne"><span class="popup-badge popup-badge-itineraire">${echapperHtml(String(propr.appareils_count))} appareils sur le meme support</span></div>${contexteLieu ? `<p class="popup-appareils-multi-lieu">📍 ${echapperHtml(contexteLieu)}</p>` : ""}${pillsTelecommandeMulti}${sectionsAppareils}</section>`;
   }
 
   const appareil = appareilsListe[0] || {};
