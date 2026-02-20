@@ -1973,9 +1973,9 @@ function determinerLibelleRetourPosteDepuisAppareil(featureAppareils) {
   const appareilsListe = extraireListeDepuisFeature(featureAppareils, "appareils_liste_json");
   const sat = champCompletOuVide(appareilsListe[0]?.SAT);
   if (sat) {
-    return "Consulter la fiche de l'accès voiture";
+    return "Consulter la fiche du SAT";
   }
-  return "Consulter la fiche de l'accès voiture";
+  return "Consulter la fiche du poste";
 }
 
 function construireLienImajnet(longitude, latitude) {
@@ -2867,6 +2867,7 @@ function attacherActionsPopupInterne() {
   const boutonRetourPosteDepuisAppareil = racinePopup.querySelector("#popup-retour-poste-appareil");
   if (boutonRetourPosteDepuisAppareil) {
     boutonRetourPosteDepuisAppareil.addEventListener("click", async () => {
+      const typeCible = String(boutonRetourPosteDepuisAppareil.getAttribute("data-target-type") || "postes").trim() || "postes";
       const longitude = Number(boutonRetourPosteDepuisAppareil.getAttribute("data-lng"));
       const latitude = Number(boutonRetourPosteDepuisAppareil.getAttribute("data-lat"));
       if (!Number.isFinite(longitude) || !Number.isFinite(latitude)) {
@@ -2874,11 +2875,11 @@ function attacherActionsPopupInterne() {
       }
 
       try {
-        await activerFiltrePourType("postes");
+        await activerFiltrePourType(typeCible);
         appliquerCouchesDonnees();
         remonterCouchesDonnees();
       } catch (erreur) {
-        console.error("Impossible d'activer la couche postes", erreur);
+        console.error(`Impossible d'activer la couche ${typeCible}`, erreur);
       }
 
       let popupOuverte = false;
@@ -2887,7 +2888,7 @@ function attacherActionsPopupInterne() {
           return;
         }
         popupOuverte = true;
-        ouvrirPopupDepuisCoordonneesPourType("postes", longitude, latitude, { fallbackGenerique: false });
+        ouvrirPopupDepuisCoordonneesPourType(typeCible, longitude, latitude, { fallbackGenerique: false });
       };
       naviguerVersCoordonneesPuisOuvrirPopup(longitude, latitude, ouvrirPopup, {
         zoomMin: 14.8,
@@ -3234,6 +3235,7 @@ function construirePopupDepuisFeatures(longitude, latitude, featurePostes, featu
   let coordonneesNavigation = null;
   let sectionAppareilsAssociesPoste = "";
   let coordonneesRetourPosteDepuisAppareil = null;
+  let coordonneesRetourAccesDepuisPoste = null;
   let posteAssocieDepuisAppareil = null;
   let sectionRssAssocieDepuisAcces = "";
 
@@ -3288,6 +3290,9 @@ function construirePopupDepuisFeatures(longitude, latitude, featurePostes, featu
   if (featureAppareils && !featurePostes) {
     coordonneesRetourPosteDepuisAppareil = trouverCoordonneesPosteDepuisAppareils(featureAppareils);
   }
+  if (featurePostes) {
+    coordonneesRetourAccesDepuisPoste = trouverCoordonneesAccesDepuisPostes(featurePostes);
+  }
   const estVueAppareilsSeule = Boolean(featureAppareils && !featurePostes);
 
   const sectionCodes = (() => {
@@ -3310,11 +3315,13 @@ function construirePopupDepuisFeatures(longitude, latitude, featurePostes, featu
   const sectionActionsPoste = featurePostes && (lienImajnet || sectionAppareilsAssociesPoste)
     ? `<section class="popup-section popup-section-itineraires"><div class="popup-section-titre popup-section-titre-gauche"><span class="popup-badge popup-badge-itineraire">${echapperHtml(libelleSectionActionsPoste)}</span></div><div class="popup-itineraires ${classeActionsPoste}">${lienImajnet ? `<a class="popup-bouton-itineraire" href="${echapperHtml(lienImajnet)}" target="_blank" rel="noopener noreferrer">🛤️ Imajnet</a>` : ""}${sectionAppareilsAssociesPoste ? '<button class="popup-bouton-itineraire" id="popup-voir-appareils-associes" type="button">💡 Afficher les appareils</button>' : ""}</div></section>`
     : "";
-  const libelleRetourPoste = estVueAppareilsSeule
+  const coordonneesBoutonFicheAssociee = estVueAppareilsSeule ? coordonneesRetourPosteDepuisAppareil : coordonneesRetourAccesDepuisPoste;
+  const typeBoutonFicheAssociee = estVueAppareilsSeule ? "postes" : "acces";
+  const libelleBoutonFicheAssociee = estVueAppareilsSeule
     ? determinerLibelleRetourPosteDepuisAppareil(featureAppareils)
-    : "Consulter la fiche de l'accès voiture";
-  const sectionRetourPoste = coordonneesRetourPosteDepuisAppareil
-    ? `<section class="popup-section popup-section-localiser"><div class="popup-itineraires popup-itineraires-localiser"><button class="popup-bouton-itineraire popup-bouton-localiser" id="popup-retour-poste-appareil" type="button" data-lng="${coordonneesRetourPosteDepuisAppareil[0]}" data-lat="${coordonneesRetourPosteDepuisAppareil[1]}">📄 ${echapperHtml(libelleRetourPoste)}</button></div></section>`
+    : "Consulter la fiche de l'accès routier";
+  const sectionRetourPoste = coordonneesBoutonFicheAssociee
+    ? `<section class="popup-section popup-section-localiser"><div class="popup-itineraires popup-itineraires-localiser"><button class="popup-bouton-itineraire popup-bouton-localiser" id="popup-retour-poste-appareil" type="button" data-target-type="${echapperHtml(typeBoutonFicheAssociee)}" data-lng="${coordonneesBoutonFicheAssociee[0]}" data-lat="${coordonneesBoutonFicheAssociee[1]}">📄 ${echapperHtml(libelleBoutonFicheAssociee)}</button></div></section>`
     : "";
   const sectionLocaliser = `<section class="popup-section popup-section-localiser"><div class="popup-itineraires popup-itineraires-localiser"><button class="popup-bouton-itineraire popup-bouton-localiser" id="popup-localiser-carte" type="button" data-lng="${longitude}" data-lat="${latitude}">📍 Localiser sur la carte</button></div></section>`;
   const contenuFiche = `<div class="popup-carte">${sections.join("")}${sectionRssAssocieDepuisAcces}${sectionItineraire}${sectionActionsPoste}${sectionCodes}${sectionLocaliser}${sectionRetourPoste}</div>`;
