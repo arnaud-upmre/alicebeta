@@ -2015,7 +2015,7 @@ function construireSectionAppareils(feature, options = {}) {
         return `<section class="popup-appareils-multi-item"><p class="popup-appareils-multi-code"><span class="popup-point-couleur" style="background:${echapperHtml(couleur)}"></span>${echapperHtml(libelleAppareil)}${tagHp}</p>${descriptionHtml ? `<p class="popup-appareils-multi-description">${descriptionHtml}</p>` : ""}</section>`;
       })
       .join("");
-    return `<section class="popup-section"><div class="popup-pill-ligne"><span class="popup-badge popup-badge-itineraire popup-badge-appareils-multi">${echapperHtml(String(propr.appareils_count))} appareils sur le meme support</span></div>${contexteLieu ? `<p class="popup-appareils-multi-lieu">📍 ${echapperHtml(contexteLieu)}</p>` : ""}${sectionsAppareils}</section>`;
+    return `<section class="popup-section"><div class="popup-pill-ligne"><span class="popup-badge popup-badge-itineraire">${echapperHtml(String(propr.appareils_count))} appareils sur le meme support</span></div>${contexteLieu ? `<p class="popup-appareils-multi-lieu">📍 ${echapperHtml(contexteLieu)}</p>` : ""}${sectionsAppareils}</section>`;
   }
 
   const appareil = appareilsListe[0] || {};

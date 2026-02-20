@@ -1157,13 +1157,6 @@ body {
   box-shadow: 0 3px 8px rgba(15, 23, 42, 0.16);
 }
 
-.popup-badge-appareils-multi {
-  font-size: 0.68rem;
-  font-weight: 700;
-  line-height: 1;
-  padding: 1px 6px;
-}
-
 .popup-appareils-multi-lieu {
   margin: 0 0 10px;
   font-size: 0.9rem;
