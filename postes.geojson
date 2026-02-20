@@ -1257,54 +1257,6 @@
       "properties": {
         "nom": "Coulogne",
         "type": "SP",
-        "SAT": "",
-        "acces": "SM1",
-        "description": "",
-        "description_telecommande": "PAS900",
-        "rss": "A",
-        "contact": "",
-        "lignes": "LILLE à LES FONTINETTES",
-        "numero_ligne": 295000,
-        "pk": "",
-        "code": false
-      },
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          1.85815,
-          50.93473
-        ]
-      }
-    },
-    {
-      "type": "Feature",
-      "properties": {
-        "nom": "Coulogne",
-        "type": "SP",
-        "SAT": "",
-        "acces": "SM2",
-        "description": "",
-        "description_telecommande": "PAS900",
-        "rss": "A",
-        "contact": "",
-        "lignes": "LILLE à LES FONTINETTES",
-        "numero_ligne": 295000,
-        "pk": "",
-        "code": false
-      },
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          1.85815,
-          50.93473
-        ]
-      }
-    },
-    {
-      "type": "Feature",
-      "properties": {
-        "nom": "Coulogne",
-        "type": "SP",
         "SAT": "SAT1",
         "acces": "",
         "description": "Alim du SAT1 dans le poste",
@@ -2946,7 +2898,10 @@
       },
       "geometry": {
         "type": "Point",
-        "coordinates": []
+        "coordinates": [
+          3.07783,
+          50.66074
+        ]
       }
     },
     {
@@ -3447,7 +3402,10 @@
       },
       "geometry": {
         "type": "Point",
-        "coordinates": []
+        "coordinates": [
+          3.083174228333746,
+          50.63200029228037
+        ]
       }
     },
     {
@@ -3592,30 +3550,6 @@
         "coordinates": [
           3.09531,
           50.64566
-        ]
-      }
-    },
-    {
-      "type": "Feature",
-      "properties": {
-        "nom": "Lion dor",
-        "type": "SSP",
-        "SAT": "",
-        "acces": "F IL3",
-        "description": "",
-        "description_telecommande": "ACS25",
-        "rss": "A",
-        "contact": "",
-        "lignes": "FIVES à MOUSCRON",
-        "numero_ligne": 278000,
-        "pk": "",
-        "code": false
-      },
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          3.10427,
-          50.65303
         ]
       }
     },
@@ -4104,32 +4038,8 @@
         "nom": "Moulin",
         "type": "S",
         "SAT": "SAT5",
-        "acces": "n°1",
+        "acces": "",
         "description": "",
-        "description_telecommande": "PAS900",
-        "rss": "A",
-        "contact": "",
-        "lignes": "FRETIN à FRÉTHUN (LGV)",
-        "numero_ligne": 216000,
-        "pk": "112.4",
-        "code": false
-      },
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          1.8133972,
-          50.8991214
-        ]
-      }
-    },
-    {
-      "type": "Feature",
-      "properties": {
-        "nom": "Moulin",
-        "type": "S",
-        "SAT": "SAT5",
-        "acces": "n°2",
-        "description": "  ",
         "description_telecommande": "PAS900",
         "rss": "A",
         "contact": "",
@@ -5162,8 +5072,8 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          1.8101758,
-          50.9137055
+          1.8116,
+          50.91441
         ]
       }
     },
@@ -7538,21 +7448,6 @@
           2.77236,
           50.2806
         ]
-      }
-    },
-    {
-      "type": "Feature",
-      "properties": {
-        "nom": "Formation Arras",
-        "description": "Accès salle de formation",
-        "contact": "",
-        "secure": "https://sncf.sharepoint.com/:w:/s/NonoMapsGrpO3652/EbqmDvvMwWNPu59i6Qxcn08BLedLJZswUxroIOMLKS4j5w?e=3EZur7",
-        "special": true,
-        "code": false
-      },
-      "geometry": {
-        "type": "Point",
-        "coordinates": []
       }
     },
     {

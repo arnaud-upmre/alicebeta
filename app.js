@@ -2086,7 +2086,7 @@ function construireSectionAcces(feature) {
 }
 
 function construireTitrePoste(poste) {
-  return construireTitreNomTypeSatAcces(poste);
+  return construireTitreNomTypeSat(poste);
 }
 
 function extraireCodesTelecommande(valeur) {
@@ -2268,25 +2268,61 @@ function trouverCoordonneesAccesDepuisAppareils(featureAppareils) {
     return null;
   }
 
-  const clesAppareils = new Set(appareilsListe.map((appareil) => construireCleCorrespondance(appareil)).filter(Boolean));
-  if (!clesAppareils.size) {
-    return null;
-  }
+  const clesPrioritaires = new Set();
+  const clesSecours = new Set();
 
-  for (const featureAcces of donneesAcces.features) {
-    const accesListe = extraireListeDepuisFeature(featureAcces, "acces_liste_json");
-    const correspond = accesListe.some((acces) => clesAppareils.has(construireCleCorrespondance(acces)));
-    if (!correspond) {
+  for (const appareil of appareilsListe) {
+    const nom = normaliserTexteRecherche(champCompletOuVide(appareil?.nom));
+    const type = normaliserTexteRecherche(champCompletOuVide(appareil?.type));
+    const sat = normaliserTexteRecherche(champCompletOuVide(appareil?.SAT));
+    if (!nom && !type && !sat) {
       continue;
     }
 
+    const acces = normaliserTexteRecherche(champCompletOuVide(appareil?.acces));
+    const codeAppareil = normaliserTexteRecherche(champCompletOuVide(appareil?.appareil));
+
+    if (acces) {
+      clesPrioritaires.add([nom, type, sat, acces].join("|"));
+      continue;
+    }
+
+    if (codeAppareil) {
+      // Si le champ "acces" est vide côté appareil, on tente d'abord le code appareil (ex: I5429).
+      clesPrioritaires.add([nom, type, sat, codeAppareil].join("|"));
+      clesSecours.add([nom, type, sat, ""].join("|"));
+      continue;
+    }
+
+    clesPrioritaires.add([nom, type, sat, ""].join("|"));
+  }
+
+  if (!clesPrioritaires.size && !clesSecours.size) {
+    return null;
+  }
+
+  let coordonneesSecours = null;
+  for (const featureAcces of donneesAcces.features) {
+    const accesListe = extraireListeDepuisFeature(featureAcces, "acces_liste_json");
     const [longitude, latitude] = featureAcces.geometry?.coordinates || [];
-    if (Number.isFinite(longitude) && Number.isFinite(latitude)) {
+    if (!Number.isFinite(longitude) || !Number.isFinite(latitude)) {
+      continue;
+    }
+
+    const correspondPrioritaire = accesListe.some((acces) => clesPrioritaires.has(construireCleCorrespondance(acces)));
+    if (correspondPrioritaire) {
       return [longitude, latitude];
+    }
+
+    if (!coordonneesSecours) {
+      const correspondSecours = accesListe.some((acces) => clesSecours.has(construireCleCorrespondance(acces)));
+      if (correspondSecours) {
+        coordonneesSecours = [longitude, latitude];
+      }
     }
   }
 
-  return null;
+  return coordonneesSecours;
 }
 
 function trouverCoordonneesPosteDepuisAppareils(featureAppareils) {

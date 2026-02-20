@@ -1869,44 +1869,6 @@
       "properties": {
         "nom": "Coulogne",
         "type": "SP",
-        "SAT": "",
-        "acces": "SM1",
-        "portail": "",
-        "hors_patrimoine": false,
-        "code": false
-      },
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          1.86056,
-          50.9333
-        ]
-      }
-    },
-    {
-      "type": "Feature",
-      "properties": {
-        "nom": "Coulogne",
-        "type": "SP",
-        "SAT": "",
-        "acces": "SM2",
-        "portail": "",
-        "hors_patrimoine": false,
-        "code": false
-      },
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          1.86056,
-          50.9333
-        ]
-      }
-    },
-    {
-      "type": "Feature",
-      "properties": {
-        "nom": "Coulogne",
-        "type": "SP",
         "SAT": "SAT1",
         "acces": "",
         "portail": "Clé 590",
@@ -2754,25 +2716,6 @@
         "coordinates": [
           2.89574,
           50.64574
-        ]
-      }
-    },
-    {
-      "type": "Feature",
-      "properties": {
-        "nom": "Formation Arras",
-        "type": "",
-        "SAT": "",
-        "acces": "",
-        "portail": "",
-        "hors_patrimoine": false,
-        "code": true
-      },
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          2.77413,
-          50.28375
         ]
       }
     },
@@ -4701,7 +4644,7 @@
         "nom": "Moulin",
         "type": "S",
         "SAT": "SAT5",
-        "acces": "n°1",
+        "acces": "V2",
         "portail": "",
         "hors_patrimoine": false,
         "code": false
@@ -4720,7 +4663,7 @@
         "nom": "Moulin",
         "type": "S",
         "SAT": "SAT5",
-        "acces": "n°2",
+        "acces": "V1",
         "portail": "",
         "hors_patrimoine": false,
         "code": false
