@@ -1193,6 +1193,54 @@ body {
   color: var(--ui-text-secondary);
 }
 
+.popup-appareil-titre {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 0;
+}
+
+.popup-point-couleur-titre-appareil {
+  width: 11px;
+  height: 11px;
+  margin-right: 2px;
+  transform: translateY(1px);
+}
+
+.popup-appareil-code {
+  font-size: 1.05rem;
+  line-height: 1.2;
+  font-weight: 800;
+  color: var(--ui-text-primary);
+}
+
+.popup-appareil-contexte {
+  font-size: 0.92rem;
+  line-height: 1.25;
+  font-weight: 600;
+  color: var(--ui-text-secondary);
+}
+
+.popup-appareil-infos {
+  margin-top: 8px;
+}
+
+.popup-appareil-infos-titre {
+  margin: 0 0 2px;
+  font-size: 0.8rem;
+  line-height: 1.25;
+  font-weight: 700;
+  color: var(--ui-text-primary);
+}
+
+.popup-appareil-infos-description {
+  margin: 0;
+  font-size: 0.78rem;
+  line-height: 1.3;
+  color: var(--ui-text-secondary);
+}
+
 .popup-poste-details {
   display: inline-block;
   margin-top: 3px;

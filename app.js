@@ -1955,6 +1955,21 @@ function construireTitreNomTypeSatAccesHtml(entree, options = {}) {
   return `${base} <span class="popup-acces-suffixe">(Accès : ${echapperHtml(acces)})</span>`;
 }
 
+function construireContexteNomTypeSat(entree) {
+  return [champCompletOuVide(entree?.nom), champCompletOuVide(entree?.type), champCompletOuVide(entree?.SAT)]
+    .filter(Boolean)
+    .join(SEPARATEUR_LIBELLE);
+}
+
+function determinerLibelleRetourPosteDepuisAppareil(featureAppareils) {
+  const appareilsListe = extraireListeDepuisFeature(featureAppareils, "appareils_liste_json");
+  const sat = champCompletOuVide(appareilsListe[0]?.SAT);
+  if (sat) {
+    return "Consulter la fiche du SAT";
+  }
+  return "Consulter la fiche du poste";
+}
+
 function construireLiensItineraires(longitude, latitude) {
   if (!Number.isFinite(longitude) || !Number.isFinite(latitude)) {
     return "";
@@ -2011,16 +2026,19 @@ function construireSectionAppareils(feature, options = {}) {
   }
 
   const appareil = appareilsListe[0] || {};
-  const titreHtml = construireTitreNomTypeSatAccesHtml(appareil);
   const couleur = appareil.couleur_appareil || "#111111";
   const tagHp = appareil.hors_patrimoine ? '<span class="popup-tag-hp">HP</span>' : "";
   const libelleAppareil = champCompletOuVide(appareil.appareil) || "Appareil inconnu";
+  const contexteAppareil = construireContexteNomTypeSat(appareil);
   const descriptionAppareil = champCompletOuVide(appareil.description);
-  const ligneTitre = options.masquerTitreLieu ? "" : `<p class="popup-acces-titre">${titreHtml}</p>`;
+  const ligneTitre = options.masquerTitreLieu
+    ? ""
+    : `<p class="popup-appareil-titre"><span class="popup-point-couleur popup-point-couleur-titre-appareil" style="background:${echapperHtml(couleur)}"></span><span class="popup-appareil-code">${echapperHtml(libelleAppareil)}</span>${contexteAppareil ? `<span class="popup-appareil-contexte">(${echapperHtml(contexteAppareil)})</span>` : ""}${tagHp}</p>`;
   const ligneDescription = descriptionAppareil
-    ? `<p class="popup-poste-details">${echapperHtml(descriptionAppareil)}</p>`
+    ? `<div class="popup-appareil-infos"><p class="popup-appareil-infos-titre">Information sur l'appareil :</p><p class="popup-appareil-infos-description">${echapperHtml(descriptionAppareil)}</p></div>`
     : "";
-  return `<section class="popup-section">${ligneTitre}<p><span class="popup-point-couleur" style="background:${echapperHtml(couleur)}"></span>${echapperHtml(libelleAppareil)}${tagHp}</p>${ligneDescription}</section>`;
+  const ligneCode = options.masquerTitreLieu ? `<p><span class="popup-point-couleur" style="background:${echapperHtml(couleur)}"></span>${echapperHtml(libelleAppareil)}${tagHp}</p>` : "";
+  return `<section class="popup-section">${ligneTitre}${ligneCode}${ligneDescription}</section>`;
 }
 
 function construireSectionAcces(feature) {
@@ -3188,6 +3206,7 @@ function construirePopupDepuisFeatures(longitude, latitude, featurePostes, featu
   if (featureAppareils && !featurePostes) {
     coordonneesRetourPosteDepuisAppareil = trouverCoordonneesPosteDepuisAppareils(featureAppareils);
   }
+  const estVueAppareilsSeule = Boolean(featureAppareils && !featurePostes);
 
   const sectionCodes = featurePostes
     ? construireSectionBoutonCodesPostes(featurePostes)
@@ -3195,13 +3214,16 @@ function construirePopupDepuisFeatures(longitude, latitude, featurePostes, featu
       ? construireSectionBoutonCodes(featureAcces)
       : "";
   const sectionItineraire = coordonneesNavigation
-    ? `<section class="popup-section popup-section-itineraires"><div class="popup-section-titre"><span class="popup-badge popup-badge-itineraire">Itineraire</span></div>${construireLiensItineraires(coordonneesNavigation[0], coordonneesNavigation[1])}</section>`
+    ? estVueAppareilsSeule
+      ? `<section class="popup-section popup-section-itineraires">${construireLiensItineraires(coordonneesNavigation[0], coordonneesNavigation[1])}</section>`
+      : `<section class="popup-section popup-section-itineraires"><div class="popup-section-titre"><span class="popup-badge popup-badge-itineraire">Itineraire</span></div>${construireLiensItineraires(coordonneesNavigation[0], coordonneesNavigation[1])}</section>`
     : "";
+  const libelleRetourPoste = estVueAppareilsSeule ? determinerLibelleRetourPosteDepuisAppareil(featureAppareils) : "Consulter la fiche du poste";
   const sectionRetourPoste = coordonneesRetourPosteDepuisAppareil
-    ? `<section class="popup-section popup-section-itineraires"><div class="popup-section-titre"><span class="popup-badge popup-badge-itineraire">Poste</span></div><div class="popup-itineraires"><button class="popup-bouton-itineraire" id="popup-retour-poste-appareil" type="button" data-lng="${coordonneesRetourPosteDepuisAppareil[0]}" data-lat="${coordonneesRetourPosteDepuisAppareil[1]}">↩ Retour poste</button></div></section>`
+    ? `<section class="popup-section popup-section-localiser"><div class="popup-itineraires popup-itineraires-localiser"><button class="popup-bouton-itineraire popup-bouton-localiser" id="popup-retour-poste-appareil" type="button" data-lng="${coordonneesRetourPosteDepuisAppareil[0]}" data-lat="${coordonneesRetourPosteDepuisAppareil[1]}">${echapperHtml(libelleRetourPoste)}</button></div></section>`
     : "";
   const sectionLocaliser = `<section class="popup-section popup-section-localiser"><div class="popup-itineraires popup-itineraires-localiser"><button class="popup-bouton-itineraire popup-bouton-localiser" id="popup-localiser-carte" type="button" data-lng="${longitude}" data-lat="${latitude}">📍 Localiser sur la carte</button></div></section>`;
-  const contenuFiche = `<div class="popup-carte">${sections.join("")}${sectionRssAssocieDepuisAcces}${sectionItineraire}${sectionRetourPoste}${sectionCodes}${sectionLocaliser}</div>`;
+  const contenuFiche = `<div class="popup-carte">${sections.join("")}${sectionRssAssocieDepuisAcces}${sectionItineraire}${sectionCodes}${sectionLocaliser}${sectionRetourPoste}</div>`;
 
   let contenuVueAppareils = "";
   if (sectionAppareilsAssociesPoste) {
