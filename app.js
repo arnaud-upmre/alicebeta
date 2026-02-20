@@ -1961,6 +1961,14 @@ function construireContexteNomTypeSat(entree) {
     .join(SEPARATEUR_LIBELLE);
 }
 
+function convertirDescriptionAppareilEnHtml(description) {
+  const texte = String(description || "");
+  if (!texte.trim()) {
+    return "";
+  }
+  return echapperHtml(texte).replace(/&lt;br\s*\/?&gt;/gi, "<br/>");
+}
+
 function determinerLibelleRetourPosteDepuisAppareil(featureAppareils) {
   const appareilsListe = extraireListeDepuisFeature(featureAppareils, "appareils_liste_json");
   const sat = champCompletOuVide(appareilsListe[0]?.SAT);
@@ -1997,32 +2005,16 @@ function construireSectionAppareils(feature, options = {}) {
   }
 
   if (Number(propr.appareils_count) > 1) {
-    const titresPostes = appareilsListe.map((a) => construireTitreNomTypeSatAcces(a)).filter(Boolean);
-    const titresUniques = [...new Set(titresPostes)];
-    const titrePosteCommun = titresUniques.length === 1 ? titresUniques[0] : "";
-
-    const lignes = appareilsListe
+    const contexteLieu = construireContexteNomTypeSat(appareilsListe[0] || {});
+    const sectionsAppareils = appareilsListe
       .map((a) => {
-        const couleur = a.couleur_appareil || "#111111";
         const tagHp = a.hors_patrimoine ? '<span class="popup-tag-hp">HP</span>' : "";
         const libelleAppareil = champCompletOuVide(a.appareil) || "Appareil inconnu";
-        const descriptionAppareil = champCompletOuVide(a.description);
-        const titrePosteHtml = construireTitreNomTypeSatAccesHtml(a);
-        const detailsPoste = !titrePosteCommun && titrePosteHtml
-          ? `<br/><span class="popup-poste-details">${titrePosteHtml}</span>`
-          : "";
-        const detailsDescription = descriptionAppareil
-          ? `<br/><span class="popup-poste-details">${echapperHtml(descriptionAppareil)}</span>`
-          : "";
-        return `<li><span class="popup-point-couleur" style="background:${echapperHtml(couleur)}"></span>${echapperHtml(libelleAppareil)}${tagHp}${detailsPoste}${detailsDescription}</li>`;
+        const descriptionHtml = convertirDescriptionAppareilEnHtml(a.description);
+        return `<section class="popup-appareils-multi-item"><p class="popup-appareils-multi-code">${echapperHtml(libelleAppareil)}${tagHp}</p>${descriptionHtml ? `<p class="popup-appareils-multi-description">${descriptionHtml}</p>` : ""}</section>`;
       })
       .join("");
-
-    const lignePosteCommune = titrePosteCommun
-      ? `<p class="popup-acces-titre popup-poste-details-centre">${construireTitreNomTypeSatAccesHtml(appareilsListe[0] || {})}</p>`
-      : "";
-
-    return `<section class="popup-section">${lignePosteCommune}<div class="popup-pill-ligne"><span class="popup-badge popup-badge-appareils">${echapperHtml(String(propr.appareils_count))} appareils</span></div><div class="popup-sous-titre-centre">sur le meme support</div><ul>${lignes}</ul></section>`;
+    return `<section class="popup-section"><div class="popup-pill-ligne"><span class="popup-badge popup-badge-itineraire popup-badge-appareils-multi">${echapperHtml(String(propr.appareils_count))} appareils sur le meme support</span></div>${contexteLieu ? `<p class="popup-appareils-multi-lieu">📍 ${echapperHtml(contexteLieu)}</p>` : ""}${sectionsAppareils}</section>`;
   }
 
   const appareil = appareilsListe[0] || {};
