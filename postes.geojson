@@ -689,30 +689,6 @@
       "properties": {
         "nom": "Boisleux",
         "type": "SSP",
-        "SAT": "SAT1",
-        "acces": "n°2",
-        "description": "",
-        "description_telecommande": "PAS900",
-        "rss": "C",
-        "contact": "",
-        "lignes": "PARIS-NORD à LILLE",
-        "numero_ligne": 272000,
-        "pk": "",
-        "code": false
-      },
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          2.7700311,
-          50.2129054
-        ]
-      }
-    },
-    {
-      "type": "Feature",
-      "properties": {
-        "nom": "Boisleux",
-        "type": "SSP",
         "SAT": "SAT2",
         "acces": "",
         "description": "",
@@ -1259,30 +1235,6 @@
         "type": "SP",
         "SAT": "SAT1",
         "acces": "",
-        "description": "Alim du SAT1 dans le poste",
-        "description_telecommande": "PAS900",
-        "rss": "A",
-        "contact": "",
-        "lignes": "LILLE à LES FONTINETTES",
-        "numero_ligne": 295000,
-        "pk": "",
-        "code": false
-      },
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          1.86169,
-          50.93227
-        ]
-      }
-    },
-    {
-      "type": "Feature",
-      "properties": {
-        "nom": "Coulogne",
-        "type": "SP",
-        "SAT": "SAT1",
-        "acces": "I5429",
         "description": "Alim du SAT1 dans le poste",
         "description_telecommande": "PAS900",
         "rss": "A",
@@ -1950,31 +1902,6 @@
       "properties": {
         "nom": "Fives",
         "type": "SSPA",
-        "SAT": "",
-        "acces": "S5064-358",
-        "description": "",
-        "description_telecommande": "PAS900",
-        "rss": "A",
-        "contact": "",
-        "secure": "https://sncf.sharepoint.com/:w:/r/sites/NonoMapsGrpO3652/Document/Fives.docx?d=wb5e6241634fe45fe8c9c9761c5491320&csf=1&web=1&e=OkSPum",
-        "lignes": "PARIS-NORD à LILLE",
-        "numero_ligne": 272000,
-        "pk": "",
-        "code": false
-      },
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          3.0908137,
-          50.6215949
-        ]
-      }
-    },
-    {
-      "type": "Feature",
-      "properties": {
-        "nom": "Fives",
-        "type": "SSPA",
         "SAT": "SAT1",
         "acces": "",
         "description": "",
@@ -2079,31 +2006,6 @@
         "description_telecommande": "PAS900",
         "rss": "A",
         "contact": "",
-        "lignes": "PARIS-NORD à LILLE",
-        "numero_ligne": 272000,
-        "pk": "",
-        "code": false
-      },
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          3.1017956,
-          50.6111406
-        ]
-      }
-    },
-    {
-      "type": "Feature",
-      "properties": {
-        "nom": "Fives",
-        "type": "SSPA",
-        "SAT": "SAT5",
-        "acces": "n°2",
-        "description": "Accès possible selon la végétation par GaroLille",
-        "description_telecommande": "PAS900",
-        "rss": "A",
-        "contact": "",
-        "secure": "https://sncf.sharepoint.com/:w:/r/sites/NonoMapsGrpO3652/Document/Fives.docx?d=wb5e6241634fe45fe8c9c9761c5491320&csf=1&web=1&e=OkSPum",
         "lignes": "PARIS-NORD à LILLE",
         "numero_ligne": 272000,
         "pk": "",
@@ -2407,30 +2309,6 @@
     {
       "type": "Feature",
       "properties": {
-        "nom": "Harponlieu",
-        "type": "L-A",
-        "SAT": "",
-        "acces": "I1037",
-        "description": "",
-        "description_telecommande": "ACS21",
-        "rss": "B",
-        "contact": "",
-        "lignes": "PARIS-NORD à LILLE",
-        "numero_ligne": 272000,
-        "pk": "228,600",
-        "code": false
-      },
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          3.01434,
-          50.45655
-        ]
-      }
-    },
-    {
-      "type": "Feature",
-      "properties": {
         "nom": "Haute Loge",
         "type": "SSP",
         "SAT": "",
@@ -2442,30 +2320,6 @@
         "lignes": "LILLE à Les FONTINETTES",
         "numero_ligne": 295000,
         "pk": "48,772",
-        "code": false
-      },
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          2.50539,
-          50.72991
-        ]
-      }
-    },
-    {
-      "type": "Feature",
-      "properties": {
-        "nom": "Haute Loge",
-        "type": "SSP",
-        "SAT": "",
-        "acces": "sectionneur",
-        "description": "",
-        "description_telecommande": "ACS25",
-        "rss": "A",
-        "contact": "",
-        "lignes": "LILLE à Les FONTINETTES",
-        "numero_ligne": 295000,
-        "pk": "",
         "code": false
       },
       "geometry": {
@@ -2704,52 +2558,6 @@
         "lignes": "FRETIN à FRÉTHUN (LGV)",
         "numero_ligne": 216000,
         "pk": "56,214",
-        "code": false
-      },
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          2.51244,
-          50.7661
-        ]
-      }
-    },
-    {
-      "type": "Feature",
-      "properties": {
-        "nom": "Hondeghem",
-        "type": "PRCI",
-        "SAT": "",
-        "acces": "I608",
-        "description": "",
-        "rss": "A",
-        "contact": "",
-        "lignes": "FRETIN à FRÉTHUN (LGV)",
-        "numero_ligne": 216000,
-        "pk": "",
-        "code": false
-      },
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          2.51244,
-          50.7661
-        ]
-      }
-    },
-    {
-      "type": "Feature",
-      "properties": {
-        "nom": "Hondeghem",
-        "type": "PRCI",
-        "SAT": "",
-        "acces": "I611",
-        "description": "",
-        "rss": "A",
-        "contact": "",
-        "lignes": "FRETIN à FRÉTHUN (LGV)",
-        "numero_ligne": 216000,
-        "pk": "",
         "code": false
       },
       "geometry": {
@@ -3005,52 +2813,6 @@
       "type": "Feature",
       "properties": {
         "nom": "Lambersart",
-        "type": "PRCI",
-        "SAT": "",
-        "acces": "I549",
-        "description": "",
-        "rss": "A",
-        "contact": "",
-        "lignes": "FRETIN à FRÉTHUN (LGV)",
-        "numero_ligne": 216000,
-        "pk": "",
-        "code": false
-      },
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          3.02475,
-          50.65928
-        ]
-      }
-    },
-    {
-      "type": "Feature",
-      "properties": {
-        "nom": "Lambersart",
-        "type": "PRCI",
-        "SAT": "",
-        "acces": "I553",
-        "description": "",
-        "rss": "A",
-        "contact": "",
-        "lignes": "FRETIN à FRÉTHUN (LGV)",
-        "numero_ligne": 216000,
-        "pk": "",
-        "code": false
-      },
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          3.02475,
-          50.65928
-        ]
-      }
-    },
-    {
-      "type": "Feature",
-      "properties": {
-        "nom": "Lambersart",
         "type": "SSP",
         "SAT": "",
         "acces": "",
@@ -3269,78 +3031,6 @@
       "properties": {
         "nom": "Lesquin",
         "type": "SP",
-        "SAT": "",
-        "acces": "n°2 - par la ferme",
-        "description": "  ",
-        "description_telecommande": "PAS900",
-        "rss": "B",
-        "contact": "",
-        "lignes": "FIVES à HIRSON",
-        "numero_ligne": 267000,
-        "pk": "4,930",
-        "code": false
-      },
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          3.1099532,
-          50.6011174
-        ]
-      }
-    },
-    {
-      "type": "Feature",
-      "properties": {
-        "nom": "Lesquin",
-        "type": "SP",
-        "SAT": "SAT1",
-        "acces": "I18",
-        "description": "",
-        "description_telecommande": "PAS900",
-        "rss": "B",
-        "contact": "",
-        "lignes": "FIVES à HIRSON",
-        "numero_ligne": 267000,
-        "pk": "",
-        "code": false
-      },
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          3.11737,
-          50.59149
-        ]
-      }
-    },
-    {
-      "type": "Feature",
-      "properties": {
-        "nom": "Lesquin",
-        "type": "SP",
-        "SAT": "SAT1",
-        "acces": "I14",
-        "description": "",
-        "description_telecommande": "PAS900",
-        "rss": "B",
-        "contact": "",
-        "lignes": "FIVES à HIRSON",
-        "numero_ligne": 267000,
-        "pk": "",
-        "code": false
-      },
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          3.11737,
-          50.59149
-        ]
-      }
-    },
-    {
-      "type": "Feature",
-      "properties": {
-        "nom": "Lesquin",
-        "type": "SP",
         "SAT": "SAT1",
         "acces": "",
         "description": "",
@@ -3422,30 +3112,6 @@
         "lignes": "PARIS-NORD à LILLE",
         "numero_ligne": 272000,
         "pk": "250,300",
-        "code": false
-      },
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          3.07812,
-          50.63474
-        ]
-      }
-    },
-    {
-      "type": "Feature",
-      "properties": {
-        "nom": "Lille Gare",
-        "type": "SSPA",
-        "SAT": "",
-        "acces": "S5082",
-        "description": "",
-        "description_telecommande": "ACS21",
-        "rss": "A",
-        "contact": "Agent E : 03 28 55 71 07",
-        "lignes": "PARIS-NORD à LILLE",
-        "numero_ligne": 272000,
-        "pk": "",
         "code": false
       },
       "geometry": {
@@ -3728,30 +3394,6 @@
         "type": "L-A",
         "SAT": "SAT1",
         "acces": "",
-        "description": "",
-        "description_telecommande": "ACS21",
-        "rss": "B",
-        "contact": "",
-        "lignes": "LENS à OSTRICOURT",
-        "numero_ligne": 284000,
-        "pk": "",
-        "code": false
-      },
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          2.993821,
-          50.435204
-        ]
-      }
-    },
-    {
-      "type": "Feature",
-      "properties": {
-        "nom": "Maison Rouge",
-        "type": "L-A",
-        "SAT": "SAT1",
-        "acces": "n°2",
         "description": "",
         "description_telecommande": "ACS21",
         "rss": "B",
@@ -4062,7 +3704,7 @@
         "nom": "Moulin",
         "type": "S",
         "SAT": "SAT2",
-        "acces": "V2",
+        "acces": "",
         "description": "  ",
         "description_telecommande": "PAS900",
         "rss": "A",
@@ -4101,30 +3743,6 @@
         "coordinates": [
           1.81373,
           50.8889835
-        ]
-      }
-    },
-    {
-      "type": "Feature",
-      "properties": {
-        "nom": "Moulin",
-        "type": "S",
-        "SAT": "SAT2",
-        "acces": "V1",
-        "description": "LGV coté voie 1",
-        "description_telecommande": "PAS900",
-        "rss": "A",
-        "contact": "",
-        "lignes": "FRETIN à FRÉTHUN (LGV)",
-        "numero_ligne": 216000,
-        "pk": "111",
-        "code": false
-      },
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          1.819481,
-          50.8873848
         ]
       }
     },
@@ -4231,29 +3849,6 @@
         "type": "PRCI",
         "SAT": "",
         "acces": "",
-        "description": "",
-        "rss": "A",
-        "contact": "",
-        "lignes": "GONESSE à LILLE-FRONTIERE (LGV)",
-        "numero_ligne": 226000,
-        "pk": "182,0539",
-        "code": false
-      },
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          2.97594,
-          50.47095
-        ]
-      }
-    },
-    {
-      "type": "Feature",
-      "properties": {
-        "nom": "Oignies",
-        "type": "PRCI",
-        "SAT": "",
-        "acces": "I449",
         "description": "",
         "rss": "A",
         "contact": "",
@@ -4489,30 +4084,6 @@
     {
       "type": "Feature",
       "properties": {
-        "nom": "PE5 Mardyck",
-        "type": "A",
-        "SAT": "",
-        "acces": "n°2",
-        "description": "",
-        "description_telecommande": "ACS25",
-        "rss": "A",
-        "contact": "",
-        "lignes": "COUDEKERQUE-BRANCHE à LES FONTINETTES",
-        "numero_ligne": 304000,
-        "pk": "10,480",
-        "code": false
-      },
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          2.26125,
-          50.99305
-        ]
-      }
-    },
-    {
-      "type": "Feature",
-      "properties": {
         "nom": "Phalempin",
         "type": "SP",
         "SAT": "",
@@ -4656,29 +4227,6 @@
     {
       "type": "Feature",
       "properties": {
-        "nom": "Quilleval",
-        "type": "PRCI",
-        "SAT": "",
-        "acces": "I625",
-        "description": "",
-        "rss": "A",
-        "contact": "",
-        "lignes": "FRETIN à FRÉTHUN (LGV)",
-        "numero_ligne": 216000,
-        "pk": "",
-        "code": false
-      },
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          2.19144,
-          50.84411
-        ]
-      }
-    },
-    {
-      "type": "Feature",
-      "properties": {
         "nom": "Rang",
         "type": "SSP",
         "SAT": "",
@@ -4751,104 +4299,11 @@
     {
       "type": "Feature",
       "properties": {
-        "nom": "Riviere",
-        "type": "SSPA",
-        "SAT": "",
-        "acces": "TT7371",
-        "description": "",
-        "description_telecommande": "PAS900",
-        "rss": "A",
-        "contact": "",
-        "lignes": "BOULOGNE-VILLE à CALAIS MARITIME",
-        "numero_ligne": 314000,
-        "pk": "291,668",
-        "code": false
-      },
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          1.8449,
-          50.9316
-        ]
-      }
-    },
-    {
-      "type": "Feature",
-      "properties": {
         "nom": "Rodelinghem",
         "type": "PRCI",
         "SAT": "",
-        "acces": "I628",
+        "acces": "",
         "description": "TVP présent pour aller jusqu'au PRCI",
-        "rss": "A",
-        "contact": "",
-        "lignes": "FRETIN à FRÉTHUN (LGV)",
-        "numero_ligne": 216000,
-        "pk": "100,188",
-        "code": false
-      },
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          1.9289311,
-          50.8262393
-        ]
-      }
-    },
-    {
-      "type": "Feature",
-      "properties": {
-        "nom": "Rodelinghem",
-        "type": "PRCI",
-        "SAT": "",
-        "acces": "I629",
-        "description": "",
-        "rss": "A",
-        "contact": "",
-        "lignes": "FRETIN à FRÉTHUN (LGV)",
-        "numero_ligne": 216000,
-        "pk": "100,188",
-        "code": false
-      },
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          1.9289311,
-          50.8262393
-        ]
-      }
-    },
-    {
-      "type": "Feature",
-      "properties": {
-        "nom": "Rodelinghem",
-        "type": "PRCI",
-        "SAT": "",
-        "acces": "TT629",
-        "description": "",
-        "rss": "A",
-        "contact": "",
-        "lignes": "FRETIN à FRÉTHUN (LGV)",
-        "numero_ligne": 216000,
-        "pk": "100,188",
-        "code": false
-      },
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          1.9289311,
-          50.8262393
-        ]
-      }
-    },
-    {
-      "type": "Feature",
-      "properties": {
-        "nom": "Rodelinghem",
-        "type": "PRCI",
-        "SAT": "",
-        "acces": "I631",
-        "description": "",
         "rss": "A",
         "contact": "",
         "lignes": "FRETIN à FRÉTHUN (LGV)",
@@ -4871,75 +4326,6 @@
         "type": "PRCI",
         "SAT": "",
         "acces": "",
-        "description": "",
-        "rss": "A",
-        "contact": "",
-        "lignes": "GONESSE à LILLE-FRONTIERE (LGV)",
-        "numero_ligne": 226000,
-        "pk": "162,019",
-        "code": false
-      },
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          2.89192,
-          50.30824
-        ]
-      }
-    },
-    {
-      "type": "Feature",
-      "properties": {
-        "nom": "Roeux",
-        "type": "PRCI",
-        "SAT": "",
-        "acces": "I417",
-        "description": "",
-        "rss": "A",
-        "contact": "",
-        "lignes": "GONESSE à LILLE-FRONTIERE (LGV)",
-        "numero_ligne": 226000,
-        "pk": "162,019",
-        "code": false
-      },
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          2.89192,
-          50.30824
-        ]
-      }
-    },
-    {
-      "type": "Feature",
-      "properties": {
-        "nom": "Roeux",
-        "type": "PRCI",
-        "SAT": "",
-        "acces": "I415",
-        "description": "",
-        "rss": "A",
-        "contact": "",
-        "lignes": "GONESSE à LILLE-FRONTIERE (LGV)",
-        "numero_ligne": 226000,
-        "pk": "162,019",
-        "code": false
-      },
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          2.89192,
-          50.30824
-        ]
-      }
-    },
-    {
-      "type": "Feature",
-      "properties": {
-        "nom": "Roeux",
-        "type": "PRCI",
-        "SAT": "",
-        "acces": "TT415",
         "description": "",
         "rss": "A",
         "contact": "",
@@ -5489,7 +4875,7 @@
       "type": "Feature",
       "properties": {
         "nom": "Avion",
-        "acces": "208-16",
+        "acces": "",
         "description": "Sectionneur à manœuvrer pour les consignations C de Bailleul sir Berthoult",
         "rss": "A",
         "contact": "",
@@ -5511,25 +4897,6 @@
         "acces": "230-37A",
         "description": "A manœuvrer lors de consignation du TT l'IA de Bethune à la demande du RSS",
         "rss": "C",
-        "contact": "",
-        "lignes": "",
-        "numero_ligne": "",
-        "pk": "",
-        "hors_patrimoine": true,
-        "code": false
-      },
-      "geometry": {
-        "type": "Point",
-        "coordinates": []
-      }
-    },
-    {
-      "type": "Feature",
-      "properties": {
-        "nom": "Avion",
-        "acces": "209-3",
-        "description": "Sectionneur à manœuvrer pour les consignations C de Bailleul sir Berthoult",
-        "rss": "A",
         "contact": "",
         "lignes": "",
         "numero_ligne": "",
@@ -5876,30 +5243,6 @@
     {
       "type": "Feature",
       "properties": {
-        "nom": "Valenciennes",
-        "type": "SS",
-        "SAT": "",
-        "acces": "n°2",
-        "description": "   ",
-        "description_telecommande": "PAS900",
-        "rss": "B",
-        "contact": "",
-        "lignes": "FIVES à HIRSON",
-        "numero_ligne": 267000,
-        "pk": "45,854",
-        "code": false
-      },
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          3.523896,
-          50.3753064
-        ]
-      }
-    },
-    {
-      "type": "Feature",
-      "properties": {
         "nom": "Verquigneul",
         "type": "SST",
         "SAT": "",
@@ -5995,78 +5338,10 @@
     {
       "type": "Feature",
       "properties": {
-        "nom": "Wannehain",
-        "type": "PRCI",
-        "acces": "TT513",
-        "description": "",
-        "rss": "A",
-        "contact": "",
-        "lignes": "GONESSE à LILLE-FRONTIERE (LGV)",
-        "numero_ligne": 226000,
-        "pk": "208,699",
-        "code": false
-      },
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          3.26354,
-          50.57433
-        ]
-      }
-    },
-    {
-      "type": "Feature",
-      "properties": {
-        "nom": "Wannehain",
-        "type": "PRCI",
-        "acces": "I510",
-        "description": "",
-        "rss": "A",
-        "contact": "",
-        "lignes": "GONESSE à LILLE-FRONTIERE (LGV)",
-        "numero_ligne": 226000,
-        "pk": "208,699",
-        "code": false
-      },
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          3.26354,
-          50.57433
-        ]
-      }
-    },
-    {
-      "type": "Feature",
-      "properties": {
         "nom": "Wattignies",
         "type": "SP",
         "SAT": "",
-        "acces": "n°1",
-        "description": "",
-        "description_telecommande": "PAS900",
-        "rss": "B",
-        "contact": "",
-        "lignes": "PARIS-NORD à LILLE",
-        "numero_ligne": 272000,
-        "pk": "244,860",
-        "code": false
-      },
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          3.062718,
-          50.5945631
-        ]
-      }
-    },
-    {
-      "type": "Feature",
-      "properties": {
-        "nom": "Wattignies",
-        "type": "SP",
-        "SAT": "",
-        "acces": "n°2",
+        "acces": "",
         "description": "",
         "description_telecommande": "PAS900",
         "rss": "B",
@@ -7059,30 +6334,6 @@
       "type": "Feature",
       "properties": {
         "nom": "Cambrai",
-        "type": "L",
-        "SAT": "",
-        "acces": "I83502",
-        "description": "",
-        "description_telecommande": "ACS21",
-        "rss": "B",
-        "contact": "",
-        "lignes": "Raccordement de Cambrai-Nord ",
-        "numero_ligne": 250311,
-        "pk": "205,191",
-        "code": false
-      },
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          3.25999,
-          50.16679
-        ]
-      }
-    },
-    {
-      "type": "Feature",
-      "properties": {
-        "nom": "Cambrai",
         "type": "SSP",
         "SAT": "",
         "acces": "",
@@ -8008,7 +7259,6 @@
         "SAT": "",
         "acces": "",
         "description": "",
-        "description_telecommande": "",
         "rss": "A",
         "contact": "",
         "lignes": "GONESSE à LILLE-FRONTIERE (LGV)",
