@@ -142,26 +142,6 @@
       return "Acces voiture";
     }
 
-    function libelleSatPourAppareil(appareil) {
-      const sat = champCompletOuVide(appareil?.SAT);
-      if (!sat || normaliserTexteRecherche(sat) === "poste") {
-        return "Poste";
-      }
-      return sat;
-    }
-
-    function scoreTriSat(libelleSat) {
-      const satNorm = normaliserTexteRecherche(libelleSat);
-      if (!satNorm || satNorm === "poste") {
-        return 0;
-      }
-      const matchSatNumero = satNorm.match(/^sat\s*(\d+)$/);
-      if (matchSatNumero) {
-        return 100 + Number(matchSatNumero[1] || 0);
-      }
-      return 1000;
-    }
-
     function reconstruireIndexRecherche() {
       const index = [];
 
@@ -204,51 +184,45 @@
         }
 
         const appareilsListe = extraireListeDepuisFeature(feature, "appareils_liste_json");
-        const groupesParSupport = new Map();
+        const groupesParTitre = new Map();
 
         for (const appareil of appareilsListe) {
-          const nom = champCompletOuVide(appareil?.nom);
-          const type = champCompletOuVide(appareil?.type);
-          const titreSupport = [nom, type].filter(Boolean).join(separateurLibelle || " ");
-          const titre = titreSupport || construireTitreNomTypeSatAcces(appareil) || "Appareil";
+          const titre = construireTitreNomTypeSatAcces(appareil) || "Appareil";
           const appareilNom = champCompletOuVide(appareil.appareil) || "";
-          const satLabel = libelleSatPourAppareil(appareil);
-          const motsCles = [titre, appareilNom, appareil.nom, appareil.SAT, appareil.acces, satLabel]
+          const motsCles = [titre, appareilNom, appareil.nom, appareil.SAT, appareil.acces]
             .filter(Boolean)
             .join(" ");
-          const cleSupport = `${normaliserTexteRecherche(nom)}|${normaliserTexteRecherche(type)}|${Number(longitude).toFixed(6)}|${Number(latitude).toFixed(6)}`;
+          const cle = `${titre}|${longitude}|${latitude}`;
 
-          if (!groupesParSupport.has(cleSupport)) {
-            groupesParSupport.set(cleSupport, {
+          if (!groupesParTitre.has(cle)) {
+            const nom = champCompletOuVide(appareil?.nom);
+            const type = champCompletOuVide(appareil?.type);
+            const sat = champCompletOuVide(appareil?.SAT);
+            groupesParTitre.set(cle, {
               type: "appareils",
               titre,
               sousTitre: "",
               nom,
               typeLieu: type,
-              sat: "",
+              sat,
               longitude,
               latitude,
               couleurPastille: normaliserCouleurHex(appareil.couleur_appareil || determinerCouleurAppareil(appareilNom)),
               appareilsCount: 0,
               appareilsLignes: [],
-              appareilsParSatMap: new Map(),
               texteMotsCles: []
             });
           }
 
-          const groupe = groupesParSupport.get(cleSupport);
+          const groupe = groupesParTitre.get(cle);
           groupe.appareilsCount += 1;
+          const contexteAppareil = [appareil.nom, appareil.type, appareil.SAT]
+            .map((v) => champCompletOuVide(v))
+            .filter(Boolean)
+            .join(separateurLibelle || " ");
           groupe.appareilsLignes.push({
             code: appareilNom || "Appareil",
-            contexte: satLabel,
-            horsPatrimoine: Boolean(appareil.hors_patrimoine),
-            couleur: normaliserCouleurHex(appareil.couleur_appareil || determinerCouleurAppareil(appareilNom))
-          });
-          if (!groupe.appareilsParSatMap.has(satLabel)) {
-            groupe.appareilsParSatMap.set(satLabel, []);
-          }
-          groupe.appareilsParSatMap.get(satLabel).push({
-            code: appareilNom || "Appareil",
+            contexte: contexteAppareil,
             horsPatrimoine: Boolean(appareil.hors_patrimoine),
             couleur: normaliserCouleurHex(appareil.couleur_appareil || determinerCouleurAppareil(appareilNom))
           });
@@ -258,26 +232,12 @@
           }
         }
 
-        for (const groupe of groupesParSupport.values()) {
+        for (const groupe of groupesParTitre.values()) {
           const lignesUniques = Array.from(new Map(groupe.appareilsLignes.map((ligne) => [`${ligne.code}|${ligne.contexte}`, ligne])).values());
-          const appareilsParSat = Array.from(groupe.appareilsParSatMap.entries())
-            .map(([sat, lignes]) => {
-              const codesUniques = Array.from(new Set(lignes.map((ligne) => String(ligne.code || "").trim()).filter(Boolean)));
-              return { sat, codes: codesUniques };
-            })
-            .sort((a, b) => {
-              const scoreA = scoreTriSat(a.sat);
-              const scoreB = scoreTriSat(b.sat);
-              if (scoreA !== scoreB) {
-                return scoreA - scoreB;
-              }
-              return String(a.sat || "").localeCompare(String(b.sat || ""), "fr", { sensitivity: "base" });
-            });
           index.push({
             ...groupe,
             sousTitre: groupe.appareilsCount > 1 ? "" : groupe.sousTitre,
             appareilsLignesUniques: lignesUniques,
-            appareilsParSat,
             texteRecherche: normaliserTexteRecherche(groupe.texteMotsCles.join(" "))
           });
         }
@@ -334,7 +294,7 @@
     }
 
     function rechercherEntrees(terme) {
-      return moteurRecherchePrincipal.rechercher(indexRecherche, terme, { minLength: 2, limit: 24 });
+      return moteurRecherchePrincipal.rechercher(indexRecherche, terme, { minLength: 2, limit: 500 });
     }
 
     function decouperTokensRecherche(texte) {
@@ -463,7 +423,7 @@
       }
 
       const filtres = base.filter((entree) => entree?.type === "appareils" && resultatAppareilCorrespondAuxPrefixes(entree, prefixes));
-      return trierResultatsRecherche(filtres, requeteLieu || texte).slice(0, 24);
+      return trierResultatsRecherche(filtres, requeteLieu || texte).slice(0, 500);
     }
 
     function determinerIntentionRecherche(texte) {
@@ -482,13 +442,10 @@
     }
 
     function compterParType(resultats) {
-      const totalAppareils = resultats
-        .filter((r) => r.type === "appareils")
-        .reduce((somme, entree) => somme + Math.max(1, Number(entree?.appareilsCount) || 0), 0);
       return {
         acces: resultats.filter((r) => r.type === "acces").length,
         postes: resultats.filter((r) => r.type === "postes").length,
-        appareils: totalAppareils
+        appareils: resultats.filter((r) => r.type === "appareils").length
       };
     }
 
@@ -517,14 +474,14 @@
       return melange;
     }
 
-    function filtrerResultatsPourAffichage(resultats, texte, limite = 400) {
+    function filtrerResultatsPourAffichage(resultats, texte, limite = 500) {
       const intention = determinerIntentionRecherche(texte);
       const typeForce = intention.typeForce;
       if (typeForce) {
-        return resultats.filter((r) => r.type === typeForce).slice(0, 400);
+        return resultats.filter((r) => r.type === typeForce).slice(0, 500);
       }
       if (filtreTypeActif !== "tous") {
-        return resultats.filter((r) => r.type === filtreTypeActif).slice(0, 400);
+        return resultats.filter((r) => r.type === filtreTypeActif).slice(0, 500);
       }
       return equilibrerResultatsMixtes(resultats, limite);
     }
@@ -538,16 +495,6 @@
       );
 
       if (resultat.type === "appareils") {
-        if (Array.isArray(resultat.appareilsParSat) && resultat.appareilsParSat.length) {
-          const lignesParSat = resultat.appareilsParSat
-            .map((bloc) => {
-              const sat = echapperHtml(bloc.sat || "Poste");
-              const codes = echapperHtml((bloc.codes || []).join(", "));
-              return `<span class="recherche-appareil-ligne"><span class="recherche-appareil-ligne-principale"><span class="recherche-resultat-pastille recherche-resultat-pastille-ligne-appareil" style="background-color:${couleurPastille};"></span><span class="recherche-appareil-code">${sat} :</span> <span>${codes}</span></span></span>`;
-            })
-            .join("");
-          return `<li><button class="recherche-resultat" type="button" data-action="ouvrir-resultat" data-type="${echapperHtml(resultat.type)}" data-lng="${resultat.longitude}" data-lat="${resultat.latitude}"><span class="recherche-resultat-titre"><span class="recherche-appareil-liste recherche-appareil-groupe">${lignesParSat}</span></span></button></li>`;
-        }
         const appareilsLignes =
           Array.isArray(resultat.appareilsLignesUniques) && resultat.appareilsLignesUniques.length
             ? resultat.appareilsLignesUniques
@@ -607,7 +554,7 @@
         return;
       }
 
-      const visibles = filtrerResultatsPourAffichage(resultats, texte, 400);
+      const visibles = filtrerResultatsPourAffichage(resultats, texte, 500);
       const barre = construireBarreFiltres(intention.typeForce, compteurs);
       const hint =
         !intention.typeForce && filtreTypeActif === "tous"
