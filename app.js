@@ -2760,7 +2760,7 @@ function construireSectionAppareilsAssociesDepuisPostes(postesListe, options = {
       const latPoste = Number(options?.coordonneesPoste?.[1]);
       const pillSatHtml =
         Number.isFinite(lngPoste) && Number.isFinite(latPoste)
-          ? `<button class="popup-badge popup-badge-itineraire popup-badge-poste-sat popup-poste-sat-lien" type="button" data-target-type="postes" data-lng="${lngPoste}" data-lat="${latPoste}">${echapperHtml(groupe.label)}</button>`
+          ? `<button class="popup-badge popup-badge-itineraire popup-badge-poste-sat popup-poste-sat-lien" type="button" data-target-type="postes" data-target-sat="${echapperHtml(groupe.label)}" data-lng="${lngPoste}" data-lat="${latPoste}">${echapperHtml(groupe.label)}</button>`
           : `<span class="popup-badge popup-badge-itineraire popup-badge-poste-sat">${echapperHtml(groupe.label)}</span>`;
       return `<div class="popup-poste-appareils-groupe"><div class="popup-poste-appareils-entete-ligne">${pillSatHtml}<p class="popup-poste-appareils-ligne">${codesHtml}</p></div></div>`;
     })
@@ -2769,7 +2769,7 @@ function construireSectionAppareilsAssociesDepuisPostes(postesListe, options = {
   return `<section class="popup-section"><div class="popup-poste-appareils-groupes">${lignes}</div></section>`;
 }
 
-function construireSectionPostes(feature) {
+function construireSectionPostes(feature, options = {}) {
   const propr = feature.properties || {};
   let postesListe = [];
   try {
@@ -2782,8 +2782,23 @@ function construireSectionPostes(feature) {
     return "";
   }
 
-  if (Number(propr.postes_count) > 1) {
-    const lignes = postesListe
+  const cibleSat = normaliserTexteRecherche(options?.cibleSat || "");
+  let postesAffiches = postesListe;
+  if (cibleSat) {
+    const filtres = postesListe.filter((poste) => {
+      const satNorm = normaliserTexteRecherche(champCompletOuVide(poste?.SAT));
+      if (cibleSat === "poste") {
+        return !satNorm;
+      }
+      return satNorm === cibleSat;
+    });
+    if (filtres.length) {
+      postesAffiches = filtres;
+    }
+  }
+
+  if (postesAffiches.length > 1) {
+    const lignes = postesAffiches
       .map((p) => {
         const titre = construireTitrePoste(p) || "Poste inconnu";
         const infoLigneHtml = construireLignePkEtLigneHtml(p);
@@ -2798,10 +2813,10 @@ function construireSectionPostes(feature) {
         return `<li class="${classeHors}"><span class="popup-acces-ligne">${echapperHtml(titre)}</span>${pillsTelecommande}${infoLigneHtml ? `<br/><span class="popup-poste-details">${infoLigneHtml}</span>` : ""}${rss ? `<br/><span class="popup-poste-details">RSS: ${echapperHtml(rss)}</span>` : ""}</li>`;
       })
       .join("");
-    return `<section class="popup-section"><div class="popup-pill-ligne"><span class="popup-badge popup-badge-postes">${echapperHtml(String(propr.postes_count))} postes</span></div><ul>${lignes}</ul></section>`;
+    return `<section class="popup-section"><div class="popup-pill-ligne"><span class="popup-badge popup-badge-postes">${echapperHtml(String(postesAffiches.length))} postes</span></div><ul>${lignes}</ul></section>`;
   }
 
-  const poste = postesListe[0] || {};
+  const poste = postesAffiches[0] || {};
   const titre = construireTitrePoste(poste) || "Poste inconnu";
   const classeHors = poste.hors_patrimoine ? " popup-item-hors" : "";
   const codesTelecommande = extraireCodesTelecommande(poste.description_telecommande);
@@ -2978,6 +2993,7 @@ function attacherActionsPopupInterne() {
   for (const bouton of boutonsAppareilsAssocies) {
     bouton.addEventListener("click", async () => {
       const typeCible = String(bouton.getAttribute("data-target-type") || "appareils").trim() || "appareils";
+      const cibleSatPoste = String(bouton.getAttribute("data-target-sat") || "").trim();
       const longitude = Number(bouton.getAttribute("data-lng"));
       const latitude = Number(bouton.getAttribute("data-lat"));
       if (!Number.isFinite(longitude) || !Number.isFinite(latitude)) {
@@ -3001,7 +3017,11 @@ function attacherActionsPopupInterne() {
           return;
         }
         popupOuverte = true;
-        ouvrirPopupDepuisCoordonneesPourType(typeCible, longitude, latitude, { fallbackGenerique: false });
+        const optionsOuverture = { fallbackGenerique: false };
+        if (typeCible === "postes" && cibleSatPoste) {
+          optionsOuverture.cibleSatPoste = cibleSatPoste;
+        }
+        ouvrirPopupDepuisCoordonneesPourType(typeCible, longitude, latitude, optionsOuverture);
       };
       naviguerVersCoordonneesPuisOuvrirPopup(longitude, latitude, ouvrirPopup, {
         zoomMin: 14.8,
@@ -3284,7 +3304,9 @@ function construirePopupDepuisFeatures(longitude, latitude, featurePostes, featu
   let sectionRssAssocieDepuisAcces = "";
 
   if (featurePostes) {
-    const sectionPostes = construireSectionPostes(featurePostes);
+    const sectionPostes = construireSectionPostes(featurePostes, {
+      cibleSat: options?.cibleSatPoste || ""
+    });
     if (sectionPostes) {
       sections.push(sectionPostes);
     }
