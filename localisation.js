@@ -150,16 +150,21 @@
       const sat = champCompletOuVide(entree?.SAT);
       const acces = champCompletOuVide(entree?.acces);
       const appareil = champCompletOuVide(entree?.appareil);
+      const joindre = (segments) => segments.filter(Boolean).join(" / ");
 
       if (type === "acces") {
-        return [nom, typeSupport, sat, acces].filter(Boolean).join(" / ") || "Acces";
+        return joindre([nom, sat]) || "Acces";
       }
 
       if (type === "appareils") {
-        return [nom, typeSupport, sat, appareil].filter(Boolean).join(" / ") || "Appareil";
+        const contexteAppareil = joindre([nom, sat, acces]);
+        if (appareil) {
+          return contexteAppareil ? `${appareil} (${contexteAppareil})` : appareil;
+        }
+        return contexteAppareil ? `Appareil (${contexteAppareil})` : "Appareil";
       }
 
-      return [nom, typeSupport, sat].filter(Boolean).join(" / ") || "Poste";
+      return joindre([nom, sat]) || "Poste";
     }
 
     function construireResultatsProximite(longitude, latitude) {
