@@ -1973,9 +1973,9 @@ function determinerLibelleRetourPosteDepuisAppareil(featureAppareils) {
   const appareilsListe = extraireListeDepuisFeature(featureAppareils, "appareils_liste_json");
   const sat = champCompletOuVide(appareilsListe[0]?.SAT);
   if (sat) {
-    return "Consulter la fiche du SAT";
+    return "Accéder à la fiche du SAT";
   }
-  return "Consulter la fiche du poste";
+  return "Accéder à la fiche du poste";
 }
 
 function construireLienImajnet(longitude, latitude) {
@@ -2133,7 +2133,8 @@ function construireSectionConsigneRssDepuisAcces(featureAcces) {
 }
 
 function construireSectionExplorerAcces(longitude, latitude) {
-  return `<section class="popup-section popup-section-itineraires"><div class="popup-section-titre popup-section-titre-gauche"><span class="popup-badge popup-badge-itineraire">Explorer l'accès</span></div><div class="popup-itineraires popup-itineraires-poste-actions"><button class="popup-bouton-itineraire popup-bouton-localiser" id="popup-localiser-carte" type="button" data-lng="${longitude}" data-lat="${latitude}">📍 Localiser sur la carte</button><button class="popup-bouton-itineraire popup-bouton-street-view" id="popup-ouvrir-street-view" type="button" data-lng="${longitude}" data-lat="${latitude}">🛣️ Street View</button></div></section>`;
+  const boutonLocaliser = `<button class="popup-bouton-itineraire popup-bouton-localiser" id="popup-localiser-carte" type="button" data-lng="${longitude}" data-lat="${latitude}">📍 Localiser sur la carte</button>`;
+  return `<section class="popup-section popup-section-itineraires"><div class="popup-section-titre popup-section-titre-gauche"><span class="popup-badge popup-badge-itineraire">Explorer l'accès</span></div><div class="popup-itineraires popup-itineraires-poste-actions">${boutonLocaliser}<button class="popup-bouton-itineraire popup-bouton-street-view" id="popup-ouvrir-street-view" type="button" data-lng="${longitude}" data-lat="${latitude}">🛣️ Street View</button></div></section>`;
 }
 
 function construireModalStreetView() {
@@ -2415,6 +2416,60 @@ function trouverPosteAssocieDepuisAcces(featureAcces) {
   }
 
   return fallbackNomTypeSat || fallbackNomType;
+}
+
+function trouverChoixPostesDepuisAcces(featureAcces) {
+  if (!featureAcces || !donneesPostes?.features?.length) {
+    return [];
+  }
+
+  const accesListe = extraireListeDepuisFeature(featureAcces, "acces_liste_json");
+  if (!accesListe.length) {
+    return [];
+  }
+
+  const clesCorrespondance = new Set(accesListe.map((acces) => construireCleCorrespondance(acces)).filter(Boolean));
+  const clesNomTypeSat = new Set(accesListe.map((acces) => construireCleNomTypeSat(acces)).filter(Boolean));
+  const clesNomType = new Set(accesListe.map((acces) => construireCleNomType(acces)).filter(Boolean));
+  if (!clesCorrespondance.size && !clesNomTypeSat.size && !clesNomType.size) {
+    return [];
+  }
+
+  const choix = [];
+  const dejaVu = new Set();
+  for (const featurePostes of donneesPostes.features) {
+    const [longitude, latitude] = featurePostes.geometry?.coordinates || [];
+    if (!Number.isFinite(longitude) || !Number.isFinite(latitude)) {
+      continue;
+    }
+
+    const postesListe = extraireListeDepuisFeature(featurePostes, "postes_liste_json");
+    if (!postesListe.length) {
+      continue;
+    }
+
+    for (const poste of postesListe) {
+      const match =
+        clesCorrespondance.has(construireCleCorrespondance(poste)) ||
+        clesNomTypeSat.has(construireCleNomTypeSat(poste)) ||
+        clesNomType.has(construireCleNomType(poste));
+      if (!match) {
+        continue;
+      }
+
+      const label = construireTitrePoste(poste) || "Poste";
+      const satBrut = champCompletOuVide(poste?.SAT);
+      const cibleSat = satBrut || "Poste";
+      const cle = `${normaliserTexteRecherche(label)}|${longitude}|${latitude}|${normaliserTexteRecherche(cibleSat)}`;
+      if (dejaVu.has(cle)) {
+        continue;
+      }
+      dejaVu.add(cle);
+      choix.push({ label, longitude, latitude, cibleSat });
+    }
+  }
+
+  return choix.sort((a, b) => a.label.localeCompare(b.label, "fr", { sensitivity: "base", numeric: true }));
 }
 
 function construireSectionRssAssocieDepuisAcces(featureAcces) {
@@ -3142,6 +3197,72 @@ function attacherActionsPopupInterne() {
     });
   }
 
+  const boutonRetourPoste = racinePopup.querySelector("#popup-retour-poste");
+  const selectRetourPoste = racinePopup.querySelector("#popup-retour-poste-select");
+  if (boutonRetourPoste && selectRetourPoste) {
+    boutonRetourPoste.addEventListener("click", () => {
+      boutonRetourPoste.setAttribute("hidden", "hidden");
+      selectRetourPoste.removeAttribute("hidden");
+      selectRetourPoste.focus();
+    });
+  }
+  if (selectRetourPoste) {
+    selectRetourPoste.addEventListener("change", async () => {
+      const optionChoisie = selectRetourPoste.options[selectRetourPoste.selectedIndex];
+      if (!optionChoisie || !optionChoisie.value) {
+        return;
+      }
+
+      const longitude = Number(optionChoisie.getAttribute("data-lng"));
+      const latitude = Number(optionChoisie.getAttribute("data-lat"));
+      const cibleSatPoste = String(optionChoisie.getAttribute("data-target-sat") || "").trim();
+      const origineAccesLng = Number(selectRetourPoste.getAttribute("data-origin-acces-lng"));
+      const origineAccesLat = Number(selectRetourPoste.getAttribute("data-origin-acces-lat"));
+      const origineAppareilLng = Number(selectRetourPoste.getAttribute("data-origin-appareil-lng"));
+      const origineAppareilLat = Number(selectRetourPoste.getAttribute("data-origin-appareil-lat"));
+      if (!Number.isFinite(longitude) || !Number.isFinite(latitude)) {
+        return;
+      }
+
+      try {
+        await activerFiltrePourType("postes");
+        appliquerCouchesDonnees();
+        remonterCouchesDonnees();
+      } catch (erreur) {
+        console.error("Impossible d'activer la couche postes", erreur);
+      }
+
+      let popupOuverte = false;
+      const ouvrirPopup = () => {
+        if (popupOuverte) {
+          return;
+        }
+        popupOuverte = true;
+        const optionsOuverture = { fallbackGenerique: false };
+        if (Number.isFinite(origineAccesLng) && Number.isFinite(origineAccesLat)) {
+          optionsOuverture.coordonneesAccesPreferees = [origineAccesLng, origineAccesLat];
+        }
+        if (Number.isFinite(origineAppareilLng) && Number.isFinite(origineAppareilLat)) {
+          optionsOuverture.coordonneesAppareilPrecedent = [origineAppareilLng, origineAppareilLat];
+        }
+        if (cibleSatPoste) {
+          optionsOuverture.cibleSatPoste = cibleSatPoste;
+        }
+        ouvrirPopupDepuisCoordonneesPourType("postes", longitude, latitude, optionsOuverture);
+      };
+      naviguerVersCoordonneesPuisOuvrirPopup(longitude, latitude, ouvrirPopup, {
+        zoomMin: 14.8,
+        durationDouxMs: 420
+      });
+
+      selectRetourPoste.value = "";
+      selectRetourPoste.setAttribute("hidden", "hidden");
+      if (boutonRetourPoste) {
+        boutonRetourPoste.removeAttribute("hidden");
+      }
+    });
+  }
+
   const boutonsAppareilsAssocies = racinePopup.querySelectorAll(
     ".popup-poste-appareil-lien[data-lng][data-lat], .popup-poste-sat-lien[data-lng][data-lat]"
   );
@@ -3595,6 +3716,7 @@ function construirePopupDepuisFeatures(longitude, latitude, featurePostes, featu
   const latAppareilPrev = Number(options?.coordonneesAppareilPrecedent?.[1]);
   const coordonneesAppareilPrecedent =
     Number.isFinite(lngAppareilPrev) && Number.isFinite(latAppareilPrev) ? [lngAppareilPrev, latAppareilPrev] : null;
+  const choixRetourPostesDepuisAcces = estVueAccesSeule && featureAcces ? trouverChoixPostesDepuisAcces(featureAcces) : [];
 
   const sectionCodes = (() => {
     if (featurePostes) {
@@ -3693,7 +3815,7 @@ function construirePopupDepuisFeatures(longitude, latitude, featurePostes, featu
       );
     }
     boutonsLiaison.push(
-      `<button class="popup-bouton-itineraire popup-bouton-localiser popup-bouton-liaison" type="button" data-target-type="postes" data-lng="${coordonneesRetourPosteDepuisAppareil[0]}" data-lat="${coordonneesRetourPosteDepuisAppareil[1]}">📄 Accéder à la fiche du poste</button>`
+      `<button class="popup-bouton-itineraire popup-bouton-localiser popup-bouton-liaison" type="button" data-target-type="postes" data-lng="${coordonneesRetourPosteDepuisAppareil[0]}" data-lat="${coordonneesRetourPosteDepuisAppareil[1]}">📄 ${echapperHtml(determinerLibelleRetourPosteDepuisAppareil(featureAppareils))}</button>`
     );
   } else if (estVueAppareilsSeule && coordonneesRetourPosteDepuisAppareil && !posteAssocieDepuisAppareil) {
     const attributsOrigineAcces =
@@ -3730,9 +3852,29 @@ function construirePopupDepuisFeatures(longitude, latitude, featurePostes, featu
       coordonneesAppareilPrecedent
         ? ` data-origin-appareil-lng="${coordonneesAppareilPrecedent[0]}" data-origin-appareil-lat="${coordonneesAppareilPrecedent[1]}"`
         : "";
-    boutonsLiaison.push(
-      `<button class="popup-bouton-itineraire popup-bouton-localiser popup-bouton-liaison" type="button" data-target-type="postes" data-lng="${coordonneesRetourPosteDepuisAcces[0]}" data-lat="${coordonneesRetourPosteDepuisAcces[1]}" data-origin-acces-lng="${longitude}" data-origin-acces-lat="${latitude}"${attributsOrigineAppareil}>📄 Accéder à la fiche du poste</button>`
-    );
+    if (choixRetourPostesDepuisAcces.length > 1) {
+      const optionsChoixPostes = choixRetourPostesDepuisAcces
+        .map(
+          (choix, index) =>
+            `<option value="${index}" data-lng="${choix.longitude}" data-lat="${choix.latitude}" data-target-sat="${echapperHtml(
+              choix.cibleSat || "Poste"
+            )}">📄 ${echapperHtml(choix.label)}</option>`
+        )
+        .join("");
+      boutonsLiaison.push(
+        `<button class="popup-bouton-itineraire popup-bouton-localiser" id="popup-retour-poste" type="button">📄 Accéder à la fiche du poste</button><select class="popup-codes-select" id="popup-retour-poste-select" hidden data-origin-acces-lng="${longitude}" data-origin-acces-lat="${latitude}"${attributsOrigineAppareil}><option value="">📄 Choisir un poste</option>${optionsChoixPostes}</select>`
+      );
+    } else {
+      const choixPoste = choixRetourPostesDepuisAcces[0] || null;
+      const lngPoste = Number.isFinite(choixPoste?.longitude) ? choixPoste.longitude : coordonneesRetourPosteDepuisAcces[0];
+      const latPoste = Number.isFinite(choixPoste?.latitude) ? choixPoste.latitude : coordonneesRetourPosteDepuisAcces[1];
+      const satCible = choixPoste?.cibleSat || "Poste";
+      boutonsLiaison.push(
+        `<button class="popup-bouton-itineraire popup-bouton-localiser popup-bouton-liaison" type="button" data-target-type="postes" data-target-sat="${echapperHtml(
+          satCible
+        )}" data-lng="${lngPoste}" data-lat="${latPoste}" data-origin-acces-lng="${longitude}" data-origin-acces-lat="${latitude}"${attributsOrigineAppareil}>📄 Accéder à la fiche du poste</button>`
+      );
+    }
   }
   const sectionRetourPoste = boutonsLiaison.length
     ? `<section class="popup-section popup-section-localiser"><div class="popup-itineraires ${boutonsLiaison.length > 1 ? "popup-itineraires-poste-actions" : "popup-itineraires-localiser"}">${boutonsLiaison.join("")}</div></section>`
