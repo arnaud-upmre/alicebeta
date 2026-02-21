@@ -2096,7 +2096,7 @@ function construireSectionAcces(feature) {
       .join("");
     const totalPostes = Math.max(2, totalPostesUniques || totalLignesUniques);
     const libelleBadge = `${totalPostes} postes partagent le même accès :`;
-    return `<section class="popup-section"><div class="popup-pill-ligne popup-pill-ligne-gauche"><span class="popup-badge popup-badge-acces">${echapperHtml(libelleBadge)}</span></div><ul>${lignes}</ul></section>`;
+    return `<section class="popup-section"><div class="popup-pill-ligne"><span class="popup-badge popup-badge-acces">${echapperHtml(libelleBadge)}</span></div><ul>${lignes}</ul></section>`;
   }
 
   const acces = accesListe[0] || {};
@@ -2119,7 +2119,7 @@ function construireSectionConsigneRssDepuisAcces(featureAcces) {
   const cle = normaliserCleRss(rss);
   const libelleTable = construireLibelleTableRss(cle);
   const numeros = obtenirNumerosRssDepuisCode(cle);
-  const phrase = `Avant d’accéder au poste, contactez le RSS ${libelleTable}.`;
+  const phrase = `📞 RSS ${libelleTable}`;
   const boutons = numeros
     .map((numero) => {
       const href = construireHrefTelephone(numero);
