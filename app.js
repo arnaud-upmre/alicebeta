@@ -3463,7 +3463,7 @@ function construirePopupDepuisFeatures(longitude, latitude, featurePostes, featu
     ? `<section class="popup-section popup-section-itineraires"><div class="popup-section-titre popup-section-titre-gauche"><span class="popup-badge popup-badge-itineraire">${echapperHtml(libelleSectionActionsPoste)}</span></div><div class="popup-itineraires ${classeActionsPoste}">${actionsExploreesTriees}</div></section>`
     : "";
   const sectionTerrain = featurePostes
-    ? `<section class="popup-section popup-section-itineraires"><div class="popup-section-titre popup-section-titre-gauche"><span class="popup-badge popup-badge-itineraire">Terrain</span></div><div class="popup-itineraires popup-itineraires-localiser"><a class="popup-bouton-itineraire" href="${echapperHtml(lienSignalementTerrain)}" target="_blank" rel="noopener noreferrer">🚦 Signalement Incidents et Anomalies</a></div></section>`
+    ? `<section class="popup-section popup-section-itineraires"><div class="popup-section-titre popup-section-titre-gauche"><span class="popup-badge popup-badge-itineraire">Terrain</span></div><div class="popup-itineraires popup-itineraires-localiser"><a class="popup-bouton-itineraire" href="${echapperHtml(lienSignalementTerrain)}" target="_blank" rel="noopener noreferrer">🚦 Signaler un STOP&GO ou un incident</a></div></section>`
     : "";
   const boutonsLiaison = [];
   if (estVueAppareilsSeule && coordonneesRetourPosteDepuisAppareil) {
@@ -3477,6 +3477,12 @@ function construirePopupDepuisFeatures(longitude, latitude, featurePostes, featu
     );
   }
   if (estVuePosteSeule && coordonneesRetourAccesDepuisPoste) {
+    const cibleSatCourante = normaliserTexteRecherche(options?.cibleSatPoste || "");
+    if (cibleSatCourante && cibleSatCourante !== "poste") {
+      boutonsLiaison.push(
+        `<button class="popup-bouton-itineraire popup-bouton-localiser popup-bouton-liaison" type="button" data-target-type="postes" data-target-sat="Poste" data-lng="${longitude}" data-lat="${latitude}">📄 Accéder à la fiche du poste</button>`
+      );
+    }
     const attributsOrigineAppareil =
       coordonneesAppareilPrecedent
         ? ` data-origin-appareil-lng="${coordonneesAppareilPrecedent[0]}" data-origin-appareil-lat="${coordonneesAppareilPrecedent[1]}"`
