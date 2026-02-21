@@ -3204,18 +3204,32 @@ function attacherActionsPopupInterne() {
   }
   if (selectRetourPoste) {
     selectRetourPoste.addEventListener("change", async () => {
+      const lireNombreAttribut = (element, nomAttribut) => {
+        if (!element || typeof element.getAttribute !== "function") {
+          return Number.NaN;
+        }
+        const brut = element.getAttribute(nomAttribut);
+        if (brut == null) {
+          return Number.NaN;
+        }
+        const texte = String(brut).trim();
+        if (!texte) {
+          return Number.NaN;
+        }
+        return Number(texte);
+      };
       const optionChoisie = selectRetourPoste.options[selectRetourPoste.selectedIndex];
       if (!optionChoisie || !optionChoisie.value) {
         return;
       }
 
-      const longitude = Number(optionChoisie.getAttribute("data-lng"));
-      const latitude = Number(optionChoisie.getAttribute("data-lat"));
+      const longitude = lireNombreAttribut(optionChoisie, "data-lng");
+      const latitude = lireNombreAttribut(optionChoisie, "data-lat");
       const cibleSatPoste = String(optionChoisie.getAttribute("data-target-sat") || "").trim();
-      const origineAccesLng = Number(selectRetourPoste.getAttribute("data-origin-acces-lng"));
-      const origineAccesLat = Number(selectRetourPoste.getAttribute("data-origin-acces-lat"));
-      const origineAppareilLng = Number(selectRetourPoste.getAttribute("data-origin-appareil-lng"));
-      const origineAppareilLat = Number(selectRetourPoste.getAttribute("data-origin-appareil-lat"));
+      const origineAccesLng = lireNombreAttribut(selectRetourPoste, "data-origin-acces-lng");
+      const origineAccesLat = lireNombreAttribut(selectRetourPoste, "data-origin-acces-lat");
+      const origineAppareilLng = lireNombreAttribut(selectRetourPoste, "data-origin-appareil-lng");
+      const origineAppareilLat = lireNombreAttribut(selectRetourPoste, "data-origin-appareil-lat");
       if (!Number.isFinite(longitude) || !Number.isFinite(latitude)) {
         return;
       }
