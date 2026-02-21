@@ -3195,7 +3195,15 @@ function attacherActionsPopupInterne() {
     });
   }
 
+  const boutonRetourPoste = racinePopup.querySelector("#popup-retour-poste");
   const selectRetourPoste = racinePopup.querySelector("#popup-retour-poste-select");
+  if (boutonRetourPoste && selectRetourPoste) {
+    boutonRetourPoste.addEventListener("click", () => {
+      boutonRetourPoste.setAttribute("hidden", "hidden");
+      selectRetourPoste.removeAttribute("hidden");
+      selectRetourPoste.focus();
+    });
+  }
   if (selectRetourPoste) {
     selectRetourPoste.addEventListener("change", async () => {
       const optionChoisie = selectRetourPoste.options[selectRetourPoste.selectedIndex];
@@ -3246,6 +3254,10 @@ function attacherActionsPopupInterne() {
       });
 
       selectRetourPoste.value = "";
+      selectRetourPoste.setAttribute("hidden", "hidden");
+      if (boutonRetourPoste) {
+        boutonRetourPoste.removeAttribute("hidden");
+      }
     });
   }
 
@@ -3848,7 +3860,7 @@ function construirePopupDepuisFeatures(longitude, latitude, featurePostes, featu
         )
         .join("");
       boutonsLiaison.push(
-        `<select class="popup-codes-select" id="popup-retour-poste-select" data-origin-acces-lng="${longitude}" data-origin-acces-lat="${latitude}"${attributsOrigineAppareil}><option value="">📄 Choisir un poste</option>${optionsChoixPostes}</select>`
+        `<button class="popup-bouton-itineraire popup-bouton-localiser" id="popup-retour-poste" type="button">📄 Accéder à la fiche du poste</button><select class="popup-codes-select" id="popup-retour-poste-select" hidden data-origin-acces-lng="${longitude}" data-origin-acces-lat="${latitude}"${attributsOrigineAppareil}><option value="">📄 Choisir un poste</option>${optionsChoixPostes}</select>`
       );
     } else {
       const choixPoste = choixRetourPostesDepuisAcces[0] || null;
@@ -3862,8 +3874,24 @@ function construirePopupDepuisFeatures(longitude, latitude, featurePostes, featu
       );
     }
   }
+  const prioriteBoutonLiaison = (htmlBouton) => {
+    const texte = String(htmlBouton || "");
+    if (texte.includes('data-target-type="acces"')) {
+      return 0;
+    }
+    if (texte.includes('data-target-type="postes"')) {
+      return 1;
+    }
+    if (texte.includes('data-target-type="appareils"')) {
+      return 2;
+    }
+    return 3;
+  };
+  const boutonsLiaisonOrdonnes = [...boutonsLiaison].sort(
+    (a, b) => prioriteBoutonLiaison(a) - prioriteBoutonLiaison(b)
+  );
   const sectionRetourPoste = boutonsLiaison.length
-    ? `<section class="popup-section popup-section-localiser"><div class="popup-itineraires ${boutonsLiaison.length > 1 ? "popup-itineraires-poste-actions" : "popup-itineraires-localiser"}">${boutonsLiaison.join("")}</div></section>`
+    ? `<section class="popup-section popup-section-localiser"><div class="popup-itineraires ${boutonsLiaison.length > 1 ? "popup-itineraires-poste-actions" : "popup-itineraires-localiser"}">${boutonsLiaisonOrdonnes.join("")}</div></section>`
     : "";
   const sectionLocaliser = featurePostes || estVueAppareilsSeule || estVueAccesSeule
     ? ""
