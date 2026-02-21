@@ -2864,14 +2864,18 @@ function attacherActionsPopupInterne() {
     }
   }
 
-  const boutonRetourPosteDepuisAppareil = racinePopup.querySelector("#popup-retour-poste-appareil");
-  if (boutonRetourPosteDepuisAppareil) {
-    boutonRetourPosteDepuisAppareil.addEventListener("click", async () => {
-      const typeCible = String(boutonRetourPosteDepuisAppareil.getAttribute("data-target-type") || "postes").trim() || "postes";
-      const longitude = Number(boutonRetourPosteDepuisAppareil.getAttribute("data-lng"));
-      const latitude = Number(boutonRetourPosteDepuisAppareil.getAttribute("data-lat"));
-      const origineAccesLng = Number(boutonRetourPosteDepuisAppareil.getAttribute("data-origin-acces-lng"));
-      const origineAccesLat = Number(boutonRetourPosteDepuisAppareil.getAttribute("data-origin-acces-lat"));
+  const boutonsLiaison = racinePopup.querySelectorAll(".popup-bouton-liaison[data-target-type][data-lng][data-lat]");
+  for (const boutonLiaison of boutonsLiaison) {
+    boutonLiaison.addEventListener("click", async () => {
+      const typeCible = String(boutonLiaison.getAttribute("data-target-type") || "postes").trim() || "postes";
+      const longitude = Number(boutonLiaison.getAttribute("data-lng"));
+      const latitude = Number(boutonLiaison.getAttribute("data-lat"));
+      const origineAccesLng = Number(boutonLiaison.getAttribute("data-origin-acces-lng"));
+      const origineAccesLat = Number(boutonLiaison.getAttribute("data-origin-acces-lat"));
+      const originePosteLng = Number(boutonLiaison.getAttribute("data-origin-poste-lng"));
+      const originePosteLat = Number(boutonLiaison.getAttribute("data-origin-poste-lat"));
+      const origineAppareilLng = Number(boutonLiaison.getAttribute("data-origin-appareil-lng"));
+      const origineAppareilLat = Number(boutonLiaison.getAttribute("data-origin-appareil-lat"));
       if (!Number.isFinite(longitude) || !Number.isFinite(latitude)) {
         return;
       }
@@ -2893,6 +2897,15 @@ function attacherActionsPopupInterne() {
         const optionsOuverture = { fallbackGenerique: false };
         if (typeCible === "postes" && Number.isFinite(origineAccesLng) && Number.isFinite(origineAccesLat)) {
           optionsOuverture.coordonneesAccesPreferees = [origineAccesLng, origineAccesLat];
+        }
+        if (typeCible === "postes" && Number.isFinite(origineAppareilLng) && Number.isFinite(origineAppareilLat)) {
+          optionsOuverture.coordonneesAppareilPrecedent = [origineAppareilLng, origineAppareilLat];
+        }
+        if (typeCible === "acces" && Number.isFinite(originePosteLng) && Number.isFinite(originePosteLat)) {
+          optionsOuverture.coordonneesPostePrecedent = [originePosteLng, originePosteLat];
+        }
+        if (typeCible === "acces" && Number.isFinite(origineAppareilLng) && Number.isFinite(origineAppareilLat)) {
+          optionsOuverture.coordonneesAppareilPrecedent = [origineAppareilLng, origineAppareilLat];
         }
         ouvrirPopupDepuisCoordonneesPourType(typeCible, longitude, latitude, optionsOuverture);
       };
@@ -3242,6 +3255,7 @@ function construirePopupDepuisFeatures(longitude, latitude, featurePostes, featu
   let sectionAppareilsAssociesPoste = "";
   let coordonneesRetourPosteDepuisAppareil = null;
   let coordonneesRetourAccesDepuisPoste = null;
+  let coordonneesRetourPosteDepuisAcces = null;
   let posteAssocieDepuisAppareil = null;
   let sectionRssAssocieDepuisAcces = "";
 
@@ -3299,10 +3313,23 @@ function construirePopupDepuisFeatures(longitude, latitude, featurePostes, featu
       Number.isFinite(lngAccesPref) && Number.isFinite(latAccesPref) ? [lngAccesPref, latAccesPref] : null;
     coordonneesRetourAccesDepuisPoste = coordonneesAccesPreferees || trouverCoordonneesAccesDepuisPostes(featurePostes);
   }
+  if (featureAcces) {
+    const lngPostePref = Number(options?.coordonneesPostePrecedent?.[0]);
+    const latPostePref = Number(options?.coordonneesPostePrecedent?.[1]);
+    if (Number.isFinite(lngPostePref) && Number.isFinite(latPostePref)) {
+      coordonneesRetourPosteDepuisAcces = [lngPostePref, latPostePref];
+    }
+  }
   if (!coordonneesNavigation && featurePostes) {
     coordonneesNavigation = coordonneesRetourAccesDepuisPoste || trouverCoordonneesAccesDepuisPostes(featurePostes);
   }
   const estVueAppareilsSeule = Boolean(featureAppareils && !featurePostes);
+  const estVuePosteSeule = Boolean(featurePostes && !featureAcces && !featureAppareils);
+  const estVueAccesSeule = Boolean(featureAcces && !featurePostes && !featureAppareils);
+  const lngAppareilPrev = Number(options?.coordonneesAppareilPrecedent?.[0]);
+  const latAppareilPrev = Number(options?.coordonneesAppareilPrecedent?.[1]);
+  const coordonneesAppareilPrecedent =
+    Number.isFinite(lngAppareilPrev) && Number.isFinite(latAppareilPrev) ? [lngAppareilPrev, latAppareilPrev] : null;
 
   const sectionCodes = (() => {
     if (featurePostes) {
@@ -3318,25 +3345,52 @@ function construirePopupDepuisFeatures(longitude, latitude, featurePostes, featu
     ? `<section class="popup-section popup-section-itineraires"><div class="popup-section-titre popup-section-titre-gauche"><span class="popup-badge popup-badge-itineraire">Créer un itineraire</span></div>${construireLiensItineraires(coordonneesNavigation[0], coordonneesNavigation[1])}</section>`
     : "";
   const lienImajnet = featurePostes ? construireLienImajnet(longitude, latitude) : "";
-  const nombreActionsPoste = Number(Boolean(lienImajnet)) + Number(Boolean(sectionAppareilsAssociesPoste));
-  const classeActionsPoste = nombreActionsPoste > 1 ? "popup-itineraires-poste-actions" : "popup-itineraires-localiser";
-  const libelleSectionActionsPoste = nombreActionsPoste > 1 ? "Explorer les équipements" : "Vue terrain";
+  const lienGoogleMapsPoint = `https://www.google.com/maps?q=${latitude},${longitude}`;
+  const classeActionsPoste = "popup-itineraires-poste-actions";
+  const libelleSectionActionsPoste = "Explorer les équipements";
   const sectionActionsPoste = featurePostes && (lienImajnet || sectionAppareilsAssociesPoste)
-    ? `<section class="popup-section popup-section-itineraires"><div class="popup-section-titre popup-section-titre-gauche"><span class="popup-badge popup-badge-itineraire">${echapperHtml(libelleSectionActionsPoste)}</span></div><div class="popup-itineraires ${classeActionsPoste}">${lienImajnet ? `<a class="popup-bouton-itineraire" href="${echapperHtml(lienImajnet)}" target="_blank" rel="noopener noreferrer">🛤️ Imajnet</a>` : ""}${sectionAppareilsAssociesPoste ? '<button class="popup-bouton-itineraire" id="popup-voir-appareils-associes" type="button">💡 Afficher les appareils</button>' : ""}</div></section>`
+    ? `<section class="popup-section popup-section-itineraires"><div class="popup-section-titre popup-section-titre-gauche"><span class="popup-badge popup-badge-itineraire">${echapperHtml(libelleSectionActionsPoste)}</span></div><div class="popup-itineraires ${classeActionsPoste}">${lienImajnet ? `<a class="popup-bouton-itineraire" href="${echapperHtml(lienImajnet)}" target="_blank" rel="noopener noreferrer">🛤️ Imajnet</a>` : ""}${sectionAppareilsAssociesPoste ? '<button class="popup-bouton-itineraire" id="popup-voir-appareils-associes" type="button">💡 Afficher les appareils</button>' : ""}<button class="popup-bouton-itineraire popup-bouton-localiser" id="popup-localiser-carte" type="button" data-lng="${longitude}" data-lat="${latitude}">📍 Localiser sur la carte</button><a class="popup-bouton-itineraire" href="${echapperHtml(lienGoogleMapsPoint)}" target="_blank" rel="noopener noreferrer">🌎 Google Maps</a></div></section>`
     : "";
-  const coordonneesBoutonFicheAssociee = estVueAppareilsSeule ? coordonneesRetourPosteDepuisAppareil : coordonneesRetourAccesDepuisPoste;
-  const typeBoutonFicheAssociee = estVueAppareilsSeule ? "postes" : "acces";
-  const libelleBoutonFicheAssociee = estVueAppareilsSeule
-    ? determinerLibelleRetourPosteDepuisAppareil(featureAppareils)
-    : "Consulter la fiche de l'accès routier";
-  const attributsOrigineAcces =
-    estVueAppareilsSeule && coordonneesNavigation
-      ? ` data-origin-acces-lng="${coordonneesNavigation[0]}" data-origin-acces-lat="${coordonneesNavigation[1]}"`
-      : "";
-  const sectionRetourPoste = coordonneesBoutonFicheAssociee
-    ? `<section class="popup-section popup-section-localiser"><div class="popup-itineraires popup-itineraires-localiser"><button class="popup-bouton-itineraire popup-bouton-localiser" id="popup-retour-poste-appareil" type="button" data-target-type="${echapperHtml(typeBoutonFicheAssociee)}" data-lng="${coordonneesBoutonFicheAssociee[0]}" data-lat="${coordonneesBoutonFicheAssociee[1]}"${attributsOrigineAcces}>📄 ${echapperHtml(libelleBoutonFicheAssociee)}</button></div></section>`
+  const boutonsLiaison = [];
+  if (estVueAppareilsSeule && coordonneesRetourPosteDepuisAppareil) {
+    const attributsOrigineAcces =
+      coordonneesNavigation
+        ? ` data-origin-acces-lng="${coordonneesNavigation[0]}" data-origin-acces-lat="${coordonneesNavigation[1]}"`
+        : "";
+    const attributsOrigineAppareil = ` data-origin-appareil-lng="${longitude}" data-origin-appareil-lat="${latitude}"`;
+    boutonsLiaison.push(
+      `<button class="popup-bouton-itineraire popup-bouton-localiser popup-bouton-liaison" type="button" data-target-type="postes" data-lng="${coordonneesRetourPosteDepuisAppareil[0]}" data-lat="${coordonneesRetourPosteDepuisAppareil[1]}"${attributsOrigineAcces}${attributsOrigineAppareil}>📄 ${echapperHtml(determinerLibelleRetourPosteDepuisAppareil(featureAppareils))}</button>`
+    );
+  }
+  if (estVuePosteSeule && coordonneesRetourAccesDepuisPoste) {
+    const attributsOrigineAppareil =
+      coordonneesAppareilPrecedent
+        ? ` data-origin-appareil-lng="${coordonneesAppareilPrecedent[0]}" data-origin-appareil-lat="${coordonneesAppareilPrecedent[1]}"`
+        : "";
+    boutonsLiaison.push(
+      `<button class="popup-bouton-itineraire popup-bouton-localiser popup-bouton-liaison" type="button" data-target-type="acces" data-lng="${coordonneesRetourAccesDepuisPoste[0]}" data-lat="${coordonneesRetourAccesDepuisPoste[1]}" data-origin-poste-lng="${longitude}" data-origin-poste-lat="${latitude}"${attributsOrigineAppareil}>📄 Consulter la fiche de l'accès routier</button>`
+    );
+  }
+  if (estVuePosteSeule && coordonneesAppareilPrecedent) {
+    boutonsLiaison.push(
+      `<button class="popup-bouton-itineraire popup-bouton-localiser popup-bouton-liaison" type="button" data-target-type="appareils" data-lng="${coordonneesAppareilPrecedent[0]}" data-lat="${coordonneesAppareilPrecedent[1]}">↩ Retour vers l'appareil</button>`
+    );
+  }
+  if (estVueAccesSeule && coordonneesRetourPosteDepuisAcces) {
+    const attributsOrigineAppareil =
+      coordonneesAppareilPrecedent
+        ? ` data-origin-appareil-lng="${coordonneesAppareilPrecedent[0]}" data-origin-appareil-lat="${coordonneesAppareilPrecedent[1]}"`
+        : "";
+    boutonsLiaison.push(
+      `<button class="popup-bouton-itineraire popup-bouton-localiser popup-bouton-liaison" type="button" data-target-type="postes" data-lng="${coordonneesRetourPosteDepuisAcces[0]}" data-lat="${coordonneesRetourPosteDepuisAcces[1]}" data-origin-acces-lng="${longitude}" data-origin-acces-lat="${latitude}"${attributsOrigineAppareil}>📄 Accéder à la fiche du poste</button>`
+    );
+  }
+  const sectionRetourPoste = boutonsLiaison.length
+    ? `<section class="popup-section popup-section-localiser"><div class="popup-itineraires ${boutonsLiaison.length > 1 ? "popup-itineraires-poste-actions" : "popup-itineraires-localiser"}">${boutonsLiaison.join("")}</div></section>`
     : "";
-  const sectionLocaliser = `<section class="popup-section popup-section-localiser"><div class="popup-itineraires popup-itineraires-localiser"><button class="popup-bouton-itineraire popup-bouton-localiser" id="popup-localiser-carte" type="button" data-lng="${longitude}" data-lat="${latitude}">📍 Localiser sur la carte</button></div></section>`;
+  const sectionLocaliser = featurePostes
+    ? ""
+    : `<section class="popup-section popup-section-localiser"><div class="popup-itineraires popup-itineraires-poste-actions"><button class="popup-bouton-itineraire popup-bouton-localiser" id="popup-localiser-carte" type="button" data-lng="${longitude}" data-lat="${latitude}">📍 Localiser sur la carte</button><a class="popup-bouton-itineraire" href="${echapperHtml(lienGoogleMapsPoint)}" target="_blank" rel="noopener noreferrer">🌎 Google Maps</a></div></section>`;
   const contenuFiche = `<div class="popup-carte">${sections.join("")}${sectionRssAssocieDepuisAcces}${sectionItineraire}${sectionActionsPoste}${sectionCodes}${sectionLocaliser}${sectionRetourPoste}</div>`;
 
   let contenuVueAppareils = "";
