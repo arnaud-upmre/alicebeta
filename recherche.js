@@ -95,12 +95,7 @@
     let promesseChargementRecherche = null;
     let dernierTexteRecherche = "";
     let derniersResultatsRecherche = [];
-    let etatAffichageRecherche = {
-      mode: "racine",
-      groupeCle: "",
-      categorie: "",
-      modeGroupe: "site"
-    };
+    let filtreTypeActif = "tous";
 
     const obtenirPrioriteTypeRecherche = (type) => {
       if (type === "acces") return 0;
@@ -315,73 +310,49 @@
       return { typeForce: "", modeGroupe: hasSat ? "sat" : "site" };
     }
 
-    function construireLibelleLieu(resultat, modeGroupe) {
-      const nom = champCompletOuVide(resultat?.nom);
-      const typeLieu = champCompletOuVide(resultat?.typeLieu);
-      const sat = champCompletOuVide(resultat?.sat);
-      const base = [nom, typeLieu].filter(Boolean).join(separateurLibelle || " ");
-      if (modeGroupe === "sat" && sat) {
-        return [base, sat].filter(Boolean).join(separateurLibelle || " ") || resultat.titre || "Lieu";
-      }
-      return base || [nom, typeLieu, sat].filter(Boolean).join(separateurLibelle || " ") || resultat.titre || "Lieu";
+    function compterParType(resultats) {
+      return {
+        acces: resultats.filter((r) => r.type === "acces").length,
+        postes: resultats.filter((r) => r.type === "postes").length,
+        appareils: resultats.filter((r) => r.type === "appareils").length
+      };
     }
 
-    function construireCleGroupeRecherche(resultat, modeGroupe) {
-      const nom = champCompletOuVide(resultat?.nom);
-      const typeLieu = champCompletOuVide(resultat?.typeLieu);
-      const sat = champCompletOuVide(resultat?.sat);
-      const base = [nom, typeLieu].filter(Boolean).join(separateurLibelle || " ");
-      const brut = modeGroupe === "sat" ? [base, sat].filter(Boolean).join(separateurLibelle || " ") : base;
-      return normaliserTexteRecherche(brut || resultat?.titre || "");
-    }
-
-    function grouperResultatsRecherche(resultats, modeGroupe) {
-      const map = new Map();
-      for (const resultat of resultats) {
-        const cle = construireCleGroupeRecherche(resultat, modeGroupe);
-        if (!cle) continue;
-        if (!map.has(cle)) {
-          map.set(cle, {
-            cle,
-            libelle: construireLibelleLieu(resultat, modeGroupe),
-            sats: new Set(),
-            resultatsParType: { acces: [], postes: [], appareils: [] }
-          });
-        }
-        const groupe = map.get(cle);
-        if (resultat.type && groupe.resultatsParType[resultat.type]) {
-          groupe.resultatsParType[resultat.type].push(resultat);
-        }
-        const sat = champCompletOuVide(resultat?.sat);
-        if (sat) {
-          groupe.sats.add(sat);
+    function equilibrerResultatsMixtes(resultats, limite) {
+      const buckets = {
+        postes: resultats.filter((r) => r.type === "postes"),
+        appareils: resultats.filter((r) => r.type === "appareils"),
+        acces: resultats.filter((r) => r.type === "acces")
+      };
+      const ordre = ["postes", "appareils", "acces"];
+      const melange = [];
+      let aAjoute = true;
+      while (melange.length < limite && aAjoute) {
+        aAjoute = false;
+        for (const type of ordre) {
+          if (melange.length >= limite) {
+            break;
+          }
+          const next = buckets[type].shift();
+          if (next) {
+            melange.push(next);
+            aAjoute = true;
+          }
         }
       }
-
-      return Array.from(map.values())
-        .sort((a, b) => {
-          const totalA = a.resultatsParType.acces.length + a.resultatsParType.postes.length + a.resultatsParType.appareils.length;
-          const totalB = b.resultatsParType.acces.length + b.resultatsParType.postes.length + b.resultatsParType.appareils.length;
-          if (totalB !== totalA) return totalB - totalA;
-          return a.libelle.localeCompare(b.libelle, "fr", { sensitivity: "base" });
-        })
-        .slice(0, 12);
+      return melange;
     }
 
-    function construireMetaGroupe(groupe, modeGroupe) {
-      const metas = [];
-      if (modeGroupe === "site" && groupe.sats.size > 1) metas.push(`${groupe.sats.size} SAT`);
-      if (groupe.resultatsParType.acces.length) metas.push(`${groupe.resultatsParType.acces.length} accès`);
-      if (groupe.resultatsParType.postes.length) metas.push(`${groupe.resultatsParType.postes.length} poste${groupe.resultatsParType.postes.length > 1 ? "s" : ""}`);
-      if (groupe.resultatsParType.appareils.length) metas.push(`${groupe.resultatsParType.appareils.length} appareil${groupe.resultatsParType.appareils.length > 1 ? "s" : ""}`);
-      return metas.join(" • ");
-    }
-
-    function construireBoutonResultatNavigation(libelle, meta, attrs = {}, couleur = "#64748b") {
-      const attributs = Object.entries(attrs)
-        .map(([cle, valeur]) => `data-${echapperHtml(cle)}="${echapperHtml(String(valeur))}"`)
-        .join(" ");
-      return `<li><button class="recherche-resultat" type="button" ${attributs}><span class="recherche-resultat-titre"><span class="recherche-resultat-pastille" style="background-color:${echapperHtml(normaliserCouleurHex(couleur))};"></span>${echapperHtml(libelle)}<span class="recherche-resultat-type-inline">${echapperHtml(meta || "")}</span></span></button></li>`;
+    function filtrerResultatsPourAffichage(resultats, texte, limite = 9) {
+      const intention = determinerIntentionRecherche(texte);
+      const typeForce = intention.typeForce;
+      if (typeForce) {
+        return resultats.filter((r) => r.type === typeForce).slice(0, 24);
+      }
+      if (filtreTypeActif !== "tous") {
+        return resultats.filter((r) => r.type === filtreTypeActif).slice(0, 24);
+      }
+      return equilibrerResultatsMixtes(resultats, limite);
     }
 
     function construireBoutonResultatGeographique(resultat) {
@@ -414,6 +385,29 @@
       return `<li><button class="recherche-resultat" type="button" data-action="ouvrir-resultat" data-type="${echapperHtml(resultat.type)}" data-lng="${resultat.longitude}" data-lat="${resultat.latitude}"><span class="recherche-resultat-titre"><span class="recherche-resultat-pastille ${classePastille}" style="background-color:${couleurPastille};"></span>${titre}<span class="recherche-resultat-type-inline">${echapperHtml(meta)}</span></span></button></li>`;
     }
 
+    function construireBarreFiltres(typeForce, compteurs) {
+      if (typeForce) {
+        return "";
+      }
+      const options = [
+        { id: "tous", label: `Tous (${compteurs.acces + compteurs.postes + compteurs.appareils})` },
+        { id: "acces", label: `Accès (${compteurs.acces})` },
+        { id: "postes", label: `Postes (${compteurs.postes})` },
+        { id: "appareils", label: `Appareils (${compteurs.appareils})` }
+      ];
+      const boutons = options
+        .map((opt) => {
+          const actif = opt.id === filtreTypeActif;
+          const bg = actif ? "#dbeafe" : "#f1f5f9";
+          const fg = actif ? "#1e3a8a" : "#334155";
+          return `<button type="button" data-action="set-filtre" data-filtre="${opt.id}" style="border:0;border-radius:999px;padding:6px 10px;font:inherit;background:${bg};color:${fg};cursor:pointer;">${echapperHtml(
+            opt.label
+          )}</button>`;
+        })
+        .join("");
+      return `<li><div style="display:flex;gap:8px;flex-wrap:wrap;padding:6px 4px 10px 4px;">${boutons}</div></li>`;
+    }
+
     function afficherResultatsRecherche(resultats, options = {}) {
       if (!listeResultatsRecherche) {
         return;
@@ -421,7 +415,7 @@
 
       const texte = String(options.texte || dernierTexteRecherche || "");
       const intention = determinerIntentionRecherche(texte);
-      const modeGroupe = etatAffichageRecherche.modeGroupe || intention.modeGroupe || "site";
+      const compteurs = compterParType(resultats);
 
       if (!resultats.length) {
         listeResultatsRecherche.innerHTML = '<li class="recherche-resultat-vide">Aucun resultat</li>';
@@ -429,64 +423,13 @@
         return;
       }
 
-      if (intention.typeForce) {
-        const filtres = resultats.filter((entree) => entree.type === intention.typeForce);
-        const source = filtres.length ? filtres : resultats;
-        listeResultatsRecherche.innerHTML = source.slice(0, 24).map(construireBoutonResultatGeographique).join("");
-        ouvrirResultatsRecherche();
-        return;
-      }
-
-      const groupes = grouperResultatsRecherche(resultats, modeGroupe);
-      const groupeActif = groupes.find((groupe) => groupe.cle === etatAffichageRecherche.groupeCle) || null;
-
-      if (!groupes.length) {
-        listeResultatsRecherche.innerHTML = '<li class="recherche-resultat-vide">Aucun resultat</li>';
-        ouvrirResultatsRecherche();
-        return;
-      }
-
-      if (etatAffichageRecherche.mode === "categorie" && groupeActif) {
-        const categorie = etatAffichageRecherche.categorie;
-        const items = (groupeActif.resultatsParType[categorie] || []).slice(0, 24);
-        const retour = construireBoutonResultatNavigation("Retour", "Choix du lieu", { action: "retour-racine" }, "#64748b");
-        const retourGroupe = construireBoutonResultatNavigation(groupeActif.libelle, "Changer de catégorie", { action: "retour-groupe" }, "#334155");
-        listeResultatsRecherche.innerHTML = [retour, retourGroupe, ...items.map(construireBoutonResultatGeographique)].join("");
-        ouvrirResultatsRecherche();
-        return;
-      }
-
-      if (etatAffichageRecherche.mode === "groupe" && groupeActif) {
-        const retour = construireBoutonResultatNavigation("Retour", "Liste des lieux", { action: "retour-racine" }, "#64748b");
-        const boutons = [
-          { type: "acces", label: "Accès routier", couleur: "#8b5cf6" },
-          { type: "postes", label: "Postes", couleur: "#2563eb" },
-          { type: "appareils", label: "Appareils", couleur: "#111111" }
-        ]
-          .filter((entree) => (groupeActif.resultatsParType[entree.type] || []).length > 0)
-          .map((entree) =>
-            construireBoutonResultatNavigation(
-              entree.label,
-              `${groupeActif.resultatsParType[entree.type].length} résultat${groupeActif.resultatsParType[entree.type].length > 1 ? "s" : ""}`,
-              { action: "ouvrir-categorie", categorie: entree.type },
-              entree.couleur
-            )
-          );
-        listeResultatsRecherche.innerHTML = [retour, ...boutons].join("");
-        ouvrirResultatsRecherche();
-        return;
-      }
-
-      listeResultatsRecherche.innerHTML = groupes
-        .map((groupe) =>
-          construireBoutonResultatNavigation(
-            groupe.libelle,
-            construireMetaGroupe(groupe, modeGroupe),
-            { action: "ouvrir-groupe", "groupe-cle": groupe.cle },
-            "#475569"
-          )
-        )
-        .join("");
+      const visibles = filtrerResultatsPourAffichage(resultats, texte, 9);
+      const barre = construireBarreFiltres(intention.typeForce, compteurs);
+      const hint =
+        !intention.typeForce && filtreTypeActif === "tous"
+          ? '<li class="recherche-resultat-vide">Résultats mixtes. Astuce: tape "poste", "accès", "sat" ou "TT".</li>'
+          : "";
+      listeResultatsRecherche.innerHTML = `${barre}${hint}${visibles.map(construireBoutonResultatGeographique).join("")}`;
       ouvrirResultatsRecherche();
     }
 
@@ -497,14 +440,8 @@
       const texteModifie = texteNettoye !== dernierTexteRecherche;
       dernierTexteRecherche = texteNettoye;
       derniersResultatsRecherche = resultats;
-      if (texteModifie) {
-        const intention = determinerIntentionRecherche(texteNettoye);
-        etatAffichageRecherche = {
-          mode: "racine",
-          groupeCle: "",
-          categorie: "",
-          modeGroupe: intention.modeGroupe || "site"
-        };
+      if (texteModifie && determinerIntentionRecherche(texteNettoye).typeForce) {
+        filtreTypeActif = "tous";
       }
       afficherResultatsRecherche(resultats, { texte: texteNettoye });
       return resultats;
@@ -543,12 +480,7 @@
     function reinitialiserEtatRecherche() {
       dernierTexteRecherche = "";
       derniersResultatsRecherche = [];
-      etatAffichageRecherche = {
-        mode: "racine",
-        groupeCle: "",
-        categorie: "",
-        modeGroupe: "site"
-      };
+      filtreTypeActif = "tous";
     }
 
     function initialiser() {
@@ -596,7 +528,7 @@
         if (event.key !== "Enter") {
           return;
         }
-        const premierResultat = listeResultatsRecherche.querySelector(".recherche-resultat");
+        const premierResultat = listeResultatsRecherche.querySelector('[data-action="ouvrir-resultat"]');
         if (!premierResultat) {
           return;
         }
@@ -606,38 +538,14 @@
       });
 
       listeResultatsRecherche.addEventListener("click", async (event) => {
-        const boutonResultat = event.target.closest(".recherche-resultat");
+        const boutonResultat = event.target.closest('button[data-action], .recherche-resultat');
         if (!boutonResultat) {
           return;
         }
 
         const action = boutonResultat.dataset.action || "ouvrir-resultat";
-        if (action === "retour-racine") {
-          etatAffichageRecherche.mode = "racine";
-          etatAffichageRecherche.groupeCle = "";
-          etatAffichageRecherche.categorie = "";
-          afficherResultatsRecherche(derniersResultatsRecherche, { texte: dernierTexteRecherche });
-          return;
-        }
-
-        if (action === "ouvrir-groupe") {
-          etatAffichageRecherche.mode = "groupe";
-          etatAffichageRecherche.groupeCle = boutonResultat.dataset.groupeCle || "";
-          etatAffichageRecherche.categorie = "";
-          afficherResultatsRecherche(derniersResultatsRecherche, { texte: dernierTexteRecherche });
-          return;
-        }
-
-        if (action === "retour-groupe") {
-          etatAffichageRecherche.mode = "groupe";
-          etatAffichageRecherche.categorie = "";
-          afficherResultatsRecherche(derniersResultatsRecherche, { texte: dernierTexteRecherche });
-          return;
-        }
-
-        if (action === "ouvrir-categorie") {
-          etatAffichageRecherche.mode = "categorie";
-          etatAffichageRecherche.categorie = boutonResultat.dataset.categorie || "";
+        if (action === "set-filtre") {
+          filtreTypeActif = boutonResultat.dataset.filtre || "tous";
           afficherResultatsRecherche(derniersResultatsRecherche, { texte: dernierTexteRecherche });
           return;
         }
