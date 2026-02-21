@@ -1319,7 +1319,7 @@ body {
 }
 
 .popup-poste-ligne-titre {
-  margin: 6px 0 0;
+  margin: 10px 0 0;
   text-align: center;
   white-space: nowrap;
   overflow: hidden;
@@ -1494,6 +1494,7 @@ body {
 }
 
 .popup-itineraires-rss {
+  margin-top: 4px;
   grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
