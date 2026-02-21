@@ -1321,12 +1321,16 @@ body {
 .popup-poste-ligne-titre {
   margin: 10px 0 0;
   text-align: center;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  white-space: normal;
+  overflow: visible;
+  text-overflow: clip;
   font-size: 0.9rem;
   line-height: 1.25;
   color: var(--ui-text-secondary);
+}
+
+.popup-poste-telecommande-pills {
+  margin-bottom: 6px;
 }
 
 .popup-poste-pills {

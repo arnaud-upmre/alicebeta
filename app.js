@@ -2799,7 +2799,7 @@ function construireSectionPostes(feature) {
   const classeHors = poste.hors_patrimoine ? " popup-item-hors" : "";
   const codesTelecommande = extraireCodesTelecommande(poste.description_telecommande);
   const pillsTelecommande = codesTelecommande.length
-    ? `<div class="popup-appareils-multi-telecommande">${codesTelecommande
+    ? `<div class="popup-appareils-multi-telecommande popup-poste-telecommande-pills">${codesTelecommande
         .map((code) => `<span class="popup-tag-hp popup-tag-telecommande">${echapperHtml(code)}</span>`)
         .join("")}</div>`
     : "";
