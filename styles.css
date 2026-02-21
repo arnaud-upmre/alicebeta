@@ -1318,6 +1318,17 @@ body {
   text-align: center;
 }
 
+.popup-poste-ligne-titre {
+  margin: 6px 0 0;
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-size: 0.9rem;
+  line-height: 1.25;
+  color: var(--ui-text-secondary);
+}
+
 .popup-poste-pills {
   display: flex;
   justify-content: center;

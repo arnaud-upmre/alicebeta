@@ -2466,22 +2466,25 @@ function construireLignePkEtLigne(poste) {
     ? String(poste.numero_ligne).trim()
     : "";
   const lignes = champCompletOuVide(poste.lignes);
-
-  const elements = [];
-  if (pk) {
-    elements.push(`PK ${pk}`);
+  if (pk && numeroLigne && lignes) {
+    return `PK ${pk} sur la ligne n°${numeroLigne} – ${lignes}`;
   }
-  if (numeroLigne || lignes) {
-    const partieLigne = [
-      numeroLigne ? `sur la ligne n°${numeroLigne}` : "",
-      lignes || ""
-    ]
-      .filter(Boolean)
-      .join(" – ");
-    elements.push(partieLigne);
+  if (pk && numeroLigne && !lignes) {
+    return `PK ${pk} sur la ligne n°${numeroLigne}`;
   }
-
-  return elements.join(" ");
+  if (pk && !numeroLigne && lignes) {
+    return `PK ${pk} sur la ligne ${lignes}`;
+  }
+  if (!pk && numeroLigne && lignes) {
+    return `Ligne n°${numeroLigne} – ${lignes}`;
+  }
+  if (!pk && !numeroLigne && lignes) {
+    return `Ligne ${lignes}`;
+  }
+  if (!pk && numeroLigne && !lignes) {
+    return `Ligne n°${numeroLigne}`;
+  }
+  return "";
 }
 
 function construireLignePkEtLigneHtml(poste) {
@@ -2491,21 +2494,29 @@ function construireLignePkEtLigneHtml(poste) {
     : "";
   const lignes = champCompletOuVide(poste?.lignes);
 
-  const elements = [];
-  if (pk) {
-    elements.push(`<strong>PK ${echapperHtml(pk)}</strong>`);
-  }
-  if (numeroLigne || lignes) {
-    const partieLigne = [
-      numeroLigne ? `sur la ligne <strong>n°${echapperHtml(numeroLigne)}</strong>` : "",
-      lignes ? echapperHtml(lignes) : ""
-    ]
-      .filter(Boolean)
-      .join(" – ");
-    elements.push(partieLigne);
-  }
+  const pkHtml = pk ? `<strong>PK ${echapperHtml(pk)}</strong>` : "";
+  const numeroHtml = numeroLigne ? `<strong>n°${echapperHtml(numeroLigne)}</strong>` : "";
+  const lignesHtml = lignes ? echapperHtml(lignes) : "";
 
-  return elements.join(" ");
+  if (pk && numeroLigne && lignes) {
+    return `${pkHtml} sur la ligne ${numeroHtml} – ${lignesHtml}`;
+  }
+  if (pk && numeroLigne && !lignes) {
+    return `${pkHtml} sur la ligne ${numeroHtml}`;
+  }
+  if (pk && !numeroLigne && lignes) {
+    return `${pkHtml} sur la ligne ${lignesHtml}`;
+  }
+  if (!pk && numeroLigne && lignes) {
+    return `Ligne ${numeroHtml} – ${lignesHtml}`;
+  }
+  if (!pk && !numeroLigne && lignes) {
+    return `Ligne ${lignesHtml}`;
+  }
+  if (!pk && numeroLigne && !lignes) {
+    return `Ligne ${numeroHtml}`;
+  }
+  return "";
 }
 
 function construireDetailsPoste(poste) {
@@ -2618,14 +2629,6 @@ function construireSectionRssPoste(poste) {
     .join("");
 
   return `<section class="popup-section"><p class="popup-poste-rss-titre">📞 RSS ${echapperHtml(libelleTable)}</p><div class="popup-itineraires popup-itineraires-rss">${boutons}</div></section>`;
-}
-
-function construireSectionPkPoste(poste) {
-  const lignePkHtml = construireLignePkEtLigneHtml(poste);
-  if (!lignePkHtml) {
-    return "";
-  }
-  return `<section class="popup-section"><p class="popup-poste-ligne">🚆 ${lignePkHtml}</p></section>`;
 }
 
 function construireSectionInformationsPoste(poste) {
@@ -2800,12 +2803,12 @@ function construireSectionPostes(feature) {
         .map((code) => `<span class="popup-tag-hp popup-tag-telecommande">${echapperHtml(code)}</span>`)
         .join("")}</div>`
     : "";
+  const lignePkSousTitre = construireLignePkEtLigneHtml(poste);
   const sectionRss = construireSectionRssPoste(poste);
-  const sectionPk = construireSectionPkPoste(poste);
   const sectionInformations = construireSectionInformationsPoste(poste);
   const sectionContact = construireSectionContactPoste(poste);
 
-  return `<section class="popup-section${classeHors}"><p class="popup-poste-entete-principal">📍 ${echapperHtml(titre)}</p>${pillsTelecommande}</section>${sectionRss}${sectionPk}${sectionInformations}${sectionContact}`;
+  return `<section class="popup-section${classeHors}"><p class="popup-poste-entete-principal">📍 ${echapperHtml(titre)}</p>${pillsTelecommande}${lignePkSousTitre ? `<p class="popup-poste-ligne-titre">🚆 ${lignePkSousTitre}</p>` : ""}</section>${sectionRss}${sectionInformations}${sectionContact}`;
 }
 
 function attacherActionsPopupInterne() {
@@ -3385,7 +3388,7 @@ function construirePopupDepuisFeatures(longitude, latitude, featurePostes, featu
   });
   actionsExplorerEquipements.push({
     label: "Google Maps",
-    html: `<a class="popup-bouton-itineraire" href="${echapperHtml(lienGoogleMapsPoint)}" target="_blank" rel="noopener noreferrer">🌎 Google Maps</a>`
+    html: `<a class="popup-bouton-itineraire" href="${echapperHtml(lienGoogleMapsPoint)}" target="_blank" rel="noopener noreferrer">🗺️ Google Maps</a>`
   });
   const actionsExploreesTriees = actionsExplorerEquipements
     .sort((a, b) => a.label.localeCompare(b.label, "fr", { sensitivity: "base", numeric: true }))
@@ -3433,7 +3436,7 @@ function construirePopupDepuisFeatures(longitude, latitude, featurePostes, featu
     : "";
   const sectionLocaliser = featurePostes
     ? ""
-    : `<section class="popup-section popup-section-localiser"><div class="popup-itineraires popup-itineraires-poste-actions"><button class="popup-bouton-itineraire popup-bouton-localiser" id="popup-localiser-carte" type="button" data-lng="${longitude}" data-lat="${latitude}">📍 Localiser sur la carte</button><a class="popup-bouton-itineraire" href="${echapperHtml(lienGoogleMapsPoint)}" target="_blank" rel="noopener noreferrer">🌎 Google Maps</a></div></section>`;
+    : `<section class="popup-section popup-section-localiser"><div class="popup-itineraires popup-itineraires-poste-actions"><button class="popup-bouton-itineraire popup-bouton-localiser" id="popup-localiser-carte" type="button" data-lng="${longitude}" data-lat="${latitude}">📍 Localiser sur la carte</button><a class="popup-bouton-itineraire" href="${echapperHtml(lienGoogleMapsPoint)}" target="_blank" rel="noopener noreferrer">🗺️ Google Maps</a></div></section>`;
   const contenuFiche = `<div class="popup-carte">${sections.join("")}${sectionRssAssocieDepuisAcces}${sectionItineraire}${sectionActionsPoste}${sectionCodesAvecPills}${sectionLocaliser}${sectionRetourPoste}</div>`;
 
   let contenuVueAppareils = "";
