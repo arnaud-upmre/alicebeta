@@ -2867,15 +2867,26 @@ function attacherActionsPopupInterne() {
   const boutonsLiaison = racinePopup.querySelectorAll(".popup-bouton-liaison[data-target-type][data-lng][data-lat]");
   for (const boutonLiaison of boutonsLiaison) {
     boutonLiaison.addEventListener("click", async () => {
+      const lireNombreAttribut = (nomAttribut) => {
+        const brut = boutonLiaison.getAttribute(nomAttribut);
+        if (brut == null) {
+          return Number.NaN;
+        }
+        const texte = String(brut).trim();
+        if (!texte) {
+          return Number.NaN;
+        }
+        return Number(texte);
+      };
       const typeCible = String(boutonLiaison.getAttribute("data-target-type") || "postes").trim() || "postes";
-      const longitude = Number(boutonLiaison.getAttribute("data-lng"));
-      const latitude = Number(boutonLiaison.getAttribute("data-lat"));
-      const origineAccesLng = Number(boutonLiaison.getAttribute("data-origin-acces-lng"));
-      const origineAccesLat = Number(boutonLiaison.getAttribute("data-origin-acces-lat"));
-      const originePosteLng = Number(boutonLiaison.getAttribute("data-origin-poste-lng"));
-      const originePosteLat = Number(boutonLiaison.getAttribute("data-origin-poste-lat"));
-      const origineAppareilLng = Number(boutonLiaison.getAttribute("data-origin-appareil-lng"));
-      const origineAppareilLat = Number(boutonLiaison.getAttribute("data-origin-appareil-lat"));
+      const longitude = lireNombreAttribut("data-lng");
+      const latitude = lireNombreAttribut("data-lat");
+      const origineAccesLng = lireNombreAttribut("data-origin-acces-lng");
+      const origineAccesLat = lireNombreAttribut("data-origin-acces-lat");
+      const originePosteLng = lireNombreAttribut("data-origin-poste-lng");
+      const originePosteLat = lireNombreAttribut("data-origin-poste-lat");
+      const origineAppareilLng = lireNombreAttribut("data-origin-appareil-lng");
+      const origineAppareilLat = lireNombreAttribut("data-origin-appareil-lat");
       if (!Number.isFinite(longitude) || !Number.isFinite(latitude)) {
         return;
       }
