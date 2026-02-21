@@ -1,7 +1,7 @@
 // Centre initial de la carte (France metropolitaine).
 const CENTRE_INITIAL = [2.35, 48.85];
 const ZOOM_INITIAL = 6;
-const ZOOM_MAX = 19;
+const ZOOM_MAX = 21;
 const SOURCE_APPAREILS = "appareils-source";
 const COUCHE_APPAREILS = "appareils-points";
 const COUCHE_APPAREILS_GROUPES = "appareils-groupes";
@@ -11,6 +11,9 @@ const COUCHE_ACCES_GROUPES = "acces-groupes";
 const SOURCE_POSTES = "postes-source";
 const COUCHE_POSTES = "postes-points";
 const COUCHE_POSTES_GROUPES = "postes-groupes";
+const SOURCE_PK = "pk-source";
+const COUCHE_PK_POINTS = "pk-points";
+const COUCHE_PK_LABELS = "pk-labels";
 const SOURCE_LIGNES = "openrailwaymap-source";
 const COUCHE_LIGNES = "openrailwaymap-lignes";
 const SOURCE_VITESSE_LIGNE = "openrailwaymap-maxspeed-source";
@@ -28,6 +31,9 @@ const SEPARATEUR_LIBELLE = " ";
 const APPAREILS_VIDE = { type: "FeatureCollection", features: [] };
 const ACCES_VIDE = { type: "FeatureCollection", features: [] };
 const POSTES_VIDE = { type: "FeatureCollection", features: [] };
+const PK_VIDE = { type: "FeatureCollection", features: [] };
+const PK_ZOOM_MIN = 11;
+const PK_TOLERANCE_M = 50;
 
 // Style raster OSM (plan open).
 const stylePlanOsm = {
@@ -90,14 +96,18 @@ let ignAutomatiqueActif = true;
 let afficherAppareils = true;
 let afficherAcces = true;
 let afficherPostes = true;
+let afficherPk = false;
 let afficherLignes = false;
 let afficherVitesseLigne = false;
 let donneesAppareils = null;
 let donneesAcces = null;
 let donneesPostes = null;
+let donneesPk = null;
+let donneesPkAffichees = PK_VIDE;
 let promesseChargementAppareils = null;
 let promesseChargementAcces = null;
 let promesseChargementPostes = null;
+let promesseChargementPk = null;
 let popupCarte = null;
 let initialisationDonneesLancee = false;
 let totalAppareilsBrut = 0;
@@ -603,6 +613,7 @@ const boutonLocalisationMobile = document.getElementById("bouton-localisation-mo
 const caseAppareils = document.querySelector('input[name="filtre-appareils"]');
 const caseAcces = document.querySelector('input[name="filtre-acces"]');
 const casePostes = document.querySelector('input[name="filtre-postes"]');
+const casePk = document.querySelector('input[name="filtre-pk"]');
 const caseLignes = document.querySelector('input[name="filtre-lignes"]');
 const caseVitesseLigne = document.querySelector('input[name="filtre-vitesse-ligne"]');
 const compteurAppareils = document.getElementById("compteur-appareils");
@@ -642,6 +653,7 @@ let moduleItineraire = null;
 let promesseChargementModuleItineraire = null;
 let moduleLocalisation = null;
 let promesseChargementModuleLocalisation = null;
+let rafMiseAJourPk = null;
 
 class ControleActionsCarte {
   onAdd() {
@@ -1523,11 +1535,21 @@ actualiserPlaceholderRecherche();
 window.addEventListener("resize", () => {
   actualiserPlaceholderRecherche();
   planifierResizeCarte();
+  planifierMiseAJourPk();
 }, { passive: true });
-window.addEventListener("orientationchange", planifierResizeCarte, { passive: true });
+window.addEventListener("orientationchange", () => {
+  planifierResizeCarte();
+  planifierMiseAJourPk();
+}, { passive: true });
 if (window.visualViewport) {
-  window.visualViewport.addEventListener("resize", planifierResizeCarte, { passive: true });
-  window.visualViewport.addEventListener("scroll", planifierResizeCarte, { passive: true });
+  window.visualViewport.addEventListener("resize", () => {
+    planifierResizeCarte();
+    planifierMiseAJourPk();
+  }, { passive: true });
+  window.visualViewport.addEventListener("scroll", () => {
+    planifierResizeCarte();
+    planifierMiseAJourPk();
+  }, { passive: true });
 }
 
 function calculerTotalEntrees(donnees, cleCount) {
@@ -1589,6 +1611,168 @@ function mettreAJourCompteursFiltres() {
     const totalPostes = donneesPostes ? totalPostesBrut : calculerTotalEntrees(donneesPostes, "postes_count");
     compteurPostes.textContent = `(${totalPostes})`;
   }
+}
+
+function estAffichageMobilePk() {
+  return window.matchMedia("(max-width: 720px), (pointer: coarse)").matches;
+}
+
+function determinerPasPkMetres(zoomEffectif) {
+  if (zoomEffectif < PK_ZOOM_MIN) {
+    return Infinity;
+  }
+  if (zoomEffectif < 12) {
+    return 15000;
+  }
+  if (zoomEffectif < 13) {
+    return 10000;
+  }
+  if (zoomEffectif < 14) {
+    return 5000;
+  }
+  if (zoomEffectif < 15) {
+    return 2000;
+  }
+  if (zoomEffectif < 16) {
+    return 1000;
+  }
+  if (zoomEffectif < 17) {
+    return 500;
+  }
+  if (zoomEffectif < 18) {
+    return 200;
+  }
+  return 0;
+}
+
+function formaterPkAffichage(valeurPk) {
+  const texte = String(valeurPk ?? "").trim().replace(",", ".");
+  const nombre = Number(texte);
+  if (!Number.isFinite(nombre)) {
+    return texte ? `PK ${texte}` : "PK";
+  }
+
+  const signe = nombre < 0 ? "-" : "";
+  const absolu = Math.abs(nombre);
+  let kilometres = Math.floor(absolu);
+  let metres = Math.round((absolu - kilometres) * 1000);
+  if (metres >= 1000) {
+    kilometres += 1;
+    metres = 0;
+  }
+  const metresBornes = Math.max(0, metres);
+  return `PK ${signe}${kilometres}+${String(metresBornes).padStart(3, "0")}`;
+}
+
+function estLongitudeDansBornes(longitude, ouest, est) {
+  if (ouest <= est) {
+    return longitude >= ouest && longitude <= est;
+  }
+  return longitude >= ouest || longitude <= est;
+}
+
+function estCoordonneeDansVue(bounds, longitude, latitude) {
+  if (!bounds) {
+    return false;
+  }
+  const sud = bounds.getSouth();
+  const nord = bounds.getNorth();
+  const ouest = bounds.getWest();
+  const est = bounds.getEast();
+  if (latitude < sud || latitude > nord) {
+    return false;
+  }
+  return estLongitudeDansBornes(longitude, ouest, est);
+}
+
+function filtrerPkPourVue() {
+  if (!donneesPk?.features?.length) {
+    return PK_VIDE;
+  }
+
+  const bonusMobile = estAffichageMobilePk() ? 1 : 0;
+  const zoomEffectif = carte.getZoom() + bonusMobile;
+  const pasMetres = determinerPasPkMetres(zoomEffectif);
+  if (!Number.isFinite(pasMetres)) {
+    return PK_VIDE;
+  }
+
+  const bounds = carte.getBounds();
+  const centreLat = carte.getCenter().lat;
+  const metresParDegLat = 111320;
+  const metresParDegLon = Math.max(1, 111320 * Math.cos((centreLat * Math.PI) / 180));
+  const espacementMinMetres = pasMetres > 0 ? Math.max(50, pasMetres - PK_TOLERANCE_M) : 0;
+  const pasDegLat = espacementMinMetres > 0 ? espacementMinMetres / metresParDegLat : 0;
+  const pasDegLon = espacementMinMetres > 0 ? espacementMinMetres / metresParDegLon : 0;
+  const cellules = new Set();
+  const features = [];
+
+  for (const feature of donneesPk.features) {
+    const [longitude, latitude] = feature?.geometry?.coordinates || [];
+    if (!Number.isFinite(longitude) || !Number.isFinite(latitude)) {
+      continue;
+    }
+    if (!estCoordonneeDansVue(bounds, longitude, latitude)) {
+      continue;
+    }
+
+    if (espacementMinMetres > 0) {
+      const i = Math.floor(latitude / pasDegLat);
+      const j = Math.floor(longitude / pasDegLon);
+      const cleCellule = `${i}:${j}`;
+      if (cellules.has(cleCellule)) {
+        continue;
+      }
+      cellules.add(cleCellule);
+    }
+
+    const properties = {
+      ...(feature?.properties || {}),
+      pk_affichage: formaterPkAffichage(feature?.properties?.pk)
+    };
+    features.push({
+      ...feature,
+      properties
+    });
+  }
+
+  return { type: "FeatureCollection", features };
+}
+
+function mettreAJourAffichagePk() {
+  if (!carte.isStyleLoaded()) {
+    return;
+  }
+
+  const sourcePk = carte.getSource(SOURCE_PK);
+  if (!sourcePk) {
+    return;
+  }
+
+  const bonusMobile = estAffichageMobilePk() ? 1 : 0;
+  const zoomEffectif = carte.getZoom() + bonusMobile;
+  const doitAfficher = afficherPk && Boolean(donneesPk?.features?.length) && zoomEffectif >= PK_ZOOM_MIN;
+  donneesPkAffichees = doitAfficher ? filtrerPkPourVue() : PK_VIDE;
+  sourcePk.setData(donneesPkAffichees);
+
+  const visibilitePoints = doitAfficher ? "visible" : "none";
+  const visibiliteLabels = doitAfficher && zoomEffectif >= 14 ? "visible" : "none";
+  if (carte.getLayer(COUCHE_PK_POINTS)) {
+    carte.setLayoutProperty(COUCHE_PK_POINTS, "visibility", visibilitePoints);
+  }
+  if (carte.getLayer(COUCHE_PK_LABELS)) {
+    carte.setLayoutProperty(COUCHE_PK_LABELS, "visibility", visibiliteLabels);
+  }
+}
+
+function planifierMiseAJourPk() {
+  if (rafMiseAJourPk !== null) {
+    window.cancelAnimationFrame(rafMiseAJourPk);
+  }
+  rafMiseAJourPk = window.requestAnimationFrame(() => {
+    rafMiseAJourPk = null;
+    mettreAJourAffichagePk();
+  });
 }
 
 function appliquerCouchesDonnees() {
@@ -1777,6 +1961,50 @@ function appliquerCouchesDonnees() {
     });
   }
 
+  if (!carte.getSource(SOURCE_PK)) {
+    carte.addSource(SOURCE_PK, {
+      type: "geojson",
+      data: PK_VIDE
+    });
+  }
+
+  if (!carte.getLayer(COUCHE_PK_POINTS)) {
+    carte.addLayer({
+      id: COUCHE_PK_POINTS,
+      type: "circle",
+      source: SOURCE_PK,
+      paint: {
+        "circle-radius": ["interpolate", ["linear"], ["zoom"], 11, 1.2, 18, 1.8, 21, 2.2],
+        "circle-color": "#1d4ed8",
+        "circle-opacity": 0.5,
+        "circle-stroke-color": "#ffffff",
+        "circle-stroke-width": 0.7
+      }
+    });
+  }
+
+  if (!carte.getLayer(COUCHE_PK_LABELS)) {
+    carte.addLayer({
+      id: COUCHE_PK_LABELS,
+      type: "symbol",
+      source: SOURCE_PK,
+      layout: {
+        "text-field": ["coalesce", ["get", "pk_affichage"], ["get", "pk_label"], ["concat", "PK ", ["to-string", ["get", "pk"]]]],
+        "text-font": ["Open Sans Bold"],
+        "text-size": ["interpolate", ["linear"], ["zoom"], 14, 9.5, 17, 10.8, 21, 11.8],
+        "text-offset": [0, 1.1],
+        "text-allow-overlap": false,
+        "text-padding": 2
+      },
+      paint: {
+        "text-color": "#0f172a",
+        "text-halo-color": "#ffffff",
+        "text-halo-width": 2.6,
+        "text-halo-blur": 0.3
+      }
+    });
+  }
+
   carte.setLayoutProperty(
     COUCHE_APPAREILS,
     "visibility",
@@ -1801,6 +2029,7 @@ function appliquerCouchesDonnees() {
   );
   carte.setLayoutProperty(COUCHE_LIGNES, "visibility", afficherLignes ? "visible" : "none");
   carte.setLayoutProperty(COUCHE_VITESSE_LIGNE, "visibility", afficherVitesseLigne ? "visible" : "none");
+  mettreAJourAffichagePk();
 }
 
 function restaurerEtatFiltres() {
@@ -1812,6 +2041,9 @@ function restaurerEtatFiltres() {
   }
   if (casePostes) {
     casePostes.checked = afficherPostes;
+  }
+  if (casePk) {
+    casePk.checked = afficherPk;
   }
   if (caseLignes) {
     caseLignes.checked = afficherLignes;
@@ -1848,6 +2080,14 @@ function remonterCouchesDonnees() {
   if (carte.getLayer(COUCHE_APPAREILS)) {
     carte.moveLayer(COUCHE_APPAREILS);
   }
+
+  if (carte.getLayer(COUCHE_PK_POINTS)) {
+    carte.moveLayer(COUCHE_PK_POINTS);
+  }
+
+  if (carte.getLayer(COUCHE_PK_LABELS)) {
+    carte.moveLayer(COUCHE_PK_LABELS);
+  }
 }
 
 function restaurerAffichageDonnees() {
@@ -1857,6 +2097,7 @@ function restaurerAffichageDonnees() {
 
   appliquerCouchesDonnees();
   remonterCouchesDonnees();
+  planifierMiseAJourPk();
 }
 
 function planifierRestaurationFiltres() {
@@ -1976,6 +2217,32 @@ async function chargerDonneesPostes() {
   }
 
   return promesseChargementPostes;
+}
+
+async function chargerDonneesPk() {
+  if (donneesPk) {
+    return donneesPk;
+  }
+
+  if (!promesseChargementPk) {
+    promesseChargementPk = fetch("./pk.geojson", { cache: "default" })
+      .then((reponse) => {
+        if (!reponse.ok) {
+          throw new Error(`HTTP ${reponse.status}`);
+        }
+        return reponse.json();
+      })
+      .then((geojson) => {
+        const features = Array.isArray(geojson?.features) ? geojson.features : [];
+        donneesPk = { type: "FeatureCollection", features };
+        return donneesPk;
+      })
+      .finally(() => {
+        promesseChargementPk = null;
+      });
+  }
+
+  return promesseChargementPk;
 }
 
 async function chargerCompteurPostes() {
@@ -4580,7 +4847,7 @@ if (carte.loaded()) {
 bloquerZoomTactileHorsCarte();
 
 carte.on("styledata", () => {
-  if (!(afficherAppareils || afficherAcces || afficherPostes || afficherLignes || afficherVitesseLigne)) {
+  if (!(afficherAppareils || afficherAcces || afficherPostes || afficherPk || afficherLignes || afficherVitesseLigne)) {
     return;
   }
   if (!carte.isStyleLoaded()) {
@@ -4621,7 +4888,9 @@ for (const option of optionsFond) {
 
 carte.on("zoomend", () => {
   appliquerFondIgnAutomatique();
+  planifierMiseAJourPk();
 });
+carte.on("moveend", planifierMiseAJourPk);
 
 boutonFonds.addEventListener("click", (event) => {
   event.stopPropagation();
@@ -4698,6 +4967,29 @@ if (casePostes) {
 
     appliquerCouchesDonnees();
     remonterCouchesDonnees();
+  });
+}
+
+if (casePk) {
+  casePk.addEventListener("change", async () => {
+    afficherPk = casePk.checked;
+    if (afficherPk) {
+      casePk.disabled = true;
+      try {
+        await chargerDonneesPk();
+      } catch (erreur) {
+        afficherPk = false;
+        casePk.checked = false;
+        console.error("Impossible de charger pk.geojson", erreur);
+        alert("Chargement des PK impossible. Vérifie la présence de pk.geojson.");
+      } finally {
+        casePk.disabled = false;
+      }
+    }
+
+    appliquerCouchesDonnees();
+    remonterCouchesDonnees();
+    planifierMiseAJourPk();
   });
 }
 
