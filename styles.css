@@ -364,6 +364,18 @@ body {
   width: auto;
 }
 
+.modal-localisation-voir-plus-wrap {
+  display: flex;
+  justify-content: center;
+  padding-top: 2px;
+}
+
+.modal-localisation-voir-plus {
+  min-height: 36px;
+  padding-inline: 14px;
+  font-size: 0.8rem;
+}
+
 .modal-itineraire-champs {
   display: grid;
   gap: 8px;

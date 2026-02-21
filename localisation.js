@@ -1,4 +1,6 @@
 (function () {
+  const TAILLE_PAGE_RESULTATS = 8;
+
   window.creerModuleLocalisationAlice = function creerModuleLocalisationAlice(config) {
     const {
       carte,
@@ -10,7 +12,6 @@
       getDonneesAppareils,
       construireTitreNomTypeSat,
       construireTitreNomTypeSatAcces,
-      construireContexteNomTypeSat,
       estHorsPatrimoine,
       echapperHtml,
       formaterDistanceMetres,
@@ -28,6 +29,8 @@
     const zoneEtat = document.getElementById("localisation-etat");
     const listeResultats = document.getElementById("localisation-resultats");
     const boutonFermer = document.getElementById("modal-localisation-fermer");
+    let tousResultats = [];
+    let limiteAffichage = 0;
 
     function estOuverte() {
       return Boolean(modal?.classList.contains("est-visible"));
@@ -62,6 +65,8 @@
       if (!listeResultats) {
         return;
       }
+      tousResultats = [];
+      limiteAffichage = 0;
       listeResultats.innerHTML = "";
     }
 
@@ -94,12 +99,55 @@
       });
     }
 
-    function formaterTypeResultat(type) {
-      if (type === "postes") {
-        return "Poste";
-      }
+    function normaliserChampTexte(valeur) {
+      return String(valeur || "").trim();
+    }
+
+    function determinerIconeResultat(type, feature) {
+      const proprietes = feature?.properties || {};
       if (type === "acces") {
-        return "Acces";
+        return "🚙";
+      }
+      if (type === "appareils") {
+        return "💡";
+      }
+      const estHorsOuSpecial =
+        estHorsPatrimoine(proprietes?.hors_patrimoine) ||
+        estHorsPatrimoine(proprietes?.special) ||
+        Number(proprietes?.hors_patrimoine_count) > 0;
+      return estHorsOuSpecial ? "🗂️" : "📍";
+    }
+
+    function formaterTypeResultat(type) {
+      if (type === "postes") return "Poste";
+      if (type === "acces") return "Acces";
+      return "Appareil";
+    }
+
+    function construireTitreResultatAppareil(feature) {
+      const proprietes = feature?.properties || {};
+      let appareils = [];
+      try {
+        appareils = JSON.parse(proprietes.appareils_liste_json || "[]");
+      } catch {
+        appareils = [];
+      }
+
+      const premier = appareils[0] || proprietes;
+      const codeAppareil = normaliserChampTexte(premier?.appareil);
+      const nomPoste = normaliserChampTexte(premier?.nom);
+      if (codeAppareil && nomPoste) {
+        return `${codeAppareil} (${nomPoste})`;
+      }
+      if (codeAppareil) {
+        return codeAppareil;
+      }
+      if (nomPoste) {
+        return nomPoste;
+      }
+      const nombre = Number(proprietes?.appareils_count);
+      if (Number.isFinite(nombre) && nombre > 1) {
+        return `${nombre} appareils`;
       }
       return "Appareil";
     }
@@ -120,19 +168,10 @@
           }) || "Acces"
         );
       }
-
-      const titre = construireContexteNomTypeSat(proprietes);
-      const nombre = Number(proprietes?.appareils_count);
-      if (titre) {
-        return titre;
-      }
-      if (Number.isFinite(nombre) && nombre > 1) {
-        return `${nombre} appareils`;
-      }
-      return "Appareil";
+      return construireTitreResultatAppareil(feature);
     }
 
-    function construireResultatsProximite(longitude, latitude, limite) {
+    function construireResultatsProximite(longitude, latitude) {
       const pointUtilisateur = [longitude, latitude];
       const ensembles = [
         { type: "postes", donnees: getDonneesPostes?.() },
@@ -153,30 +192,32 @@
             longitude: lng,
             latitude: lat,
             distanceMetres,
+            icone: determinerIconeResultat(type, feature),
             titre: construireTitreResultat(type, feature),
             typeLibelle: formaterTypeResultat(type)
           });
         }
       }
 
-      return resultats
-        .sort((a, b) => a.distanceMetres - b.distanceMetres)
-        .slice(0, Math.max(1, Number(limite) || 8));
+      return resultats.sort((a, b) => a.distanceMetres - b.distanceMetres);
     }
 
-    function afficherResultats(resultats) {
+    function afficherResultats() {
       if (!listeResultats) {
         return;
       }
-      if (!Array.isArray(resultats) || !resultats.length) {
+      if (!Array.isArray(tousResultats) || !tousResultats.length) {
         listeResultats.innerHTML = "";
         return;
       }
 
-      listeResultats.innerHTML = resultats
+      const visibles = tousResultats.slice(0, limiteAffichage);
+      const peutVoirPlus = limiteAffichage < tousResultats.length;
+
+      listeResultats.innerHTML = visibles
         .map((resultat) => {
           return `<li class="modal-localisation-resultat-item"><div class="modal-localisation-resultat-entete"><strong>${echapperHtml(
-            resultat.titre
+            `${resultat.icone} ${resultat.titre}`
           )}</strong><span>${echapperHtml(resultat.typeLibelle)}</span></div><div class="modal-localisation-resultat-pied"><span class="modal-localisation-resultat-distance">${echapperHtml(
             formaterDistanceMetres(resultat.distanceMetres)
           )}</span><button class="popup-bouton-itineraire modal-localisation-resultat-action" type="button" data-type="${echapperHtml(
@@ -184,6 +225,13 @@
           )}" data-lng="${resultat.longitude}" data-lat="${resultat.latitude}">Voir la fiche</button></div></li>`;
         })
         .join("");
+
+      if (peutVoirPlus) {
+        listeResultats.insertAdjacentHTML(
+          "beforeend",
+          '<li class="modal-localisation-voir-plus-wrap"><button class="popup-bouton-itineraire modal-localisation-voir-plus" type="button">➕ Voir Plus</button></li>'
+        );
+      }
     }
 
     async function ouvrirResultat(type, longitude, latitude) {
@@ -247,14 +295,16 @@
           return;
         }
 
-        const resultats = construireResultatsProximite(longitude, latitude, 8);
-        if (!resultats.length) {
+        tousResultats = construireResultatsProximite(longitude, latitude);
+        limiteAffichage = Math.min(TAILLE_PAGE_RESULTATS, tousResultats.length);
+
+        if (!tousResultats.length) {
           definirEtat("Aucun resultat proche trouve.", true);
           return;
         }
 
-        definirEtat(`${resultats.length} resultats proches trouves.`);
-        afficherResultats(resultats);
+        definirEtat(`${tousResultats.length} resultats proches trouves.`);
+        afficherResultats();
       } catch (erreur) {
         const message = String(erreur?.message || "Impossible de recuperer votre position.");
         if (avecPanneau) {
@@ -274,6 +324,14 @@
     });
 
     listeResultats?.addEventListener("click", (event) => {
+      const boutonVoirPlus =
+        event.target instanceof Element ? event.target.closest(".modal-localisation-voir-plus") : null;
+      if (boutonVoirPlus) {
+        limiteAffichage = Math.min(tousResultats.length, limiteAffichage + TAILLE_PAGE_RESULTATS);
+        afficherResultats();
+        return;
+      }
+
       const bouton = event.target instanceof Element ? event.target.closest(".modal-localisation-resultat-action") : null;
       if (!bouton) {
         return;

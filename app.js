@@ -1109,7 +1109,6 @@ async function obtenirModuleLocalisation() {
     getDonneesAppareils: () => donneesAppareils,
     construireTitreNomTypeSat,
     construireTitreNomTypeSatAcces,
-    construireContexteNomTypeSat,
     estHorsPatrimoine,
     echapperHtml,
     formaterDistanceMetres,
