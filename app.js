@@ -3388,7 +3388,7 @@ function construirePopupDepuisFeatures(longitude, latitude, featurePostes, featu
   });
   actionsExplorerEquipements.push({
     label: "Power BI",
-    html: `<a class="popup-bouton-itineraire" href="${echapperHtml(lienPowerBi)}" target="_blank" rel="noopener noreferrer">⚡️ Patrimoine</a>`
+    html: `<a class="popup-bouton-itineraire" href="${echapperHtml(lienPowerBi)}" target="_blank" rel="noopener noreferrer">⚡️ Patrimoine SPOT</a>`
   });
   const actionsExploreesTriees = actionsExplorerEquipements
     .sort((a, b) => a.label.localeCompare(b.label, "fr", { sensitivity: "base", numeric: true }))
@@ -3436,7 +3436,7 @@ function construirePopupDepuisFeatures(longitude, latitude, featurePostes, featu
     : "";
   const sectionLocaliser = featurePostes
     ? ""
-    : `<section class="popup-section popup-section-localiser"><div class="popup-itineraires popup-itineraires-poste-actions"><button class="popup-bouton-itineraire popup-bouton-localiser" id="popup-localiser-carte" type="button" data-lng="${longitude}" data-lat="${latitude}">📍 Localiser sur la carte</button><a class="popup-bouton-itineraire" href="${echapperHtml(lienPowerBi)}" target="_blank" rel="noopener noreferrer">⚡️ Patrimoine</a></div></section>`;
+    : `<section class="popup-section popup-section-localiser"><div class="popup-itineraires popup-itineraires-poste-actions"><button class="popup-bouton-itineraire popup-bouton-localiser" id="popup-localiser-carte" type="button" data-lng="${longitude}" data-lat="${latitude}">📍 Localiser sur la carte</button><a class="popup-bouton-itineraire" href="${echapperHtml(lienPowerBi)}" target="_blank" rel="noopener noreferrer">⚡️ Patrimoine SPOT</a></div></section>`;
   const contenuFiche = `<div class="popup-carte">${sections.join("")}${sectionRssAssocieDepuisAcces}${sectionItineraire}${sectionActionsPoste}${sectionCodesAvecPills}${sectionLocaliser}${sectionRetourPoste}</div>`;
 
   let contenuVueAppareils = "";
