@@ -2430,8 +2430,7 @@ function trouverChoixPostesDepuisAcces(featureAcces) {
 
   const clesCorrespondance = new Set(accesListe.map((acces) => construireCleCorrespondance(acces)).filter(Boolean));
   const clesNomTypeSat = new Set(accesListe.map((acces) => construireCleNomTypeSat(acces)).filter(Boolean));
-  const clesNomType = new Set(accesListe.map((acces) => construireCleNomType(acces)).filter(Boolean));
-  if (!clesCorrespondance.size && !clesNomTypeSat.size && !clesNomType.size) {
+  if (!clesCorrespondance.size && !clesNomTypeSat.size) {
     return [];
   }
 
@@ -2451,8 +2450,7 @@ function trouverChoixPostesDepuisAcces(featureAcces) {
     for (const poste of postesListe) {
       const match =
         clesCorrespondance.has(construireCleCorrespondance(poste)) ||
-        clesNomTypeSat.has(construireCleNomTypeSat(poste)) ||
-        clesNomType.has(construireCleNomType(poste));
+        clesNomTypeSat.has(construireCleNomTypeSat(poste));
       if (!match) {
         continue;
       }
@@ -3197,15 +3195,7 @@ function attacherActionsPopupInterne() {
     });
   }
 
-  const boutonRetourPoste = racinePopup.querySelector("#popup-retour-poste");
   const selectRetourPoste = racinePopup.querySelector("#popup-retour-poste-select");
-  if (boutonRetourPoste && selectRetourPoste) {
-    boutonRetourPoste.addEventListener("click", () => {
-      boutonRetourPoste.setAttribute("hidden", "hidden");
-      selectRetourPoste.removeAttribute("hidden");
-      selectRetourPoste.focus();
-    });
-  }
   if (selectRetourPoste) {
     selectRetourPoste.addEventListener("change", async () => {
       const optionChoisie = selectRetourPoste.options[selectRetourPoste.selectedIndex];
@@ -3256,10 +3246,6 @@ function attacherActionsPopupInterne() {
       });
 
       selectRetourPoste.value = "";
-      selectRetourPoste.setAttribute("hidden", "hidden");
-      if (boutonRetourPoste) {
-        boutonRetourPoste.removeAttribute("hidden");
-      }
     });
   }
 
@@ -3862,7 +3848,7 @@ function construirePopupDepuisFeatures(longitude, latitude, featurePostes, featu
         )
         .join("");
       boutonsLiaison.push(
-        `<button class="popup-bouton-itineraire popup-bouton-localiser" id="popup-retour-poste" type="button">📄 Accéder à la fiche du poste</button><select class="popup-codes-select" id="popup-retour-poste-select" hidden data-origin-acces-lng="${longitude}" data-origin-acces-lat="${latitude}"${attributsOrigineAppareil}><option value="">📄 Choisir un poste</option>${optionsChoixPostes}</select>`
+        `<select class="popup-codes-select" id="popup-retour-poste-select" data-origin-acces-lng="${longitude}" data-origin-acces-lat="${latitude}"${attributsOrigineAppareil}><option value="">📄 Choisir un poste</option>${optionsChoixPostes}</select>`
       );
     } else {
       const choixPoste = choixRetourPostesDepuisAcces[0] || null;
