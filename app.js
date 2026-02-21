@@ -2248,6 +2248,53 @@ function trouverCoordonneesAccesDepuisPostes(featurePostes) {
   return null;
 }
 
+function trouverCoordonneesPostePrincipalDepuisFeaturePostes(featurePostes) {
+  if (!featurePostes || !donneesPostes?.features?.length) {
+    return null;
+  }
+
+  const postesListe = extraireListeDepuisFeature(featurePostes, "postes_liste_json");
+  if (!postesListe.length) {
+    return null;
+  }
+
+  const clesNomType = new Set(postesListe.map((poste) => construireCleNomType(poste)).filter(Boolean));
+  if (!clesNomType.size) {
+    return null;
+  }
+
+  let fallbackNomType = null;
+  for (const feature of donneesPostes.features) {
+    const [lng, lat] = feature.geometry?.coordinates || [];
+    if (!Number.isFinite(lng) || !Number.isFinite(lat)) {
+      continue;
+    }
+    const liste = extraireListeDepuisFeature(feature, "postes_liste_json");
+    if (!liste.length) {
+      continue;
+    }
+
+    if (!fallbackNomType) {
+      const matchNomType = liste.some((poste) => clesNomType.has(construireCleNomType(poste)));
+      if (matchNomType) {
+        fallbackNomType = [lng, lat];
+      }
+    }
+
+    const matchPostePrincipal = liste.some((poste) => {
+      if (!clesNomType.has(construireCleNomType(poste))) {
+        return false;
+      }
+      return !normaliserTexteRecherche(champCompletOuVide(poste?.SAT));
+    });
+    if (matchPostePrincipal) {
+      return [lng, lat];
+    }
+  }
+
+  return fallbackNomType;
+}
+
 function trouverPosteAssocieDepuisAcces(featureAcces) {
   if (!featureAcces || !donneesPostes?.features?.length) {
     return null;
@@ -3329,6 +3376,7 @@ function construirePopupDepuisFeatures(longitude, latitude, featurePostes, featu
   let coordonneesRetourPosteDepuisAppareil = null;
   let coordonneesRetourAccesDepuisPoste = null;
   let coordonneesRetourPosteDepuisAcces = null;
+  let coordonneesPostePrincipalDepuisSat = null;
   let posteAssocieDepuisAppareil = null;
   let sectionRssAssocieDepuisAcces = "";
 
@@ -3344,6 +3392,7 @@ function construirePopupDepuisFeatures(longitude, latitude, featurePostes, featu
     const [lngPosteFeature, latPosteFeature] = featurePostes.geometry?.coordinates || [];
     const coordonneesPoste = Number.isFinite(lngPosteFeature) && Number.isFinite(latPosteFeature) ? [lngPosteFeature, latPosteFeature] : null;
     sectionAppareilsAssociesPoste = construireSectionAppareilsAssociesDepuisPostes(postesListe, { coordonneesPoste });
+    coordonneesPostePrincipalDepuisSat = trouverCoordonneesPostePrincipalDepuisFeaturePostes(featurePostes);
   }
 
   if (featureAcces) {
@@ -3479,8 +3528,9 @@ function construirePopupDepuisFeatures(longitude, latitude, featurePostes, featu
   if (estVuePosteSeule && coordonneesRetourAccesDepuisPoste) {
     const cibleSatCourante = normaliserTexteRecherche(options?.cibleSatPoste || "");
     if (cibleSatCourante && cibleSatCourante !== "poste") {
+      const coordonneesPosteCible = coordonneesPostePrincipalDepuisSat || [longitude, latitude];
       boutonsLiaison.push(
-        `<button class="popup-bouton-itineraire popup-bouton-localiser popup-bouton-liaison" type="button" data-target-type="postes" data-target-sat="Poste" data-lng="${longitude}" data-lat="${latitude}">📄 Accéder à la fiche du poste</button>`
+        `<button class="popup-bouton-itineraire popup-bouton-localiser popup-bouton-liaison" type="button" data-target-type="postes" data-target-sat="Poste" data-lng="${coordonneesPosteCible[0]}" data-lat="${coordonneesPosteCible[1]}">📄 Accéder à la fiche du poste</button>`
       );
     }
     const attributsOrigineAppareil =
