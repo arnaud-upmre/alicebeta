@@ -2132,10 +2132,6 @@ function construireSectionConsigneRssDepuisAcces(featureAcces) {
   }</section>`;
 }
 
-function construireSectionBriefingAcces() {
-  return '<section class="popup-section"><p class="popup-poste-ligne">Avant toute intervention, faite un briefing :</p><div class="popup-itineraires popup-itineraires-localiser"><button class="popup-bouton-itineraire popup-bouton-desactive" type="button" disabled aria-disabled="true">Briefing numérique</button></div></section>';
-}
-
 function construireSectionExplorerAcces(longitude, latitude) {
   return `<section class="popup-section popup-section-itineraires"><div class="popup-section-titre popup-section-titre-gauche"><span class="popup-badge popup-badge-itineraire">Explorer l'accès</span></div><div class="popup-itineraires popup-itineraires-poste-actions"><button class="popup-bouton-itineraire popup-bouton-localiser" id="popup-localiser-carte" type="button" data-lng="${longitude}" data-lat="${latitude}">📍 Localiser sur la carte</button><button class="popup-bouton-itineraire popup-bouton-street-view" id="popup-ouvrir-street-view" type="button" data-lng="${longitude}" data-lat="${latitude}">🛣️ Street View</button></div></section>`;
 }

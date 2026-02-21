@@ -1155,9 +1155,9 @@ body {
 .popup-badge-itineraire {
   color: #9a4a12;
   background: #efd8be;
-  font-size: 0.58rem;
+  font-size: 0.64rem;
   font-weight: 800;
-  padding: 5px 13px;
+  padding: 6px 14px;
   transition: transform 120ms ease, box-shadow 120ms ease;
 }
 
