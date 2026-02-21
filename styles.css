@@ -1246,6 +1246,7 @@ body {
   font-weight: 700;
   word-spacing: 0.09em;
   color: var(--ui-text-primary);
+  text-align: center;
 }
 
 .popup-acces-suffixe {
@@ -1719,8 +1720,8 @@ body {
 
 .popup-streetview-fermer {
   position: absolute;
-  top: 8px;
-  right: 8px;
+  top: 56px;
+  right: 10px;
   z-index: 2;
   width: 36px;
   height: 36px;
@@ -1731,6 +1732,13 @@ body {
   font-size: 1rem;
   line-height: 1;
   cursor: pointer;
+}
+
+@media (max-width: 720px) {
+  .popup-streetview-fermer {
+    top: 52px;
+    right: 8px;
+  }
 }
 
 .popup-streetview-iframe {

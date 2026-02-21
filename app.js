@@ -2080,56 +2080,29 @@ function construireSectionAcces(feature) {
       .map((a) => construireCleNomTypeSat(a))
       .filter(Boolean)
   );
+  const totalLignesUniques = Math.max(1, clesAffichageLignes.size || accesListe.length);
+  const totalPostesUniques = clesPostesUniques.size;
+  const totalAccesBrut = Number(propr.acces_count);
+  const estMultiAcces =
+    (Number.isFinite(totalAccesBrut) && totalAccesBrut > 1) || totalPostesUniques > 1 || totalLignesUniques > 1 || accesListe.length > 1;
 
-  if (Number(propr.acces_count) > 1) {
+  if (estMultiAcces) {
     const lignes = accesListe
       .map((a) => {
         const titreHtml = construireTitreAccesHtml(a);
         const classeHp = a.hors_patrimoine ? " popup-acces-ligne-hp" : "";
-        return `<li><span class="popup-acces-ligne${classeHp}">${titreHtml}</span></li>`;
+        return `<li><span class="popup-acces-ligne${classeHp}">🚗 ${titreHtml}</span></li>`;
       })
       .join("");
-    const totalAccesUniques = Math.max(1, clesAccesUniques.size || Number(propr.acces_count) || 1);
-    const totalPostesUniques = clesPostesUniques.size;
-    const totalLignesUniques = Math.max(1, clesAffichageLignes.size || accesListe.length);
-    const libelleBadge =
-      totalAccesUniques === 1 && totalPostesUniques > 1
-        ? `${totalPostesUniques} postes`
-        : `${totalLignesUniques} accès voiture`;
-    return `<section class="popup-section"><div class="popup-pill-ligne"><span class="popup-badge popup-badge-acces">${echapperHtml(libelleBadge)}</span></div><ul>${lignes}</ul></section>`;
+    const totalPostes = Math.max(2, totalPostesUniques || totalLignesUniques);
+    const libelleBadge = `${totalPostes} postes partagent le même accès :`;
+    return `<section class="popup-section"><div class="popup-pill-ligne popup-pill-ligne-gauche"><span class="popup-badge popup-badge-acces">${echapperHtml(libelleBadge)}</span></div><ul>${lignes}</ul></section>`;
   }
 
   const acces = accesListe[0] || {};
   const titreHtml = construireTitreAccesHtml(acces);
   const classeHors = acces.hors_patrimoine ? " popup-item-hors" : "";
   return `<section class="popup-section"><p class="popup-acces-titre${classeHors}">🚗 ${titreHtml}</p></section>`;
-}
-
-function estFeatureAccesSingle(featureAcces) {
-  const accesListe = extraireListeDepuisFeature(featureAcces, "acces_liste_json");
-  if (!accesListe.length) {
-    return false;
-  }
-
-  const clesAffichageLignes = new Set(
-    accesListe
-      .map((a) => {
-        const cleComplete = [
-          normaliserTexteRecherche(champCompletOuVide(a?.nom)),
-          normaliserTexteRecherche(champCompletOuVide(a?.type)),
-          normaliserTexteRecherche(champCompletOuVide(a?.SAT)),
-          normaliserTexteRecherche(champCompletOuVide(a?.acces))
-        ].join("|");
-        if (cleComplete.replace(/\|/g, "")) {
-          return cleComplete;
-        }
-        return normaliserTexteRecherche(construireTitreNomTypeSatAcces(a, { nomVilleDe: true }));
-      })
-      .filter(Boolean)
-  );
-
-  const totalLignesUniques = Math.max(1, clesAffichageLignes.size || accesListe.length);
-  return totalLignesUniques === 1;
 }
 
 function construireSectionConsigneRssDepuisAcces(featureAcces) {
@@ -2146,7 +2119,7 @@ function construireSectionConsigneRssDepuisAcces(featureAcces) {
   const cle = normaliserCleRss(rss);
   const libelleTable = construireLibelleTableRss(cle);
   const numeros = obtenirNumerosRssDepuisCode(cle);
-  const phrase = `Avant d'entrée dans le poste, prévenir le RSS ${libelleTable}.`;
+  const phrase = `Avant d’accéder au poste, contactez le RSS ${libelleTable}.`;
   const boutons = numeros
     .map((numero) => {
       const href = construireHrefTelephone(numero);
@@ -2154,7 +2127,7 @@ function construireSectionConsigneRssDepuisAcces(featureAcces) {
     })
     .join("");
 
-  return `<section class="popup-section"><p class="popup-poste-ligne">${echapperHtml(phrase)}</p>${
+  return `<section class="popup-section"><p class="popup-poste-rss-titre">${echapperHtml(phrase)}</p>${
     boutons ? `<div class="popup-itineraires popup-itineraires-rss">${boutons}</div>` : ""
   }</section>`;
 }
@@ -2302,6 +2275,52 @@ function trouverCoordonneesAccesDepuisPostes(featurePostes) {
     return [longitude, latitude];
   }
   return null;
+}
+
+function trouverCoordonneesPosteDepuisAcces(featureAcces) {
+  if (!featureAcces || !donneesPostes?.features?.length) {
+    return null;
+  }
+
+  const accesListe = extraireListeDepuisFeature(featureAcces, "acces_liste_json");
+  if (!accesListe.length) {
+    return null;
+  }
+
+  const clesNomTypeSat = new Set(accesListe.map((acces) => construireCleNomTypeSat(acces)).filter(Boolean));
+  const clesNomType = new Set(accesListe.map((acces) => construireCleNomType(acces)).filter(Boolean));
+  if (!clesNomType.size) {
+    return null;
+  }
+
+  let fallbackNomType = null;
+  for (const featurePostes of donneesPostes.features) {
+    const postesListe = extraireListeDepuisFeature(featurePostes, "postes_liste_json");
+    if (!postesListe.length) {
+      continue;
+    }
+
+    const matchSat = postesListe.some((poste) => clesNomTypeSat.has(construireCleNomTypeSat(poste)));
+    const matchNomType = postesListe.some((poste) => clesNomType.has(construireCleNomType(poste)));
+    if (!matchSat && !matchNomType) {
+      continue;
+    }
+
+    const [longitude, latitude] = featurePostes.geometry?.coordinates || [];
+    if (!Number.isFinite(longitude) || !Number.isFinite(latitude)) {
+      continue;
+    }
+
+    if (matchSat) {
+      return [longitude, latitude];
+    }
+
+    if (!fallbackNomType) {
+      fallbackNomType = [longitude, latitude];
+    }
+  }
+
+  return fallbackNomType;
 }
 
 function trouverCoordonneesPostePrincipalDepuisFeaturePostes(featurePostes) {
@@ -3555,6 +3574,8 @@ function construirePopupDepuisFeatures(longitude, latitude, featurePostes, featu
     const latPostePref = Number(options?.coordonneesPostePrecedent?.[1]);
     if (Number.isFinite(lngPostePref) && Number.isFinite(latPostePref)) {
       coordonneesRetourPosteDepuisAcces = [lngPostePref, latPostePref];
+    } else {
+      coordonneesRetourPosteDepuisAcces = trouverCoordonneesPosteDepuisAcces(featureAcces);
     }
   }
   if (!coordonneesNavigation && featurePostes) {
@@ -3563,7 +3584,7 @@ function construirePopupDepuisFeatures(longitude, latitude, featurePostes, featu
   const estVueAppareilsSeule = Boolean(featureAppareils && !featurePostes);
   const estVuePosteSeule = Boolean(featurePostes && !featureAcces && !featureAppareils);
   const estVueAccesSeule = Boolean(featureAcces && !featurePostes && !featureAppareils);
-  const estAccesSingle = Boolean(estVueAccesSeule && featureAcces && estFeatureAccesSingle(featureAcces));
+  const estAccesFiche = Boolean(estVueAccesSeule && featureAcces);
   let cibleSatCourante = normaliserTexteRecherche(options?.cibleSatPoste || "");
   if (estVuePosteSeule && !cibleSatCourante && featurePostes) {
     const postesCourants = extraireListeDepuisFeature(featurePostes, "postes_liste_json");
@@ -3626,10 +3647,9 @@ function construirePopupDepuisFeatures(longitude, latitude, featurePostes, featu
   const sectionItineraire = coordonneesNavigation
     ? `<section class="popup-section popup-section-itineraires"><div class="popup-section-titre popup-section-titre-gauche"><span class="popup-badge popup-badge-itineraire">${echapperHtml(libelleSectionItineraire)}</span></div>${construireLiensItineraires(coordonneesNavigation[0], coordonneesNavigation[1])}</section>`
     : "";
-  const sectionConsigneRssAcces = estAccesSingle ? construireSectionConsigneRssDepuisAcces(featureAcces) : "";
-  const sectionBriefingAcces = estAccesSingle ? construireSectionBriefingAcces() : "";
-  const sectionExplorerAcces = estAccesSingle ? construireSectionExplorerAcces(longitude, latitude) : "";
-  const modalStreetView = estAccesSingle ? construireModalStreetView() : "";
+  const sectionConsigneRssAcces = estAccesFiche ? construireSectionConsigneRssDepuisAcces(featureAcces) : "";
+  const sectionExplorerAcces = estAccesFiche ? construireSectionExplorerAcces(longitude, latitude) : "";
+  const modalStreetView = estAccesFiche ? construireModalStreetView() : "";
   const lienImajnet = featurePostes || estVueAppareilsSeule ? construireLienImajnet(longitude, latitude) : "";
   const lienPowerBi = "https://app.powerbi.com/groups/me/reports/e63d15fe-0d14-4471-8571-6e146456990f/ReportSection0107f8f0b80dcd560566?experience=power-bi";
   const lienSignalementTerrain =
@@ -3721,11 +3741,11 @@ function construirePopupDepuisFeatures(longitude, latitude, featurePostes, featu
   const sectionRetourPoste = boutonsLiaison.length
     ? `<section class="popup-section popup-section-localiser"><div class="popup-itineraires ${boutonsLiaison.length > 1 ? "popup-itineraires-poste-actions" : "popup-itineraires-localiser"}">${boutonsLiaison.join("")}</div></section>`
     : "";
-  const sectionLocaliser = featurePostes || estVueAppareilsSeule || estAccesSingle
+  const sectionLocaliser = featurePostes || estVueAppareilsSeule || estVueAccesSeule
     ? ""
     : `<section class="popup-section popup-section-localiser"><div class="popup-itineraires popup-itineraires-poste-actions"><button class="popup-bouton-itineraire popup-bouton-localiser" id="popup-localiser-carte" type="button" data-lng="${longitude}" data-lat="${latitude}">📍 Localiser sur la carte</button><a class="popup-bouton-itineraire" href="${echapperHtml(lienPowerBi)}" target="_blank" rel="noopener noreferrer">⚡️ Patrimoine SPOT</a></div></section>`;
-  const sectionRssFinale = estAccesSingle ? "" : sectionRssAssocieDepuisAcces;
-  const contenuFiche = `<div class="popup-carte">${sections.join("")}${sectionConsigneRssAcces}${sectionBriefingAcces}${sectionRssFinale}${sectionItineraire}${sectionExplorerAcces}${sectionActionsPoste}${sectionTerrain}${sectionCodesAvecPills}${sectionLocaliser}${sectionRetourPoste}${modalStreetView}</div>`;
+  const sectionRssFinale = estVueAccesSeule ? "" : sectionRssAssocieDepuisAcces;
+  const contenuFiche = `<div class="popup-carte">${sections.join("")}${sectionConsigneRssAcces}${sectionRssFinale}${sectionItineraire}${sectionExplorerAcces}${sectionActionsPoste}${sectionTerrain}${sectionCodesAvecPills}${sectionLocaliser}${sectionRetourPoste}${modalStreetView}</div>`;
 
   let contenuVueAppareils = "";
   if (sectionAppareilsAssociesPoste) {
