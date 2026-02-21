@@ -37,7 +37,11 @@
           );
           const contientTousLesTokens = tokens.every((token) => {
             const estTokenSat = /^sat\d*$/i.test(token);
+            const estTokenCodeAppareil = /\d/.test(token);
             if (estTokenSat) {
+              return entree.texteRecherche.includes(token);
+            }
+            if (estTokenCodeAppareil) {
               return entree.texteRecherche.includes(token);
             }
             return textePrincipal.includes(token);
@@ -125,6 +129,7 @@
     const PREFIXES_TRANSFO = ["TT", "TSA", "TC", "GT", "TRA"];
     const PREFIXES_SECTIONNEUR = ["ST", "S", "FB", "F", "P", "B"];
     const PREFIXES_ALIM = ["ALIM"];
+    const MOTS_VIDES = new Set(["de", "du", "des", "d", "la", "le", "les", "a", "à", "au", "aux", "en", "sur", "et", "l"]);
 
     function fermerResultatsRecherche() {
       controleRecherche?.classList.remove("est-ouvert");
@@ -305,13 +310,25 @@
     }
 
     function rechercherEntrees(terme) {
-      return moteurRecherchePrincipal.rechercher(indexRecherche, terme, { minLength: 2, limit: 500 });
+      const requeteNormalisee = supprimerMotsVides(decouperTokensRecherche(terme)).join(" ").trim();
+      return moteurRecherchePrincipal.rechercher(indexRecherche, requeteNormalisee, { minLength: 2, limit: 500 });
     }
 
     function decouperTokensRecherche(texte) {
       return normaliserTexteRecherche(texte)
+        .replace(/['’]/g, " ")
         .split(/\s+/)
         .filter(Boolean);
+    }
+
+    function supprimerMotsVides(tokens, options = {}) {
+      const preserverCodeDu = Boolean(options.preserverCodeDu);
+      return tokens.filter((token, index) => {
+        if (preserverCodeDu && token === "du" && index === 0) {
+          return true;
+        }
+        return !MOTS_VIDES.has(token);
+      });
     }
 
     function extraireFiltreAppareilDepuisTokens(tokens) {
@@ -364,7 +381,9 @@
           continue;
         }
 
-        tokensRestants.push(token);
+        if (!MOTS_VIDES.has(token)) {
+          tokensRestants.push(token);
+        }
       }
 
       return {
@@ -417,7 +436,7 @@
     }
 
     function rechercherEntreesAvancee(texte) {
-      const tokens = decouperTokensRecherche(texte);
+      const tokens = supprimerMotsVides(decouperTokensRecherche(texte), { preserverCodeDu: true });
       const filtreAppareil = extraireFiltreAppareilDepuisTokens(tokens);
       const requeteLieu = filtreAppareil.tokensRestants.join(" ").trim();
       const prefixes = filtreAppareil.prefixes;
@@ -438,7 +457,7 @@
     }
 
     function determinerIntentionRecherche(texte) {
-      const tokens = decouperTokensRecherche(texte);
+      const tokens = supprimerMotsVides(decouperTokensRecherche(texte), { preserverCodeDu: true });
       const filtreAppareil = extraireFiltreAppareilDepuisTokens(tokens);
       const hasSat = tokens.some((token) => token.startsWith("sat"));
       const hasAcces = tokens.some((token) => token === "acces" || token === "accesroutier" || token === "routier");
@@ -569,7 +588,7 @@
       const barre = construireBarreFiltres(intention.typeForce, compteurs);
       const hint =
         !intention.typeForce && filtreTypeActif === "tous"
-          ? '<li class="recherche-resultat-vide">Résultats mixtes. Astuce: tape "poste", "accès", "sat" ou "TT".</li>'
+          ? '<li class="recherche-resultat-vide">Astuces : "TT Alleux", "inter Fives", "DU Lens"</li>'
           : "";
       listeResultatsRecherche.innerHTML = `${barre}${hint}${visibles.map(construireBoutonResultatGeographique).join("")}`;
       ouvrirResultatsRecherche();
