@@ -5035,11 +5035,10 @@ if (boutonCtxAjoutAppareil) {
     if (!Number.isFinite(latitude) || !Number.isFinite(longitude)) {
       return;
     }
-    const sujet = encodeURIComponent("➕ Ajout d'un appareil");
-    const corps = encodeURIComponent(
-      `Bonjour Arnaud,\n\nMerci d'ajouter l'appareil : (à préciser)\nau poste de (à préciser, si poste, sat) :\n\nExiste-t-il d’autres appareils sur le même support ? (si oui, précisez)\n\nCoordonnées GPS :\nLatitude : ${latitude}\nLongitude : ${longitude}\n\n📍 Lien Google Maps :\nhttps://www.google.com/maps?q=${latitude},${longitude}\n\nBonne journée,`
-    );
-    window.location.href = `mailto:arnaud.debaecker@sncf.fr?subject=${sujet}&body=${corps}`;
+    const urlAjoutAppareil = new URL("./ajout_appareil.html", window.location.href);
+    urlAjoutAppareil.searchParams.set("lat", String(latitude));
+    urlAjoutAppareil.searchParams.set("lng", String(longitude));
+    window.location.href = urlAjoutAppareil.toString();
     fermerMenuContextuel();
   });
 }
