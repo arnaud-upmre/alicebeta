@@ -3445,6 +3445,14 @@ function obtenirPrioriteTypeRecherche(type) {
   return 3;
 }
 
+const moteurRecherchePrincipal =
+  typeof window.creerMoteurRecherchePrincipal === "function"
+    ? window.creerMoteurRecherchePrincipal({
+        normaliserTexteRecherche,
+        obtenirPrioriteTypeRecherche
+      })
+    : null;
+
 function reconstruireIndexRecherche() {
   const index = [];
 
@@ -4356,6 +4364,10 @@ async function activerFiltrePourType(type) {
 }
 
 function rechercherEntrees(terme) {
+  if (moteurRecherchePrincipal) {
+    return moteurRecherchePrincipal.rechercher(indexRecherche, terme, { minLength: 2, limit: 24 });
+  }
+
   const termeNormalise = normaliserTexteRecherche(terme);
   if (!termeNormalise || termeNormalise.length < 2) {
     return [];
