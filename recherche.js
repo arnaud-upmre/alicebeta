@@ -114,7 +114,6 @@
     const PREFIXES_TRANSFO = ["TT", "TSA", "TC", "GT", "TRA"];
     const PREFIXES_SECTIONNEUR = ["ST", "S", "FB", "F", "P", "B"];
     const PREFIXES_ALIM = ["ALIM"];
-    const MOTS_VIDES = new Set(["de", "du", "des", "d", "la", "le", "les", "a", "à", "au", "aux", "en", "sur", "et", "l"]);
 
     function fermerResultatsRecherche() {
       controleRecherche?.classList.remove("est-ouvert");
@@ -141,21 +140,6 @@
         return "Appareil";
       }
       return "Acces voiture";
-    }
-
-    function construireCleSupportAppareil(appareil, longitude, latitude) {
-      const nom = normaliserTexteRecherche(champCompletOuVide(appareil?.nom));
-      const type = normaliserTexteRecherche(champCompletOuVide(appareil?.type));
-      const cleLieu = [nom, type].filter(Boolean).join("|");
-      return `${cleLieu}|${Number(longitude).toFixed(6)}|${Number(latitude).toFixed(6)}`;
-    }
-
-    function libelleSatOuPoste(appareil) {
-      const sat = champCompletOuVide(appareil?.SAT);
-      if (!sat || normaliserTexteRecherche(sat) === "poste") {
-        return "Poste";
-      }
-      return sat;
     }
 
     function reconstruireIndexRecherche() {
@@ -200,86 +184,61 @@
         }
 
         const appareilsListe = extraireListeDepuisFeature(feature, "appareils_liste_json");
-        const groupesParSupport = new Map();
+        const groupesParTitre = new Map();
 
         for (const appareil of appareilsListe) {
-          const titreSupport = [champCompletOuVide(appareil?.nom), champCompletOuVide(appareil?.type)].filter(Boolean).join(separateurLibelle || " ");
-          const titre = titreSupport || construireTitreNomTypeSatAcces(appareil) || "Appareil";
+          const titre = construireTitreNomTypeSatAcces(appareil) || "Appareil";
           const appareilNom = champCompletOuVide(appareil.appareil) || "";
           const motsCles = [titre, appareilNom, appareil.nom, appareil.SAT, appareil.acces]
             .filter(Boolean)
             .join(" ");
-          const cle = construireCleSupportAppareil(appareil, longitude, latitude);
-          const satLabel = libelleSatOuPoste(appareil);
+          const cle = `${titre}|${longitude}|${latitude}`;
 
-          if (!groupesParSupport.has(cle)) {
+          if (!groupesParTitre.has(cle)) {
             const nom = champCompletOuVide(appareil?.nom);
             const type = champCompletOuVide(appareil?.type);
-            groupesParSupport.set(cle, {
+            const sat = champCompletOuVide(appareil?.SAT);
+            groupesParTitre.set(cle, {
               type: "appareils",
               titre,
               sousTitre: "",
               nom,
               typeLieu: type,
-              sat: "",
+              sat,
               longitude,
               latitude,
               couleurPastille: normaliserCouleurHex(appareil.couleur_appareil || determinerCouleurAppareil(appareilNom)),
               appareilsCount: 0,
               appareilsLignes: [],
-              appareilsParSatMap: new Map(),
-              satLabelsSet: new Set(),
               texteMotsCles: []
             });
           }
 
-          const groupe = groupesParSupport.get(cle);
+          const groupe = groupesParTitre.get(cle);
           groupe.appareilsCount += 1;
+          const contexteAppareil = [appareil.nom, appareil.type, appareil.SAT]
+            .map((v) => champCompletOuVide(v))
+            .filter(Boolean)
+            .join(separateurLibelle || " ");
           groupe.appareilsLignes.push({
             code: appareilNom || "Appareil",
-            contexte: satLabel,
+            contexte: contexteAppareil,
             horsPatrimoine: Boolean(appareil.hors_patrimoine),
             couleur: normaliserCouleurHex(appareil.couleur_appareil || determinerCouleurAppareil(appareilNom))
           });
-          if (!groupe.appareilsParSatMap.has(satLabel)) {
-            groupe.appareilsParSatMap.set(satLabel, []);
-          }
-          groupe.appareilsParSatMap.get(satLabel).push({
-            code: appareilNom || "Appareil",
-            horsPatrimoine: Boolean(appareil.hors_patrimoine),
-            couleur: normaliserCouleurHex(appareil.couleur_appareil || determinerCouleurAppareil(appareilNom))
-          });
-          groupe.satLabelsSet.add(satLabel);
           groupe.texteMotsCles.push(motsCles);
           if (!groupe.sousTitre && appareilNom) {
             groupe.sousTitre = appareilNom;
           }
         }
 
-        for (const groupe of groupesParSupport.values()) {
+        for (const groupe of groupesParTitre.values()) {
           const lignesUniques = Array.from(new Map(groupe.appareilsLignes.map((ligne) => [`${ligne.code}|${ligne.contexte}`, ligne])).values());
-          const appareilsParSat = Array.from(groupe.appareilsParSatMap.entries())
-            .map(([sat, lignes]) => {
-              const codesUniques = Array.from(new Set(lignes.map((ligne) => String(ligne.code || "").trim()).filter(Boolean)));
-              return {
-                sat,
-                codes: codesUniques,
-                count: lignes.length
-              };
-            })
-            .sort((a, b) => {
-              if (a.sat === "Poste") return -1;
-              if (b.sat === "Poste") return 1;
-              return a.sat.localeCompare(b.sat, "fr", { sensitivity: "base" });
-            });
-          const satLabels = Array.from(groupe.satLabelsSet);
-          const satMeta = satLabels.length ? satLabels.join(" ") : "";
           index.push({
             ...groupe,
             sousTitre: groupe.appareilsCount > 1 ? "" : groupe.sousTitre,
             appareilsLignesUniques: lignesUniques,
-            appareilsParSat,
-            texteRecherche: normaliserTexteRecherche(`${groupe.texteMotsCles.join(" ")} ${satMeta}`)
+            texteRecherche: normaliserTexteRecherche(groupe.texteMotsCles.join(" "))
           });
         }
       }
@@ -335,23 +294,13 @@
     }
 
     function rechercherEntrees(terme) {
-      const requeteNettoyee = normaliserRequeteSansMotsVides(terme);
-      return moteurRecherchePrincipal.rechercher(indexRecherche, requeteNettoyee, { minLength: 2, limit: 400 });
+      return moteurRecherchePrincipal.rechercher(indexRecherche, terme, { minLength: 2, limit: 24 });
     }
 
     function decouperTokensRecherche(texte) {
       return normaliserTexteRecherche(texte)
-        .replace(/['’]/g, " ")
         .split(/\s+/)
         .filter(Boolean);
-    }
-
-    function supprimerMotsVides(tokens) {
-      return tokens.filter((token) => !MOTS_VIDES.has(token));
-    }
-
-    function normaliserRequeteSansMotsVides(texte) {
-      return supprimerMotsVides(decouperTokensRecherche(texte)).join(" ").trim();
     }
 
     function extraireFiltreAppareilDepuisTokens(tokens) {
@@ -359,7 +308,7 @@
       const tokensRestants = [];
       const aliasInter = new Set(["inter", "interrupteur", "interupteur", "interrupteurs", "interupteurs"]);
       const aliasDisj = new Set(["disjoncteur", "disjoncteurs", "disj", "dj"]);
-      const aliasUrgence = new Set(["urgence", "urgent", "dispositifurgence", "dispositifdurgence"]);
+      const aliasUrgence = new Set(["urgence", "urgent", "du", "dispositifurgence", "dispositifdurgence"]);
       const aliasTransfo = new Set(["transfo", "transfos", "transformateur", "transformateurs"]);
       const aliasSectionneur = new Set(["sectionneur", "sectionneurs"]);
       const aliasAlim = new Set(["alim", "alimentation", "alimentations"]);
@@ -404,9 +353,7 @@
           continue;
         }
 
-        if (!MOTS_VIDES.has(token)) {
-          tokensRestants.push(token);
-        }
+        tokensRestants.push(token);
       }
 
       return {
@@ -495,13 +442,10 @@
     }
 
     function compterParType(resultats) {
-      const totalAppareils = resultats
-        .filter((r) => r.type === "appareils")
-        .reduce((somme, entree) => somme + (Number(entree?.appareilsCount) || 0), 0);
       return {
         acces: resultats.filter((r) => r.type === "acces").length,
         postes: resultats.filter((r) => r.type === "postes").length,
-        appareils: totalAppareils
+        appareils: resultats.filter((r) => r.type === "appareils").length
       };
     }
 
@@ -530,14 +474,14 @@
       return melange;
     }
 
-    function filtrerResultatsPourAffichage(resultats, texte, limite = 400) {
+    function filtrerResultatsPourAffichage(resultats, texte, limite = 9) {
       const intention = determinerIntentionRecherche(texte);
       const typeForce = intention.typeForce;
       if (typeForce) {
-        return resultats.filter((r) => r.type === typeForce).slice(0, 200);
+        return resultats.filter((r) => r.type === typeForce).slice(0, 24);
       }
       if (filtreTypeActif !== "tous") {
-        return resultats.filter((r) => r.type === filtreTypeActif).slice(0, 200);
+        return resultats.filter((r) => r.type === filtreTypeActif).slice(0, 24);
       }
       return equilibrerResultatsMixtes(resultats, limite);
     }
@@ -551,16 +495,6 @@
       );
 
       if (resultat.type === "appareils") {
-        if (Array.isArray(resultat.appareilsParSat) && resultat.appareilsParSat.length) {
-          const lignesParSat = resultat.appareilsParSat
-            .map((bloc) => {
-              const sat = echapperHtml(bloc.sat || "Poste");
-              const codes = echapperHtml((bloc.codes || []).join(", "));
-              return `<span class="recherche-appareil-ligne"><span class="recherche-appareil-ligne-principale"><span class="recherche-resultat-pastille recherche-resultat-pastille-ligne-appareil" style="background-color:${couleurPastille};"></span><span class="recherche-appareil-code">${sat} :</span> <span class="recherche-appareil-contexte">${codes}</span></span></span>`;
-            })
-            .join("");
-          return `<li><button class="recherche-resultat" type="button" data-action="ouvrir-resultat" data-type="${echapperHtml(resultat.type)}" data-lng="${resultat.longitude}" data-lat="${resultat.latitude}"><span class="recherche-resultat-titre"><span class="recherche-appareil-liste recherche-appareil-groupe">${lignesParSat}</span></span></button></li>`;
-        }
         const appareilsLignes =
           Array.isArray(resultat.appareilsLignesUniques) && resultat.appareilsLignesUniques.length
             ? resultat.appareilsLignesUniques
@@ -620,7 +554,7 @@
         return;
       }
 
-      const visibles = filtrerResultatsPourAffichage(resultats, texte, 400);
+      const visibles = filtrerResultatsPourAffichage(resultats, texte, 9);
       const barre = construireBarreFiltres(intention.typeForce, compteurs);
       const hint =
         !intention.typeForce && filtreTypeActif === "tous"
