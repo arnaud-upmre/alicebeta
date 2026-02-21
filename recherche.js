@@ -30,7 +30,18 @@
           if (!entree?.texteRecherche) {
             continue;
           }
-          const contientTousLesTokens = tokens.every((token) => entree.texteRecherche.includes(token));
+          const textePrincipal = normaliserTexteRecherche(
+            [entree?.titre, entree?.nom, entree?.typeLieu, entree?.sat]
+              .filter(Boolean)
+              .join(" ")
+          );
+          const contientTousLesTokens = tokens.every((token) => {
+            const estTokenSat = /^sat\d*$/i.test(token);
+            if (estTokenSat) {
+              return entree.texteRecherche.includes(token);
+            }
+            return textePrincipal.includes(token);
+          });
           if (!contientTousLesTokens) {
             continue;
           }
