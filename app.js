@@ -1,7 +1,7 @@
 // Centre initial de la carte (France metropolitaine).
 const CENTRE_INITIAL = [2.35, 48.85];
 const ZOOM_INITIAL = 6;
-const ZOOM_MAX = 21;
+const ZOOM_MAX = 19;
 const SOURCE_APPAREILS = "appareils-source";
 const COUCHE_APPAREILS = "appareils-points";
 const COUCHE_APPAREILS_GROUPES = "appareils-groupes";
@@ -1642,6 +1642,9 @@ function determinerPasPkMetres(zoomEffectif) {
   if (zoomEffectif < 18) {
     return 200;
   }
+  if (zoomEffectif < 19) {
+    return 100;
+  }
   return 0;
 }
 
@@ -1755,8 +1758,8 @@ function mettreAJourAffichagePk() {
   donneesPkAffichees = doitAfficher ? filtrerPkPourVue() : PK_VIDE;
   sourcePk.setData(donneesPkAffichees);
 
-  const visibilitePoints = doitAfficher ? "visible" : "none";
-  const visibiliteLabels = doitAfficher && zoomEffectif >= 14 ? "visible" : "none";
+  const visibilitePoints = "none";
+  const visibiliteLabels = doitAfficher ? "visible" : "none";
   if (carte.getLayer(COUCHE_PK_POINTS)) {
     carte.setLayoutProperty(COUCHE_PK_POINTS, "visibility", visibilitePoints);
   }
@@ -1974,11 +1977,11 @@ function appliquerCouchesDonnees() {
       type: "circle",
       source: SOURCE_PK,
       paint: {
-        "circle-radius": ["interpolate", ["linear"], ["zoom"], 11, 1.2, 18, 1.8, 21, 2.2],
+        "circle-radius": ["interpolate", ["linear"], ["zoom"], 11, 1.1, 18, 1.6, 19, 1.9],
         "circle-color": "#1d4ed8",
-        "circle-opacity": 0.5,
+        "circle-opacity": 0.0,
         "circle-stroke-color": "#ffffff",
-        "circle-stroke-width": 0.7
+        "circle-stroke-width": 0
       }
     });
   }
@@ -1991,9 +1994,9 @@ function appliquerCouchesDonnees() {
       layout: {
         "text-field": ["coalesce", ["get", "pk_affichage"], ["get", "pk_label"], ["concat", "PK ", ["to-string", ["get", "pk"]]]],
         "text-font": ["Open Sans Bold"],
-        "text-size": ["interpolate", ["linear"], ["zoom"], 14, 9.5, 17, 10.8, 21, 11.8],
+        "text-size": ["interpolate", ["linear"], ["zoom"], 11, 9, 15, 10, 18, 11, 19, 11.5],
         "text-offset": [0, 1.1],
-        "text-allow-overlap": false,
+        "text-allow-overlap": true,
         "text-padding": 2
       },
       paint: {
