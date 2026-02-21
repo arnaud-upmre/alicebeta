@@ -3452,6 +3452,16 @@ function construirePopupDepuisFeatures(longitude, latitude, featurePostes, featu
   const estVueAppareilsSeule = Boolean(featureAppareils && !featurePostes);
   const estVuePosteSeule = Boolean(featurePostes && !featureAcces && !featureAppareils);
   const estVueAccesSeule = Boolean(featureAcces && !featurePostes && !featureAppareils);
+  let cibleSatCourante = normaliserTexteRecherche(options?.cibleSatPoste || "");
+  if (estVuePosteSeule && !cibleSatCourante && featurePostes) {
+    const postesCourants = extraireListeDepuisFeature(featurePostes, "postes_liste_json");
+    if (postesCourants.length === 1) {
+      const satCourant = normaliserTexteRecherche(champCompletOuVide(postesCourants[0]?.SAT));
+      if (satCourant) {
+        cibleSatCourante = satCourant;
+      }
+    }
+  }
   const lngAppareilPrev = Number(options?.coordonneesAppareilPrecedent?.[0]);
   const latAppareilPrev = Number(options?.coordonneesAppareilPrecedent?.[1]);
   const coordonneesAppareilPrecedent =
@@ -3526,7 +3536,6 @@ function construirePopupDepuisFeatures(longitude, latitude, featurePostes, featu
     );
   }
   if (estVuePosteSeule && coordonneesRetourAccesDepuisPoste) {
-    const cibleSatCourante = normaliserTexteRecherche(options?.cibleSatPoste || "");
     if (cibleSatCourante && cibleSatCourante !== "poste") {
       const coordonneesPosteCible = coordonneesPostePrincipalDepuisSat || [longitude, latitude];
       boutonsLiaison.push(
