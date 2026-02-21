@@ -1995,7 +1995,7 @@ function construireLiensItineraires(longitude, latitude) {
   const applePlans = `https://maps.apple.com/?daddr=${encodeURIComponent(destination)}&dirflg=d`;
   const waze = `https://waze.com/ul?ll=${encodeURIComponent(destination)}&navigate=yes`;
 
-  return `<div class="popup-itineraires"><a class="popup-bouton-itineraire" href="${echapperHtml(googleMaps)}" target="_blank" rel="noopener noreferrer">🗺️ Maps</a><a class="popup-bouton-itineraire" href="${echapperHtml(applePlans)}" target="_blank" rel="noopener noreferrer">🍎 Plans</a><a class="popup-bouton-itineraire" href="${echapperHtml(waze)}" target="_blank" rel="noopener noreferrer">🚗 Waze</a></div>`;
+  return `<div class="popup-itineraires popup-itineraires-navigation"><a class="popup-bouton-itineraire" href="${echapperHtml(googleMaps)}" target="_blank" rel="noopener noreferrer">🗺️ Maps</a><a class="popup-bouton-itineraire" href="${echapperHtml(applePlans)}" target="_blank" rel="noopener noreferrer">🍎 Plans</a><a class="popup-bouton-itineraire" href="${echapperHtml(waze)}" target="_blank" rel="noopener noreferrer">🚗 Waze</a></div>`;
 }
 
 function construireSectionAppareils(feature, options = {}) {
@@ -3359,8 +3359,33 @@ function construirePopupDepuisFeatures(longitude, latitude, featurePostes, featu
   const lienGoogleMapsPoint = `https://www.google.com/maps?q=${latitude},${longitude}`;
   const classeActionsPoste = "popup-itineraires-poste-actions";
   const libelleSectionActionsPoste = "Explorer les équipements";
-  const sectionActionsPoste = featurePostes && (lienImajnet || sectionAppareilsAssociesPoste)
-    ? `<section class="popup-section popup-section-itineraires"><div class="popup-section-titre popup-section-titre-gauche"><span class="popup-badge popup-badge-itineraire">${echapperHtml(libelleSectionActionsPoste)}</span></div><div class="popup-itineraires ${classeActionsPoste}">${lienImajnet ? `<a class="popup-bouton-itineraire" href="${echapperHtml(lienImajnet)}" target="_blank" rel="noopener noreferrer">🛤️ Imajnet</a>` : ""}${sectionAppareilsAssociesPoste ? '<button class="popup-bouton-itineraire" id="popup-voir-appareils-associes" type="button">💡 Afficher les appareils</button>' : ""}<button class="popup-bouton-itineraire popup-bouton-localiser" id="popup-localiser-carte" type="button" data-lng="${longitude}" data-lat="${latitude}">📍 Localiser sur la carte</button><a class="popup-bouton-itineraire" href="${echapperHtml(lienGoogleMapsPoint)}" target="_blank" rel="noopener noreferrer">🌎 Google Maps</a></div></section>`
+  const actionsExplorerEquipements = [];
+  if (lienImajnet) {
+    actionsExplorerEquipements.push({
+      label: "Imajnet",
+      html: `<a class="popup-bouton-itineraire" href="${echapperHtml(lienImajnet)}" target="_blank" rel="noopener noreferrer">🛤️ Imajnet</a>`
+    });
+  }
+  if (sectionAppareilsAssociesPoste) {
+    actionsExplorerEquipements.push({
+      label: "Afficher les appareils",
+      html: '<button class="popup-bouton-itineraire" id="popup-voir-appareils-associes" type="button">💡 Afficher les appareils</button>'
+    });
+  }
+  actionsExplorerEquipements.push({
+    label: "Localiser sur la carte",
+    html: `<button class="popup-bouton-itineraire popup-bouton-localiser" id="popup-localiser-carte" type="button" data-lng="${longitude}" data-lat="${latitude}">📍 Localiser sur la carte</button>`
+  });
+  actionsExplorerEquipements.push({
+    label: "Google Maps",
+    html: `<a class="popup-bouton-itineraire" href="${echapperHtml(lienGoogleMapsPoint)}" target="_blank" rel="noopener noreferrer">🌎 Google Maps</a>`
+  });
+  const actionsExploreesTriees = actionsExplorerEquipements
+    .sort((a, b) => a.label.localeCompare(b.label, "fr", { sensitivity: "base", numeric: true }))
+    .map((action) => action.html)
+    .join("");
+  const sectionActionsPoste = featurePostes
+    ? `<section class="popup-section popup-section-itineraires"><div class="popup-section-titre popup-section-titre-gauche"><span class="popup-badge popup-badge-itineraire">${echapperHtml(libelleSectionActionsPoste)}</span></div><div class="popup-itineraires ${classeActionsPoste}">${actionsExploreesTriees}</div></section>`
     : "";
   const boutonsLiaison = [];
   if (estVueAppareilsSeule && coordonneesRetourPosteDepuisAppareil) {
