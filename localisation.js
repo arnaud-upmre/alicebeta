@@ -27,6 +27,7 @@
     const zoneEtat = document.getElementById("localisation-etat");
     const listeResultats = document.getElementById("localisation-resultats");
     const boutonFermer = document.getElementById("modal-localisation-fermer");
+    let elementRetourFocus = null;
     let tousResultats = [];
     let limiteAffichage = 0;
 
@@ -38,14 +39,29 @@
       if (!modal) {
         return;
       }
+      const actif = document.activeElement;
+      if (actif instanceof HTMLElement && !modal.contains(actif)) {
+        elementRetourFocus = actif;
+      }
       modal.classList.add("est-visible");
       modal.setAttribute("aria-hidden", "false");
       fermerMenusGlobalement?.();
+      window.requestAnimationFrame(() => {
+        boutonFermer?.focus({ preventScroll: true });
+      });
     }
 
     function fermer() {
       if (!modal) {
         return;
+      }
+      const actif = document.activeElement;
+      if (actif instanceof HTMLElement && modal.contains(actif)) {
+        if (elementRetourFocus instanceof HTMLElement && elementRetourFocus.isConnected) {
+          elementRetourFocus.focus({ preventScroll: true });
+        } else {
+          actif.blur();
+        }
       }
       modal.classList.remove("est-visible");
       modal.setAttribute("aria-hidden", "true");

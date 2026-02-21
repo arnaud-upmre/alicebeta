@@ -635,6 +635,7 @@ const boutonFermerLegende = document.getElementById("bouton-fermer-legende");
 let modalFiche = document.getElementById("modal-fiche");
 let modalFicheContenu = document.getElementById("modal-fiche-contenu");
 let boutonFermerModalFiche = document.getElementById("modal-fiche-fermer");
+let elementRetourFocusModalFiche = null;
 const CLE_STOCKAGE_FENETRE_ACCUEIL = "alice.fenetre-accueil.derniere-date";
 let temporisationInfoVitesse = null;
 let moduleItineraire = null;
@@ -830,8 +831,15 @@ function creerPopupFicheModale() {
     },
     addTo() {
       if (modalFiche) {
+        const actif = document.activeElement;
+        if (actif instanceof HTMLElement && !modalFiche.contains(actif)) {
+          elementRetourFocusModalFiche = actif;
+        }
         modalFiche.classList.add("est-visible");
         modalFiche.setAttribute("aria-hidden", "false");
+        window.requestAnimationFrame(() => {
+          boutonFermerModalFiche?.focus({ preventScroll: true });
+        });
       }
       return instance;
     },
@@ -850,6 +858,14 @@ function creerPopupFicheModale() {
       }
       estFermee = true;
       if (modalFiche) {
+        const actif = document.activeElement;
+        if (actif instanceof HTMLElement && modalFiche.contains(actif)) {
+          if (elementRetourFocusModalFiche instanceof HTMLElement && elementRetourFocusModalFiche.isConnected) {
+            elementRetourFocusModalFiche.focus({ preventScroll: true });
+          } else {
+            actif.blur();
+          }
+        }
         modalFiche.classList.remove("est-visible");
         modalFiche.setAttribute("aria-hidden", "true");
       }
