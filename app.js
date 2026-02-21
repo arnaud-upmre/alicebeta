@@ -3819,13 +3819,14 @@ function construirePopupDepuisFeatures(longitude, latitude, featurePostes, featu
     : "";
   const boutonsLiaison = [];
   if (estVueAppareilsSeule && coordonneesRetourPosteDepuisAppareil && posteAssocieDepuisAppareil) {
+    const attributsOrigineAppareil = ` data-origin-appareil-lng="${longitude}" data-origin-appareil-lat="${latitude}"`;
     if (coordonneesNavigation) {
       boutonsLiaison.push(
         `<button class="popup-bouton-itineraire popup-bouton-localiser popup-bouton-liaison" type="button" data-target-type="acces" data-lng="${coordonneesNavigation[0]}" data-lat="${coordonneesNavigation[1]}">📄 Consulter la fiche de l'accès routier</button>`
       );
     }
     boutonsLiaison.push(
-      `<button class="popup-bouton-itineraire popup-bouton-localiser popup-bouton-liaison" type="button" data-target-type="postes" data-lng="${coordonneesRetourPosteDepuisAppareil[0]}" data-lat="${coordonneesRetourPosteDepuisAppareil[1]}">📄 ${echapperHtml(determinerLibelleRetourPosteDepuisAppareil(featureAppareils))}</button>`
+      `<button class="popup-bouton-itineraire popup-bouton-localiser popup-bouton-liaison" type="button" data-target-type="postes" data-lng="${coordonneesRetourPosteDepuisAppareil[0]}" data-lat="${coordonneesRetourPosteDepuisAppareil[1]}"${attributsOrigineAppareil}>📄 ${echapperHtml(determinerLibelleRetourPosteDepuisAppareil(featureAppareils))}</button>`
     );
   } else if (estVueAppareilsSeule && coordonneesRetourPosteDepuisAppareil && !posteAssocieDepuisAppareil) {
     const attributsOrigineAcces =
