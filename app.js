@@ -594,6 +594,7 @@ const optionsFond = Array.from(document.querySelectorAll('input[name="fond"]'));
 const controleFiltres = document.getElementById("controle-filtres");
 const boutonFiltres = document.getElementById("bouton-filtres");
 const boutonItineraire = document.getElementById("bouton-itineraire");
+const boutonLocalisationMobile = document.getElementById("bouton-localisation-mobile");
 const caseAppareils = document.querySelector('input[name="filtre-appareils"]');
 const caseAcces = document.querySelector('input[name="filtre-acces"]');
 const casePostes = document.querySelector('input[name="filtre-postes"]');
@@ -633,6 +634,8 @@ const CLE_STOCKAGE_FENETRE_ACCUEIL = "alice.fenetre-accueil.derniere-date";
 let temporisationInfoVitesse = null;
 let moduleItineraire = null;
 let promesseChargementModuleItineraire = null;
+let moduleLocalisation = null;
+let promesseChargementModuleLocalisation = null;
 
 class ControleActionsCarte {
   onAdd() {
@@ -642,6 +645,7 @@ class ControleActionsCarte {
     const boutonLocaliser = document.createElement("button");
     boutonLocaliser.type = "button";
     boutonLocaliser.className = "bouton-carte-action";
+    boutonLocaliser.setAttribute("data-role", "localiser-carte");
     boutonLocaliser.setAttribute("aria-label", "Me localiser");
     boutonLocaliser.innerHTML = `
       <svg viewBox="0 0 24 24" aria-hidden="true">
@@ -1058,6 +1062,76 @@ async function obtenirModuleItineraire() {
   return moduleItineraire;
 }
 
+function chargerScriptLocalisation() {
+  if (window.creerModuleLocalisationAlice) {
+    return Promise.resolve(window.creerModuleLocalisationAlice);
+  }
+  if (promesseChargementModuleLocalisation) {
+    return promesseChargementModuleLocalisation;
+  }
+
+  promesseChargementModuleLocalisation = new Promise((resolve, reject) => {
+    const script = document.createElement("script");
+    script.src = "./localisation.js";
+    script.async = true;
+    script.onload = () => {
+      if (typeof window.creerModuleLocalisationAlice === "function") {
+        resolve(window.creerModuleLocalisationAlice);
+      } else {
+        reject(new Error("Module localisation introuvable après chargement."));
+      }
+    };
+    script.onerror = () => {
+      reject(new Error("Impossible de charger localisation.js"));
+    };
+    document.head.appendChild(script);
+  }).catch((erreur) => {
+    promesseChargementModuleLocalisation = null;
+    throw erreur;
+  });
+
+  return promesseChargementModuleLocalisation;
+}
+
+async function obtenirModuleLocalisation() {
+  if (moduleLocalisation) {
+    return moduleLocalisation;
+  }
+
+  const creerModule = await chargerScriptLocalisation();
+  moduleLocalisation = creerModule({
+    carte,
+    chargerDonneesAcces,
+    chargerDonneesPostes,
+    chargerDonneesAppareils,
+    getDonneesAcces: () => donneesAcces,
+    getDonneesPostes: () => donneesPostes,
+    getDonneesAppareils: () => donneesAppareils,
+    construireTitreNomTypeSat,
+    construireTitreNomTypeSatAcces,
+    construireContexteNomTypeSat,
+    estHorsPatrimoine,
+    echapperHtml,
+    formaterDistanceMetres,
+    obtenirDistanceMetres,
+    demarrerClignotementLocalisation,
+    activerFiltrePourType,
+    appliquerCouchesDonnees,
+    remonterCouchesDonnees,
+    ouvrirPopupDepuisCoordonneesPourType,
+    naviguerVersCoordonneesPuisOuvrirPopup,
+    fermerMenusGlobalement: () => {
+      fermerMenuFonds();
+      fermerMenuFiltres();
+      fermerResultatsRecherche();
+      fermerMenuContextuel();
+      fermerMenuLegende();
+    }
+  });
+
+  return moduleLocalisation;
+}
+
 function construireDonneesSourceMesure() {
   const featuresPoints = mesurePoints.map((coordonnees, index) => ({
     type: "Feature",
@@ -1349,34 +1423,18 @@ function basculerMenuLegende() {
   ouvrirMenuLegende();
 }
 
-function localiserUtilisateurCarte() {
-  if (!navigator.geolocation) {
-    alert("La géolocalisation n'est pas disponible sur cet appareil.");
-    return;
-  }
-
-  navigator.geolocation.getCurrentPosition(
-    ({ coords }) => {
-      const longitude = Number(coords?.longitude);
-      const latitude = Number(coords?.latitude);
-      if (!Number.isFinite(longitude) || !Number.isFinite(latitude)) {
-        return;
-      }
-      carte.flyTo({
-        center: [longitude, latitude],
-        zoom: Math.max(carte.getZoom(), 15.5),
-        essential: true
-      });
-    },
-    () => {
-      alert("Impossible de récupérer votre position.");
-    },
-    {
-      enableHighAccuracy: true,
-      timeout: 10000,
-      maximumAge: 120000
+async function localiserUtilisateurCarte(options = {}) {
+  try {
+    const module = await obtenirModuleLocalisation();
+    if (options.ouvrirPanneauResultats) {
+      module?.localiserEtAfficher?.();
+      return;
     }
-  );
+    module?.localiserSimple?.();
+  } catch (erreur) {
+    console.error("Impossible de charger le module de localisation", erreur);
+    alert("Impossible d'ouvrir la localisation.");
+  }
 }
 
 async function partagerPositionContextuelle() {
@@ -4685,6 +4743,13 @@ if (boutonItineraire) {
       console.error("Impossible d'ouvrir le module itinéraire", erreur);
       alert("Impossible d'ouvrir le calcul d'itinéraire.");
     }
+  });
+}
+
+if (boutonLocalisationMobile) {
+  boutonLocalisationMobile.addEventListener("click", (event) => {
+    event.stopPropagation();
+    localiserUtilisateurCarte({ ouvrirPanneauResultats: true });
   });
 }
 

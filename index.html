@@ -56,6 +56,18 @@
 
     <div class="controle-filtres" id="controle-filtres">
       <button
+        class="bouton-filtres bouton-localisation-mobile"
+        id="bouton-localisation-mobile"
+        type="button"
+        aria-label="Me localiser"
+        title="Me localiser"
+      >
+        <svg class="icone-localisation-mobile" viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M12 8.8A3.2 3.2 0 1 0 12 15.2 3.2 3.2 0 1 0 12 8.8z" />
+          <path d="M20.5 11h-1.64a6.94 6.94 0 0 0-5.86-5.86V3.5a1 1 0 1 0-2 0v1.64A6.94 6.94 0 0 0 5.14 11H3.5a1 1 0 1 0 0 2h1.64a6.94 6.94 0 0 0 5.86 5.86v1.64a1 1 0 1 0 2 0v-1.64A6.94 6.94 0 0 0 18.86 13h1.64a1 1 0 1 0 0-2zM12 17a5 5 0 1 1 0-10 5 5 0 0 1 0 10z" />
+        </svg>
+      </button>
+      <button
         class="bouton-filtres bouton-itineraire"
         id="bouton-itineraire"
         type="button"
@@ -255,6 +267,22 @@
       <div class="modal-fiche-carte">
         <button class="modal-fiche-fermer" id="modal-fiche-fermer" type="button" aria-label="Fermer la fiche">×</button>
         <div class="modal-fiche-contenu maplibregl-popup-content" id="modal-fiche-contenu"></div>
+      </div>
+    </div>
+    <div
+      class="modal-localisation"
+      id="modal-localisation"
+      role="dialog"
+      aria-modal="true"
+      aria-label="Résultats autour de vous"
+      aria-hidden="true"
+    >
+      <div class="modal-localisation-carte">
+        <button class="modal-localisation-fermer" id="modal-localisation-fermer" type="button" aria-label="Fermer la localisation">×</button>
+        <h2 class="modal-localisation-titre">Autour de vous</h2>
+        <p class="modal-localisation-sous-titre">Résultats proches de votre position actuelle</p>
+        <div class="modal-localisation-etat" id="localisation-etat" aria-live="polite">Appuyez sur "Me localiser".</div>
+        <ul class="modal-localisation-resultats" id="localisation-resultats" aria-label="Résultats autour de vous"></ul>
       </div>
     </div>
 
