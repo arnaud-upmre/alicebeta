@@ -3352,6 +3352,13 @@ function construirePopupDepuisFeatures(longitude, latitude, featurePostes, featu
     }
     return "";
   })();
+  const sectionCodesAvecPills =
+    sectionCodes && !sectionCodes.includes("Espace sécurisé")
+      ? sectionCodes.replace(
+          '<section class="popup-section popup-section-codes">',
+          '<section class="popup-section popup-section-codes"><div class="popup-section-titre popup-section-titre-gauche"><span class="popup-badge popup-badge-itineraire">Espace sécurisé</span></div>'
+        )
+      : sectionCodes;
   const sectionItineraire = coordonneesNavigation
     ? `<section class="popup-section popup-section-itineraires"><div class="popup-section-titre popup-section-titre-gauche"><span class="popup-badge popup-badge-itineraire">Créer un itineraire</span></div>${construireLiensItineraires(coordonneesNavigation[0], coordonneesNavigation[1])}</section>`
     : "";
@@ -3427,7 +3434,7 @@ function construirePopupDepuisFeatures(longitude, latitude, featurePostes, featu
   const sectionLocaliser = featurePostes
     ? ""
     : `<section class="popup-section popup-section-localiser"><div class="popup-itineraires popup-itineraires-poste-actions"><button class="popup-bouton-itineraire popup-bouton-localiser" id="popup-localiser-carte" type="button" data-lng="${longitude}" data-lat="${latitude}">📍 Localiser sur la carte</button><a class="popup-bouton-itineraire" href="${echapperHtml(lienGoogleMapsPoint)}" target="_blank" rel="noopener noreferrer">🌎 Google Maps</a></div></section>`;
-  const contenuFiche = `<div class="popup-carte">${sections.join("")}${sectionRssAssocieDepuisAcces}${sectionItineraire}${sectionActionsPoste}${sectionCodes}${sectionLocaliser}${sectionRetourPoste}</div>`;
+  const contenuFiche = `<div class="popup-carte">${sections.join("")}${sectionRssAssocieDepuisAcces}${sectionItineraire}${sectionActionsPoste}${sectionCodesAvecPills}${sectionLocaliser}${sectionRetourPoste}</div>`;
 
   let contenuVueAppareils = "";
   if (sectionAppareilsAssociesPoste) {
