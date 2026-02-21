@@ -1397,12 +1397,12 @@ body {
 .popup-poste-appareils-groupes {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 12px;
 }
 
 .popup-poste-appareils-groupe + .popup-poste-appareils-groupe {
   border-top: 1px solid rgba(156, 163, 175, 0.42);
-  padding-top: 10px;
+  padding-top: 14px;
 }
 
 .popup-badge-poste-sat {
@@ -1411,7 +1411,7 @@ body {
 }
 
 .popup-poste-appareils-ligne {
-  margin: 4px 0 0;
+  margin: 10px 0 0;
   font-size: 0.84rem;
   line-height: 1.42;
   word-spacing: 0.08em;

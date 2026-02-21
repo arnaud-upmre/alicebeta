@@ -2759,7 +2759,7 @@ function construireSectionAppareilsAssociesDepuisPostes(postesListe) {
     })
     .join("");
 
-  return `<section class="popup-section"><p class="popup-poste-appareils-titre">💡 Appareils au poste</p><div class="popup-poste-appareils-groupes">${lignes}</div></section>`;
+  return `<section class="popup-section"><div class="popup-poste-appareils-groupes">${lignes}</div></section>`;
 }
 
 function construireSectionPostes(feature) {
