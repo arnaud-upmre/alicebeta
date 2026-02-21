@@ -75,6 +75,9 @@ const styleSatelliteIgn = {
 // Style vectoriel officiel du Plan IGN (plus fluide pour le fond plan).
 const URL_STYLE_PLAN_IGN =
   "https://data.geopf.fr/annexes/ressources/vectorTiles/styles/PLAN.IGN/standard.json";
+const FOND_IGN_AUTOMATIQUE = "ignAuto";
+const ZOOM_PASSAGE_SATELLITE_IGN = 15;
+const ZOOM_RETOUR_PLAN_IGN = 14.5;
 
 const fondsCartographiques = {
   planIgn: URL_STYLE_PLAN_IGN,
@@ -82,8 +85,9 @@ const fondsCartographiques = {
   satelliteIgn: styleSatelliteIgn
 };
 
-let fondActif = "satelliteIgn";
-let afficherAppareils = false;
+let fondActif = "planIgn";
+let ignAutomatiqueActif = true;
+let afficherAppareils = true;
 let afficherAcces = true;
 let afficherPostes = true;
 let afficherLignes = false;
@@ -4494,13 +4498,52 @@ function changerFondCarte(nomFond) {
   // Changement de style complet pour basculer proprement entre raster et vectoriel.
   carte.setStyle(fondsCartographiques[nomFond]);
   fondActif = nomFond;
-  mettreAJourSelection(nomFond);
   planifierRestaurationFiltres();
 
   // Certains styles vectoriels se finalisent en plusieurs etapes.
   setTimeout(restaurerAffichageDonnees, 120);
   setTimeout(restaurerAffichageDonnees, 420);
   setTimeout(restaurerAffichageDonnees, 900);
+}
+
+function determinerFondIgnAutomatique(zoom, fondCourant = fondActif) {
+  if (zoom >= ZOOM_PASSAGE_SATELLITE_IGN) {
+    return "satelliteIgn";
+  }
+  if (zoom <= ZOOM_RETOUR_PLAN_IGN) {
+    return "planIgn";
+  }
+  if (fondCourant === "planIgn" || fondCourant === "satelliteIgn") {
+    return fondCourant;
+  }
+  return "planIgn";
+}
+
+function appliquerFondIgnAutomatique(options = {}) {
+  if (!ignAutomatiqueActif) {
+    return;
+  }
+
+  const forcer = options.force === true;
+  const fondCible = determinerFondIgnAutomatique(carte.getZoom(), fondActif);
+  if (!forcer && fondCible === fondActif) {
+    return;
+  }
+
+  changerFondCarte(fondCible);
+  mettreAJourSelection(FOND_IGN_AUTOMATIQUE);
+}
+
+function choisirFondManuel(nomFond) {
+  ignAutomatiqueActif = false;
+  changerFondCarte(nomFond);
+  mettreAJourSelection(nomFond);
+}
+
+function activerFondIgnAutomatique() {
+  ignAutomatiqueActif = true;
+  mettreAJourSelection(FOND_IGN_AUTOMATIQUE);
+  appliquerFondIgnAutomatique({ force: true });
 }
 
 function gererStyleCharge() {
@@ -4549,10 +4592,20 @@ for (const option of optionsFond) {
       return;
     }
 
-    changerFondCarte(option.value);
+    if (option.value === FOND_IGN_AUTOMATIQUE) {
+      activerFondIgnAutomatique();
+      fermerMenuFonds();
+      return;
+    }
+
+    choisirFondManuel(option.value);
     fermerMenuFonds();
   });
 }
+
+carte.on("zoomend", () => {
+  appliquerFondIgnAutomatique();
+});
 
 boutonFonds.addEventListener("click", (event) => {
   event.stopPropagation();
