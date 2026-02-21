@@ -552,6 +552,17 @@ body {
   transition: opacity 140ms linear;
 }
 
+.marqueur-clic-contextuel {
+  width: 24px;
+  height: 24px;
+  border-radius: 999px;
+  border: 2px solid rgba(15, 23, 42, 0.95);
+  background:
+    radial-gradient(circle at center, #ef4444 0 3px, rgba(255, 255, 255, 0.95) 3px 8px, transparent 8px);
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.28);
+  pointer-events: none;
+}
+
 .modal-itineraire-apercu {
   display: none;
   margin-top: 8px;

@@ -107,6 +107,7 @@ let minuterieClignotementLocalisation = null;
 let minuterieArretLocalisation = null;
 let coordonneesDerniereFiche = null;
 let marqueurLocalisation = null;
+let marqueurClicContextuel = null;
 let recadragePopupMobileEnCours = false;
 let navigationPopupProgrammatiqueEnCours = false;
 let conserverFichePendantNavigation = false;
@@ -970,6 +971,24 @@ function supprimerPointLocalisation() {
   }
 }
 
+function supprimerMarqueurClicContextuel() {
+  if (marqueurClicContextuel) {
+    marqueurClicContextuel.remove();
+    marqueurClicContextuel = null;
+  }
+}
+
+function afficherMarqueurClicContextuel(longitude, latitude) {
+  if (!Number.isFinite(longitude) || !Number.isFinite(latitude)) {
+    return;
+  }
+
+  supprimerMarqueurClicContextuel();
+  const element = document.createElement("div");
+  element.className = "marqueur-clic-contextuel";
+  marqueurClicContextuel = new maplibregl.Marker({ element, anchor: "center" }).setLngLat([longitude, latitude]).addTo(carte);
+}
+
 function arreterClignotementLocalisation() {
   if (minuterieClignotementLocalisation) {
     clearInterval(minuterieClignotementLocalisation);
@@ -1324,6 +1343,7 @@ function ouvrirMenuContextuel(event, feature) {
 
   contexteMenuPosition = { longitude: lng, latitude: lat };
   contexteMenuFeature = feature || null;
+  afficherMarqueurClicContextuel(lng, lat);
 
   if (boutonCtxCoord) {
     boutonCtxCoord.textContent = `📍 ${formaterCoordonneeMenu(lat)}, ${formaterCoordonneeMenu(lng)}`;
@@ -1371,6 +1391,7 @@ function fermerMenuContextuel() {
     sousMenuItin.classList.remove("est-visible");
     sousMenuItin.setAttribute("aria-hidden", "true");
   }
+  supprimerMarqueurClicContextuel();
   menuContextuelOuvert = false;
 }
 
