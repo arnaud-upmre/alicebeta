@@ -1135,6 +1135,11 @@ body {
   margin-bottom: 8px;
 }
 
+.popup-pill-ligne-gauche {
+  justify-content: flex-start;
+  margin-bottom: 0;
+}
+
 .popup-sous-titre-centre {
   margin: -2px 0 8px;
   text-align: center;
@@ -1319,7 +1324,7 @@ body {
 }
 
 .popup-poste-ligne-titre {
-  margin: 10px 0 0;
+  margin: 0;
   text-align: center;
   white-space: normal;
   overflow: visible;
@@ -1330,7 +1335,7 @@ body {
 }
 
 .popup-poste-telecommande-pills {
-  margin-bottom: 6px;
+  margin: 0 0 14px !important;
 }
 
 .popup-poste-pills {
@@ -1389,17 +1394,29 @@ body {
   color: var(--ui-text-secondary);
 }
 
+.popup-poste-appareils-groupes {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.popup-poste-appareils-groupe + .popup-poste-appareils-groupe {
+  border-top: 1px solid rgba(156, 163, 175, 0.42);
+  padding-top: 10px;
+}
+
+.popup-badge-poste-sat {
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.14);
+  border: 1px solid rgba(210, 136, 77, 0.25);
+}
+
 .popup-poste-appareils-ligne {
-  margin: 0;
+  margin: 4px 0 0;
   font-size: 0.84rem;
   line-height: 1.42;
   word-spacing: 0.08em;
   color: var(--ui-text-secondary);
   overflow-wrap: anywhere;
-}
-
-.popup-poste-appareils-ligne + .popup-poste-appareils-ligne {
-  margin-top: 8px;
 }
 
 .popup-poste-appareil-lien {

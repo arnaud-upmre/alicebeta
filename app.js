@@ -2755,11 +2755,11 @@ function construireSectionAppareilsAssociesDepuisPostes(postesListe) {
             `<button class="popup-poste-appareil-lien" type="button" data-lng="${entree.longitude}" data-lat="${entree.latitude}">${echapperHtml(entree.code)}</button>`
         )
         .join(", ");
-      return `<p class="popup-poste-appareils-ligne"><strong>${echapperHtml(groupe.label)} :</strong> ${codesHtml}</p>`;
+      return `<div class="popup-poste-appareils-groupe"><div class="popup-pill-ligne popup-pill-ligne-gauche"><span class="popup-badge popup-badge-itineraire popup-badge-poste-sat">${echapperHtml(groupe.label)}</span></div><p class="popup-poste-appareils-ligne">${codesHtml}</p></div>`;
     })
     .join("");
 
-  return `<section class="popup-section"><p class="popup-poste-appareils-titre">💡 Appareils au poste</p>${lignes}</section>`;
+  return `<section class="popup-section"><p class="popup-poste-appareils-titre">💡 Appareils au poste</p><div class="popup-poste-appareils-groupes">${lignes}</div></section>`;
 }
 
 function construireSectionPostes(feature) {
@@ -3366,7 +3366,7 @@ function construirePopupDepuisFeatures(longitude, latitude, featurePostes, featu
     ? `<section class="popup-section popup-section-itineraires"><div class="popup-section-titre popup-section-titre-gauche"><span class="popup-badge popup-badge-itineraire">Créer un itineraire</span></div>${construireLiensItineraires(coordonneesNavigation[0], coordonneesNavigation[1])}</section>`
     : "";
   const lienImajnet = featurePostes ? construireLienImajnet(longitude, latitude) : "";
-  const lienGoogleMapsPoint = `https://www.google.com/maps?q=${latitude},${longitude}`;
+  const lienPowerBi = "https://app.powerbi.com/groups/me/reports/e63d15fe-0d14-4471-8571-6e146456990f/ReportSection0107f8f0b80dcd560566?experience=power-bi";
   const classeActionsPoste = "popup-itineraires-poste-actions";
   const libelleSectionActionsPoste = "Explorer les équipements";
   const actionsExplorerEquipements = [];
@@ -3387,8 +3387,8 @@ function construirePopupDepuisFeatures(longitude, latitude, featurePostes, featu
     html: `<button class="popup-bouton-itineraire popup-bouton-localiser" id="popup-localiser-carte" type="button" data-lng="${longitude}" data-lat="${latitude}">📍 Localiser sur la carte</button>`
   });
   actionsExplorerEquipements.push({
-    label: "Google Maps",
-    html: `<a class="popup-bouton-itineraire" href="${echapperHtml(lienGoogleMapsPoint)}" target="_blank" rel="noopener noreferrer">🗺️ Google Maps</a>`
+    label: "Power BI",
+    html: `<a class="popup-bouton-itineraire" href="${echapperHtml(lienPowerBi)}" target="_blank" rel="noopener noreferrer">⚡️ Patrimoine</a>`
   });
   const actionsExploreesTriees = actionsExplorerEquipements
     .sort((a, b) => a.label.localeCompare(b.label, "fr", { sensitivity: "base", numeric: true }))
@@ -3436,12 +3436,12 @@ function construirePopupDepuisFeatures(longitude, latitude, featurePostes, featu
     : "";
   const sectionLocaliser = featurePostes
     ? ""
-    : `<section class="popup-section popup-section-localiser"><div class="popup-itineraires popup-itineraires-poste-actions"><button class="popup-bouton-itineraire popup-bouton-localiser" id="popup-localiser-carte" type="button" data-lng="${longitude}" data-lat="${latitude}">📍 Localiser sur la carte</button><a class="popup-bouton-itineraire" href="${echapperHtml(lienGoogleMapsPoint)}" target="_blank" rel="noopener noreferrer">🗺️ Google Maps</a></div></section>`;
+    : `<section class="popup-section popup-section-localiser"><div class="popup-itineraires popup-itineraires-poste-actions"><button class="popup-bouton-itineraire popup-bouton-localiser" id="popup-localiser-carte" type="button" data-lng="${longitude}" data-lat="${latitude}">📍 Localiser sur la carte</button><a class="popup-bouton-itineraire" href="${echapperHtml(lienPowerBi)}" target="_blank" rel="noopener noreferrer">⚡️ Patrimoine</a></div></section>`;
   const contenuFiche = `<div class="popup-carte">${sections.join("")}${sectionRssAssocieDepuisAcces}${sectionItineraire}${sectionActionsPoste}${sectionCodesAvecPills}${sectionLocaliser}${sectionRetourPoste}</div>`;
 
   let contenuVueAppareils = "";
   if (sectionAppareilsAssociesPoste) {
-    contenuVueAppareils = `<div class="popup-carte">${sectionAppareilsAssociesPoste}<section class="popup-section popup-section-itineraires"><div class="popup-section-titre"><span class="popup-badge popup-badge-itineraire">Fiche</span></div><div class="popup-itineraires"><button class="popup-bouton-itineraire" id="popup-retour-fiche-poste" type="button">↩ Retour à la fiche</button></div></section></div>`;
+    contenuVueAppareils = `<div class="popup-carte">${sectionAppareilsAssociesPoste}<section class="popup-section popup-section-itineraires"><div class="popup-itineraires popup-itineraires-localiser"><button class="popup-bouton-itineraire" id="popup-retour-fiche-poste" type="button">📄 Retour à la fiche du poste</button></div></section></div>`;
   }
 
   fermerPopupCarte({ preserveNavigationLock: conserverFichePendantNavigation });
