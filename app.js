@@ -2703,6 +2703,34 @@ function construireSectionAppareilsAssociesDepuisPostes(postesListe, options = {
     return "";
   }
 
+  const trouverCoordonneesPostePourSat = (libelleSat) => {
+    const cible = normaliserTexteRecherche(libelleSat);
+    for (const featurePostes of donneesPostes?.features || []) {
+      const [lng, lat] = featurePostes.geometry?.coordinates || [];
+      if (!Number.isFinite(lng) || !Number.isFinite(lat)) {
+        continue;
+      }
+      const liste = extraireListeDepuisFeature(featurePostes, "postes_liste_json");
+      if (!liste.length) {
+        continue;
+      }
+      const match = liste.some((poste) => {
+        if (!clesPostesNomType.has(construireCleNomType(poste))) {
+          return false;
+        }
+        const satNorm = normaliserTexteRecherche(champCompletOuVide(poste?.SAT));
+        if (cible === "poste") {
+          return !satNorm;
+        }
+        return satNorm === cible;
+      });
+      if (match) {
+        return [lng, lat];
+      }
+    }
+    return null;
+  };
+
   const groupes = new Map();
   for (const feature of donneesAppareils.features) {
     const [longitudeFeature, latitudeFeature] = feature.geometry?.coordinates || [];
@@ -2756,8 +2784,9 @@ function construireSectionAppareilsAssociesDepuisPostes(postesListe, options = {
             `<button class="popup-poste-appareil-lien" type="button" data-lng="${entree.longitude}" data-lat="${entree.latitude}">${echapperHtml(entree.code)}</button>`
         )
         .join(", ");
-      const lngPoste = Number(options?.coordonneesPoste?.[0]);
-      const latPoste = Number(options?.coordonneesPoste?.[1]);
+      const coordonneesSat = trouverCoordonneesPostePourSat(groupe.label);
+      const lngPoste = Number(coordonneesSat?.[0] ?? options?.coordonneesPoste?.[0]);
+      const latPoste = Number(coordonneesSat?.[1] ?? options?.coordonneesPoste?.[1]);
       const pillSatHtml =
         Number.isFinite(lngPoste) && Number.isFinite(latPoste)
           ? `<button class="popup-badge popup-badge-itineraire popup-badge-poste-sat popup-poste-sat-lien" type="button" data-target-type="postes" data-target-sat="${echapperHtml(groupe.label)}" data-lng="${lngPoste}" data-lat="${latPoste}">${echapperHtml(groupe.label)}</button>`
