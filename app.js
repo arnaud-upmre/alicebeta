@@ -2028,7 +2028,9 @@ function construireSectionAppareils(feature, options = {}) {
         return `<section class="popup-appareils-multi-item"><p class="popup-appareils-multi-code"><span class="popup-point-couleur" style="background:${echapperHtml(couleur)}"></span>${echapperHtml(libelleAppareil)}${tagHp}</p>${descriptionHtml ? `<p class="popup-appareils-multi-description">${descriptionHtml}</p>` : ""}</section>`;
       })
       .join("");
-    return `<section class="popup-section"><div class="popup-pill-ligne"><span class="popup-badge popup-badge-itineraire">${echapperHtml(String(propr.appareils_count))} appareils sur le meme support</span></div>${contexteLieu ? `<p class="popup-appareils-multi-lieu">📍 ${echapperHtml(contexteLieu)}</p>` : ""}${pillsTelecommandeMulti}${sectionsAppareils}</section>`;
+    const afficherContexteLieu = options?.afficherContexteLieu !== false;
+    const afficherPillsTelecommande = options?.afficherPillsTelecommande !== false;
+    return `<section class="popup-section"><div class="popup-pill-ligne"><span class="popup-badge popup-badge-itineraire">${echapperHtml(String(propr.appareils_count))} appareils sur le meme support</span></div>${afficherContexteLieu && contexteLieu ? `<p class="popup-appareils-multi-lieu">📍 ${echapperHtml(contexteLieu)}</p>` : ""}${afficherPillsTelecommande ? pillsTelecommandeMulti : ""}${sectionsAppareils}</section>`;
   }
 
   const appareil = appareilsListe[0] || {};
@@ -2050,7 +2052,10 @@ function construireSectionAppareils(feature, options = {}) {
     ? `<div class="popup-appareil-infos"><div class="popup-section-titre popup-section-titre-gauche"><span class="popup-badge popup-badge-itineraire">Information sur l'appareil</span></div><p class="popup-appareil-infos-description">${echapperHtml(descriptionAppareil)}</p></div>`
     : "";
   const ligneCode = options.masquerTitreLieu ? `<p><span class="popup-point-couleur" style="background:${echapperHtml(couleur)}"></span>${echapperHtml(libelleAppareil)}${tagHp}</p>` : "";
-  return `<section class="popup-section">${ligneTitre}${ligneCode}${ligneDescription}</section>`;
+  const badgeSupport = options.afficherBadgeSupport
+    ? '<div class="popup-pill-ligne"><span class="popup-badge popup-badge-itineraire">1 appareil sur le meme support</span></div>'
+    : "";
+  return `<section class="popup-section">${badgeSupport}${ligneTitre}${ligneCode}${ligneDescription}</section>`;
 }
 
 function construireSectionAcces(feature) {
@@ -2845,6 +2850,27 @@ function construireSectionAppareilsAssociesDepuisPostes(postesListe, options = {
   return `<section class="popup-section"><div class="popup-poste-appareils-groupes">${lignes}</div></section>`;
 }
 
+function construireFichePosteDepuisEntree(poste, options = {}) {
+  if (!poste) {
+    return "";
+  }
+  const titre = construireTitrePoste(poste) || "Poste inconnu";
+  const classeHors = poste.hors_patrimoine ? " popup-item-hors" : "";
+  const codesTelecommande = extraireCodesTelecommande(poste.description_telecommande);
+  const pillsTelecommande = codesTelecommande.length
+    ? `<div class="popup-appareils-multi-telecommande popup-poste-telecommande-pills">${codesTelecommande
+        .map((code) => `<span class="popup-tag-hp popup-tag-telecommande">${echapperHtml(code)}</span>`)
+        .join("")}</div>`
+    : "";
+  const lignePkSousTitre = construireLignePkEtLigneHtml(poste);
+  const sectionAppareilsAvantRss = options.sectionAppareilsAvantRss || "";
+  const sectionRss = construireSectionRssPoste(poste);
+  const sectionInformations = construireSectionInformationsPoste(poste);
+  const sectionContact = construireSectionContactPoste(poste);
+
+  return `<section class="popup-section${classeHors}"><p class="popup-poste-entete-principal">📍 ${echapperHtml(titre)}</p>${pillsTelecommande}${lignePkSousTitre ? `<p class="popup-poste-ligne-titre">🚆 ${lignePkSousTitre}</p>` : ""}</section>${sectionAppareilsAvantRss}${sectionRss}${sectionInformations}${sectionContact}`;
+}
+
 function construireSectionPostes(feature, options = {}) {
   const propr = feature.properties || {};
   let postesListe = [];
@@ -2893,20 +2919,7 @@ function construireSectionPostes(feature, options = {}) {
   }
 
   const poste = postesAffiches[0] || {};
-  const titre = construireTitrePoste(poste) || "Poste inconnu";
-  const classeHors = poste.hors_patrimoine ? " popup-item-hors" : "";
-  const codesTelecommande = extraireCodesTelecommande(poste.description_telecommande);
-  const pillsTelecommande = codesTelecommande.length
-    ? `<div class="popup-appareils-multi-telecommande popup-poste-telecommande-pills">${codesTelecommande
-        .map((code) => `<span class="popup-tag-hp popup-tag-telecommande">${echapperHtml(code)}</span>`)
-        .join("")}</div>`
-    : "";
-  const lignePkSousTitre = construireLignePkEtLigneHtml(poste);
-  const sectionRss = construireSectionRssPoste(poste);
-  const sectionInformations = construireSectionInformationsPoste(poste);
-  const sectionContact = construireSectionContactPoste(poste);
-
-  return `<section class="popup-section${classeHors}"><p class="popup-poste-entete-principal">📍 ${echapperHtml(titre)}</p>${pillsTelecommande}${lignePkSousTitre ? `<p class="popup-poste-ligne-titre">🚆 ${lignePkSousTitre}</p>` : ""}</section>${sectionRss}${sectionInformations}${sectionContact}`;
+  return construireFichePosteDepuisEntree(poste);
 }
 
 function attacherActionsPopupInterne() {
@@ -3411,7 +3424,21 @@ function construirePopupDepuisFeatures(longitude, latitude, featurePostes, featu
     posteAssocieDepuisAppareil = trouverPosteAssocieDepuisAppareils(featureAppareils);
   }
 
-  if (featureAppareils) {
+  if (featureAppareils && !featurePostes && posteAssocieDepuisAppareil) {
+    const sectionAppareilsAvantRss = construireSectionAppareils(featureAppareils, {
+      masquerTitreLieu: true,
+      posteAssocie: posteAssocieDepuisAppareil,
+      afficherBadgeSupport: true,
+      afficherContexteLieu: false,
+      afficherPillsTelecommande: false
+    });
+    const sectionFusionnee = construireFichePosteDepuisEntree(posteAssocieDepuisAppareil, {
+      sectionAppareilsAvantRss
+    });
+    if (sectionFusionnee) {
+      sections.push(sectionFusionnee);
+    }
+  } else if (featureAppareils) {
     const sectionAppareils = construireSectionAppareils(featureAppareils, {
       masquerTitreLieu: Boolean(featurePostes),
       posteAssocie: posteAssocieDepuisAppareil
@@ -3472,6 +3499,15 @@ function construirePopupDepuisFeatures(longitude, latitude, featurePostes, featu
       return construireSectionBoutonCodesPostes(featurePostes);
     }
 
+    if (featureAppareils && posteAssocieDepuisAppareil) {
+      const featurePosteVirtuel = {
+        properties: {
+          postes_liste_json: JSON.stringify([posteAssocieDepuisAppareil])
+        }
+      };
+      return construireSectionBoutonCodesPostes(featurePosteVirtuel);
+    }
+
     if (featureAcces) {
       return construireSectionBoutonCodes(featureAcces);
     }
@@ -3484,15 +3520,30 @@ function construirePopupDepuisFeatures(longitude, latitude, featurePostes, featu
           '<section class="popup-section popup-section-codes"><div class="popup-section-titre popup-section-titre-gauche"><span class="popup-badge popup-badge-itineraire">Espace sécurisé</span></div>'
         )
       : sectionCodes;
+  const libelleSectionItineraire = (() => {
+    if (estVueAppareilsSeule) {
+      return "Créer un itineraire vers les appareils";
+    }
+    if (estVuePosteSeule) {
+      return cibleSatCourante && cibleSatCourante !== "poste"
+        ? "Créer un itineraire vers ce SAT"
+        : "Créer un itineraire vers ce poste";
+    }
+    if (estVueAccesSeule) {
+      return "Créer un itineraire vers cet acces";
+    }
+    return "Créer un itineraire";
+  })();
   const sectionItineraire = coordonneesNavigation
-    ? `<section class="popup-section popup-section-itineraires"><div class="popup-section-titre popup-section-titre-gauche"><span class="popup-badge popup-badge-itineraire">Créer un itineraire</span></div>${construireLiensItineraires(coordonneesNavigation[0], coordonneesNavigation[1])}</section>`
+    ? `<section class="popup-section popup-section-itineraires"><div class="popup-section-titre popup-section-titre-gauche"><span class="popup-badge popup-badge-itineraire">${echapperHtml(libelleSectionItineraire)}</span></div>${construireLiensItineraires(coordonneesNavigation[0], coordonneesNavigation[1])}</section>`
     : "";
-  const lienImajnet = featurePostes ? construireLienImajnet(longitude, latitude) : "";
+  const lienImajnet = featurePostes || estVueAppareilsSeule ? construireLienImajnet(longitude, latitude) : "";
   const lienPowerBi = "https://app.powerbi.com/groups/me/reports/e63d15fe-0d14-4471-8571-6e146456990f/ReportSection0107f8f0b80dcd560566?experience=power-bi";
   const lienSignalementTerrain =
     "https://forms.office.com/Pages/ResponsePage.aspx?id=OIJ8SplXFkufxprY_OWn2UJJqJxHNcNPmrPMZznt7P1UNUhTNFRJVkhJVzBPMTMyM1g5UUlUMlgzTS4u";
   const classeActionsPoste = "popup-itineraires-poste-actions";
   const libelleSectionActionsPoste = "Explorer les équipements";
+  const activerSectionEquipements = Boolean(featurePostes || estVueAppareilsSeule);
   const actionsExplorerEquipements = [];
   if (lienImajnet) {
     actionsExplorerEquipements.push({
@@ -3518,14 +3569,23 @@ function construirePopupDepuisFeatures(longitude, latitude, featurePostes, featu
     .sort((a, b) => a.label.localeCompare(b.label, "fr", { sensitivity: "base", numeric: true }))
     .map((action) => action.html)
     .join("");
-  const sectionActionsPoste = featurePostes
+  const sectionActionsPoste = activerSectionEquipements
     ? `<section class="popup-section popup-section-itineraires"><div class="popup-section-titre popup-section-titre-gauche"><span class="popup-badge popup-badge-itineraire">${echapperHtml(libelleSectionActionsPoste)}</span></div><div class="popup-itineraires ${classeActionsPoste}">${actionsExploreesTriees}</div></section>`
     : "";
-  const sectionTerrain = featurePostes
-    ? `<section class="popup-section popup-section-itineraires"><div class="popup-section-titre popup-section-titre-gauche"><span class="popup-badge popup-badge-itineraire">Terrain</span></div><div class="popup-itineraires popup-itineraires-localiser"><a class="popup-bouton-itineraire" href="${echapperHtml(lienSignalementTerrain)}" target="_blank" rel="noopener noreferrer">🚦 Signaler un STOP&GO ou un incident</a></div></section>`
+  const sectionTerrain = activerSectionEquipements
+    ? `<section class="popup-section popup-section-itineraires"><div class="popup-section-titre popup-section-titre-gauche"><span class="popup-badge popup-badge-itineraire">Terrain</span></div><div class="popup-itineraires popup-itineraires-localiser"><a class="popup-bouton-itineraire" href="${echapperHtml(lienSignalementTerrain)}" target="_blank" rel="noopener noreferrer">🚦 Signaler un STOP & GO ou un incident</a></div></section>`
     : "";
   const boutonsLiaison = [];
-  if (estVueAppareilsSeule && coordonneesRetourPosteDepuisAppareil) {
+  if (estVueAppareilsSeule && coordonneesRetourPosteDepuisAppareil && posteAssocieDepuisAppareil) {
+    if (coordonneesNavigation) {
+      boutonsLiaison.push(
+        `<button class="popup-bouton-itineraire popup-bouton-localiser popup-bouton-liaison" type="button" data-target-type="acces" data-lng="${coordonneesNavigation[0]}" data-lat="${coordonneesNavigation[1]}">📄 Consulter la fiche de l'accès routier</button>`
+      );
+    }
+    boutonsLiaison.push(
+      `<button class="popup-bouton-itineraire popup-bouton-localiser popup-bouton-liaison" type="button" data-target-type="postes" data-lng="${coordonneesRetourPosteDepuisAppareil[0]}" data-lat="${coordonneesRetourPosteDepuisAppareil[1]}">📄 Retour vers le poste</button>`
+    );
+  } else if (estVueAppareilsSeule && coordonneesRetourPosteDepuisAppareil && !posteAssocieDepuisAppareil) {
     const attributsOrigineAcces =
       coordonneesNavigation
         ? ` data-origin-acces-lng="${coordonneesNavigation[0]}" data-origin-acces-lat="${coordonneesNavigation[1]}"`
@@ -3567,7 +3627,7 @@ function construirePopupDepuisFeatures(longitude, latitude, featurePostes, featu
   const sectionRetourPoste = boutonsLiaison.length
     ? `<section class="popup-section popup-section-localiser"><div class="popup-itineraires ${boutonsLiaison.length > 1 ? "popup-itineraires-poste-actions" : "popup-itineraires-localiser"}">${boutonsLiaison.join("")}</div></section>`
     : "";
-  const sectionLocaliser = featurePostes
+  const sectionLocaliser = featurePostes || estVueAppareilsSeule
     ? ""
     : `<section class="popup-section popup-section-localiser"><div class="popup-itineraires popup-itineraires-poste-actions"><button class="popup-bouton-itineraire popup-bouton-localiser" id="popup-localiser-carte" type="button" data-lng="${longitude}" data-lat="${latitude}">📍 Localiser sur la carte</button><a class="popup-bouton-itineraire" href="${echapperHtml(lienPowerBi)}" target="_blank" rel="noopener noreferrer">⚡️ Patrimoine SPOT</a></div></section>`;
   const contenuFiche = `<div class="popup-carte">${sections.join("")}${sectionRssAssocieDepuisAcces}${sectionItineraire}${sectionActionsPoste}${sectionTerrain}${sectionCodesAvecPills}${sectionLocaliser}${sectionRetourPoste}</div>`;
