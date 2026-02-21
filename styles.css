@@ -1614,6 +1614,10 @@ body {
   border-color: rgba(100, 116, 139, 0.3);
 }
 
+.popup-bouton-itineraire[hidden] {
+  display: none !important;
+}
+
 .popup-bouton-codes {
   width: 100%;
 }
