@@ -2757,7 +2757,7 @@ function construireSectionAppareilsAssociesDepuisPostes(postesListe) {
         )
         .join(", ");
       const pillSatHtml = entreePill
-        ? `<button class="popup-badge popup-badge-itineraire popup-badge-poste-sat popup-poste-sat-lien popup-poste-appareil-lien" type="button" data-lng="${entreePill.longitude}" data-lat="${entreePill.latitude}">${echapperHtml(groupe.label)}</button>`
+        ? `<button class="popup-badge popup-badge-itineraire popup-badge-poste-sat popup-poste-sat-lien" type="button" data-lng="${entreePill.longitude}" data-lat="${entreePill.latitude}">${echapperHtml(groupe.label)}</button>`
         : `<span class="popup-badge popup-badge-itineraire popup-badge-poste-sat">${echapperHtml(groupe.label)}</span>`;
       return `<div class="popup-poste-appareils-groupe"><div class="popup-poste-appareils-entete-ligne">${pillSatHtml}<p class="popup-poste-appareils-ligne">${codesHtml}</p></div></div>`;
     })
@@ -2969,7 +2969,9 @@ function attacherActionsPopupInterne() {
     });
   }
 
-  const boutonsAppareilsAssocies = racinePopup.querySelectorAll(".popup-poste-appareil-lien[data-lng][data-lat]");
+  const boutonsAppareilsAssocies = racinePopup.querySelectorAll(
+    ".popup-poste-appareil-lien[data-lng][data-lat], .popup-poste-sat-lien[data-lng][data-lat]"
+  );
   for (const bouton of boutonsAppareilsAssocies) {
     bouton.addEventListener("click", async () => {
       const longitude = Number(bouton.getAttribute("data-lng"));

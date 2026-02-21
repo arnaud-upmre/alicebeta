@@ -1413,6 +1413,8 @@ body {
 .popup-poste-sat-lien {
   cursor: pointer;
   font: inherit;
+  border: 0;
+  text-decoration: none;
 }
 
 .popup-poste-sat-lien:hover,
