@@ -1397,12 +1397,12 @@ body {
 .popup-poste-appareils-groupes {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 10px;
 }
 
 .popup-poste-appareils-groupe + .popup-poste-appareils-groupe {
   border-top: 1px solid rgba(156, 163, 175, 0.42);
-  padding-top: 14px;
+  padding-top: 10px;
 }
 
 .popup-badge-poste-sat {
@@ -1410,8 +1410,28 @@ body {
   border: 1px solid rgba(210, 136, 77, 0.25);
 }
 
+.popup-poste-sat-lien {
+  cursor: pointer;
+  font: inherit;
+}
+
+.popup-poste-sat-lien:hover,
+.popup-poste-sat-lien:focus-visible {
+  transform: translateY(-1px);
+  box-shadow: 0 3px 8px rgba(15, 23, 42, 0.16);
+  outline: none;
+}
+
+.popup-poste-appareils-entete-ligne {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  column-gap: 12px;
+  row-gap: 8px;
+}
+
 .popup-poste-appareils-ligne {
-  margin: 10px 0 0;
+  margin: 0;
   font-size: 0.84rem;
   line-height: 1.42;
   word-spacing: 0.08em;

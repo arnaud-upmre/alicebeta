@@ -2749,13 +2749,17 @@ function construireSectionAppareilsAssociesDepuisPostes(postesListe) {
       const codes = Array.from(groupe.codes.values()).sort((a, b) =>
         String(a.code).localeCompare(String(b.code), "fr", { numeric: true })
       );
+      const entreePill = codes[0] || null;
       const codesHtml = codes
         .map(
           (entree) =>
             `<button class="popup-poste-appareil-lien" type="button" data-lng="${entree.longitude}" data-lat="${entree.latitude}">${echapperHtml(entree.code)}</button>`
         )
         .join(", ");
-      return `<div class="popup-poste-appareils-groupe"><div class="popup-pill-ligne popup-pill-ligne-gauche"><span class="popup-badge popup-badge-itineraire popup-badge-poste-sat">${echapperHtml(groupe.label)}</span></div><p class="popup-poste-appareils-ligne">${codesHtml}</p></div>`;
+      const pillSatHtml = entreePill
+        ? `<button class="popup-badge popup-badge-itineraire popup-badge-poste-sat popup-poste-sat-lien popup-poste-appareil-lien" type="button" data-lng="${entreePill.longitude}" data-lat="${entreePill.latitude}">${echapperHtml(groupe.label)}</button>`
+        : `<span class="popup-badge popup-badge-itineraire popup-badge-poste-sat">${echapperHtml(groupe.label)}</span>`;
+      return `<div class="popup-poste-appareils-groupe"><div class="popup-poste-appareils-entete-ligne">${pillSatHtml}<p class="popup-poste-appareils-ligne">${codesHtml}</p></div></div>`;
     })
     .join("");
 
