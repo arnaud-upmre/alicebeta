@@ -405,13 +405,11 @@ function regrouperAccesParCoordonnees(geojson) {
     const cle = `${longitude}|${latitude}`;
     const horsPatrimoine = estHorsPatrimoine(propr.hors_patrimoine);
     const champAcces = String(propr.acces || "").trim();
-    const champPortail = String(propr.portail || "").trim();
     const acces = {
       nom: propr.nom || "",
       type: propr.type || "",
       SAT: propr.SAT || "",
       acces: champAcces,
-      portail: champPortail,
       code: estCodeDisponible(propr.code),
       hors_patrimoine: horsPatrimoine
     };

@@ -9,7 +9,6 @@
         "type": "Atelier",
         "SAT": "",
         "acces": "",
-        "portail": "",
         "hors_patrimoine": false,
         "code": true
       },
@@ -28,7 +27,6 @@
         "type": "L",
         "SAT": "",
         "acces": "",
-        "portail": "Triangle",
         "hors_patrimoine": false,
         "code": false
       },
@@ -47,7 +45,6 @@
         "type": "L",
         "SAT": "SATa",
         "acces": "",
-        "portail": "",
         "hors_patrimoine": false,
         "code": false
       },
@@ -66,7 +63,6 @@
         "type": "L",
         "SAT": "SATb",
         "acces": "",
-        "portail": "",
         "hors_patrimoine": false,
         "code": false
       },
@@ -85,7 +81,6 @@
         "type": "L",
         "SAT": "SATc",
         "acces": "",
-        "portail": "",
         "hors_patrimoine": false,
         "code": false
       },
@@ -104,7 +99,6 @@
         "type": "L",
         "SAT": "SATd",
         "acces": "",
-        "portail": "",
         "hors_patrimoine": false,
         "code": false
       },
@@ -123,7 +117,6 @@
         "type": "SST",
         "SAT": "",
         "acces": "",
-        "portail": "",
         "hors_patrimoine": false,
         "code": true
       },
@@ -142,7 +135,6 @@
         "type": "SS",
         "SAT": "",
         "acces": "",
-        "portail": "",
         "hors_patrimoine": false,
         "code": false
       },
@@ -161,7 +153,6 @@
         "type": "SST",
         "SAT": "",
         "acces": "",
-        "portail": "121",
         "hors_patrimoine": false,
         "code": true
       },
@@ -180,7 +171,6 @@
         "type": "SST",
         "SAT": "SAT1",
         "acces": "",
-        "portail": "",
         "hors_patrimoine": false,
         "code": false
       },
@@ -199,7 +189,6 @@
         "type": "",
         "SAT": "",
         "acces": "",
-        "portail": "",
         "hors_patrimoine": false,
         "code": false
       },
@@ -218,7 +207,6 @@
         "type": "",
         "SAT": "",
         "acces": "",
-        "portail": "",
         "hors_patrimoine": false,
         "code": false
       },
@@ -237,7 +225,6 @@
         "type": "",
         "SAT": "",
         "acces": "",
-        "portail": "",
         "hors_patrimoine": false,
         "code": false
       },
@@ -256,7 +243,6 @@
         "type": "",
         "SAT": "",
         "acces": "",
-        "portail": "",
         "hors_patrimoine": false,
         "code": false
       },
@@ -275,7 +261,6 @@
         "type": "",
         "SAT": "",
         "acces": "",
-        "portail": "",
         "hors_patrimoine": false,
         "code": false
       },
@@ -294,7 +279,6 @@
         "type": "",
         "SAT": "",
         "acces": "",
-        "portail": "Ouverture du portail par Agent E",
         "hors_patrimoine": false,
         "code": false
       },
@@ -313,7 +297,6 @@
         "type": "",
         "SAT": "",
         "acces": "",
-        "portail": "",
         "hors_patrimoine": false,
         "code": false
       },
@@ -332,7 +315,6 @@
         "type": "SSP",
         "SAT": "",
         "acces": "",
-        "portail": "Clé Nord",
         "hors_patrimoine": false,
         "code": true
       },
@@ -351,7 +333,6 @@
         "type": "SP",
         "SAT": "",
         "acces": "",
-        "portail": "Badge Eurotunnel obligatoire",
         "hors_patrimoine": false,
         "code": true
       },
@@ -370,7 +351,6 @@
         "type": "SP",
         "SAT": "SAT1",
         "acces": "",
-        "portail": "Badge Eurotunnel obligatoire",
         "hors_patrimoine": false,
         "code": true
       },
@@ -389,7 +369,6 @@
         "type": "SP",
         "SAT": "SAT2",
         "acces": "",
-        "portail": "Badge Eurotunnel obligatoire",
         "hors_patrimoine": false,
         "code": true
       },
@@ -408,7 +387,6 @@
         "type": "SP",
         "SAT": "SAT3",
         "acces": "",
-        "portail": "Badge Eurotunnel obligatoire",
         "hors_patrimoine": false,
         "code": true
       },
@@ -427,7 +405,6 @@
         "type": "SP",
         "SAT": "SAT4",
         "acces": "",
-        "portail": "Badge Eurotunnel obligatoire",
         "hors_patrimoine": false,
         "code": true
       },
@@ -446,7 +423,6 @@
         "type": "SSPA",
         "SAT": "",
         "acces": "",
-        "portail": "Accès par Carmillon",
         "hors_patrimoine": false,
         "code": true
       },
@@ -465,7 +441,6 @@
         "type": "SSPA",
         "SAT": "SAT",
         "acces": "",
-        "portail": "Accès par Carmillon",
         "hors_patrimoine": false,
         "code": true
       },
@@ -484,7 +459,6 @@
         "type": "",
         "SAT": "",
         "acces": "",
-        "portail": "",
         "hors_patrimoine": false,
         "code": false
       },
@@ -503,7 +477,6 @@
         "type": "L",
         "SAT": "",
         "acces": "",
-        "portail": "",
         "hors_patrimoine": false,
         "code": true
       },
@@ -522,7 +495,6 @@
         "type": "L",
         "SAT": "SATa",
         "acces": "",
-        "portail": "Libre",
         "hors_patrimoine": false,
         "code": false
       },
@@ -541,7 +513,6 @@
         "type": "SP",
         "SAT": "",
         "acces": "",
-        "portail": "",
         "hors_patrimoine": false,
         "code": false
       },
@@ -560,7 +531,6 @@
         "type": "SSP",
         "SAT": "",
         "acces": "",
-        "portail": "Triangle",
         "hors_patrimoine": false,
         "code": true
       },
@@ -579,7 +549,6 @@
         "type": "SS",
         "SAT": "",
         "acces": "",
-        "portail": "",
         "hors_patrimoine": false,
         "code": false
       },
@@ -598,7 +567,6 @@
         "type": "SSP",
         "SAT": "",
         "acces": "",
-        "portail": "",
         "hors_patrimoine": false,
         "code": false
       },
@@ -617,7 +585,6 @@
         "type": "P",
         "SAT": "",
         "acces": "",
-        "portail": "",
         "hors_patrimoine": false,
         "code": false
       },
@@ -636,7 +603,6 @@
         "type": "SSPA",
         "SAT": "",
         "acces": "",
-        "portail": "",
         "hors_patrimoine": false,
         "code": false
       },
@@ -655,7 +621,6 @@
         "type": "L",
         "SAT": "",
         "acces": "",
-        "portail": "",
         "hors_patrimoine": false,
         "code": false
       },
@@ -674,7 +639,6 @@
         "type": "L",
         "SAT": "",
         "acces": "",
-        "portail": "",
         "hors_patrimoine": false,
         "code": false
       },
@@ -693,7 +657,6 @@
         "type": "SSPA",
         "SAT": "",
         "acces": "",
-        "portail": "",
         "hors_patrimoine": false,
         "code": false
       },
@@ -712,7 +675,6 @@
         "type": "PRCI",
         "SAT": "",
         "acces": "",
-        "portail": "LGV",
         "hors_patrimoine": false,
         "code": false
       },
@@ -731,7 +693,6 @@
         "type": "SP",
         "SAT": "",
         "acces": "",
-        "portail": "Libre",
         "hors_patrimoine": false,
         "code": false
       },
@@ -750,7 +711,6 @@
         "type": "SP",
         "SAT": "SAT",
         "acces": "",
-        "portail": "",
         "hors_patrimoine": false,
         "code": false
       },
@@ -769,7 +729,6 @@
         "type": "SSP",
         "SAT": "",
         "acces": "",
-        "portail": "",
         "hors_patrimoine": false,
         "code": false
       },
@@ -788,7 +747,6 @@
         "type": "",
         "SAT": "",
         "acces": "208-16",
-        "portail": "",
         "hors_patrimoine": true,
         "code": false
       },
@@ -807,7 +765,6 @@
         "type": "",
         "SAT": "",
         "acces": "209-3",
-        "portail": "Clé portail spécifique",
         "hors_patrimoine": true,
         "code": false
       },
@@ -826,7 +783,6 @@
         "type": "A",
         "SAT": "",
         "acces": "",
-        "portail": "",
         "hors_patrimoine": false,
         "code": false
       },
@@ -845,7 +801,6 @@
         "type": "L",
         "SAT": "",
         "acces": "",
-        "portail": "",
         "hors_patrimoine": false,
         "code": false
       },
@@ -864,7 +819,6 @@
         "type": "SP",
         "SAT": "",
         "acces": "",
-        "portail": "",
         "hors_patrimoine": false,
         "code": false
       },
@@ -883,7 +837,6 @@
         "type": "SSP",
         "SAT": "",
         "acces": "",
-        "portail": "",
         "hors_patrimoine": false,
         "code": false
       },
@@ -902,7 +855,6 @@
         "type": "SP",
         "SAT": "",
         "acces": "",
-        "portail": "",
         "hors_patrimoine": false,
         "code": false
       },
@@ -921,7 +873,6 @@
         "type": "A",
         "SAT": "",
         "acces": "",
-        "portail": "Contacter l’agent E pour ouverture du portail.",
         "hors_patrimoine": false,
         "code": true
       },
@@ -940,7 +891,6 @@
         "type": "SSP",
         "SAT": "",
         "acces": "",
-        "portail": "",
         "hors_patrimoine": false,
         "code": false
       },
@@ -959,7 +909,6 @@
         "type": "",
         "SAT": "",
         "acces": "230-37A",
-        "portail": "",
         "hors_patrimoine": true,
         "code": false
       },
@@ -978,7 +927,6 @@
         "type": "SS",
         "SAT": "",
         "acces": "",
-        "portail": "Contacter l’agent E pour ouverture du portail.",
         "hors_patrimoine": false,
         "code": true
       },
@@ -997,7 +945,6 @@
         "type": "PRCI",
         "SAT": "",
         "acces": "",
-        "portail": "LGV",
         "hors_patrimoine": false,
         "code": true
       },
@@ -1016,7 +963,6 @@
         "type": "SSP",
         "SAT": "",
         "acces": "",
-        "portail": "Cadenas artillerie",
         "hors_patrimoine": false,
         "code": true
       },
@@ -1035,7 +981,6 @@
         "type": "PRCI",
         "SAT": "",
         "acces": "",
-        "portail": "LGV",
         "hors_patrimoine": false,
         "code": true
       },
@@ -1054,7 +999,6 @@
         "type": "SP",
         "SAT": "",
         "acces": "",
-        "portail": "Clé spécifique",
         "hors_patrimoine": false,
         "code": false
       },
@@ -1073,7 +1017,6 @@
         "type": "L",
         "SAT": "",
         "acces": "",
-        "portail": "clé 590",
         "hors_patrimoine": false,
         "code": true
       },
@@ -1092,7 +1035,6 @@
         "type": "A",
         "SAT": "",
         "acces": "",
-        "portail": "",
         "hors_patrimoine": false,
         "code": false
       },
@@ -1111,7 +1053,6 @@
         "type": "L",
         "SAT": "",
         "acces": "",
-        "portail": "",
         "hors_patrimoine": false,
         "code": false
       },
@@ -1130,7 +1071,6 @@
         "type": "SP",
         "SAT": "",
         "acces": "",
-        "portail": "",
         "hors_patrimoine": false,
         "code": false
       },
@@ -1149,7 +1089,6 @@
         "type": "L",
         "SAT": "",
         "acces": "",
-        "portail": "Clé spécifique",
         "hors_patrimoine": false,
         "code": true
       },
@@ -1168,7 +1107,6 @@
         "type": "L",
         "SAT": "",
         "acces": "",
-        "portail": "Clé spécifique",
         "hors_patrimoine": false,
         "code": true
       },
@@ -1187,7 +1125,6 @@
         "type": "S",
         "SAT": "",
         "acces": "",
-        "portail": "",
         "hors_patrimoine": false,
         "code": false
       },
@@ -1206,7 +1143,6 @@
         "type": "type?",
         "SAT": "",
         "acces": "",
-        "portail": "",
         "hors_patrimoine": false,
         "code": false
       },
@@ -1225,7 +1161,6 @@
         "type": "SSP",
         "SAT": "",
         "acces": "",
-        "portail": "",
         "hors_patrimoine": false,
         "code": false
       },
@@ -1244,7 +1179,6 @@
         "type": "SSP",
         "SAT": "SAT1",
         "acces": "",
-        "portail": "Clé spécifique",
         "hors_patrimoine": false,
         "code": true
       },
@@ -1263,7 +1197,6 @@
         "type": "SSP",
         "SAT": "SAT1",
         "acces": "n°2",
-        "portail": "",
         "hors_patrimoine": false,
         "code": false
       },
@@ -1282,7 +1215,6 @@
         "type": "SSP",
         "SAT": "SAT2",
         "acces": "",
-        "portail": "",
         "hors_patrimoine": false,
         "code": false
       },
@@ -1301,7 +1233,6 @@
         "type": "SSP",
         "SAT": "",
         "acces": "",
-        "portail": "",
         "hors_patrimoine": false,
         "code": false
       },
@@ -1320,7 +1251,6 @@
         "type": "P",
         "SAT": "",
         "acces": "",
-        "portail": "",
         "hors_patrimoine": false,
         "code": false
       },
@@ -1339,7 +1269,6 @@
         "type": "S",
         "SAT": "",
         "acces": "",
-        "portail": "",
         "hors_patrimoine": false,
         "code": false
       },
@@ -1358,7 +1287,6 @@
         "type": "SP",
         "SAT": "",
         "acces": "",
-        "portail": "Clé LGV + 121",
         "hors_patrimoine": false,
         "code": true
       },
@@ -1377,7 +1305,6 @@
         "type": "P",
         "SAT": "",
         "acces": "",
-        "portail": "Clé LGV + 121",
         "hors_patrimoine": false,
         "code": true
       },
@@ -1396,7 +1323,6 @@
         "type": "SST",
         "SAT": "",
         "acces": "",
-        "portail": "",
         "hors_patrimoine": false,
         "code": false
       },
@@ -1415,7 +1341,6 @@
         "type": "",
         "SAT": "",
         "acces": "",
-        "portail": "",
         "hors_patrimoine": false,
         "code": true
       },
@@ -1434,7 +1359,6 @@
         "type": "",
         "SAT": "",
         "acces": "",
-        "portail": "",
         "hors_patrimoine": false,
         "code": false
       },
@@ -1453,7 +1377,6 @@
         "type": "L",
         "SAT": "",
         "acces": "",
-        "portail": "",
         "hors_patrimoine": false,
         "code": false
       },
@@ -1472,7 +1395,6 @@
         "type": "L",
         "SAT": "SAT1",
         "acces": "",
-        "portail": "",
         "hors_patrimoine": false,
         "code": false
       },
@@ -1491,7 +1413,6 @@
         "type": "L",
         "SAT": "SAT2",
         "acces": "",
-        "portail": "",
         "hors_patrimoine": false,
         "code": false
       },
@@ -1510,7 +1431,6 @@
         "type": "L",
         "SAT": "",
         "acces": "",
-        "portail": "",
         "hors_patrimoine": false,
         "code": false
       },
@@ -1529,7 +1449,6 @@
         "type": "L",
         "SAT": "",
         "acces": "I83502",
-        "portail": "Boite à clé",
         "hors_patrimoine": false,
         "code": false
       },
@@ -1548,7 +1467,6 @@
         "type": "SSP",
         "SAT": "",
         "acces": "",
-        "portail": "",
         "hors_patrimoine": false,
         "code": false
       },
@@ -1567,7 +1485,6 @@
         "type": "S",
         "SAT": "",
         "acces": "",
-        "portail": "",
         "hors_patrimoine": false,
         "code": false
       },
@@ -1586,7 +1503,6 @@
         "type": "S",
         "SAT": "SAT1",
         "acces": "",
-        "portail": "",
         "hors_patrimoine": false,
         "code": false
       },
@@ -1605,7 +1521,6 @@
         "type": "S",
         "SAT": "SAT2",
         "acces": "",
-        "portail": "",
         "hors_patrimoine": false,
         "code": false
       },
@@ -1624,7 +1539,6 @@
         "type": "PRCI",
         "SAT": "",
         "acces": "",
-        "portail": "LGV",
         "hors_patrimoine": false,
         "code": false
       },
@@ -1643,7 +1557,6 @@
         "type": "PRCI",
         "SAT": "",
         "acces": "",
-        "portail": "LGV",
         "hors_patrimoine": false,
         "code": false
       },
@@ -1662,7 +1575,6 @@
         "type": "L",
         "SAT": "",
         "acces": "",
-        "portail": "Badge Eurotunnel obligatoire",
         "hors_patrimoine": false,
         "code": true
       },
@@ -1681,7 +1593,6 @@
         "type": "L",
         "SAT": "SAT1",
         "acces": "",
-        "portail": "Badge Eurotunnel obligatoire",
         "hors_patrimoine": false,
         "code": true
       },
@@ -1700,7 +1611,6 @@
         "type": "L",
         "SAT": "SAT2",
         "acces": "",
-        "portail": "Badge Eurotunnel obligatoire",
         "hors_patrimoine": false,
         "code": true
       },
@@ -1719,7 +1629,6 @@
         "type": "L",
         "SAT": "SAT3",
         "acces": "",
-        "portail": "Badge Eurotunnel obligatoire",
         "hors_patrimoine": false,
         "code": true
       },
@@ -1738,7 +1647,6 @@
         "type": "L",
         "SAT": "SAT4",
         "acces": "",
-        "portail": "Badge Eurotunnel obligatoire",
         "hors_patrimoine": false,
         "code": true
       },
@@ -1757,7 +1665,6 @@
         "type": "L",
         "SAT": "SAT5",
         "acces": "",
-        "portail": "Badge Eurotunnel obligatoire",
         "hors_patrimoine": false,
         "code": true
       },
@@ -1776,7 +1683,6 @@
         "type": "SS",
         "SAT": "",
         "acces": "",
-        "portail": "",
         "hors_patrimoine": false,
         "code": false
       },
@@ -1795,7 +1701,6 @@
         "type": "SST",
         "SAT": "",
         "acces": "",
-        "portail": "",
         "hors_patrimoine": false,
         "code": true
       },
@@ -1814,7 +1719,6 @@
         "type": "SST",
         "SAT": "SAT1",
         "acces": "",
-        "portail": "",
         "hors_patrimoine": false,
         "code": false
       },
@@ -1833,7 +1737,6 @@
         "type": "SST",
         "SAT": "SAT2",
         "acces": "",
-        "portail": "",
         "hors_patrimoine": false,
         "code": false
       },
@@ -1852,7 +1755,6 @@
         "type": "SP",
         "SAT": "",
         "acces": "",
-        "portail": "",
         "hors_patrimoine": false,
         "code": true
       },
@@ -1871,7 +1773,6 @@
         "type": "SP",
         "SAT": "SAT1",
         "acces": "",
-        "portail": "Clé 590",
         "hors_patrimoine": false,
         "code": true
       },
@@ -1890,7 +1791,6 @@
         "type": "SP",
         "SAT": "SAT1",
         "acces": "I5429",
-        "portail": "Clé 590",
         "hors_patrimoine": false,
         "code": true
       },
@@ -1909,7 +1809,6 @@
         "type": "SP",
         "SAT": "SAT2",
         "acces": "",
-        "portail": "",
         "hors_patrimoine": false,
         "code": false
       },
@@ -1928,7 +1827,6 @@
         "type": "SP",
         "SAT": "SAT3",
         "acces": "",
-        "portail": "",
         "hors_patrimoine": false,
         "code": false
       },
@@ -1947,7 +1845,6 @@
         "type": "SP",
         "SAT": "SAT4",
         "acces": "",
-        "portail": "",
         "hors_patrimoine": false,
         "code": false
       },
@@ -1966,7 +1863,6 @@
         "type": "SSP",
         "SAT": "",
         "acces": "",
-        "portail": "Clé Nord et 121",
         "hors_patrimoine": false,
         "code": true
       },
@@ -1985,7 +1881,6 @@
         "type": "PRCI",
         "SAT": "",
         "acces": "",
-        "portail": "LGV",
         "hors_patrimoine": false,
         "code": false
       },
@@ -2004,7 +1899,6 @@
         "type": "SSP",
         "SAT": "",
         "acces": "",
-        "portail": "",
         "hors_patrimoine": false,
         "code": false
       },
@@ -2023,7 +1917,6 @@
         "type": "SSP",
         "SAT": "SAT1",
         "acces": "",
-        "portail": "",
         "hors_patrimoine": false,
         "code": false
       },
@@ -2042,7 +1935,6 @@
         "type": "SSP",
         "SAT": "SAT2",
         "acces": "",
-        "portail": "",
         "hors_patrimoine": false,
         "code": false
       },
@@ -2061,7 +1953,6 @@
         "type": "SSP",
         "SAT": "SAT3",
         "acces": "",
-        "portail": "",
         "hors_patrimoine": false,
         "code": false
       },
@@ -2080,7 +1971,6 @@
         "type": "SSP",
         "SAT": "SAT4",
         "acces": "",
-        "portail": "",
         "hors_patrimoine": false,
         "code": true
       },
@@ -2099,7 +1989,6 @@
         "type": "P",
         "SAT": "",
         "acces": "",
-        "portail": "",
         "hors_patrimoine": false,
         "code": false
       },
@@ -2118,7 +2007,6 @@
         "type": "SSP",
         "SAT": "",
         "acces": "",
-        "portail": "",
         "hors_patrimoine": false,
         "code": false
       },
@@ -2137,7 +2025,6 @@
         "type": "SST",
         "SAT": "",
         "acces": "",
-        "portail": "590 et 121",
         "hors_patrimoine": false,
         "code": true
       },
@@ -2156,7 +2043,6 @@
         "type": "SP",
         "SAT": "",
         "acces": "",
-        "portail": "",
         "hors_patrimoine": false,
         "code": false
       },
@@ -2175,7 +2061,6 @@
         "type": "SS",
         "SAT": "",
         "acces": "",
-        "portail": "",
         "hors_patrimoine": false,
         "code": false
       },
@@ -2194,7 +2079,6 @@
         "type": "SS",
         "SAT": "SAT1",
         "acces": "",
-        "portail": "",
         "hors_patrimoine": false,
         "code": false
       },
@@ -2213,7 +2097,6 @@
         "type": "SS",
         "SAT": "SAT2",
         "acces": "",
-        "portail": "",
         "hors_patrimoine": false,
         "code": false
       },
@@ -2232,7 +2115,6 @@
         "type": "SS",
         "SAT": "SAT3",
         "acces": "",
-        "portail": "",
         "hors_patrimoine": false,
         "code": false
       },
@@ -2251,7 +2133,6 @@
         "type": "SSPA",
         "SAT": "",
         "acces": "",
-        "portail": "Carmillon",
         "hors_patrimoine": false,
         "code": true
       },
@@ -2270,7 +2151,6 @@
         "type": "SSPA",
         "SAT": "",
         "acces": "",
-        "portail": "",
         "hors_patrimoine": false,
         "code": false
       },
@@ -2289,7 +2169,6 @@
         "type": "PRCI",
         "SAT": "",
         "acces": "",
-        "portail": "LGV",
         "hors_patrimoine": false,
         "code": true
       },
@@ -2308,7 +2187,6 @@
         "type": "SP",
         "SAT": "",
         "acces": "",
-        "portail": "",
         "hors_patrimoine": false,
         "code": false
       },
@@ -2327,7 +2205,6 @@
         "type": "SS",
         "SAT": "",
         "acces": "",
-        "portail": "",
         "hors_patrimoine": false,
         "code": false
       },
@@ -2346,7 +2223,6 @@
         "type": "SSP",
         "SAT": "",
         "acces": "",
-        "portail": "",
         "hors_patrimoine": false,
         "code": true
       },
@@ -2365,7 +2241,6 @@
         "type": "SS",
         "SAT": "",
         "acces": "",
-        "portail": "Clé 121",
         "hors_patrimoine": false,
         "code": true
       },
@@ -2384,7 +2259,6 @@
         "type": "SSP",
         "SAT": "",
         "acces": "",
-        "portail": "Clé 590",
         "hors_patrimoine": false,
         "code": false
       },
@@ -2403,7 +2277,6 @@
         "type": "SSP",
         "SAT": "SAT1",
         "acces": "",
-        "portail": "",
         "hors_patrimoine": false,
         "code": true
       },
@@ -2422,7 +2295,6 @@
         "type": "SSP",
         "SAT": "SAT2",
         "acces": "",
-        "portail": "",
         "hors_patrimoine": false,
         "code": true
       },
@@ -2441,7 +2313,6 @@
         "type": "SST",
         "SAT": "",
         "acces": "",
-        "portail": "",
         "hors_patrimoine": false,
         "code": true
       },
@@ -2460,7 +2331,6 @@
         "type": "S",
         "SAT": "",
         "acces": "",
-        "portail": "",
         "hors_patrimoine": false,
         "code": false
       },
@@ -2479,7 +2349,6 @@
         "type": "S",
         "SAT": "SAT I21",
         "acces": "",
-        "portail": "",
         "hors_patrimoine": false,
         "code": false
       },
@@ -2498,7 +2367,6 @@
         "type": "S",
         "SAT": "SAT I16",
         "acces": "",
-        "portail": "",
         "hors_patrimoine": false,
         "code": false
       },
@@ -2517,7 +2385,6 @@
         "type": "SSP",
         "SAT": "",
         "acces": "",
-        "portail": "",
         "hors_patrimoine": false,
         "code": false
       },
@@ -2536,7 +2403,6 @@
         "type": "SSPA",
         "SAT": "",
         "acces": "",
-        "portail": "",
         "hors_patrimoine": false,
         "code": true
       },
@@ -2555,7 +2421,6 @@
         "type": "SSPA",
         "SAT": "",
         "acces": "S5064-358",
-        "portail": "",
         "hors_patrimoine": false,
         "code": true
       },
@@ -2574,7 +2439,6 @@
         "type": "SSPA",
         "SAT": "SAT1",
         "acces": "",
-        "portail": "",
         "hors_patrimoine": false,
         "code": true
       },
@@ -2593,7 +2457,6 @@
         "type": "SSPA",
         "SAT": "SAT2",
         "acces": "",
-        "portail": "",
         "hors_patrimoine": false,
         "code": false
       },
@@ -2612,7 +2475,6 @@
         "type": "SSPA",
         "SAT": "SAT3",
         "acces": "",
-        "portail": "",
         "hors_patrimoine": false,
         "code": false
       },
@@ -2631,7 +2493,6 @@
         "type": "SSPA",
         "SAT": "SAT4",
         "acces": "",
-        "portail": "Clé spécifique pour ouvrir la guérite du SAT4",
         "hors_patrimoine": false,
         "code": false
       },
@@ -2650,7 +2511,6 @@
         "type": "SSPA",
         "SAT": "SAT5",
         "acces": "",
-        "portail": "",
         "hors_patrimoine": false,
         "code": false
       },
@@ -2669,7 +2529,6 @@
         "type": "SSPA",
         "SAT": "SAT5",
         "acces": "n°2",
-        "portail": "",
         "hors_patrimoine": false,
         "code": true
       },
@@ -2688,7 +2547,6 @@
         "type": "SSPA",
         "SAT": "SAT6",
         "acces": "",
-        "portail": "",
         "hors_patrimoine": false,
         "code": false
       },
@@ -2707,7 +2565,6 @@
         "type": "SST",
         "SAT": "",
         "acces": "",
-        "portail": "Badge d'accès obligatoire - clé spécifique pour ouvrir le 1er portail",
         "hors_patrimoine": false,
         "code": true
       },
@@ -2726,7 +2583,6 @@
         "type": "SST",
         "SAT": "",
         "acces": "",
-        "portail": "",
         "hors_patrimoine": false,
         "code": false
       },
@@ -2745,7 +2601,6 @@
         "type": "SST",
         "SAT": "",
         "acces": "",
-        "portail": "",
         "hors_patrimoine": false,
         "code": false
       },
@@ -2764,7 +2619,6 @@
         "type": "SSP",
         "SAT": "",
         "acces": "",
-        "portail": "121",
         "hors_patrimoine": false,
         "code": true
       },
@@ -2783,7 +2637,6 @@
         "type": "SP",
         "SAT": "",
         "acces": "",
-        "portail": "LGV + 121",
         "hors_patrimoine": false,
         "code": true
       },
@@ -2802,7 +2655,6 @@
         "type": "P",
         "SAT": "",
         "acces": "",
-        "portail": "",
         "hors_patrimoine": false,
         "code": false
       },
@@ -2821,7 +2673,6 @@
         "type": "SST",
         "SAT": "",
         "acces": "",
-        "portail": "121",
         "hors_patrimoine": false,
         "code": true
       },
@@ -2840,7 +2691,6 @@
         "type": "A",
         "SAT": "",
         "acces": "",
-        "portail": "",
         "hors_patrimoine": false,
         "code": false
       },
@@ -2859,7 +2709,6 @@
         "type": "L",
         "SAT": "",
         "acces": "",
-        "portail": "",
         "hors_patrimoine": false,
         "code": false
       },
@@ -2878,7 +2727,6 @@
         "type": "L",
         "SAT": "SAT1",
         "acces": "",
-        "portail": "",
         "hors_patrimoine": false,
         "code": false
       },
@@ -2897,7 +2745,6 @@
         "type": "L",
         "SAT": "SAT2",
         "acces": "",
-        "portail": "",
         "hors_patrimoine": false,
         "code": false
       },
@@ -2916,7 +2763,6 @@
         "type": "L",
         "SAT": "SAT3",
         "acces": "",
-        "portail": "",
         "hors_patrimoine": false,
         "code": false
       },
@@ -2935,7 +2781,6 @@
         "type": "SP",
         "SAT": "",
         "acces": "",
-        "portail": "",
         "hors_patrimoine": false,
         "code": true
       },
@@ -2954,7 +2799,6 @@
         "type": "L-A",
         "SAT": "",
         "acces": "",
-        "portail": "",
         "hors_patrimoine": false,
         "code": false
       },
@@ -2973,7 +2817,6 @@
         "type": "L-A",
         "SAT": "",
         "acces": "I1037",
-        "portail": "",
         "hors_patrimoine": false,
         "code": false
       },
@@ -2992,7 +2835,6 @@
         "type": "SSP",
         "SAT": "",
         "acces": "",
-        "portail": "",
         "hors_patrimoine": false,
         "code": false
       },
@@ -3011,7 +2853,6 @@
         "type": "SSP",
         "SAT": "",
         "acces": "sectionneur",
-        "portail": "",
         "hors_patrimoine": false,
         "code": false
       },
@@ -3030,7 +2871,6 @@
         "type": "SSPA",
         "SAT": "",
         "acces": "",
-        "portail": "",
         "hors_patrimoine": false,
         "code": false
       },
@@ -3049,7 +2889,6 @@
         "type": "SSPA",
         "SAT": "SAT1",
         "acces": "",
-        "portail": "",
         "hors_patrimoine": false,
         "code": false
       },
@@ -3068,7 +2907,6 @@
         "type": "SSPA",
         "SAT": "SAT2",
         "acces": "",
-        "portail": "",
         "hors_patrimoine": false,
         "code": true
       },
@@ -3087,7 +2925,6 @@
         "type": "SSPA",
         "SAT": "SAT3",
         "acces": "",
-        "portail": "",
         "hors_patrimoine": false,
         "code": true
       },
@@ -3106,7 +2943,6 @@
         "type": "SST",
         "SAT": "",
         "acces": "",
-        "portail": "",
         "hors_patrimoine": false,
         "code": false
       },
@@ -3125,7 +2961,6 @@
         "type": "SSPA",
         "SAT": "",
         "acces": "",
-        "portail": "Libre",
         "hors_patrimoine": false,
         "code": false
       },
@@ -3144,7 +2979,6 @@
         "type": "",
         "SAT": "",
         "acces": "263-16",
-        "portail": "",
         "hors_patrimoine": true,
         "code": false
       },
@@ -3163,7 +2997,6 @@
         "type": "",
         "SAT": "",
         "acces": "",
-        "portail": "",
         "hors_patrimoine": false,
         "code": false
       },
@@ -3182,7 +3015,6 @@
         "type": "Atelier",
         "SAT": "",
         "acces": "",
-        "portail": "",
         "hors_patrimoine": false,
         "code": true
       },
@@ -3201,7 +3033,6 @@
         "type": "SP",
         "SAT": "",
         "acces": "",
-        "portail": "",
         "hors_patrimoine": false,
         "code": false
       },
@@ -3220,7 +3051,6 @@
         "type": "SSPA",
         "SAT": "",
         "acces": "",
-        "portail": "",
         "hors_patrimoine": false,
         "code": false
       },
@@ -3239,7 +3069,6 @@
         "type": "PRCI",
         "SAT": "",
         "acces": "",
-        "portail": "LGV",
         "hors_patrimoine": false,
         "code": false
       },
@@ -3258,7 +3087,6 @@
         "type": "PRCI",
         "SAT": "",
         "acces": "I608",
-        "portail": "LGV",
         "hors_patrimoine": false,
         "code": false
       },
@@ -3277,7 +3105,6 @@
         "type": "PRCI",
         "SAT": "",
         "acces": "I611",
-        "portail": "LGV",
         "hors_patrimoine": false,
         "code": false
       },
@@ -3296,7 +3123,6 @@
         "type": "L",
         "SAT": "",
         "acces": "",
-        "portail": "",
         "hors_patrimoine": false,
         "code": false
       },
@@ -3315,7 +3141,6 @@
         "type": "SP",
         "SAT": "",
         "acces": "",
-        "portail": "",
         "hors_patrimoine": false,
         "code": false
       },
@@ -3334,7 +3159,6 @@
         "type": "PRCI",
         "SAT": "",
         "acces": "",
-        "portail": "LGV",
         "hors_patrimoine": false,
         "code": false
       },
@@ -3353,7 +3177,6 @@
         "type": "SSPA",
         "SAT": "",
         "acces": "",
-        "portail": "",
         "hors_patrimoine": false,
         "code": true
       },
@@ -3372,7 +3195,6 @@
         "type": "SSP",
         "SAT": "",
         "acces": "",
-        "portail": "",
         "hors_patrimoine": false,
         "code": false
       },
@@ -3391,7 +3213,6 @@
         "type": "SSP",
         "SAT": "SAT1",
         "acces": "",
-        "portail": "",
         "hors_patrimoine": false,
         "code": false
       },
@@ -3410,7 +3231,6 @@
         "type": "SSP",
         "SAT": "SAT3",
         "acces": "",
-        "portail": "",
         "hors_patrimoine": false,
         "code": false
       },
@@ -3429,7 +3249,6 @@
         "type": "SP",
         "SAT": "",
         "acces": "",
-        "portail": "Triangle",
         "hors_patrimoine": false,
         "code": true
       },
@@ -3448,7 +3267,6 @@
         "type": "L",
         "SAT": "",
         "acces": "",
-        "portail": "",
         "hors_patrimoine": false,
         "code": false
       },
@@ -3467,7 +3285,6 @@
         "type": "L",
         "SAT": "SAT1",
         "acces": "",
-        "portail": "",
         "hors_patrimoine": false,
         "code": false
       },
@@ -3486,7 +3303,6 @@
         "type": "L",
         "SAT": "SAT2",
         "acces": "",
-        "portail": "",
         "hors_patrimoine": false,
         "code": false
       },
@@ -3505,7 +3321,6 @@
         "type": "SSP",
         "SAT": "",
         "acces": "",
-        "portail": "Clé 590",
         "hors_patrimoine": false,
         "code": true
       },
@@ -3524,7 +3339,6 @@
         "type": "LGV",
         "SAT": "",
         "acces": "",
-        "portail": "",
         "hors_patrimoine": false,
         "code": true
       },
@@ -3543,7 +3357,6 @@
         "type": "PRCI",
         "SAT": "",
         "acces": "",
-        "portail": "LGV",
         "hors_patrimoine": false,
         "code": true
       },
@@ -3562,7 +3375,6 @@
         "type": "PRCI",
         "SAT": "",
         "acces": "I549",
-        "portail": "LGV",
         "hors_patrimoine": false,
         "code": false
       },
@@ -3581,7 +3393,6 @@
         "type": "PRCI",
         "SAT": "",
         "acces": "I553",
-        "portail": "LGV",
         "hors_patrimoine": false,
         "code": false
       },
@@ -3600,7 +3411,6 @@
         "type": "SSP",
         "SAT": "",
         "acces": "",
-        "portail": "",
         "hors_patrimoine": false,
         "code": true
       },
@@ -3619,7 +3429,6 @@
         "type": "SSP",
         "SAT": "SAT1",
         "acces": "",
-        "portail": "",
         "hors_patrimoine": false,
         "code": false
       },
@@ -3638,7 +3447,6 @@
         "type": "SSP",
         "SAT": "SAT2",
         "acces": "",
-        "portail": "",
         "hors_patrimoine": false,
         "code": false
       },
@@ -3657,7 +3465,6 @@
         "type": "SST",
         "SAT": "",
         "acces": "",
-        "portail": "121",
         "hors_patrimoine": false,
         "code": true
       },
@@ -3676,7 +3483,6 @@
         "type": "SP",
         "SAT": "",
         "acces": "",
-        "portail": "",
         "hors_patrimoine": false,
         "code": false
       },
@@ -3695,7 +3501,6 @@
         "type": "SSP",
         "SAT": "",
         "acces": "",
-        "portail": "",
         "hors_patrimoine": false,
         "code": false
       },
@@ -3714,7 +3519,6 @@
         "type": "SP",
         "SAT": "",
         "acces": "",
-        "portail": "",
         "hors_patrimoine": false,
         "code": false
       },
@@ -3733,7 +3537,6 @@
         "type": "P",
         "SAT": "",
         "acces": "",
-        "portail": "",
         "hors_patrimoine": false,
         "code": true
       },
@@ -3752,7 +3555,6 @@
         "type": "Atelier",
         "SAT": "",
         "acces": "",
-        "portail": "",
         "hors_patrimoine": false,
         "code": true
       },
@@ -3771,7 +3573,6 @@
         "type": "A",
         "SAT": "",
         "acces": "",
-        "portail": "",
         "hors_patrimoine": false,
         "code": true
       },
@@ -3790,7 +3591,6 @@
         "type": "SSPA",
         "SAT": "",
         "acces": "",
-        "portail": "",
         "hors_patrimoine": false,
         "code": false
       },
@@ -3809,7 +3609,6 @@
         "type": "",
         "SAT": "",
         "acces": "sectionneur",
-        "portail": "",
         "hors_patrimoine": true,
         "code": true
       },
@@ -3828,7 +3627,6 @@
         "type": "SP",
         "SAT": "",
         "acces": "",
-        "portail": "",
         "hors_patrimoine": false,
         "code": false
       },
@@ -3847,7 +3645,6 @@
         "type": "SP",
         "SAT": "",
         "acces": "n°2 - par la ferme",
-        "portail": "",
         "hors_patrimoine": false,
         "code": false
       },
@@ -3866,7 +3663,6 @@
         "type": "SP",
         "SAT": "SAT1",
         "acces": "I18",
-        "portail": "",
         "hors_patrimoine": false,
         "code": false
       },
@@ -3885,7 +3681,6 @@
         "type": "SP",
         "SAT": "SAT1",
         "acces": "I14",
-        "portail": "",
         "hors_patrimoine": false,
         "code": false
       },
@@ -3904,7 +3699,6 @@
         "type": "SP",
         "SAT": "SAT1",
         "acces": "",
-        "portail": "",
         "hors_patrimoine": false,
         "code": false
       },
@@ -3923,7 +3717,6 @@
         "type": "P",
         "SAT": "",
         "acces": "",
-        "portail": "",
         "hors_patrimoine": false,
         "code": false
       },
@@ -3942,7 +3735,6 @@
         "type": "SP",
         "SAT": "",
         "acces": "",
-        "portail": "",
         "hors_patrimoine": false,
         "code": false
       },
@@ -3961,7 +3753,6 @@
         "type": "VR GP",
         "SAT": "",
         "acces": "",
-        "portail": "",
         "hors_patrimoine": false,
         "code": true
       },
@@ -3980,7 +3771,6 @@
         "type": "PRCI",
         "SAT": "",
         "acces": "",
-        "portail": "LGV",
         "hors_patrimoine": false,
         "code": true
       },
@@ -3999,7 +3789,6 @@
         "type": "SSPA",
         "SAT": "",
         "acces": "",
-        "portail": "",
         "hors_patrimoine": false,
         "code": false
       },
@@ -4018,7 +3807,6 @@
         "type": "SSPA",
         "SAT": "",
         "acces": "S5082",
-        "portail": "",
         "hors_patrimoine": false,
         "code": false
       },
@@ -4037,7 +3825,6 @@
         "type": "S",
         "SAT": "",
         "acces": "",
-        "portail": "",
         "hors_patrimoine": false,
         "code": false
       },
@@ -4056,7 +3843,6 @@
         "type": "SSP",
         "SAT": "",
         "acces": "",
-        "portail": "",
         "hors_patrimoine": false,
         "code": false
       },
@@ -4075,7 +3861,6 @@
         "type": "SSP",
         "SAT": "",
         "acces": "",
-        "portail": "",
         "hors_patrimoine": false,
         "code": false
       },
@@ -4094,7 +3879,6 @@
         "type": "SSP",
         "SAT": "",
         "acces": "F IL3",
-        "portail": "",
         "hors_patrimoine": false,
         "code": false
       },
@@ -4113,7 +3897,6 @@
         "type": "SSP",
         "SAT": "SAT1",
         "acces": "",
-        "portail": "",
         "hors_patrimoine": false,
         "code": false
       },
@@ -4132,7 +3915,6 @@
         "type": "SSP",
         "SAT": "SAT2",
         "acces": "",
-        "portail": "",
         "hors_patrimoine": false,
         "code": false
       },
@@ -4151,7 +3933,6 @@
         "type": "SP",
         "SAT": "",
         "acces": "",
-        "portail": "",
         "hors_patrimoine": false,
         "code": false
       },
@@ -4170,7 +3951,6 @@
         "type": "SP",
         "SAT": "",
         "acces": "",
-        "portail": "",
         "hors_patrimoine": false,
         "code": false
       },
@@ -4189,7 +3969,6 @@
         "type": "SP",
         "SAT": "SAT1",
         "acces": "",
-        "portail": "",
         "hors_patrimoine": false,
         "code": false
       },
@@ -4208,7 +3987,6 @@
         "type": "SA",
         "SAT": "",
         "acces": "",
-        "portail": "",
         "hors_patrimoine": false,
         "code": false
       },
@@ -4227,7 +4005,6 @@
         "type": "SSPA",
         "SAT": "",
         "acces": "",
-        "portail": "",
         "hors_patrimoine": false,
         "code": false
       },
@@ -4246,7 +4023,6 @@
         "type": "L",
         "SAT": "",
         "acces": "",
-        "portail": "",
         "hors_patrimoine": false,
         "code": false
       },
@@ -4265,7 +4041,6 @@
         "type": "L",
         "SAT": "SAT1",
         "acces": "",
-        "portail": "",
         "hors_patrimoine": false,
         "code": false
       },
@@ -4284,7 +4059,6 @@
         "type": "SST",
         "SAT": "",
         "acces": "",
-        "portail": "",
         "hors_patrimoine": false,
         "code": false
       },
@@ -4303,7 +4077,6 @@
         "type": "L-A",
         "SAT": "",
         "acces": "",
-        "portail": "",
         "hors_patrimoine": false,
         "code": false
       },
@@ -4322,7 +4095,6 @@
         "type": "L-A",
         "SAT": "SAT1",
         "acces": "",
-        "portail": "",
         "hors_patrimoine": false,
         "code": false
       },
@@ -4341,7 +4113,6 @@
         "type": "L-A",
         "SAT": "SAT1",
         "acces": "n°2",
-        "portail": "",
         "hors_patrimoine": false,
         "code": false
       },
@@ -4360,7 +4131,6 @@
         "type": "L-A",
         "SAT": "SAT IA1",
         "acces": "",
-        "portail": "",
         "hors_patrimoine": false,
         "code": false
       },
@@ -4379,7 +4149,6 @@
         "type": "L-A",
         "SAT": "SAT2",
         "acces": "",
-        "portail": "",
         "hors_patrimoine": false,
         "code": false
       },
@@ -4398,7 +4167,6 @@
         "type": "L-A",
         "SAT": "SAT3",
         "acces": "",
-        "portail": "",
         "hors_patrimoine": false,
         "code": false
       },
@@ -4417,7 +4185,6 @@
         "type": "SSP",
         "SAT": "",
         "acces": "",
-        "portail": "Portail clé 590",
         "hors_patrimoine": false,
         "code": true
       },
@@ -4436,7 +4203,6 @@
         "type": "SSP",
         "SAT": "SAT1",
         "acces": "",
-        "portail": "",
         "hors_patrimoine": false,
         "code": false
       },
@@ -4455,7 +4221,6 @@
         "type": "SSP",
         "SAT": "SAT2",
         "acces": "",
-        "portail": "",
         "hors_patrimoine": false,
         "code": false
       },
@@ -4474,7 +4239,6 @@
         "type": "L",
         "SAT": "",
         "acces": "",
-        "portail": "",
         "hors_patrimoine": false,
         "code": false
       },
@@ -4493,7 +4257,6 @@
         "type": "SP",
         "SAT": "",
         "acces": "",
-        "portail": "",
         "hors_patrimoine": false,
         "code": false
       },
@@ -4512,7 +4275,6 @@
         "type": "SP",
         "SAT": "SAT1",
         "acces": "",
-        "portail": "",
         "hors_patrimoine": false,
         "code": false
       },
@@ -4531,7 +4293,6 @@
         "type": "SP",
         "SAT": "SAT2",
         "acces": "",
-        "portail": "",
         "hors_patrimoine": false,
         "code": false
       },
@@ -4550,7 +4311,6 @@
         "type": "SP",
         "SAT": "SAT3",
         "acces": "",
-        "portail": "",
         "hors_patrimoine": false,
         "code": true
       },
@@ -4569,7 +4329,6 @@
         "type": "SSP",
         "SAT": "",
         "acces": "",
-        "portail": "",
         "hors_patrimoine": false,
         "code": false
       },
@@ -4588,7 +4347,6 @@
         "type": "SP",
         "SAT": "",
         "acces": "",
-        "portail": "",
         "hors_patrimoine": false,
         "code": false
       },
@@ -4607,7 +4365,6 @@
         "type": "P",
         "SAT": "",
         "acces": "",
-        "portail": "",
         "hors_patrimoine": false,
         "code": false
       },
@@ -4626,7 +4383,6 @@
         "type": "S",
         "SAT": "",
         "acces": "",
-        "portail": "Clé 590",
         "hors_patrimoine": false,
         "code": true
       },
@@ -4645,7 +4401,6 @@
         "type": "S",
         "SAT": "SAT5",
         "acces": "V2",
-        "portail": "",
         "hors_patrimoine": false,
         "code": false
       },
@@ -4664,7 +4419,6 @@
         "type": "S",
         "SAT": "SAT5",
         "acces": "V1",
-        "portail": "",
         "hors_patrimoine": false,
         "code": false
       },
@@ -4683,7 +4437,6 @@
         "type": "S",
         "SAT": "SAT2",
         "acces": "V2",
-        "portail": "",
         "hors_patrimoine": false,
         "code": false
       },
@@ -4702,7 +4455,6 @@
         "type": "S",
         "SAT": "SAT1",
         "acces": "",
-        "portail": "",
         "hors_patrimoine": false,
         "code": false
       },
@@ -4721,7 +4473,6 @@
         "type": "S",
         "SAT": "SAT2",
         "acces": "V1",
-        "portail": "",
         "hors_patrimoine": false,
         "code": false
       },
@@ -4740,7 +4491,6 @@
         "type": "S",
         "SAT": "SAT3",
         "acces": "V1",
-        "portail": "",
         "hors_patrimoine": false,
         "code": false
       },
@@ -4759,7 +4509,6 @@
         "type": "S",
         "SAT": "SAT4",
         "acces": "V2",
-        "portail": "",
         "hors_patrimoine": false,
         "code": false
       },
@@ -4778,7 +4527,6 @@
         "type": "SP",
         "SAT": "",
         "acces": "",
-        "portail": "",
         "hors_patrimoine": false,
         "code": false
       },
@@ -4797,7 +4545,6 @@
         "type": "P",
         "SAT": "",
         "acces": "",
-        "portail": "Clé 121",
         "hors_patrimoine": false,
         "code": true
       },
@@ -4816,7 +4563,6 @@
         "type": "P",
         "SAT": "",
         "acces": "",
-        "portail": "",
         "hors_patrimoine": false,
         "code": false
       },
@@ -4835,7 +4581,6 @@
         "type": "SS",
         "SAT": "",
         "acces": "",
-        "portail": "",
         "hors_patrimoine": false,
         "code": true
       },
@@ -4854,7 +4599,6 @@
         "type": "PRCI",
         "SAT": "",
         "acces": "",
-        "portail": "LGV",
         "hors_patrimoine": false,
         "code": false
       },
@@ -4873,7 +4617,6 @@
         "type": "PRCI",
         "SAT": "",
         "acces": "I449",
-        "portail": "LGV",
         "hors_patrimoine": false,
         "code": false
       },
@@ -4892,7 +4635,6 @@
         "type": "SP",
         "SAT": "",
         "acces": "",
-        "portail": "",
         "hors_patrimoine": false,
         "code": false
       },
@@ -4911,7 +4653,6 @@
         "type": "SSP",
         "SAT": "",
         "acces": "",
-        "portail": "",
         "hors_patrimoine": false,
         "code": false
       },
@@ -4930,7 +4671,6 @@
         "type": "P",
         "SAT": "",
         "acces": "",
-        "portail": "Badge Eurotunnel obligatoire",
         "hors_patrimoine": false,
         "code": true
       },
@@ -4949,7 +4689,6 @@
         "type": "P",
         "SAT": "SAT1",
         "acces": "",
-        "portail": "Badge Eurotunnel obligatoire",
         "hors_patrimoine": false,
         "code": true
       },
@@ -4968,7 +4707,6 @@
         "type": "P",
         "SAT": "SAT2",
         "acces": "",
-        "portail": "Badge Eurotunnel obligatoire",
         "hors_patrimoine": false,
         "code": true
       },
@@ -4987,7 +4725,6 @@
         "type": "P",
         "SAT": "SAT3",
         "acces": "",
-        "portail": "Badge Eurotunnel obligatoire",
         "hors_patrimoine": false,
         "code": true
       },
@@ -5006,7 +4743,6 @@
         "type": "A",
         "SAT": "",
         "acces": "",
-        "portail": "",
         "hors_patrimoine": false,
         "code": false
       },
@@ -5025,7 +4761,6 @@
         "type": "A",
         "SAT": "",
         "acces": "",
-        "portail": "Clé spécifique pour ouvrir la guérite",
         "hors_patrimoine": false,
         "code": false
       },
@@ -5044,7 +4779,6 @@
         "type": "A",
         "SAT": "",
         "acces": "",
-        "portail": "",
         "hors_patrimoine": false,
         "code": false
       },
@@ -5063,7 +4797,6 @@
         "type": "A",
         "SAT": "",
         "acces": "n°2",
-        "portail": "",
         "hors_patrimoine": false,
         "code": false
       },
@@ -5082,7 +4815,6 @@
         "type": "SP",
         "SAT": "",
         "acces": "",
-        "portail": "",
         "hors_patrimoine": false,
         "code": false
       },
@@ -5101,7 +4833,6 @@
         "type": "SSP",
         "SAT": "",
         "acces": "",
-        "portail": "Libre",
         "hors_patrimoine": false,
         "code": false
       },
@@ -5120,7 +4851,6 @@
         "type": "SSP",
         "SAT": "SAT",
         "acces": "",
-        "portail": "",
         "hors_patrimoine": false,
         "code": false
       },
@@ -5139,7 +4869,6 @@
         "type": "SST",
         "SAT": "",
         "acces": "",
-        "portail": "Clé 121",
         "hors_patrimoine": false,
         "code": true
       },
@@ -5158,7 +4887,6 @@
         "type": "SST",
         "SAT": "SAT1",
         "acces": "",
-        "portail": "Libre",
         "hors_patrimoine": false,
         "code": false
       },
@@ -5177,7 +4905,6 @@
         "type": "SSPA",
         "SAT": "",
         "acces": "",
-        "portail": "Clé spécifique pour ouvrir la guérite",
         "hors_patrimoine": false,
         "code": true
       },
@@ -5196,7 +4923,6 @@
         "type": "SSPA",
         "SAT": "",
         "acces": "",
-        "portail": "",
         "hors_patrimoine": false,
         "code": false
       },
@@ -5215,7 +4941,6 @@
         "type": "PRCI",
         "SAT": "",
         "acces": "",
-        "portail": "LGV",
         "hors_patrimoine": false,
         "code": true
       },
@@ -5234,7 +4959,6 @@
         "type": "PRCI",
         "SAT": "",
         "acces": "I625",
-        "portail": "LGV",
         "hors_patrimoine": false,
         "code": true
       },
@@ -5253,7 +4977,6 @@
         "type": "SSP",
         "SAT": "",
         "acces": "",
-        "portail": "Libre",
         "hors_patrimoine": false,
         "code": false
       },
@@ -5272,7 +4995,6 @@
         "type": "SSPA",
         "SAT": "",
         "acces": "",
-        "portail": "",
         "hors_patrimoine": false,
         "code": false
       },
@@ -5291,7 +5013,6 @@
         "type": "SSPA",
         "SAT": "SAT1",
         "acces": "",
-        "portail": "",
         "hors_patrimoine": false,
         "code": false
       },
@@ -5310,7 +5031,6 @@
         "type": "SSPA",
         "SAT": "",
         "acces": "TT7371",
-        "portail": "",
         "hors_patrimoine": false,
         "code": false
       },
@@ -5329,7 +5049,6 @@
         "type": "PRCI",
         "SAT": "",
         "acces": "I628",
-        "portail": "LGV",
         "hors_patrimoine": false,
         "code": true
       },
@@ -5348,7 +5067,6 @@
         "type": "PRCI",
         "SAT": "",
         "acces": "I629",
-        "portail": "LGV",
         "hors_patrimoine": false,
         "code": true
       },
@@ -5367,7 +5085,6 @@
         "type": "PRCI",
         "SAT": "",
         "acces": "TT629",
-        "portail": "LGV",
         "hors_patrimoine": false,
         "code": true
       },
@@ -5386,7 +5103,6 @@
         "type": "PRCI",
         "SAT": "",
         "acces": "I631",
-        "portail": "LGV",
         "hors_patrimoine": false,
         "code": true
       },
@@ -5405,7 +5121,6 @@
         "type": "PRCI",
         "SAT": "",
         "acces": "",
-        "portail": "LGV",
         "hors_patrimoine": false,
         "code": false
       },
@@ -5424,7 +5139,6 @@
         "type": "PRCI",
         "SAT": "",
         "acces": "I417",
-        "portail": "LGV",
         "hors_patrimoine": false,
         "code": false
       },
@@ -5443,7 +5157,6 @@
         "type": "PRCI",
         "SAT": "",
         "acces": "I415",
-        "portail": "LGV",
         "hors_patrimoine": false,
         "code": false
       },
@@ -5462,7 +5175,6 @@
         "type": "PRCI",
         "SAT": "",
         "acces": "TT415",
-        "portail": "LGV",
         "hors_patrimoine": false,
         "code": false
       },
@@ -5481,7 +5193,6 @@
         "type": "SP",
         "SAT": "",
         "acces": "",
-        "portail": "",
         "hors_patrimoine": false,
         "code": false
       },
@@ -5500,7 +5211,6 @@
         "type": "P",
         "SAT": "",
         "acces": "",
-        "portail": "Clé 590",
         "hors_patrimoine": false,
         "code": true
       },
@@ -5519,7 +5229,6 @@
         "type": "P",
         "SAT": "SAT1",
         "acces": "",
-        "portail": "",
         "hors_patrimoine": false,
         "code": true
       },
@@ -5538,7 +5247,6 @@
         "type": "L",
         "SAT": "",
         "acces": "",
-        "portail": "",
         "hors_patrimoine": false,
         "code": false
       },
@@ -5557,7 +5265,6 @@
         "type": "L",
         "SAT": "",
         "acces": "",
-        "portail": "Badge Eurotunnel obligatoire",
         "hors_patrimoine": false,
         "code": true
       },
@@ -5576,7 +5283,6 @@
         "type": "L",
         "SAT": "SAT1",
         "acces": "",
-        "portail": "Badge Eurotunnel obligatoire",
         "hors_patrimoine": false,
         "code": true
       },
@@ -5595,7 +5301,6 @@
         "type": "L",
         "SAT": "SAT2",
         "acces": "",
-        "portail": "Badge Eurotunnel obligatoire",
         "hors_patrimoine": false,
         "code": true
       },
@@ -5614,7 +5319,6 @@
         "type": "L",
         "SAT": "SAT3",
         "acces": "",
-        "portail": "Badge Eurotunnel obligatoire",
         "hors_patrimoine": false,
         "code": true
       },
@@ -5633,7 +5337,6 @@
         "type": "L",
         "SAT": "SAT4",
         "acces": "",
-        "portail": "Badge Eurotunnel obligatoire",
         "hors_patrimoine": false,
         "code": true
       },
@@ -5652,7 +5355,6 @@
         "type": "L",
         "SAT": "SAT5",
         "acces": "",
-        "portail": "Badge Eurotunnel obligatoire",
         "hors_patrimoine": false,
         "code": true
       },
@@ -5671,7 +5373,6 @@
         "type": "SP",
         "SAT": "",
         "acces": "",
-        "portail": "",
         "hors_patrimoine": false,
         "code": false
       },
@@ -5690,7 +5391,6 @@
         "type": "SST",
         "SAT": "",
         "acces": "",
-        "portail": "Clé 121",
         "hors_patrimoine": false,
         "code": true
       },
@@ -5709,7 +5409,6 @@
         "type": "PRCI",
         "SAT": "",
         "acces": "",
-        "portail": "LGV",
         "hors_patrimoine": false,
         "code": true
       },
@@ -5728,7 +5427,6 @@
         "type": "SSP",
         "SAT": "",
         "acces": "",
-        "portail": "",
         "hors_patrimoine": false,
         "code": false
       },
@@ -5747,7 +5445,6 @@
         "type": "SSP",
         "SAT": "SAT1",
         "acces": "",
-        "portail": "",
         "hors_patrimoine": false,
         "code": false
       },
@@ -5766,7 +5463,6 @@
         "type": "SSP",
         "SAT": "",
         "acces": "",
-        "portail": "",
         "hors_patrimoine": false,
         "code": false
       },
@@ -5785,7 +5481,6 @@
         "type": "L",
         "SAT": "",
         "acces": "",
-        "portail": "",
         "hors_patrimoine": false,
         "code": false
       },
@@ -5804,7 +5499,6 @@
         "type": "L",
         "SAT": "SAT1",
         "acces": "",
-        "portail": "",
         "hors_patrimoine": false,
         "code": false
       },
@@ -5823,7 +5517,6 @@
         "type": "L",
         "SAT": "SAT2",
         "acces": "",
-        "portail": "",
         "hors_patrimoine": false,
         "code": false
       },
@@ -5842,7 +5535,6 @@
         "type": "L",
         "SAT": "SAT3",
         "acces": "",
-        "portail": "",
         "hors_patrimoine": false,
         "code": false
       },
@@ -5861,7 +5553,6 @@
         "type": "SSPA",
         "SAT": "",
         "acces": "",
-        "portail": "",
         "hors_patrimoine": false,
         "code": false
       },
@@ -5880,7 +5571,6 @@
         "type": "SSP",
         "SAT": "",
         "acces": "",
-        "portail": "",
         "hors_patrimoine": false,
         "code": true
       },
@@ -5899,7 +5589,6 @@
         "type": "SSP",
         "SAT": "SATa",
         "acces": "",
-        "portail": "Par parc public, grille ouverte.",
         "hors_patrimoine": false,
         "code": true
       },
@@ -5918,7 +5607,6 @@
         "type": "A",
         "SAT": "",
         "acces": "",
-        "portail": "Contacter l’agent E pour ouverture du portail.",
         "hors_patrimoine": false,
         "code": true
       },
@@ -5937,7 +5625,6 @@
         "type": "L",
         "SAT": "",
         "acces": "",
-        "portail": "",
         "hors_patrimoine": false,
         "code": false
       },
@@ -5956,7 +5643,6 @@
         "type": "A",
         "SAT": "",
         "acces": "",
-        "portail": "",
         "hors_patrimoine": false,
         "code": false
       },
@@ -5975,7 +5661,6 @@
         "type": "L",
         "SAT": "",
         "acces": "",
-        "portail": "",
         "hors_patrimoine": false,
         "code": false
       },
@@ -5994,7 +5679,6 @@
         "type": "L",
         "SAT": "",
         "acces": "",
-        "portail": "Carmillon",
         "hors_patrimoine": false,
         "code": true
       },
@@ -6013,7 +5697,6 @@
         "type": "",
         "SAT": "",
         "acces": "",
-        "portail": "",
         "hors_patrimoine": false,
         "code": false
       },
@@ -6032,7 +5715,6 @@
         "type": "SSP",
         "SAT": "",
         "acces": "",
-        "portail": "",
         "hors_patrimoine": false,
         "code": false
       },
@@ -6051,7 +5733,6 @@
         "type": "",
         "SAT": "",
         "acces": "",
-        "portail": "Quai n°2 Porte 40 - Accès par Carmillon",
         "hors_patrimoine": false,
         "code": false
       },
@@ -6070,7 +5751,6 @@
         "type": "A",
         "SAT": "",
         "acces": "",
-        "portail": "",
         "hors_patrimoine": false,
         "code": false
       },
@@ -6089,7 +5769,6 @@
         "type": "SSP",
         "SAT": "",
         "acces": "",
-        "portail": "Clé 590 + 121",
         "hors_patrimoine": false,
         "code": true
       },
@@ -6108,7 +5787,6 @@
         "type": "SP",
         "SAT": "",
         "acces": "",
-        "portail": "Libre",
         "hors_patrimoine": false,
         "code": false
       },
@@ -6127,7 +5805,6 @@
         "type": "SP",
         "SAT": "SAT1",
         "acces": "",
-        "portail": "Libre",
         "hors_patrimoine": false,
         "code": false
       },
@@ -6146,7 +5823,6 @@
         "type": "SP",
         "SAT": "SAT2",
         "acces": "",
-        "portail": "Libre",
         "hors_patrimoine": false,
         "code": false
       },
@@ -6165,7 +5841,6 @@
         "type": "L",
         "SAT": "",
         "acces": "",
-        "portail": "",
         "hors_patrimoine": false,
         "code": false
       },
@@ -6184,7 +5859,6 @@
         "type": "SST",
         "SAT": "",
         "acces": "",
-        "portail": "",
         "hors_patrimoine": false,
         "code": true
       },
@@ -6203,7 +5877,6 @@
         "type": "SST",
         "SAT": "",
         "acces": "",
-        "portail": "",
         "hors_patrimoine": false,
         "code": false
       },
@@ -6222,7 +5895,6 @@
         "type": "SP",
         "SAT": "",
         "acces": "",
-        "portail": "Libre",
         "hors_patrimoine": false,
         "code": false
       },
@@ -6241,7 +5913,6 @@
         "type": "SSP",
         "SAT": "",
         "acces": "",
-        "portail": "",
         "hors_patrimoine": false,
         "code": false
       },
@@ -6260,7 +5931,6 @@
         "type": "L-A",
         "SAT": "",
         "acces": "",
-        "portail": "Appeler l'agent E",
         "hors_patrimoine": false,
         "code": true
       },
@@ -6279,7 +5949,6 @@
         "type": "SP",
         "SAT": "",
         "acces": "",
-        "portail": "Clef Nord",
         "hors_patrimoine": false,
         "code": true
       },
@@ -6298,7 +5967,6 @@
         "type": "SP",
         "SAT": "",
         "acces": "",
-        "portail": "Libre",
         "hors_patrimoine": false,
         "code": false
       },
@@ -6317,7 +5985,6 @@
         "type": "SS",
         "SAT": "",
         "acces": "",
-        "portail": "",
         "hors_patrimoine": false,
         "code": true
       },
@@ -6336,7 +6003,6 @@
         "type": "SS",
         "SAT": "",
         "acces": "n°2",
-        "portail": "",
         "hors_patrimoine": false,
         "code": false
       },
@@ -6355,7 +6021,6 @@
         "type": "A",
         "SAT": "",
         "acces": "",
-        "portail": "",
         "hors_patrimoine": false,
         "code": false
       },
@@ -6374,7 +6039,6 @@
         "type": "",
         "SAT": "",
         "acces": "",
-        "portail": "Carmillon",
         "hors_patrimoine": false,
         "code": false
       },
@@ -6393,7 +6057,6 @@
         "type": "SST",
         "SAT": "",
         "acces": "",
-        "portail": "Clé 121",
         "hors_patrimoine": false,
         "code": true
       },
@@ -6412,7 +6075,6 @@
         "type": "SP",
         "SAT": "",
         "acces": "",
-        "portail": "Libre",
         "hors_patrimoine": false,
         "code": false
       },
@@ -6431,7 +6093,6 @@
         "type": "P",
         "SAT": "",
         "acces": "",
-        "portail": "",
         "hors_patrimoine": false,
         "code": true
       },
@@ -6450,7 +6111,6 @@
         "type": "PRCI",
         "SAT": "",
         "acces": "",
-        "portail": "LGV",
         "hors_patrimoine": false,
         "code": true
       },
@@ -6469,7 +6129,6 @@
         "type": "PRCI",
         "SAT": "",
         "acces": "TT513",
-        "portail": "LGV",
         "hors_patrimoine": false,
         "code": true
       },
@@ -6488,7 +6147,6 @@
         "type": "PRCI",
         "SAT": "",
         "acces": "I510",
-        "portail": "LGV",
         "hors_patrimoine": false,
         "code": true
       },
@@ -6507,7 +6165,6 @@
         "type": "SP",
         "SAT": "",
         "acces": "n°1",
-        "portail": "",
         "hors_patrimoine": false,
         "code": false
       },
@@ -6526,7 +6183,6 @@
         "type": "SP",
         "SAT": "",
         "acces": "n°2",
-        "portail": "",
         "hors_patrimoine": false,
         "code": false
       },
@@ -6545,7 +6201,6 @@
         "type": "P",
         "SAT": "",
         "acces": "",
-        "portail": "Clé LGV + 121",
         "hors_patrimoine": false,
         "code": true
       },
