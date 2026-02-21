@@ -98,8 +98,7 @@ let popupCarte = null;
 let initialisationDonneesLancee = false;
 let totalAppareilsBrut = 0;
 let totalPostesBrut = 0;
-let indexRecherche = [];
-let promesseChargementRecherche = null;
+let moduleRechercheAlice = null;
 let menuContextuelOuvert = false;
 let mesureActive = false;
 let mesurePoints = [];
@@ -3399,220 +3398,7 @@ function normaliserTexteRecherche(valeur) {
 }
 
 function fermerResultatsRecherche() {
-  if (!controleRecherche) {
-    return;
-  }
-  controleRecherche.classList.remove("est-ouvert");
-}
-
-function ouvrirResultatsRecherche() {
-  if (!controleRecherche) {
-    return;
-  }
-  controleRecherche.classList.add("est-ouvert");
-}
-
-function viderResultatsRecherche() {
-  if (!listeResultatsRecherche) {
-    return;
-  }
-  listeResultatsRecherche.innerHTML = "";
-}
-
-function construireResumeRecherche(entree) {
-  if (entree.type === "postes") {
-    return "Poste";
-  }
-  if (entree.type === "appareils") {
-    if (Number(entree.appareilsCount) > 1) {
-      return `${entree.appareilsCount} appareils`;
-    }
-    return "Appareil";
-  }
-  return "Acces voiture";
-}
-
-function obtenirPrioriteTypeRecherche(type) {
-  if (type === "acces") {
-    return 0;
-  }
-  if (type === "postes") {
-    return 1;
-  }
-  if (type === "appareils") {
-    return 2;
-  }
-  return 3;
-}
-
-const moteurRecherchePrincipal =
-  typeof window.creerMoteurRecherchePrincipal === "function"
-    ? window.creerMoteurRecherchePrincipal({
-        normaliserTexteRecherche,
-        obtenirPrioriteTypeRecherche
-      })
-    : null;
-
-function reconstruireIndexRecherche() {
-  const index = [];
-
-  for (const feature of donneesPostes?.features || []) {
-    const [longitude, latitude] = feature.geometry?.coordinates || [];
-    if (!Number.isFinite(longitude) || !Number.isFinite(latitude)) {
-      continue;
-    }
-
-    let postesListe = [];
-    try {
-      postesListe = JSON.parse(feature.properties?.postes_liste_json || "[]");
-    } catch {
-      postesListe = [];
-    }
-
-    for (const poste of postesListe) {
-      const titre = construireTitrePoste(poste) || "Poste";
-      const details = construireDetailsPoste(poste);
-      const motsCles = [titre, details, poste.nom, poste.SAT, poste.acces, poste.rss, poste.pk, poste.contact]
-        .filter(Boolean)
-        .join(" ");
-
-      index.push({
-        type: "postes",
-        titre,
-        sousTitre: "",
-        longitude,
-        latitude,
-        couleurPastille: "#2563eb",
-        texteRecherche: normaliserTexteRecherche(motsCles)
-      });
-    }
-  }
-
-  for (const feature of donneesAppareils?.features || []) {
-    const [longitude, latitude] = feature.geometry?.coordinates || [];
-    if (!Number.isFinite(longitude) || !Number.isFinite(latitude)) {
-      continue;
-    }
-
-    let appareilsListe = [];
-    try {
-      appareilsListe = JSON.parse(feature.properties?.appareils_liste_json || "[]");
-    } catch {
-      appareilsListe = [];
-    }
-
-    const groupesParTitre = new Map();
-    for (const appareil of appareilsListe) {
-      const titre = construireTitreNomTypeSatAcces(appareil) || "Appareil";
-      const appareilNom = champCompletOuVide(appareil.appareil) || "";
-      const motsCles = [titre, appareilNom, appareil.nom, appareil.SAT, appareil.acces]
-        .filter(Boolean)
-        .join(" ");
-      const cle = `${titre}|${longitude}|${latitude}`;
-
-      if (!groupesParTitre.has(cle)) {
-        groupesParTitre.set(cle, {
-          type: "appareils",
-          titre,
-          sousTitre: "",
-          longitude,
-          latitude,
-          couleurPastille: normaliserCouleurHex(
-            appareil.couleur_appareil || determinerCouleurAppareil(appareilNom)
-          ),
-          appareilsCount: 0,
-          appareilsLignes: [],
-          texteMotsCles: []
-        });
-      }
-
-      const groupe = groupesParTitre.get(cle);
-      groupe.appareilsCount += 1;
-      const contexteAppareil = [appareil.nom, appareil.type, appareil.SAT]
-        .map((v) => champCompletOuVide(v))
-        .filter(Boolean)
-        .join(SEPARATEUR_LIBELLE);
-      groupe.appareilsLignes.push({
-        code: appareilNom || "Appareil",
-        contexte: contexteAppareil,
-        horsPatrimoine: Boolean(appareil.hors_patrimoine),
-        couleur: normaliserCouleurHex(appareil.couleur_appareil || determinerCouleurAppareil(appareilNom))
-      });
-      groupe.texteMotsCles.push(motsCles);
-      if (!groupe.sousTitre && appareilNom) {
-        groupe.sousTitre = appareilNom;
-      }
-    }
-
-    for (const groupe of groupesParTitre.values()) {
-      const lignesUniques = Array.from(
-        new Map(
-          groupe.appareilsLignes.map((ligne) => [`${ligne.code}|${ligne.contexte}`, ligne])
-        ).values()
-      );
-      index.push({
-        ...groupe,
-        sousTitre: groupe.appareilsCount > 1 ? "" : groupe.sousTitre,
-        appareilsLignesUniques: lignesUniques,
-        texteRecherche: normaliserTexteRecherche(groupe.texteMotsCles.join(" "))
-      });
-    }
-  }
-
-  for (const feature of donneesAcces?.features || []) {
-    const [longitude, latitude] = feature.geometry?.coordinates || [];
-    if (!Number.isFinite(longitude) || !Number.isFinite(latitude)) {
-      continue;
-    }
-
-    let accesListe = [];
-    try {
-      accesListe = JSON.parse(feature.properties?.acces_liste_json || "[]");
-    } catch {
-      accesListe = [];
-    }
-
-    for (const acces of accesListe) {
-      const titre = construireTitreNomTypeSatAcces(acces, { nomVilleDe: true }) || "Acces";
-      const motsCles = [titre, acces.nom, acces.SAT, acces.acces]
-        .filter(Boolean)
-        .join(" ");
-
-      index.push({
-        type: "acces",
-        titre,
-        sousTitre: "",
-        longitude,
-        latitude,
-        couleurPastille: "#8b5cf6",
-        texteRecherche: normaliserTexteRecherche(motsCles)
-      });
-    }
-  }
-
-  indexRecherche = index;
-}
-
-async function chargerDonneesRecherche() {
-  if (indexRecherche.length) {
-    return;
-  }
-
-  if (!promesseChargementRecherche) {
-    promesseChargementRecherche = Promise.all([
-      chargerDonneesPostes(),
-      chargerDonneesAppareils(),
-      chargerDonneesAcces()
-    ])
-      .then(() => {
-        reconstruireIndexRecherche();
-      })
-      .finally(() => {
-        promesseChargementRecherche = null;
-      });
-  }
-
-  await promesseChargementRecherche;
+  moduleRechercheAlice?.fermerResultatsRecherche?.();
 }
 
 function obtenirFeatureALaCoordonnee(collection, longitude, latitude) {
@@ -4363,100 +4149,6 @@ async function activerFiltrePourType(type) {
   await chargerDonneesAcces();
 }
 
-function rechercherEntrees(terme) {
-  if (moteurRecherchePrincipal) {
-    return moteurRecherchePrincipal.rechercher(indexRecherche, terme, { minLength: 2, limit: 24 });
-  }
-
-  const termeNormalise = normaliserTexteRecherche(terme);
-  if (!termeNormalise || termeNormalise.length < 2) {
-    return [];
-  }
-
-  const resultats = [];
-  for (const entree of indexRecherche) {
-    if (!entree.texteRecherche.includes(termeNormalise)) {
-      continue;
-    }
-    const titreNormalise = normaliserTexteRecherche(entree.titre);
-    const matchDebut = entree.texteRecherche.startsWith(termeNormalise) || titreNormalise.startsWith(termeNormalise) ? 1 : 0;
-    resultats.push({
-      ...entree,
-      matchDebut
-    });
-  }
-
-  resultats.sort((a, b) => {
-    if (b.matchDebut !== a.matchDebut) {
-      return b.matchDebut - a.matchDebut;
-    }
-    const prioriteA = obtenirPrioriteTypeRecherche(a.type);
-    const prioriteB = obtenirPrioriteTypeRecherche(b.type);
-    if (prioriteA !== prioriteB) {
-      return prioriteA - prioriteB;
-    }
-    return a.titre.localeCompare(b.titre, "fr", { sensitivity: "base" });
-  });
-
-  return resultats.slice(0, 24);
-}
-
-function afficherResultatsRecherche(resultats) {
-  if (!listeResultatsRecherche) {
-    return;
-  }
-
-  if (!resultats.length) {
-    listeResultatsRecherche.innerHTML = '<li class="recherche-resultat-vide">Aucun resultat</li>';
-    ouvrirResultatsRecherche();
-    return;
-  }
-
-  listeResultatsRecherche.innerHTML = resultats
-    .map((resultat, index) => {
-      const titre = echapperHtml(resultat.titre || "Element");
-      const meta = construireResumeRecherche(resultat);
-      const classePastille = `recherche-resultat-pastille-${echapperHtml(resultat.type || "acces")}`;
-      const couleurPastille = echapperHtml(
-        normaliserCouleurHex(
-          resultat.couleurPastille || (resultat.type === "postes" ? "#2563eb" : resultat.type === "appareils" ? "#111111" : "#8b5cf6")
-        )
-      );
-      if (resultat.type === "appareils") {
-        const appareilsLignes =
-          Array.isArray(resultat.appareilsLignesUniques) && resultat.appareilsLignesUniques.length
-            ? resultat.appareilsLignesUniques
-            : [{ code: resultat.sousTitre || "Appareil", contexte: "" }];
-        const classeGroupe = appareilsLignes.length > 1 ? " recherche-appareil-groupe" : "";
-        const lignesAppareils = appareilsLignes
-          .map((ligne) => {
-            const code = echapperHtml(ligne?.code || "Appareil");
-            const contexte = echapperHtml(ligne?.contexte || "");
-            const blocContexte = contexte ? `<span class="recherche-appareil-contexte">(${contexte})</span>` : "";
-            const couleurLigne = echapperHtml(normaliserCouleurHex(ligne?.couleur || "#111111"));
-            const blocHorsPatrimoine = ligne?.horsPatrimoine
-              ? '<span class="recherche-appareil-hors-patrimoine">Hors patrimoine</span>'
-              : "";
-            return `<span class="recherche-appareil-ligne"><span class="recherche-appareil-ligne-principale"><span class="recherche-resultat-pastille recherche-resultat-pastille-ligne-appareil" style="background-color:${couleurLigne};"></span><span class="recherche-appareil-code">${code}</span>${blocContexte}</span>${blocHorsPatrimoine}</span>`;
-          })
-          .join("");
-        return `<li><button class="recherche-resultat" type="button" data-index="${index}" data-type="${echapperHtml(resultat.type)}" data-lng="${resultat.longitude}" data-lat="${resultat.latitude}"><span class="recherche-resultat-titre"><span class="recherche-appareil-liste${classeGroupe}">${lignesAppareils}</span></span></button></li>`;
-      }
-
-      return `<li><button class="recherche-resultat" type="button" data-index="${index}" data-type="${echapperHtml(resultat.type)}" data-lng="${resultat.longitude}" data-lat="${resultat.latitude}"><span class="recherche-resultat-titre"><span class="recherche-resultat-pastille ${classePastille}" style="background-color:${couleurPastille};"></span>${titre}<span class="recherche-resultat-type-inline">${echapperHtml(meta)}</span></span></button></li>`;
-    })
-    .join("");
-
-  ouvrirResultatsRecherche();
-}
-
-async function executerRecherche(texte) {
-  await chargerDonneesRecherche();
-  const resultats = rechercherEntrees(texte);
-  afficherResultatsRecherche(resultats);
-  return resultats;
-}
-
 function activerInteractionsCarte() {
   const couchesInteractives = [
     COUCHE_POSTES_GROUPES,
@@ -5030,100 +4722,42 @@ document.addEventListener("click", (event) => {
   }
 });
 
-if (champRecherche && listeResultatsRecherche) {
-  let temporisationRecherche = null;
+moduleRechercheAlice =
+  typeof window.creerModuleRechercheAlice === "function"
+    ? window.creerModuleRechercheAlice({
+        controleRecherche,
+        champRecherche,
+        listeResultatsRecherche,
+        normaliserTexteRecherche,
+        echapperHtml,
+        normaliserCouleurHex,
+        champCompletOuVide,
+        separateurLibelle: SEPARATEUR_LIBELLE,
+        construireTitrePoste,
+        construireDetailsPoste,
+        construireTitreNomTypeSatAcces,
+        determinerCouleurAppareil,
+        extraireListeDepuisFeature,
+        chargerDonneesPostes,
+        chargerDonneesAppareils,
+        chargerDonneesAcces,
+        getDonneesPostes: () => donneesPostes,
+        getDonneesAppareils: () => donneesAppareils,
+        getDonneesAcces: () => donneesAcces,
+        activerFiltrePourType,
+        appliquerCouchesDonnees,
+        remonterCouchesDonnees,
+        ouvrirPopupDepuisResultatRecherche,
+        naviguerVersCoordonneesArrierePlan,
+        fermerMenuFiltres,
+        fermerMenuFonds,
+        definirConservationFichePendantNavigation: (valeur) => {
+          conserverFichePendantNavigation = Boolean(valeur);
+        }
+      })
+    : null;
 
-  champRecherche.addEventListener("input", () => {
-    const texte = champRecherche.value.trim();
-    if (temporisationRecherche) {
-      clearTimeout(temporisationRecherche);
-    }
-
-    if (!texte || texte.length < 2) {
-      viderResultatsRecherche();
-      fermerResultatsRecherche();
-      return;
-    }
-
-    temporisationRecherche = setTimeout(async () => {
-      try {
-        await executerRecherche(texte);
-      } catch (erreur) {
-        console.error("Impossible d'executer la recherche", erreur);
-      }
-    }, 220);
-  });
-
-  champRecherche.addEventListener("focus", async () => {
-    const texte = champRecherche.value.trim();
-    if (texte.length < 2) {
-      return;
-    }
-    try {
-      await executerRecherche(texte);
-    } catch (erreur) {
-      console.error("Impossible d'executer la recherche", erreur);
-    }
-  });
-
-  champRecherche.addEventListener("keydown", async (event) => {
-    if (event.key !== "Enter") {
-      return;
-    }
-    const premierResultat = listeResultatsRecherche.querySelector(".recherche-resultat");
-    if (!premierResultat) {
-      return;
-    }
-
-    event.preventDefault();
-    premierResultat.click();
-  });
-
-  listeResultatsRecherche.addEventListener("click", async (event) => {
-    const boutonResultat = event.target.closest(".recherche-resultat");
-    if (!boutonResultat) {
-      return;
-    }
-
-    const type = boutonResultat.dataset.type || "acces";
-    const longitude = Number(boutonResultat.dataset.lng);
-    const latitude = Number(boutonResultat.dataset.lat);
-
-    if (!Number.isFinite(longitude) || !Number.isFinite(latitude)) {
-      return;
-    }
-
-    try {
-      await activerFiltrePourType(type);
-      appliquerCouchesDonnees();
-      remonterCouchesDonnees();
-
-      // Sur mobile, le blur du champ peut déclencher un petit mouvement de viewport:
-      // on garde la fiche ouverte pendant toute la séquence "ouvrir puis zoom".
-      conserverFichePendantNavigation = true;
-      fermerResultatsRecherche();
-      champRecherche.blur();
-      fermerMenuFiltres();
-      fermerMenuFonds();
-
-      const ouvertureOk = ouvrirPopupDepuisResultatRecherche(type, longitude, latitude);
-      if (!ouvertureOk) {
-        return;
-      }
-      setTimeout(() => {
-        naviguerVersCoordonneesArrierePlan(longitude, latitude, {
-          forceZoom: true,
-          conserverPopupOuvert: true,
-          zoomMin: 14.1,
-          durationDouxMs: 430
-        });
-      }, 40);
-    } catch (erreur) {
-      conserverFichePendantNavigation = false;
-      console.error("Impossible d'ouvrir le resultat de recherche", erreur);
-    }
-  });
-}
+moduleRechercheAlice?.initialiser?.();
 
 if (boutonCtxCoord) {
   boutonCtxCoord.addEventListener("click", async () => {
