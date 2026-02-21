@@ -2693,7 +2693,7 @@ function comparerLibellesSat(a, b) {
   return A.localeCompare(B, "fr", { sensitivity: "base", numeric: true });
 }
 
-function construireSectionAppareilsAssociesDepuisPostes(postesListe) {
+function construireSectionAppareilsAssociesDepuisPostes(postesListe, options = {}) {
   if (!Array.isArray(postesListe) || !postesListe.length || !donneesAppareils?.features?.length) {
     return "";
   }
@@ -2756,9 +2756,12 @@ function construireSectionAppareilsAssociesDepuisPostes(postesListe) {
             `<button class="popup-poste-appareil-lien" type="button" data-lng="${entree.longitude}" data-lat="${entree.latitude}">${echapperHtml(entree.code)}</button>`
         )
         .join(", ");
-      const pillSatHtml = entreePill
-        ? `<button class="popup-badge popup-badge-itineraire popup-badge-poste-sat popup-poste-sat-lien" type="button" data-lng="${entreePill.longitude}" data-lat="${entreePill.latitude}">${echapperHtml(groupe.label)}</button>`
-        : `<span class="popup-badge popup-badge-itineraire popup-badge-poste-sat">${echapperHtml(groupe.label)}</span>`;
+      const lngPoste = Number(options?.coordonneesPoste?.[0]);
+      const latPoste = Number(options?.coordonneesPoste?.[1]);
+      const pillSatHtml =
+        Number.isFinite(lngPoste) && Number.isFinite(latPoste)
+          ? `<button class="popup-badge popup-badge-itineraire popup-badge-poste-sat popup-poste-sat-lien" type="button" data-target-type="postes" data-lng="${lngPoste}" data-lat="${latPoste}">${echapperHtml(groupe.label)}</button>`
+          : `<span class="popup-badge popup-badge-itineraire popup-badge-poste-sat">${echapperHtml(groupe.label)}</span>`;
       return `<div class="popup-poste-appareils-groupe"><div class="popup-poste-appareils-entete-ligne">${pillSatHtml}<p class="popup-poste-appareils-ligne">${codesHtml}</p></div></div>`;
     })
     .join("");
@@ -2974,6 +2977,7 @@ function attacherActionsPopupInterne() {
   );
   for (const bouton of boutonsAppareilsAssocies) {
     bouton.addEventListener("click", async () => {
+      const typeCible = String(bouton.getAttribute("data-target-type") || "appareils").trim() || "appareils";
       const longitude = Number(bouton.getAttribute("data-lng"));
       const latitude = Number(bouton.getAttribute("data-lat"));
       if (!Number.isFinite(longitude) || !Number.isFinite(latitude)) {
@@ -2981,11 +2985,11 @@ function attacherActionsPopupInterne() {
       }
 
       try {
-        await activerFiltrePourType("appareils");
+        await activerFiltrePourType(typeCible);
         appliquerCouchesDonnees();
         remonterCouchesDonnees();
       } catch (erreur) {
-        console.error("Impossible d'activer la couche appareils", erreur);
+        console.error(`Impossible d'activer la couche ${typeCible}`, erreur);
       }
 
       fermerMenuContextuel();
@@ -2997,7 +3001,7 @@ function attacherActionsPopupInterne() {
           return;
         }
         popupOuverte = true;
-        ouvrirPopupDepuisCoordonneesPourType("appareils", longitude, latitude, { fallbackGenerique: false });
+        ouvrirPopupDepuisCoordonneesPourType(typeCible, longitude, latitude, { fallbackGenerique: false });
       };
       naviguerVersCoordonneesPuisOuvrirPopup(longitude, latitude, ouvrirPopup, {
         zoomMin: 14.8,
@@ -3286,7 +3290,9 @@ function construirePopupDepuisFeatures(longitude, latitude, featurePostes, featu
     }
 
     const postesListe = extraireListeDepuisFeature(featurePostes, "postes_liste_json");
-    sectionAppareilsAssociesPoste = construireSectionAppareilsAssociesDepuisPostes(postesListe);
+    const [lngPosteFeature, latPosteFeature] = featurePostes.geometry?.coordinates || [];
+    const coordonneesPoste = Number.isFinite(lngPosteFeature) && Number.isFinite(latPosteFeature) ? [lngPosteFeature, latPosteFeature] : null;
+    sectionAppareilsAssociesPoste = construireSectionAppareilsAssociesDepuisPostes(postesListe, { coordonneesPoste });
   }
 
   if (featureAcces) {
