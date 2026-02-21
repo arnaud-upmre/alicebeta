@@ -108,6 +108,12 @@
       normaliserTexteRecherche,
       obtenirPrioriteTypeRecherche
     });
+    const PREFIXES_INTER = ["SI", "I"];
+    const PREFIXES_DISJ = ["D"];
+    const PREFIXES_URGENCE = ["DU"];
+    const PREFIXES_TRANSFO = ["TT", "TSA", "TC", "GT", "TRA"];
+    const PREFIXES_SECTIONNEUR = ["ST", "S", "FB", "F", "P", "B"];
+    const PREFIXES_ALIM = ["ALIM"];
 
     function fermerResultatsRecherche() {
       controleRecherche?.classList.remove("est-ouvert");
@@ -297,8 +303,132 @@
         .filter(Boolean);
     }
 
+    function extraireFiltreAppareilDepuisTokens(tokens) {
+      const prefixes = new Set();
+      const tokensRestants = [];
+      const aliasInter = new Set(["inter", "interrupteur", "interupteur", "interrupteurs", "interupteurs"]);
+      const aliasDisj = new Set(["disjoncteur", "disjoncteurs", "disj", "dj"]);
+      const aliasUrgence = new Set(["urgence", "urgent", "du", "dispositifurgence", "dispositifdurgence"]);
+      const aliasTransfo = new Set(["transfo", "transfos", "transformateur", "transformateurs"]);
+      const aliasSectionneur = new Set(["sectionneur", "sectionneurs"]);
+      const aliasAlim = new Set(["alim", "alimentation", "alimentations"]);
+
+      for (const token of tokens) {
+        if (aliasInter.has(token)) {
+          PREFIXES_INTER.forEach((p) => prefixes.add(p));
+          continue;
+        }
+        if (aliasDisj.has(token)) {
+          PREFIXES_DISJ.forEach((p) => prefixes.add(p));
+          continue;
+        }
+        if (aliasUrgence.has(token)) {
+          PREFIXES_URGENCE.forEach((p) => prefixes.add(p));
+          continue;
+        }
+        if (aliasTransfo.has(token)) {
+          PREFIXES_TRANSFO.forEach((p) => prefixes.add(p));
+          continue;
+        }
+        if (aliasSectionneur.has(token)) {
+          PREFIXES_SECTIONNEUR.forEach((p) => prefixes.add(p));
+          continue;
+        }
+        if (aliasAlim.has(token)) {
+          PREFIXES_ALIM.forEach((p) => prefixes.add(p));
+          continue;
+        }
+
+        // Codes explicites saisis par l'utilisateur.
+        const upper = token.toUpperCase();
+        if (
+          PREFIXES_INTER.includes(upper) ||
+          PREFIXES_DISJ.includes(upper) ||
+          PREFIXES_URGENCE.includes(upper) ||
+          PREFIXES_TRANSFO.includes(upper) ||
+          PREFIXES_SECTIONNEUR.includes(upper) ||
+          PREFIXES_ALIM.includes(upper)
+        ) {
+          prefixes.add(upper);
+          continue;
+        }
+
+        tokensRestants.push(token);
+      }
+
+      return {
+        prefixes: Array.from(prefixes),
+        tokensRestants
+      };
+    }
+
+    function resultatAppareilCorrespondAuxPrefixes(resultat, prefixes) {
+      if (!prefixes.length || resultat?.type !== "appareils") {
+        return true;
+      }
+      const lignes =
+        Array.isArray(resultat?.appareilsLignesUniques) && resultat.appareilsLignesUniques.length
+          ? resultat.appareilsLignesUniques
+          : [{ code: resultat?.sousTitre || "" }];
+      return lignes.some((ligne) => {
+        const code = String(ligne?.code || "").trim().toUpperCase();
+        if (!code) return false;
+        return prefixes.some((prefixe) => {
+          if (prefixe === "D") {
+            return code.startsWith("D") && !code.startsWith("DU");
+          }
+          return code.startsWith(prefixe);
+        });
+      });
+    }
+
+    function trierResultatsRecherche(resultats, termeReference) {
+      const termeNormalise = normaliserTexteRecherche(termeReference);
+      const tries = [...resultats].map((entree) => {
+        const titreNormalise = normaliserTexteRecherche(entree?.titre || "");
+        const matchDebut = termeNormalise
+          ? entree?.texteRecherche?.startsWith(termeNormalise) || titreNormalise.startsWith(termeNormalise)
+            ? 1
+            : 0
+          : 0;
+        return { ...entree, matchDebut };
+      });
+
+      tries.sort((a, b) => {
+        if (b.matchDebut !== a.matchDebut) return b.matchDebut - a.matchDebut;
+        const prioriteA = obtenirPrioriteTypeRecherche(a.type);
+        const prioriteB = obtenirPrioriteTypeRecherche(b.type);
+        if (prioriteA !== prioriteB) return prioriteA - prioriteB;
+        return String(a.titre || "").localeCompare(String(b.titre || ""), "fr", { sensitivity: "base" });
+      });
+
+      return tries;
+    }
+
+    function rechercherEntreesAvancee(texte) {
+      const tokens = decouperTokensRecherche(texte);
+      const filtreAppareil = extraireFiltreAppareilDepuisTokens(tokens);
+      const requeteLieu = filtreAppareil.tokensRestants.join(" ").trim();
+      const prefixes = filtreAppareil.prefixes;
+
+      if (!prefixes.length) {
+        return rechercherEntrees(texte);
+      }
+
+      let base = [];
+      if (requeteLieu.length >= 2) {
+        base = moteurRecherchePrincipal.rechercher(indexRecherche, requeteLieu, { minLength: 2, limit: 200 });
+      } else {
+        base = indexRecherche.filter((entree) => entree?.type === "appareils");
+      }
+
+      const filtres = base.filter((entree) => entree?.type === "appareils" && resultatAppareilCorrespondAuxPrefixes(entree, prefixes));
+      return trierResultatsRecherche(filtres, requeteLieu || texte).slice(0, 24);
+    }
+
     function determinerIntentionRecherche(texte) {
       const tokens = decouperTokensRecherche(texte);
+      const filtreAppareil = extraireFiltreAppareilDepuisTokens(tokens);
       const hasSat = tokens.some((token) => token.startsWith("sat"));
       const hasAcces = tokens.some((token) => token === "acces" || token === "accesroutier" || token === "routier");
       const hasPoste = tokens.some((token) => token === "poste" || token === "postes");
@@ -306,6 +436,7 @@
 
       if (hasAcces) return { typeForce: "acces", modeGroupe: hasSat ? "sat" : "site" };
       if (hasPoste) return { typeForce: "postes", modeGroupe: hasSat ? "sat" : "site" };
+      if (filtreAppareil.prefixes.length) return { typeForce: "appareils", modeGroupe: hasSat ? "sat" : "site" };
       if (hasAppareil) return { typeForce: "appareils", modeGroupe: hasSat ? "sat" : "site" };
       return { typeForce: "", modeGroupe: hasSat ? "sat" : "site" };
     }
@@ -436,7 +567,7 @@
     async function executerRecherche(texte) {
       await chargerDonneesRecherche();
       const texteNettoye = String(texte || "").trim();
-      const resultats = rechercherEntrees(texteNettoye);
+      const resultats = rechercherEntreesAvancee(texteNettoye);
       const texteModifie = texteNettoye !== dernierTexteRecherche;
       dernierTexteRecherche = texteNettoye;
       derniersResultatsRecherche = resultats;
@@ -542,6 +673,7 @@
         if (!boutonResultat) {
           return;
         }
+        event.stopPropagation();
 
         const action = boutonResultat.dataset.action || "ouvrir-resultat";
         if (action === "set-filtre") {
