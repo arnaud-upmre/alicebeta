@@ -1291,6 +1291,10 @@ body {
   color: var(--ui-text-primary);
 }
 
+.popup-appareil-item-ligne + .popup-appareil-item-ligne {
+  margin-top: 12px;
+}
+
 .popup-appareil-contexte {
   font-size: 0.98rem;
   line-height: 1.25;

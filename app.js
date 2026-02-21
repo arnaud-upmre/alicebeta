@@ -2011,54 +2011,36 @@ function construireSectionAppareils(feature, options = {}) {
     return "";
   }
 
-  if (Number(propr.appareils_count) > 1) {
-    const contexteLieu = construireContexteNomTypeSat(appareilsListe[0] || {});
-    const codesTelecommandeMulti = extraireCodesTelecommande(options?.posteAssocie?.description_telecommande);
-    const pillsTelecommandeMulti = codesTelecommandeMulti.length
-      ? `<div class="popup-appareils-multi-telecommande">${codesTelecommandeMulti
-          .map((code) => `<span class="popup-tag-hp popup-tag-telecommande">${echapperHtml(code)}</span>`)
-          .join("")}</div>`
-      : "";
-    const sectionsAppareils = appareilsListe
-      .map((a) => {
-        const couleur = a.couleur_appareil || "#111111";
-        const tagHp = a.hors_patrimoine ? '<span class="popup-tag-hp">HP</span>' : "";
-        const libelleAppareil = champCompletOuVide(a.appareil) || "Appareil inconnu";
-        const descriptionHtml = convertirDescriptionAppareilEnHtml(a.description);
-        return `<section class="popup-appareils-multi-item"><p class="popup-appareils-multi-code"><span class="popup-point-couleur" style="background:${echapperHtml(couleur)}"></span>${echapperHtml(libelleAppareil)}${tagHp}</p>${descriptionHtml ? `<p class="popup-appareils-multi-description">${descriptionHtml}</p>` : ""}</section>`;
-      })
-      .join("");
-    const afficherContexteLieu = options?.afficherContexteLieu !== false;
-    const afficherPillsTelecommande = options?.afficherPillsTelecommande !== false;
-    return `<section class="popup-section"><div class="popup-pill-ligne popup-pill-ligne-gauche popup-pill-support-appareils"><span class="popup-badge popup-badge-itineraire">${echapperHtml(String(propr.appareils_count))} appareils sur le support</span></div>${afficherContexteLieu && contexteLieu ? `<p class="popup-appareils-multi-lieu">📍 ${echapperHtml(contexteLieu)}</p>` : ""}${afficherPillsTelecommande ? pillsTelecommandeMulti : ""}${sectionsAppareils}</section>`;
-  }
-
-  const appareil = appareilsListe[0] || {};
-  const couleur = appareil.couleur_appareil || "#111111";
-  const tagHp = appareil.hors_patrimoine ? '<span class="popup-tag-hp">HP</span>' : "";
-  const libelleAppareil = champCompletOuVide(appareil.appareil) || "Appareil inconnu";
-  const contexteAppareil = construireContexteNomTypeSat(appareil);
-  const descriptionAppareil = champCompletOuVide(appareil.description);
+  const contexteLieu = construireContexteNomTypeSat(appareilsListe[0] || {});
+  const afficherContexteLieu = options?.afficherContexteLieu !== false;
+  const afficherPillsTelecommande = options?.afficherPillsTelecommande !== false;
+  const afficherBadgeSupport = options?.afficherBadgeSupport !== false;
+  const nbAppareilsBrut = Number(propr.appareils_count);
+  const nbAppareils = Number.isFinite(nbAppareilsBrut) && nbAppareilsBrut > 0 ? nbAppareilsBrut : appareilsListe.length;
+  const libelleBadgeSupport = `${nbAppareils} ${nbAppareils > 1 ? "appareils" : "appareil"} sur le support`;
   const codesTelecommande = extraireCodesTelecommande(options?.posteAssocie?.description_telecommande);
-  const tagsTelecommande = codesTelecommande.length
-    ? codesTelecommande
+  const pillsTelecommande = codesTelecommande.length
+    ? `<div class="popup-appareils-multi-telecommande popup-poste-telecommande-pills">${codesTelecommande
         .map((code) => `<span class="popup-tag-hp popup-tag-telecommande">${echapperHtml(code)}</span>`)
-        .join("")
+        .join("")}</div>`
     : "";
-  const ligneTitre = options.masquerTitreLieu
-    ? ""
-    : `<p class="popup-appareil-titre"><span class="popup-point-couleur popup-point-couleur-titre-appareil" style="background:${echapperHtml(couleur)}"></span><span class="popup-appareil-code">${echapperHtml(libelleAppareil)}</span>${contexteAppareil ? `<span class="popup-appareil-contexte">(${echapperHtml(contexteAppareil)})</span>` : ""}${tagHp}${tagsTelecommande}</p>`;
-  const descriptionAppareilHtml = convertirDescriptionAppareilEnHtml(descriptionAppareil);
-  const ligneDescription = descriptionAppareil
-    ? `<p class="popup-appareil-description-inline">${descriptionAppareilHtml || echapperHtml(descriptionAppareil)}</p>`
+  const sectionTitre =
+    !options.masquerTitreLieu && afficherContexteLieu && contexteLieu
+      ? `<p class="popup-poste-entete-principal">📍 ${echapperHtml(contexteLieu)}</p>`
+      : "";
+  const lignesAppareils = appareilsListe
+    .map((a) => {
+      const couleur = a.couleur_appareil || "#111111";
+      const tagHp = a.hors_patrimoine ? '<span class="popup-tag-hp">HP</span>' : "";
+      const libelleAppareil = champCompletOuVide(a.appareil) || "Appareil inconnu";
+      const descriptionHtml = convertirDescriptionAppareilEnHtml(a.description);
+      return `<section class="popup-appareil-item-ligne"><p class="popup-appareil-code-ligne"><span class="popup-point-couleur" style="background:${echapperHtml(couleur)}"></span>${echapperHtml(libelleAppareil)}${tagHp}</p>${descriptionHtml ? `<p class="popup-appareil-description-inline">${descriptionHtml}</p>` : ""}</section>`;
+    })
+    .join("");
+  const badgeSupport = afficherBadgeSupport
+    ? `<div class="popup-pill-ligne popup-pill-ligne-gauche popup-pill-support-appareils"><span class="popup-badge popup-badge-itineraire">${echapperHtml(libelleBadgeSupport)}</span></div>`
     : "";
-  const ligneCode = options.masquerTitreLieu
-    ? `<p class="popup-appareil-code-ligne"><span class="popup-point-couleur" style="background:${echapperHtml(couleur)}"></span>${echapperHtml(libelleAppareil)}${tagHp}</p>`
-    : "";
-  const badgeSupport = options.afficherBadgeSupport
-    ? '<div class="popup-pill-ligne popup-pill-ligne-gauche popup-pill-support-appareils"><span class="popup-badge popup-badge-itineraire">1 appareil sur le support</span></div>'
-    : "";
-  return `<section class="popup-section">${badgeSupport}${ligneTitre}${ligneCode}${ligneDescription}</section>`;
+  return `<section class="popup-section">${sectionTitre}${afficherPillsTelecommande ? pillsTelecommande : ""}${badgeSupport}${lignesAppareils}</section>`;
 }
 
 function construireSectionAcces(feature) {
@@ -3436,10 +3418,10 @@ function construirePopupDepuisFeatures(longitude, latitude, featurePostes, featu
   if (featureAppareils) {
     const sectionAppareils = construireSectionAppareils(featureAppareils, {
       masquerTitreLieu: Boolean(featurePostes),
-      posteAssocie: featurePostes ? posteAssocieDepuisAppareil : null,
+      posteAssocie: posteAssocieDepuisAppareil,
       afficherBadgeSupport: !featurePostes,
       afficherContexteLieu: !featurePostes,
-      afficherPillsTelecommande: false
+      afficherPillsTelecommande: !featurePostes
     });
     if (sectionAppareils) {
       sections.push(sectionAppareils);
