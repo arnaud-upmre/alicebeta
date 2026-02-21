@@ -1140,6 +1140,10 @@ body {
   margin-bottom: 0;
 }
 
+.popup-pill-support-appareils {
+  margin-bottom: 10px;
+}
+
 .popup-sous-titre-centre {
   margin: -2px 0 8px;
   text-align: center;
@@ -1276,6 +1280,14 @@ body {
   font-size: 1.18rem;
   line-height: 1.2;
   font-weight: 800;
+  color: var(--ui-text-primary);
+}
+
+.popup-appareil-description-inline {
+  margin: 4px 0 0;
+  padding-left: 28px;
+  font-size: 0.98rem;
+  line-height: 1.35;
   color: var(--ui-text-primary);
 }
 
