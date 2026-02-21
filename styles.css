@@ -1271,6 +1271,14 @@ body {
   color: var(--ui-text-primary);
 }
 
+.popup-appareil-code-ligne {
+  margin: 0;
+  font-size: 1.18rem;
+  line-height: 1.2;
+  font-weight: 800;
+  color: var(--ui-text-primary);
+}
+
 .popup-appareil-contexte {
   font-size: 0.98rem;
   line-height: 1.25;
