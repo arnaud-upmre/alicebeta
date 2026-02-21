@@ -2870,6 +2870,8 @@ function attacherActionsPopupInterne() {
       const typeCible = String(boutonRetourPosteDepuisAppareil.getAttribute("data-target-type") || "postes").trim() || "postes";
       const longitude = Number(boutonRetourPosteDepuisAppareil.getAttribute("data-lng"));
       const latitude = Number(boutonRetourPosteDepuisAppareil.getAttribute("data-lat"));
+      const origineAccesLng = Number(boutonRetourPosteDepuisAppareil.getAttribute("data-origin-acces-lng"));
+      const origineAccesLat = Number(boutonRetourPosteDepuisAppareil.getAttribute("data-origin-acces-lat"));
       if (!Number.isFinite(longitude) || !Number.isFinite(latitude)) {
         return;
       }
@@ -2888,7 +2890,11 @@ function attacherActionsPopupInterne() {
           return;
         }
         popupOuverte = true;
-        ouvrirPopupDepuisCoordonneesPourType(typeCible, longitude, latitude, { fallbackGenerique: false });
+        const optionsOuverture = { fallbackGenerique: false };
+        if (typeCible === "postes" && Number.isFinite(origineAccesLng) && Number.isFinite(origineAccesLat)) {
+          optionsOuverture.coordonneesAccesPreferees = [origineAccesLng, origineAccesLat];
+        }
+        ouvrirPopupDepuisCoordonneesPourType(typeCible, longitude, latitude, optionsOuverture);
       };
       naviguerVersCoordonneesPuisOuvrirPopup(longitude, latitude, ouvrirPopup, {
         zoomMin: 14.8,
@@ -3230,7 +3236,7 @@ function obtenirFeatureProche(collection, longitude, latitude, seuilDegres = 0.0
   return null;
 }
 
-function construirePopupDepuisFeatures(longitude, latitude, featurePostes, featureAcces, featureAppareils) {
+function construirePopupDepuisFeatures(longitude, latitude, featurePostes, featureAcces, featureAppareils, options = {}) {
   const sections = [];
   let coordonneesNavigation = null;
   let sectionAppareilsAssociesPoste = "";
@@ -3279,10 +3285,6 @@ function construirePopupDepuisFeatures(longitude, latitude, featurePostes, featu
     return false;
   }
 
-  if (!coordonneesNavigation && featurePostes) {
-    coordonneesNavigation = trouverCoordonneesAccesDepuisPostes(featurePostes);
-  }
-
   if (!coordonneesNavigation && featureAppareils) {
     coordonneesNavigation = trouverCoordonneesAccesDepuisAppareils(featureAppareils);
   }
@@ -3291,7 +3293,14 @@ function construirePopupDepuisFeatures(longitude, latitude, featurePostes, featu
     coordonneesRetourPosteDepuisAppareil = trouverCoordonneesPosteDepuisAppareils(featureAppareils);
   }
   if (featurePostes) {
-    coordonneesRetourAccesDepuisPoste = trouverCoordonneesAccesDepuisPostes(featurePostes);
+    const lngAccesPref = Number(options?.coordonneesAccesPreferees?.[0]);
+    const latAccesPref = Number(options?.coordonneesAccesPreferees?.[1]);
+    const coordonneesAccesPreferees =
+      Number.isFinite(lngAccesPref) && Number.isFinite(latAccesPref) ? [lngAccesPref, latAccesPref] : null;
+    coordonneesRetourAccesDepuisPoste = coordonneesAccesPreferees || trouverCoordonneesAccesDepuisPostes(featurePostes);
+  }
+  if (!coordonneesNavigation && featurePostes) {
+    coordonneesNavigation = coordonneesRetourAccesDepuisPoste || trouverCoordonneesAccesDepuisPostes(featurePostes);
   }
   const estVueAppareilsSeule = Boolean(featureAppareils && !featurePostes);
 
@@ -3320,8 +3329,12 @@ function construirePopupDepuisFeatures(longitude, latitude, featurePostes, featu
   const libelleBoutonFicheAssociee = estVueAppareilsSeule
     ? determinerLibelleRetourPosteDepuisAppareil(featureAppareils)
     : "Consulter la fiche de l'accès routier";
+  const attributsOrigineAcces =
+    estVueAppareilsSeule && coordonneesNavigation
+      ? ` data-origin-acces-lng="${coordonneesNavigation[0]}" data-origin-acces-lat="${coordonneesNavigation[1]}"`
+      : "";
   const sectionRetourPoste = coordonneesBoutonFicheAssociee
-    ? `<section class="popup-section popup-section-localiser"><div class="popup-itineraires popup-itineraires-localiser"><button class="popup-bouton-itineraire popup-bouton-localiser" id="popup-retour-poste-appareil" type="button" data-target-type="${echapperHtml(typeBoutonFicheAssociee)}" data-lng="${coordonneesBoutonFicheAssociee[0]}" data-lat="${coordonneesBoutonFicheAssociee[1]}">📄 ${echapperHtml(libelleBoutonFicheAssociee)}</button></div></section>`
+    ? `<section class="popup-section popup-section-localiser"><div class="popup-itineraires popup-itineraires-localiser"><button class="popup-bouton-itineraire popup-bouton-localiser" id="popup-retour-poste-appareil" type="button" data-target-type="${echapperHtml(typeBoutonFicheAssociee)}" data-lng="${coordonneesBoutonFicheAssociee[0]}" data-lat="${coordonneesBoutonFicheAssociee[1]}"${attributsOrigineAcces}>📄 ${echapperHtml(libelleBoutonFicheAssociee)}</button></div></section>`
     : "";
   const sectionLocaliser = `<section class="popup-section popup-section-localiser"><div class="popup-itineraires popup-itineraires-localiser"><button class="popup-bouton-itineraire popup-bouton-localiser" id="popup-localiser-carte" type="button" data-lng="${longitude}" data-lat="${latitude}">📍 Localiser sur la carte</button></div></section>`;
   const contenuFiche = `<div class="popup-carte">${sections.join("")}${sectionRssAssocieDepuisAcces}${sectionItineraire}${sectionActionsPoste}${sectionCodes}${sectionLocaliser}${sectionRetourPoste}</div>`;
@@ -3381,18 +3394,18 @@ function ouvrirPopupDepuisCoordonneesPourType(type, longitude, latitude, options
   if (type === "postes") {
     feature = obtenirFeatureALaCoordonnee(donneesPostes, longitude, latitude) || obtenirFeatureProche(donneesPostes, longitude, latitude);
     if (feature) {
-      return construirePopupDepuisFeatures(longitude, latitude, feature, null, null);
+      return construirePopupDepuisFeatures(longitude, latitude, feature, null, null, options);
     }
   } else if (type === "appareils") {
     feature =
       obtenirFeatureALaCoordonnee(donneesAppareils, longitude, latitude) || obtenirFeatureProche(donneesAppareils, longitude, latitude);
     if (feature) {
-      return construirePopupDepuisFeatures(longitude, latitude, null, null, feature);
+      return construirePopupDepuisFeatures(longitude, latitude, null, null, feature, options);
     }
   } else if (type === "acces") {
     feature = obtenirFeatureALaCoordonnee(donneesAcces, longitude, latitude) || obtenirFeatureProche(donneesAcces, longitude, latitude);
     if (feature) {
-      return construirePopupDepuisFeatures(longitude, latitude, null, feature, null);
+      return construirePopupDepuisFeatures(longitude, latitude, null, feature, null, options);
     }
   }
 
