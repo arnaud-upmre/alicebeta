@@ -12,7 +12,6 @@ const SOURCE_POSTES = "postes-source";
 const COUCHE_POSTES = "postes-points";
 const COUCHE_POSTES_GROUPES = "postes-groupes";
 const SOURCE_PK = "pk-source";
-const COUCHE_PK_POINTS = "pk-points";
 const COUCHE_PK_LABELS = "pk-labels";
 const SOURCE_LIGNES = "openrailwaymap-source";
 const COUCHE_LIGNES = "openrailwaymap-lignes";
@@ -654,6 +653,7 @@ let promesseChargementModuleItineraire = null;
 let moduleLocalisation = null;
 let promesseChargementModuleLocalisation = null;
 let rafMiseAJourPk = null;
+let imagePkPillEnregistree = false;
 
 class ControleActionsCarte {
   onAdd() {
@@ -1758,11 +1758,7 @@ function mettreAJourAffichagePk() {
   donneesPkAffichees = doitAfficher ? filtrerPkPourVue() : PK_VIDE;
   sourcePk.setData(donneesPkAffichees);
 
-  const visibilitePoints = "none";
   const visibiliteLabels = doitAfficher ? "visible" : "none";
-  if (carte.getLayer(COUCHE_PK_POINTS)) {
-    carte.setLayoutProperty(COUCHE_PK_POINTS, "visibility", visibilitePoints);
-  }
   if (carte.getLayer(COUCHE_PK_LABELS)) {
     carte.setLayoutProperty(COUCHE_PK_LABELS, "visibility", visibiliteLabels);
   }
@@ -1778,10 +1774,60 @@ function planifierMiseAJourPk() {
   });
 }
 
+function creerImagePkPill() {
+  const largeur = 92;
+  const hauteur = 34;
+  const rayon = 9;
+  const canvas = document.createElement("canvas");
+  canvas.width = largeur;
+  canvas.height = hauteur;
+  const ctx = canvas.getContext("2d");
+  if (!ctx) {
+    return null;
+  }
+
+  ctx.clearRect(0, 0, largeur, hauteur);
+  ctx.beginPath();
+  ctx.moveTo(rayon, 1);
+  ctx.arcTo(largeur - 1, 1, largeur - 1, hauteur - 1, rayon);
+  ctx.arcTo(largeur - 1, hauteur - 1, 1, hauteur - 1, rayon);
+  ctx.arcTo(1, hauteur - 1, 1, 1, rayon);
+  ctx.arcTo(1, 1, largeur - 1, 1, rayon);
+  ctx.closePath();
+  ctx.fillStyle = "rgba(255, 255, 255, 0.98)";
+  ctx.fill();
+  ctx.strokeStyle = "rgba(0, 0, 0, 0.78)";
+  ctx.lineWidth = 2;
+  ctx.stroke();
+
+  return {
+    width: largeur,
+    height: hauteur,
+    data: ctx.getImageData(0, 0, largeur, hauteur).data
+  };
+}
+
+function enregistrerImagePkPillSiNecessaire() {
+  if (imagePkPillEnregistree || !carte.isStyleLoaded()) {
+    return;
+  }
+  if (carte.hasImage("pk-pill")) {
+    imagePkPillEnregistree = true;
+    return;
+  }
+  const image = creerImagePkPill();
+  if (!image) {
+    return;
+  }
+  carte.addImage("pk-pill", image, { pixelRatio: 2 });
+  imagePkPillEnregistree = true;
+}
+
 function appliquerCouchesDonnees() {
   if (!carte.isStyleLoaded()) {
     return;
   }
+  enregistrerImagePkPillSiNecessaire();
 
   if (!carte.getSource(SOURCE_LIGNES)) {
     carte.addSource(SOURCE_LIGNES, {
@@ -1971,21 +2017,6 @@ function appliquerCouchesDonnees() {
     });
   }
 
-  if (!carte.getLayer(COUCHE_PK_POINTS)) {
-    carte.addLayer({
-      id: COUCHE_PK_POINTS,
-      type: "circle",
-      source: SOURCE_PK,
-      paint: {
-        "circle-radius": ["interpolate", ["linear"], ["zoom"], 11, 1.1, 18, 1.6, 19, 1.9],
-        "circle-color": "#1d4ed8",
-        "circle-opacity": 0.0,
-        "circle-stroke-color": "#ffffff",
-        "circle-stroke-width": 0
-      }
-    });
-  }
-
   if (!carte.getLayer(COUCHE_PK_LABELS)) {
     carte.addLayer({
       id: COUCHE_PK_LABELS,
@@ -1994,16 +2025,20 @@ function appliquerCouchesDonnees() {
       layout: {
         "text-field": ["coalesce", ["get", "pk_affichage"], ["get", "pk_label"], ["concat", "PK ", ["to-string", ["get", "pk"]]]],
         "text-font": ["Open Sans Bold"],
-        "text-size": ["interpolate", ["linear"], ["zoom"], 11, 9, 15, 10, 18, 11, 19, 11.5],
-        "text-offset": [0, 1.1],
+        "text-size": ["interpolate", ["linear"], ["zoom"], 11, 9, 15, 10, 18, 10.8, 19, 11.2],
+        "text-offset": [0, 0],
         "text-allow-overlap": true,
-        "text-padding": 2
+        "text-padding": 2,
+        "icon-image": "pk-pill",
+        "icon-text-fit": "both",
+        "icon-text-fit-padding": [2, 7, 2, 7],
+        "icon-allow-overlap": true,
+        "symbol-sort-key": ["to-number", ["get", "pk"], 0]
       },
       paint: {
-        "text-color": "#0f172a",
-        "text-halo-color": "#ffffff",
-        "text-halo-width": 2.6,
-        "text-halo-blur": 0.3
+        "text-color": "#111827",
+        "text-halo-color": "rgba(255,255,255,0)",
+        "text-halo-width": 0
       }
     });
   }
@@ -2082,10 +2117,6 @@ function remonterCouchesDonnees() {
 
   if (carte.getLayer(COUCHE_APPAREILS)) {
     carte.moveLayer(COUCHE_APPAREILS);
-  }
-
-  if (carte.getLayer(COUCHE_PK_POINTS)) {
-    carte.moveLayer(COUCHE_PK_POINTS);
   }
 
   if (carte.getLayer(COUCHE_PK_LABELS)) {
@@ -4833,6 +4864,7 @@ function activerFondIgnAutomatique() {
 }
 
 function gererStyleCharge() {
+  imagePkPillEnregistree = false;
   restaurerEtatFiltres();
   restaurerAffichageDonnees();
   rafraichirAffichageMesure();
