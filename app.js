@@ -4843,7 +4843,7 @@ if (boutonLocalisationMobile) {
 if (boutonLocaliserCarte) {
   boutonLocaliserCarte.addEventListener("click", (event) => {
     event.stopPropagation();
-    localiserUtilisateurCarte();
+    localiserUtilisateurCarte({ ouvrirPanneauResultats: true });
   });
 }
 

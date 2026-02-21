@@ -2101,14 +2101,6 @@ body {
 }
 
 @media (max-width: 720px) {
-  .bouton-localisation-mobile {
-    display: flex;
-  }
-
-  .controle-actions-carte .bouton-carte-action[data-role="localiser-carte"] {
-    display: none;
-  }
-
   .controle-recherche {
     width: clamp(
       250px,
