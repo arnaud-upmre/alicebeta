@@ -2105,6 +2105,72 @@ function construireSectionAcces(feature) {
   return `<section class="popup-section"><p class="popup-acces-titre${classeHors}">🚗 ${titreHtml}</p></section>`;
 }
 
+function estFeatureAccesSingle(featureAcces) {
+  const accesListe = extraireListeDepuisFeature(featureAcces, "acces_liste_json");
+  if (!accesListe.length) {
+    return false;
+  }
+
+  const clesAffichageLignes = new Set(
+    accesListe
+      .map((a) => {
+        const cleComplete = [
+          normaliserTexteRecherche(champCompletOuVide(a?.nom)),
+          normaliserTexteRecherche(champCompletOuVide(a?.type)),
+          normaliserTexteRecherche(champCompletOuVide(a?.SAT)),
+          normaliserTexteRecherche(champCompletOuVide(a?.acces))
+        ].join("|");
+        if (cleComplete.replace(/\|/g, "")) {
+          return cleComplete;
+        }
+        return normaliserTexteRecherche(construireTitreNomTypeSatAcces(a, { nomVilleDe: true }));
+      })
+      .filter(Boolean)
+  );
+
+  const totalLignesUniques = Math.max(1, clesAffichageLignes.size || accesListe.length);
+  return totalLignesUniques === 1;
+}
+
+function construireSectionConsigneRssDepuisAcces(featureAcces) {
+  const posteAssocie = trouverPosteAssocieDepuisAcces(featureAcces);
+  if (!posteAssocie) {
+    return "";
+  }
+
+  const rss = champCompletOuVide(posteAssocie?.rss);
+  if (!rss) {
+    return "";
+  }
+
+  const cle = normaliserCleRss(rss);
+  const libelleTable = construireLibelleTableRss(cle);
+  const numeros = obtenirNumerosRssDepuisCode(cle);
+  const phrase = `Avant d'entrée dans le poste, prévenir le RSS ${libelleTable}.`;
+  const boutons = numeros
+    .map((numero) => {
+      const href = construireHrefTelephone(numero);
+      return `<a class="popup-bouton-itineraire" href="tel:${echapperHtml(href)}">${echapperHtml(numero)}</a>`;
+    })
+    .join("");
+
+  return `<section class="popup-section"><p class="popup-poste-ligne">${echapperHtml(phrase)}</p>${
+    boutons ? `<div class="popup-itineraires popup-itineraires-rss">${boutons}</div>` : ""
+  }</section>`;
+}
+
+function construireSectionBriefingAcces() {
+  return '<section class="popup-section"><p class="popup-poste-ligne">Avant toute intervention, faite un briefing :</p><div class="popup-itineraires popup-itineraires-localiser"><button class="popup-bouton-itineraire popup-bouton-desactive" type="button" disabled aria-disabled="true">Briefing numérique</button></div></section>';
+}
+
+function construireSectionExplorerAcces(longitude, latitude) {
+  return `<section class="popup-section popup-section-itineraires"><div class="popup-section-titre popup-section-titre-gauche"><span class="popup-badge popup-badge-itineraire">Explorer l'accès</span></div><div class="popup-itineraires popup-itineraires-poste-actions"><button class="popup-bouton-itineraire popup-bouton-localiser" id="popup-localiser-carte" type="button" data-lng="${longitude}" data-lat="${latitude}">📍 Localiser sur la carte</button><button class="popup-bouton-itineraire popup-bouton-street-view" id="popup-ouvrir-street-view" type="button" data-lng="${longitude}" data-lat="${latitude}">🛣️ Street View</button></div></section>`;
+}
+
+function construireModalStreetView() {
+  return '<div class="popup-streetview-modal" id="popup-streetview-modal" hidden><div class="popup-streetview-dialog" role="dialog" aria-modal="true" aria-label="Street View"><button class="popup-streetview-fermer" id="popup-fermer-street-view" type="button" aria-label="Fermer">✕</button><iframe class="popup-streetview-iframe" id="popup-streetview-iframe" title="Street View" loading="lazy" referrerpolicy="no-referrer-when-downgrade" allowfullscreen></iframe></div></div>';
+}
+
 function construireTitrePoste(poste) {
   return construireTitreNomTypeSat(poste);
 }
@@ -3116,6 +3182,44 @@ function attacherActionsPopupInterne() {
       demarrerClignotementLocalisation(longitude, latitude);
     });
   }
+
+  const modalStreetView = racinePopup.querySelector("#popup-streetview-modal");
+  const iframeStreetView = racinePopup.querySelector("#popup-streetview-iframe");
+  const boutonOuvrirStreetView = racinePopup.querySelector("#popup-ouvrir-street-view");
+  const boutonFermerStreetView = racinePopup.querySelector("#popup-fermer-street-view");
+  const fermerStreetView = () => {
+    if (!modalStreetView) {
+      return;
+    }
+    modalStreetView.setAttribute("hidden", "hidden");
+    if (iframeStreetView) {
+      iframeStreetView.removeAttribute("src");
+    }
+  };
+
+  if (boutonOuvrirStreetView && modalStreetView && iframeStreetView) {
+    boutonOuvrirStreetView.addEventListener("click", () => {
+      const longitude = Number(boutonOuvrirStreetView.getAttribute("data-lng"));
+      const latitude = Number(boutonOuvrirStreetView.getAttribute("data-lat"));
+      if (!Number.isFinite(longitude) || !Number.isFinite(latitude)) {
+        return;
+      }
+      const urlStreetView = `https://maps.google.com/maps?layer=c&cbll=${latitude},${longitude}&cbp=11,0,0,0,0&output=svembed`;
+      iframeStreetView.setAttribute("src", urlStreetView);
+      modalStreetView.removeAttribute("hidden");
+    });
+  }
+
+  if (boutonFermerStreetView) {
+    boutonFermerStreetView.addEventListener("click", fermerStreetView);
+  }
+  if (modalStreetView) {
+    modalStreetView.addEventListener("click", (event) => {
+      if (event.target === modalStreetView) {
+        fermerStreetView();
+      }
+    });
+  }
 }
 
 function normaliserTexteRecherche(valeur) {
@@ -3459,6 +3563,7 @@ function construirePopupDepuisFeatures(longitude, latitude, featurePostes, featu
   const estVueAppareilsSeule = Boolean(featureAppareils && !featurePostes);
   const estVuePosteSeule = Boolean(featurePostes && !featureAcces && !featureAppareils);
   const estVueAccesSeule = Boolean(featureAcces && !featurePostes && !featureAppareils);
+  const estAccesSingle = Boolean(estVueAccesSeule && featureAcces && estFeatureAccesSingle(featureAcces));
   let cibleSatCourante = normaliserTexteRecherche(options?.cibleSatPoste || "");
   if (estVuePosteSeule && !cibleSatCourante && featurePostes) {
     const postesCourants = extraireListeDepuisFeature(featurePostes, "postes_liste_json");
@@ -3521,6 +3626,10 @@ function construirePopupDepuisFeatures(longitude, latitude, featurePostes, featu
   const sectionItineraire = coordonneesNavigation
     ? `<section class="popup-section popup-section-itineraires"><div class="popup-section-titre popup-section-titre-gauche"><span class="popup-badge popup-badge-itineraire">${echapperHtml(libelleSectionItineraire)}</span></div>${construireLiensItineraires(coordonneesNavigation[0], coordonneesNavigation[1])}</section>`
     : "";
+  const sectionConsigneRssAcces = estAccesSingle ? construireSectionConsigneRssDepuisAcces(featureAcces) : "";
+  const sectionBriefingAcces = estAccesSingle ? construireSectionBriefingAcces() : "";
+  const sectionExplorerAcces = estAccesSingle ? construireSectionExplorerAcces(longitude, latitude) : "";
+  const modalStreetView = estAccesSingle ? construireModalStreetView() : "";
   const lienImajnet = featurePostes || estVueAppareilsSeule ? construireLienImajnet(longitude, latitude) : "";
   const lienPowerBi = "https://app.powerbi.com/groups/me/reports/e63d15fe-0d14-4471-8571-6e146456990f/ReportSection0107f8f0b80dcd560566?experience=power-bi";
   const lienSignalementTerrain =
@@ -3612,10 +3721,11 @@ function construirePopupDepuisFeatures(longitude, latitude, featurePostes, featu
   const sectionRetourPoste = boutonsLiaison.length
     ? `<section class="popup-section popup-section-localiser"><div class="popup-itineraires ${boutonsLiaison.length > 1 ? "popup-itineraires-poste-actions" : "popup-itineraires-localiser"}">${boutonsLiaison.join("")}</div></section>`
     : "";
-  const sectionLocaliser = featurePostes || estVueAppareilsSeule
+  const sectionLocaliser = featurePostes || estVueAppareilsSeule || estAccesSingle
     ? ""
     : `<section class="popup-section popup-section-localiser"><div class="popup-itineraires popup-itineraires-poste-actions"><button class="popup-bouton-itineraire popup-bouton-localiser" id="popup-localiser-carte" type="button" data-lng="${longitude}" data-lat="${latitude}">📍 Localiser sur la carte</button><a class="popup-bouton-itineraire" href="${echapperHtml(lienPowerBi)}" target="_blank" rel="noopener noreferrer">⚡️ Patrimoine SPOT</a></div></section>`;
-  const contenuFiche = `<div class="popup-carte">${sections.join("")}${sectionRssAssocieDepuisAcces}${sectionItineraire}${sectionActionsPoste}${sectionTerrain}${sectionCodesAvecPills}${sectionLocaliser}${sectionRetourPoste}</div>`;
+  const sectionRssFinale = estAccesSingle ? "" : sectionRssAssocieDepuisAcces;
+  const contenuFiche = `<div class="popup-carte">${sections.join("")}${sectionConsigneRssAcces}${sectionBriefingAcces}${sectionRssFinale}${sectionItineraire}${sectionExplorerAcces}${sectionActionsPoste}${sectionTerrain}${sectionCodesAvecPills}${sectionLocaliser}${sectionRetourPoste}${modalStreetView}</div>`;
 
   let contenuVueAppareils = "";
   if (sectionAppareilsAssociesPoste) {

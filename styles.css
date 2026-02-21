@@ -1603,6 +1603,16 @@ body {
   border-color: rgba(79, 70, 229, 0.28);
 }
 
+.popup-bouton-itineraire:disabled,
+.popup-bouton-itineraire[aria-disabled="true"],
+.popup-bouton-desactive {
+  opacity: 0.6;
+  cursor: not-allowed;
+  pointer-events: none;
+  background: linear-gradient(180deg, #f3f4f6 0%, #e5e7eb 100%);
+  border-color: rgba(100, 116, 139, 0.3);
+}
+
 .popup-bouton-codes {
   width: 100%;
 }
@@ -1680,6 +1690,54 @@ body {
   padding: 6px 8px;
   font-size: 0.72rem;
   font-weight: 600;
+}
+
+.popup-streetview-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  display: grid;
+  place-items: center;
+  padding: 16px;
+  background: rgba(2, 6, 23, 0.65);
+}
+
+.popup-streetview-modal[hidden] {
+  display: none !important;
+}
+
+.popup-streetview-dialog {
+  position: relative;
+  width: min(920px, calc(100vw - 24px));
+  height: min(580px, calc(100vh - 40px));
+  border-radius: 14px;
+  border: 1px solid rgba(148, 163, 184, 0.38);
+  background: #0f172a;
+  overflow: hidden;
+  box-shadow: 0 20px 44px rgba(2, 6, 23, 0.5);
+}
+
+.popup-streetview-fermer {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  z-index: 2;
+  width: 36px;
+  height: 36px;
+  border-radius: 999px;
+  border: 1px solid rgba(148, 163, 184, 0.42);
+  background: rgba(15, 23, 42, 0.85);
+  color: #f8fafc;
+  font-size: 1rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.popup-streetview-iframe {
+  width: 100%;
+  height: 100%;
+  border: 0;
+  background: #111827;
 }
 
 .panneau-mesure {
