@@ -10,8 +10,6 @@
       getDonneesAcces,
       getDonneesPostes,
       getDonneesAppareils,
-      construireTitreNomTypeSat,
-      construireTitreNomTypeSatAcces,
       estHorsPatrimoine,
       echapperHtml,
       formaterDistanceMetres,
@@ -103,8 +101,34 @@
       return String(valeur || "").trim();
     }
 
-    function determinerIconeResultat(type, feature) {
+    function champCompletOuVide(valeur) {
+      const texte = normaliserChampTexte(valeur);
+      const texteMaj = texte.toUpperCase();
+      if (!texte) {
+        return "";
+      }
+      if (texteMaj === "A COMPLETER" || texteMaj === "A COMPLÉTER" || texteMaj === "COMPLETER" || texteMaj === "COMPLÉTER") {
+        return "";
+      }
+      return texte;
+    }
+
+    function extraireListeDepuisFeature(feature, cleJson) {
       const proprietes = feature?.properties || {};
+      try {
+        const liste = JSON.parse(proprietes?.[cleJson] || "[]");
+        if (Array.isArray(liste) && liste.length) {
+          return liste;
+        }
+      } catch {
+        // Ignore les listes invalides.
+      }
+      return [proprietes];
+    }
+
+    function determinerIconeResultat(type, feature, entree) {
+      const proprietes = feature?.properties || {};
+      const source = entree || proprietes;
       if (type === "acces") {
         return "🚙";
       }
@@ -112,63 +136,30 @@
         return "💡";
       }
       const estHorsOuSpecial =
+        estHorsPatrimoine(source?.hors_patrimoine) ||
+        estHorsPatrimoine(source?.special) ||
         estHorsPatrimoine(proprietes?.hors_patrimoine) ||
         estHorsPatrimoine(proprietes?.special) ||
         Number(proprietes?.hors_patrimoine_count) > 0;
       return estHorsOuSpecial ? "🗂️" : "📍";
     }
 
-    function formaterTypeResultat(type) {
-      if (type === "postes") return "Poste";
-      if (type === "acces") return "Acces";
-      return "Appareil";
-    }
+    function construireTitreResultat(type, entree) {
+      const nom = champCompletOuVide(entree?.nom);
+      const typeSupport = champCompletOuVide(entree?.type);
+      const sat = champCompletOuVide(entree?.SAT);
+      const acces = champCompletOuVide(entree?.acces);
+      const appareil = champCompletOuVide(entree?.appareil);
 
-    function construireTitreResultatAppareil(feature) {
-      const proprietes = feature?.properties || {};
-      let appareils = [];
-      try {
-        appareils = JSON.parse(proprietes.appareils_liste_json || "[]");
-      } catch {
-        appareils = [];
-      }
-
-      const premier = appareils[0] || proprietes;
-      const codeAppareil = normaliserChampTexte(premier?.appareil);
-      const nomPoste = normaliserChampTexte(premier?.nom);
-      if (codeAppareil && nomPoste) {
-        return `${codeAppareil} (${nomPoste})`;
-      }
-      if (codeAppareil) {
-        return codeAppareil;
-      }
-      if (nomPoste) {
-        return nomPoste;
-      }
-      const nombre = Number(proprietes?.appareils_count);
-      if (Number.isFinite(nombre) && nombre > 1) {
-        return `${nombre} appareils`;
-      }
-      return "Appareil";
-    }
-
-    function construireTitreResultat(type, feature) {
-      const proprietes = feature?.properties || {};
-      if (type === "postes") {
-        return (
-          construireTitreNomTypeSat(proprietes, {
-            nomVilleDe: estHorsPatrimoine(proprietes?.hors_patrimoine)
-          }) || "Poste"
-        );
-      }
       if (type === "acces") {
-        return (
-          construireTitreNomTypeSatAcces(proprietes, {
-            nomVilleDe: estHorsPatrimoine(proprietes?.hors_patrimoine)
-          }) || "Acces"
-        );
+        return [nom, typeSupport, sat, acces].filter(Boolean).join(" / ") || "Acces";
       }
-      return construireTitreResultatAppareil(feature);
+
+      if (type === "appareils") {
+        return [nom, typeSupport, sat, appareil].filter(Boolean).join(" / ") || "Appareil";
+      }
+
+      return [nom, typeSupport, sat].filter(Boolean).join(" / ") || "Poste";
     }
 
     function construireResultatsProximite(longitude, latitude) {
@@ -187,15 +178,18 @@
             continue;
           }
           const distanceMetres = obtenirDistanceMetres(pointUtilisateur, [lng, lat]);
-          resultats.push({
-            type,
-            longitude: lng,
-            latitude: lat,
-            distanceMetres,
-            icone: determinerIconeResultat(type, feature),
-            titre: construireTitreResultat(type, feature),
-            typeLibelle: formaterTypeResultat(type)
-          });
+          const cleListe = type === "postes" ? "postes_liste_json" : type === "acces" ? "acces_liste_json" : "appareils_liste_json";
+          const listeEntrees = extraireListeDepuisFeature(feature, cleListe);
+          for (const entree of listeEntrees) {
+            resultats.push({
+              type,
+              longitude: lng,
+              latitude: lat,
+              distanceMetres,
+              icone: determinerIconeResultat(type, feature, entree),
+              titre: construireTitreResultat(type, entree)
+            });
+          }
         }
       }
 
@@ -216,11 +210,11 @@
 
       listeResultats.innerHTML = visibles
         .map((resultat) => {
-          return `<li class="modal-localisation-resultat-item"><div class="modal-localisation-resultat-entete"><strong>${echapperHtml(
+          return `<li class="modal-localisation-resultat-item"><div class="modal-localisation-resultat-corps"><div class="modal-localisation-resultat-texte"><strong>${echapperHtml(
             `${resultat.icone} ${resultat.titre}`
-          )}</strong><span>${echapperHtml(resultat.typeLibelle)}</span></div><div class="modal-localisation-resultat-pied"><span class="modal-localisation-resultat-distance">${echapperHtml(
+          )}</strong><span class="modal-localisation-resultat-distance">${echapperHtml(
             formaterDistanceMetres(resultat.distanceMetres)
-          )}</span><button class="popup-bouton-itineraire modal-localisation-resultat-action" type="button" data-type="${echapperHtml(
+          )}</span></div><button class="popup-bouton-itineraire modal-localisation-resultat-action" type="button" data-type="${echapperHtml(
             resultat.type
           )}" data-lng="${resultat.longitude}" data-lat="${resultat.latitude}">Voir la fiche</button></div></li>`;
         })

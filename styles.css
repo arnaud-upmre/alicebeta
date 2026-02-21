@@ -324,31 +324,24 @@ body {
   padding: 9px 10px;
 }
 
-.modal-localisation-resultat-entete {
-  display: flex;
-  justify-content: space-between;
-  gap: 10px;
-}
-
-.modal-localisation-resultat-entete strong {
-  color: #0f172a;
-  font-size: 0.9rem;
-  line-height: 1.2;
-}
-
-.modal-localisation-resultat-entete span {
-  color: #475569;
-  font-size: 0.75rem;
-  font-weight: 700;
-  text-transform: uppercase;
-}
-
-.modal-localisation-resultat-pied {
-  margin-top: 7px;
+.modal-localisation-resultat-corps {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 10px;
+  gap: 12px;
+}
+
+.modal-localisation-resultat-texte {
+  min-width: 0;
+  display: grid;
+  gap: 7px;
+}
+
+.modal-localisation-resultat-texte strong {
+  color: #0f172a;
+  font-size: 0.9rem;
+  line-height: 1.2;
+  overflow-wrap: anywhere;
 }
 
 .modal-localisation-resultat-distance {
@@ -362,6 +355,8 @@ body {
   padding-inline: 10px;
   font-size: 0.76rem;
   width: auto;
+  flex-shrink: 0;
+  align-self: center;
 }
 
 .modal-localisation-voir-plus-wrap {
