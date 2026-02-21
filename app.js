@@ -3373,6 +3373,8 @@ function construirePopupDepuisFeatures(longitude, latitude, featurePostes, featu
     : "";
   const lienImajnet = featurePostes ? construireLienImajnet(longitude, latitude) : "";
   const lienPowerBi = "https://app.powerbi.com/groups/me/reports/e63d15fe-0d14-4471-8571-6e146456990f/ReportSection0107f8f0b80dcd560566?experience=power-bi";
+  const lienSignalementTerrain =
+    "https://forms.office.com/Pages/ResponsePage.aspx?id=OIJ8SplXFkufxprY_OWn2UJJqJxHNcNPmrPMZznt7P1UNUhTNFRJVkhJVzBPMTMyM1g5UUlUMlgzTS4u";
   const classeActionsPoste = "popup-itineraires-poste-actions";
   const libelleSectionActionsPoste = "Explorer les équipements";
   const actionsExplorerEquipements = [];
@@ -3402,6 +3404,9 @@ function construirePopupDepuisFeatures(longitude, latitude, featurePostes, featu
     .join("");
   const sectionActionsPoste = featurePostes
     ? `<section class="popup-section popup-section-itineraires"><div class="popup-section-titre popup-section-titre-gauche"><span class="popup-badge popup-badge-itineraire">${echapperHtml(libelleSectionActionsPoste)}</span></div><div class="popup-itineraires ${classeActionsPoste}">${actionsExploreesTriees}</div></section>`
+    : "";
+  const sectionTerrain = featurePostes
+    ? `<section class="popup-section popup-section-itineraires"><div class="popup-section-titre popup-section-titre-gauche"><span class="popup-badge popup-badge-itineraire">Terrain</span></div><div class="popup-itineraires popup-itineraires-localiser"><a class="popup-bouton-itineraire" href="${echapperHtml(lienSignalementTerrain)}" target="_blank" rel="noopener noreferrer">🚦 Signalement Incidents et Anomalies</a></div></section>`
     : "";
   const boutonsLiaison = [];
   if (estVueAppareilsSeule && coordonneesRetourPosteDepuisAppareil) {
@@ -3443,7 +3448,7 @@ function construirePopupDepuisFeatures(longitude, latitude, featurePostes, featu
   const sectionLocaliser = featurePostes
     ? ""
     : `<section class="popup-section popup-section-localiser"><div class="popup-itineraires popup-itineraires-poste-actions"><button class="popup-bouton-itineraire popup-bouton-localiser" id="popup-localiser-carte" type="button" data-lng="${longitude}" data-lat="${latitude}">📍 Localiser sur la carte</button><a class="popup-bouton-itineraire" href="${echapperHtml(lienPowerBi)}" target="_blank" rel="noopener noreferrer">⚡️ Patrimoine SPOT</a></div></section>`;
-  const contenuFiche = `<div class="popup-carte">${sections.join("")}${sectionRssAssocieDepuisAcces}${sectionItineraire}${sectionActionsPoste}${sectionCodesAvecPills}${sectionLocaliser}${sectionRetourPoste}</div>`;
+  const contenuFiche = `<div class="popup-carte">${sections.join("")}${sectionRssAssocieDepuisAcces}${sectionItineraire}${sectionActionsPoste}${sectionTerrain}${sectionCodesAvecPills}${sectionLocaliser}${sectionRetourPoste}</div>`;
 
   let contenuVueAppareils = "";
   if (sectionAppareilsAssociesPoste) {

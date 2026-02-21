@@ -1412,7 +1412,7 @@ body {
 
 .popup-poste-sat-lien {
   cursor: pointer;
-  font: inherit;
+  font-family: inherit;
   border: 0;
   text-decoration: none;
 }
