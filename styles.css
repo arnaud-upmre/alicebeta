@@ -1081,8 +1081,8 @@ body {
 }
 
 .popup-section + .popup-section {
-  margin-top: 10px;
-  padding-top: 10px;
+  margin-top: 12px;
+  padding-top: 12px;
   border-top: 1px solid rgba(156, 163, 175, 0.45);
 }
 
