@@ -175,8 +175,7 @@
       );
     }
 
-    function construireTitreResultat(type, entree, options) {
-      const estEntreeHorsPatrimoine = Boolean(options?.estHorsPatrimoine);
+    function construireTitreResultat(type, entree) {
       const nom = champCompletOuVide(entree?.nom);
       const typeSupport = champCompletOuVide(entree?.type);
       const sat = champCompletOuVide(entree?.SAT ?? entree?.sat);
@@ -184,16 +183,6 @@
       const appareil = champCompletOuVide(entree?.appareil);
       const joindre = (segments) => segments.filter(Boolean).join(" / ");
       const joindreAvecEspaces = (segments) => segments.filter(Boolean).join(" ");
-      const ajouterMentionHorsPatrimoine = (titre) => {
-        const texte = champCompletOuVide(titre);
-        if (!texte) {
-          return texte;
-        }
-        if (!estEntreeHorsPatrimoine || /hors\s*patrimoine/i.test(texte)) {
-          return texte;
-        }
-        return `${texte} (hors patrimoine)`;
-      };
       const formaterAcces = (valeurAcces) => {
         const texte = champCompletOuVide(valeurAcces);
         if (!texte) {
@@ -214,12 +203,12 @@
       if (type === "appareils") {
         const contexteAppareil = joindre([nom, sat, acces]);
         if (appareil) {
-          return ajouterMentionHorsPatrimoine(contexteAppareil ? `${appareil} (${contexteAppareil})` : appareil);
+          return contexteAppareil ? `${appareil} (${contexteAppareil})` : appareil;
         }
-        return ajouterMentionHorsPatrimoine(contexteAppareil ? `Appareil (${contexteAppareil})` : "Appareil");
+        return contexteAppareil ? `Appareil (${contexteAppareil})` : "Appareil";
       }
 
-      return ajouterMentionHorsPatrimoine(joindreAvecEspaces([nom, typeSupport, sat]) || "Poste");
+      return joindreAvecEspaces([nom, typeSupport, sat]) || "Poste";
     }
 
     function construireResultatsProximite(longitude, latitude) {
@@ -248,7 +237,8 @@
               latitude: lat,
               distanceMetres,
               icone: determinerIconeResultat(type, feature, entree),
-              titre: construireTitreResultat(type, entree, { estHorsPatrimoine })
+              estHorsPatrimoine,
+              titre: construireTitreResultat(type, entree)
             });
           }
         }
@@ -271,9 +261,9 @@
 
       listeResultats.innerHTML = visibles
         .map((resultat) => {
-          return `<li class="modal-localisation-resultat-item"><div class="modal-localisation-resultat-corps"><div class="modal-localisation-resultat-texte"><strong>${echapperHtml(
-            `${resultat.icone} ${resultat.titre}`
-          )}</strong><span class="modal-localisation-resultat-distance">${echapperHtml(
+          const titrePrincipal = echapperHtml(`${resultat.icone} ${resultat.titre}`);
+          const badgeHp = resultat.estHorsPatrimoine ? '<span class="modal-localisation-pill-hp">HP</span>' : "";
+          return `<li class="modal-localisation-resultat-item"><div class="modal-localisation-resultat-corps"><div class="modal-localisation-resultat-texte"><strong>${titrePrincipal}${badgeHp}</strong><span class="modal-localisation-resultat-distance">${echapperHtml(
             formaterDistanceMetres(resultat.distanceMetres)
           )}</span></div><button class="popup-bouton-itineraire modal-localisation-resultat-action" type="button" data-type="${echapperHtml(
             resultat.type

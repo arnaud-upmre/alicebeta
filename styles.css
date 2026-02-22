@@ -470,6 +470,22 @@ body {
   overflow-wrap: anywhere;
 }
 
+.modal-localisation-pill-hp {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: 8px;
+  padding: 1px 9px 2px;
+  border-radius: 999px;
+  background: #f9d3d0;
+  color: #b42318;
+  font-size: 0.72rem;
+  font-weight: 800;
+  line-height: 1.1;
+  letter-spacing: 0.02em;
+  vertical-align: middle;
+}
+
 .modal-localisation-resultat-distance {
   color: #334155;
   font-size: 0.83rem;
