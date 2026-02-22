@@ -3,8 +3,7 @@ const CENTRE_INITIAL = [2.35, 48.85];
 const ZOOM_INITIAL = 6;
 const ZOOM_MAX = 19;
 const ZOOM_MIN_OUVERTURE_POPUP = 13;
-const ZOOM_CIBLE_PREMIER_CLIC_OBJET = 12;
-const ZOOM_CIBLE_SECOND_CLIC_OBJET = 13;
+const PAS_ZOOM_CLIC_OBJET = 1;
 const BOUNDS_DEMARRAGE = [
   [1.60412, 49.51155],
   [4.29321, 51.0309]
@@ -4756,10 +4755,10 @@ function activerInteractionsCarte() {
       if (!Number.isFinite(longitudeObjet) || !Number.isFinite(latitudeObjet)) {
         return;
       }
-      const zoomCible = zoomActuel < ZOOM_CIBLE_PREMIER_CLIC_OBJET ? ZOOM_CIBLE_PREMIER_CLIC_OBJET : ZOOM_CIBLE_SECOND_CLIC_OBJET;
+      const zoomCible = Math.min(ZOOM_MIN_OUVERTURE_POPUP, zoomActuel + PAS_ZOOM_CLIC_OBJET);
       carte.easeTo({
         center: [longitudeObjet, latitudeObjet],
-        zoom: Math.max(zoomActuel, zoomCible),
+        zoom: zoomCible,
         duration: 360,
         essential: true
       });
