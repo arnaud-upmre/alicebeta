@@ -1314,8 +1314,12 @@ async function partagerFicheCourante() {
         url: lien
       });
       return;
-    } catch {
-      // Annulation utilisateur ou API indisponible: fallback copie.
+    } catch (erreur) {
+      // Si l'utilisateur annule la feuille de partage, on sort sans fallback.
+      if (erreur?.name === "AbortError") {
+        return;
+      }
+      // Sinon: fallback copie.
     }
   }
 
@@ -1947,8 +1951,12 @@ async function partagerPositionContextuelle() {
         url: lien
       });
       return;
-    } catch {
-      // Annulation utilisateur ou API indisponible: fallback copie.
+    } catch (erreur) {
+      // Si l'utilisateur annule la feuille de partage, on sort sans fallback.
+      if (erreur?.name === "AbortError") {
+        return;
+      }
+      // Sinon: fallback copie.
     }
   }
 
