@@ -291,7 +291,13 @@
     </div>
     <div class="modal-fiche" id="modal-fiche" role="dialog" aria-modal="true" aria-label="Fiche" aria-hidden="true">
       <div class="modal-fiche-carte">
-        <button class="modal-fiche-partager" id="modal-fiche-partager" type="button" aria-label="Partager la fiche">🔗</button>
+        <button class="modal-fiche-partager" id="modal-fiche-partager" type="button" aria-label="Partager la fiche">
+          <svg class="modal-fiche-partager-icone" viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M12 3v12" />
+            <path d="M8.5 6.5 12 3l3.5 3.5" />
+            <path d="M6 10.5v7a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2v-7" />
+          </svg>
+        </button>
         <button class="modal-fiche-fermer" id="modal-fiche-fermer" type="button" aria-label="Fermer la fiche">×</button>
         <div class="modal-fiche-contenu maplibregl-popup-content" id="modal-fiche-contenu"></div>
       </div>
