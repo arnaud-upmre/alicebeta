@@ -601,7 +601,8 @@ body {
   z-index: 2;
 }
 
-.info-vitesse-ligne {
+.info-vitesse-ligne,
+.info-pk {
   position: absolute;
   left: 50%;
   right: auto;
@@ -625,7 +626,8 @@ body {
   transition: opacity 200ms ease, transform 200ms ease;
 }
 
-.info-vitesse-ligne.est-visible {
+.info-vitesse-ligne.est-visible,
+.info-pk.est-visible {
   opacity: 1;
   transform: translate(-50%, 0);
 }

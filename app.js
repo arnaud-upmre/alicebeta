@@ -50,7 +50,6 @@ const POSTES_VIDE = { type: "FeatureCollection", features: [] };
 const PK_VIDE = { type: "FeatureCollection", features: [] };
 const PN_VIDE = { type: "FeatureCollection", features: [] };
 const PK_ZOOM_MIN = 11;
-const PN_ZOOM_MIN = 10;
 const PALETTE_CARTE = Object.freeze({
   acces: "#7c3aed",
   accesGroupe: "#8b5cf6",
@@ -827,6 +826,7 @@ const controleRecherche = document.getElementById("controle-recherche");
 const champRecherche = document.getElementById("champ-recherche");
 const listeResultatsRecherche = document.getElementById("recherche-resultats");
 const infoVitesseLigne = document.getElementById("info-vitesse-ligne");
+const infoPk = document.getElementById("info-pk");
 const fenetreAccueil = document.getElementById("fenetre-accueil");
 const boutonFermerFenetreAccueil = document.getElementById("fenetre-accueil-fermer");
 const menuContextuelCarte = document.getElementById("menu-contextuel-carte");
@@ -853,6 +853,7 @@ let boutonFermerModalFiche = document.getElementById("modal-fiche-fermer");
 let elementRetourFocusModalFiche = null;
 const CLE_STOCKAGE_FENETRE_ACCUEIL = "alice.fenetre-accueil.derniere-date";
 let temporisationInfoVitesse = null;
+let temporisationInfoPk = null;
 let moduleItineraire = null;
 let promesseChargementModuleItineraire = null;
 let moduleLocalisation = null;
@@ -974,6 +975,30 @@ function afficherMessageInfoVitesseLigne() {
     masquerMessageInfoVitesseLigne();
     temporisationInfoVitesse = null;
   }, 5200);
+}
+
+function masquerMessageInfoPk() {
+  if (!infoPk) {
+    return;
+  }
+  infoPk.classList.remove("est-visible");
+  infoPk.setAttribute("aria-hidden", "true");
+}
+
+function afficherMessageInfoPk() {
+  if (!infoPk) {
+    return;
+  }
+  infoPk.classList.add("est-visible");
+  infoPk.setAttribute("aria-hidden", "false");
+
+  if (temporisationInfoPk) {
+    clearTimeout(temporisationInfoPk);
+  }
+  temporisationInfoPk = setTimeout(() => {
+    masquerMessageInfoPk();
+    temporisationInfoPk = null;
+  }, 2800);
 }
 
 function fermerPopupCarte(options = {}) {
@@ -1948,6 +1973,11 @@ function mettreAJourAffichagePk() {
   const bonusMobile = estAffichageMobilePk() ? 1 : 0;
   const zoomEffectif = carte.getZoom() + bonusMobile;
   const doitAfficher = afficherPk && Boolean(donneesPk?.features?.length) && zoomEffectif >= PK_ZOOM_MIN;
+  if (afficherPk && zoomEffectif < PK_ZOOM_MIN) {
+    afficherMessageInfoPk();
+  } else {
+    masquerMessageInfoPk();
+  }
   donneesPkAffichees = doitAfficher ? filtrerPkPourVue() : PK_VIDE;
   afficherMarqueursPk(donneesPkAffichees.features || []);
 }
@@ -1968,7 +1998,7 @@ function mettreAJourAffichagePn() {
   if (!carte.getLayer(COUCHE_PN)) {
     return;
   }
-  const visible = afficherPn && Boolean(donneesPn?.features?.length) && carte.getZoom() >= PN_ZOOM_MIN;
+  const visible = afficherPn && Boolean(donneesPn?.features?.length);
   carte.setLayoutProperty(COUCHE_PN, "visibility", visible ? "visible" : "none");
   if (!visible) {
     fermerPopupPnInfo();
@@ -2347,8 +2377,8 @@ function appliquerCouchesDonnees() {
       source: SOURCE_PN,
       paint: {
         "circle-radius": ["interpolate", ["linear"], ["zoom"], 8, 3.6, 12, 4.7, 16, 6.1],
-        "circle-color": "#f59e0b",
-        "circle-stroke-color": "#7c2d12",
+        "circle-color": "#06b6d4",
+        "circle-stroke-color": "#164e63",
         "circle-stroke-width": 1.1,
         "circle-opacity": 0.9
       }
