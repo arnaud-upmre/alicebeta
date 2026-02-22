@@ -304,6 +304,23 @@ function appliquerPresetEquilibreStyleFond(styleJson) {
   return style;
 }
 
+function corrigerAttributionsStyleFond(styleJson) {
+  const style = clonerStyle(styleJson);
+  const sources = style?.sources || {};
+  for (const source of Object.values(sources)) {
+    if (!source || typeof source !== "object") {
+      continue;
+    }
+    if (typeof source.attribution !== "string") {
+      continue;
+    }
+    source.attribution = source.attribution
+      .replaceAll("OpenStreetMap contributor", "OpenStreetMap contributors")
+      .replaceAll("OpenStreetMap Contributor", "OpenStreetMap contributors");
+  }
+  return style;
+}
+
 async function obtenirStyleFond(nomFond) {
   const style = fondsCartographiques[nomFond];
   if (!style) {
@@ -321,7 +338,8 @@ async function obtenirStyleFond(nomFond) {
   if (!promessesStylesFondsVectoriels.has(nomFond)) {
     const promesse = chargerStyleJsonDepuisUrl(style)
       .then((styleJson) => {
-        const stylePrepare = appliquerPresetEquilibreStyleFond(styleJson);
+        const styleCorrige = corrigerAttributionsStyleFond(styleJson);
+        const stylePrepare = appliquerPresetEquilibreStyleFond(styleCorrige);
         stylesFondsVectorielsPrepares.set(nomFond, stylePrepare);
         return stylePrepare;
       })
@@ -819,16 +837,16 @@ function construireAttributionsDynamiquesCarte() {
   }
   if (afficherPn) {
     attributions.push(
-      `PN affiches: <a href="${LIEN_SNCF_OPEN_DATA}" target="_blank" rel="noopener noreferrer">SNCF Open Data</a>`
+      `PN affichés : <a href="${LIEN_SNCF_OPEN_DATA}" target="_blank" rel="noopener noreferrer">SNCF Open Data</a>`
     );
   }
   if (afficherPk) {
     attributions.push(
-      `PK affiches: <a href="${LIEN_SNCF_OPEN_DATA}" target="_blank" rel="noopener noreferrer">SNCF Open Data</a> + <a href="${LIEN_EXTRA_PK}" target="_blank" rel="noopener noreferrer">extras-opendata-sncf-reseau</a>`
+      `PK affichés : <a href="${LIEN_SNCF_OPEN_DATA}" target="_blank" rel="noopener noreferrer">SNCF Open Data</a> + <a href="${LIEN_EXTRA_PK}" target="_blank" rel="noopener noreferrer">extras-opendata-sncf-reseau</a>`
     );
   }
   if (afficherAppareils || afficherAcces || afficherPostes) {
-    attributions.push("© ALICE - Donnees internes : reutilisation interdite sans autorisation.");
+    attributions.push("© ALICE - Données internes : réutilisation interdite sans autorisation.");
   }
   return attributions;
 }
