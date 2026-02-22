@@ -5047,6 +5047,51 @@ async function ouvrirFicheDepuisParametreId() {
   }
 }
 
+function estParametreUrlActif(valeur) {
+  const texte = String(valeur || "")
+    .trim()
+    .toLowerCase();
+  return /^(true|1|oui|yes)\b/.test(texte);
+}
+
+async function ouvrirPositionPartageeDepuisParametres() {
+  const params = new URLSearchParams(window.location.search);
+  const latitude = Number(params.get("lat"));
+  const longitude = Number(params.get("lon") ?? params.get("lng") ?? params.get("longitude"));
+  if (!Number.isFinite(latitude) || !Number.isFinite(longitude)) {
+    return false;
+  }
+
+  let zoom = Number(params.get("z") ?? params.get("zoom"));
+  if (!Number.isFinite(zoom)) {
+    zoom = 18;
+  }
+  zoom = Math.max(2, Math.min(ZOOM_MAX, zoom));
+
+  const markerActif = estParametreUrlActif(params.get("marker"));
+
+  if (!carte.loaded()) {
+    await new Promise((resolve) => {
+      carte.once("load", resolve);
+    });
+  }
+
+  carte.flyTo({
+    center: [longitude, latitude],
+    zoom,
+    duration: 430,
+    essential: true
+  });
+
+  contexteMenuPosition = { longitude, latitude };
+  if (markerActif) {
+    afficherMarqueurClicContextuel(longitude, latitude);
+  } else {
+    supprimerMarqueurClicContextuel();
+  }
+  return true;
+}
+
 async function activerFiltrePourType(type) {
   if (type === "postes") {
     afficherPostes = true;
@@ -6158,7 +6203,12 @@ if (boutonCtxAjoutAppareil) {
   });
 }
 
-ouvrirFicheDepuisParametreId();
+async function initialiserNavigationDepuisUrl() {
+  await ouvrirPositionPartageeDepuisParametres();
+  await ouvrirFicheDepuisParametreId();
+}
+
+initialiserNavigationDepuisUrl();
 
 document.addEventListener("click", (event) => {
   if (!controleFonds.contains(event.target)) {
