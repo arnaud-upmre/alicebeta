@@ -168,10 +168,7 @@
       const source = entree || proprietes;
       return Boolean(
         estHorsPatrimoine(source?.hors_patrimoine) ||
-          estHorsPatrimoine(source?.special) ||
-          estHorsPatrimoine(proprietes?.hors_patrimoine) ||
-          estHorsPatrimoine(proprietes?.special) ||
-          Number(proprietes?.hors_patrimoine_count) > 0
+          estHorsPatrimoine(proprietes?.hors_patrimoine)
       );
     }
 
@@ -201,7 +198,8 @@
       }
 
       if (type === "appareils") {
-        const contexteAppareil = joindre([nom, sat, acces]);
+        const contexteNomType = joindreAvecEspaces([nom, typeSupport]);
+        const contexteAppareil = [contexteNomType, sat].filter(Boolean).join(" / ");
         if (appareil) {
           return contexteAppareil ? `${appareil} (${contexteAppareil})` : appareil;
         }
