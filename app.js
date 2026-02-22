@@ -1621,25 +1621,22 @@ function determinerPasPkMetres(zoomEffectif) {
     return Infinity;
   }
   if (zoomEffectif < 12) {
-    return 15000;
-  }
-  if (zoomEffectif < 13) {
     return 10000;
   }
-  if (zoomEffectif < 14) {
+  if (zoomEffectif < 13) {
     return 5000;
   }
-  if (zoomEffectif < 15) {
-    return 2000;
-  }
-  if (zoomEffectif < 16) {
+  if (zoomEffectif < 14) {
     return 1000;
   }
-  if (zoomEffectif < 18) {
-    return 200;
+  if (zoomEffectif < 15) {
+    return 800;
   }
-  if (zoomEffectif < 19) {
-    return 100;
+  if (zoomEffectif < 16) {
+    return 400;
+  }
+  if (zoomEffectif < 17) {
+    return 200;
   }
   return 0;
 }
