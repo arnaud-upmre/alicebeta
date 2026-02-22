@@ -897,7 +897,6 @@ const textePanneauMesure = document.getElementById("panneau-mesure-texte");
 const boutonSortieMesure = document.getElementById("bouton-sortie-mesure");
 const menuLegendeCarte = document.getElementById("menu-legende-carte");
 const boutonFermerLegende = document.getElementById("bouton-fermer-legende");
-const boutonApropos = document.getElementById("bouton-apropos");
 const modalApropos = document.getElementById("modal-apropos");
 const boutonFermerModalApropos = document.getElementById("modal-apropos-fermer");
 let modalFiche = document.getElementById("modal-fiche");
@@ -5792,13 +5791,6 @@ if (boutonLegendeFiltres) {
 if (boutonFermerLegende) {
   boutonFermerLegende.addEventListener("click", () => {
     fermerMenuLegende();
-  });
-}
-
-if (boutonApropos) {
-  boutonApropos.addEventListener("click", (event) => {
-    event.stopPropagation();
-    ouvrirModalApropos();
   });
 }
 
