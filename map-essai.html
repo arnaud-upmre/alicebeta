@@ -77,46 +77,50 @@
 
     <aside class="panel">
       <h1>Map essai</h1>
-      <p>Ordre: du plus fluide au plus couteux a afficher sur le site.</p>
+      <p>Variantes vectorielles allegees: moins de routes et moins de labels.</p>
       <form id="styles-form">
         <label class="choice">
-          <input type="radio" name="style" value="osmStandard" checked />
-          <span>OSM Standard (PNG raster)</span>
+          <input type="radio" name="style" value="positronMinimal" checked />
+          <span>CARTO Positron (vectoriel) - Minimal</span>
         </label>
         <label class="choice">
-          <input type="radio" name="style" value="positronRaster" />
-          <span>CARTO Positron (PNG raster)</span>
+          <input type="radio" name="style" value="positronBalanced" />
+          <span>CARTO Positron (vectoriel) - Equilibre</span>
         </label>
         <label class="choice">
-          <input type="radio" name="style" value="voyagerRaster" />
-          <span>CARTO Voyager (PNG raster, ton actuel)</span>
+          <input type="radio" name="style" value="positronRoadsFocus" />
+          <span>CARTO Positron (vectoriel) - Axes principaux</span>
         </label>
         <label class="choice">
-          <input type="radio" name="style" value="ignSatellite" />
-          <span>IGN Satellite (PNG/JPEG raster)</span>
+          <input type="radio" name="style" value="shortbreadMinimal" />
+          <span>OSM Shortbread (vectoriel) - Minimal</span>
         </label>
         <label class="choice">
-          <input type="radio" name="style" value="voyagerNoLabels" />
-          <span>CARTO Voyager No Labels (vectoriel)</span>
+          <input type="radio" name="style" value="shortbreadBalanced" />
+          <span>OSM Shortbread (vectoriel) - Equilibre</span>
         </label>
         <label class="choice">
-          <input type="radio" name="style" value="ignPlan" />
-          <span>Plan IGN (vectoriel)</span>
+          <input type="radio" name="style" value="shortbreadRoadsFocus" />
+          <span>OSM Shortbread (vectoriel) - Axes principaux</span>
         </label>
         <label class="choice">
-          <input type="radio" name="style" value="osmShortbread" />
-          <span>OSM Shortbread / Colorful (vectoriel)</span>
+          <input type="radio" name="style" value="voyagerMinimal" />
+          <span>CARTO Voyager (vectoriel) - Minimal</span>
         </label>
         <label class="choice">
-          <input type="radio" name="style" value="positronVector" />
-          <span>CARTO Positron (vectoriel)</span>
+          <input type="radio" name="style" value="voyagerBalanced" />
+          <span>CARTO Voyager (vectoriel) - Equilibre</span>
         </label>
         <label class="choice">
-          <input type="radio" name="style" value="voyagerVector" />
-          <span>CARTO Voyager (vectoriel)</span>
+          <input type="radio" name="style" value="voyagerRoadsFocus" />
+          <span>CARTO Voyager (vectoriel) - Axes principaux</span>
+        </label>
+        <label class="choice">
+          <input type="radio" name="style" value="voyagerVectorRaw" />
+          <span>CARTO Voyager (vectoriel) - Brut</span>
         </label>
       </form>
-      <div class="active">Fond actif: <b id="active-style">OSM Standard (PNG raster)</b></div>
+      <div class="active">Fond actif: <b id="active-style">CARTO Positron (vectoriel) - Minimal</b></div>
     </aside>
 
     <script src="https://unpkg.com/maplibre-gl@5.1.0/dist/maplibre-gl.js"></script>
@@ -124,94 +128,198 @@
       const centreInitial = [2.9, 50.55];
       const zoomInitial = 8.1;
 
-      function styleRaster(id, tiles, attribution, maxzoom = 20) {
+      const URL_STYLE_POSITRON = "https://basemaps.cartocdn.com/gl/positron-gl-style/style.json";
+      const URL_STYLE_SHORTBREAD = "https://tiles.versatiles.org/assets/styles/colorful/style.json";
+      const URL_STYLE_VOYAGER = "https://basemaps.cartocdn.com/gl/voyager-gl-style/style.json";
+
+      const styleCache = new Map();
+
+      function cloneDeep(value) {
+        return JSON.parse(JSON.stringify(value));
+      }
+
+      async function chargerStyleJson(url) {
+        if (styleCache.has(url)) {
+          return cloneDeep(styleCache.get(url));
+        }
+        const reponse = await fetch(url, { cache: "default" });
+        if (!reponse.ok) {
+          throw new Error("Impossible de charger le style: " + url);
+        }
+        const json = await reponse.json();
+        styleCache.set(url, json);
+        return cloneDeep(json);
+      }
+
+      function contientMot(texte, mots) {
+        const normalise = String(texte || "").toLowerCase();
+        return mots.some((mot) => normalise.includes(mot));
+      }
+
+      function classifierLayer(layer) {
+        const id = String(layer?.id || "").toLowerCase();
+        const sourceLayer = String(layer?.["source-layer"] || "").toLowerCase();
+        const concat = id + " " + sourceLayer;
+
+        const estLabel = layer?.type === "symbol";
+        const estRoute = contientMot(concat, [
+          "road",
+          "roads",
+          "street",
+          "highway",
+          "transportation",
+          "transport",
+          "path",
+          "track",
+          "motorway",
+          "trunk",
+          "primary",
+          "secondary",
+          "tertiary",
+          "residential",
+          "service"
+        ]);
+        const estRouteMineure = contientMot(concat, [
+          "minor",
+          "residential",
+          "service",
+          "tertiary",
+          "living",
+          "pedestrian",
+          "footway",
+          "path",
+          "track",
+          "unclassified"
+        ]);
+        const estLabelRoute = estLabel && contientMot(concat, ["road", "street", "highway", "transport"]);
+        const estPoi = contientMot(concat, ["poi", "amenity", "landmark", "shop", "tourism", "leisure", "icon"]);
+        const estLabelLocal = estLabel && contientMot(concat, ["neighbour", "neighborhood", "suburb", "quarter", "hamlet", "village"]);
+        const estLabelMajeur = estLabel && contientMot(concat, ["country", "state", "region", "city", "town", "place"]);
+
         return {
-          version: 8,
-          sources: {
-            [id]: {
-              type: "raster",
-              tiles,
-              tileSize: 256,
-              maxzoom,
-              attribution
+          estLabel,
+          estRoute,
+          estRouteMineure,
+          estLabelRoute,
+          estPoi,
+          estLabelLocal,
+          estLabelMajeur
+        };
+      }
+
+      function masquerLayer(layer) {
+        if (!layer.layout) {
+          layer.layout = {};
+        }
+        layer.layout.visibility = "none";
+      }
+
+      function pousserMinZoom(layer, minZoom) {
+        if (!Number.isFinite(minZoom)) {
+          return;
+        }
+        const courant = Number.isFinite(layer.minzoom) ? layer.minzoom : 0;
+        layer.minzoom = Math.max(courant, minZoom);
+      }
+
+      function appliquerPresetAllegement(styleJson, preset) {
+        const style = cloneDeep(styleJson);
+        style.layers = (style.layers || []).map((layer) => {
+          const sortie = { ...layer };
+          const c = classifierLayer(sortie);
+
+          if (preset === "balanced") {
+            if (c.estPoi || c.estLabelLocal) {
+              masquerLayer(sortie);
+              return sortie;
             }
-          },
-          layers: [
-            {
-              id,
-              type: "raster",
-              source: id
+            if (c.estRouteMineure) {
+              pousserMinZoom(sortie, 11);
             }
-          ]
+            if (c.estLabelRoute) {
+              pousserMinZoom(sortie, 12);
+            }
+            return sortie;
+          }
+
+          if (preset === "roadsFocus") {
+            if (c.estPoi || c.estLabelLocal) {
+              masquerLayer(sortie);
+              return sortie;
+            }
+            if (c.estRouteMineure) {
+              masquerLayer(sortie);
+              return sortie;
+            }
+            if (c.estLabelRoute) {
+              pousserMinZoom(sortie, 13);
+              return sortie;
+            }
+            if (c.estLabel && !c.estLabelMajeur) {
+              pousserMinZoom(sortie, 11);
+            }
+            return sortie;
+          }
+
+          if (preset === "minimal") {
+            if (c.estPoi || c.estLabelLocal || c.estLabelRoute || c.estRouteMineure) {
+              masquerLayer(sortie);
+              return sortie;
+            }
+            if (c.estRoute) {
+              pousserMinZoom(sortie, 10);
+              return sortie;
+            }
+            if (c.estLabel && !c.estLabelMajeur) {
+              pousserMinZoom(sortie, 12);
+            }
+            return sortie;
+          }
+
+          return sortie;
+        });
+        return style;
+      }
+
+      function creerVarianteVectorielle(label, baseUrl, preset) {
+        return {
+          label,
+          async getStyle() {
+            const base = await chargerStyleJson(baseUrl);
+            return appliquerPresetAllegement(base, preset);
+          }
         };
       }
 
       const styles = {
-        osmStandard: {
-          label: "OSM Standard (PNG raster)",
-          style: styleRaster(
-            "osmStandard",
-            ["https://tile.openstreetmap.org/{z}/{x}/{y}.png"],
-            "© OpenStreetMap contributors",
-            19
-          )
-        },
-        positronRaster: {
-          label: "CARTO Positron (PNG raster)",
-          style: styleRaster(
-            "positronRaster",
-            [
-              "https://a.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png",
-              "https://b.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png",
-              "https://c.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png",
-              "https://d.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png"
-            ],
-            "© OpenStreetMap contributors, © CARTO"
-          )
-        },
-        voyagerRaster: {
-          label: "CARTO Voyager (PNG raster, ton actuel)",
-          style: styleRaster(
-            "voyagerRaster",
-            [
-              "https://a.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}.png",
-              "https://b.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}.png",
-              "https://c.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}.png",
-              "https://d.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}.png"
-            ],
-            "© OpenStreetMap contributors, © CARTO"
-          )
-        },
-        ignSatellite: {
-          label: "IGN Satellite (PNG/JPEG raster)",
-          style: styleRaster(
-            "ignSatellite",
-            [
-              "https://data.geopf.fr/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER=ORTHOIMAGERY.ORTHOPHOTOS&STYLE=normal&TILEMATRIXSET=PM&FORMAT=image/jpeg&TILEMATRIX={z}&TILEROW={y}&TILECOL={x}"
-            ],
-            "© IGN, © OpenStreetMap contributors",
-            18
-          )
-        },
-        voyagerNoLabels: {
-          label: "CARTO Voyager No Labels (vectoriel)",
-          style: "https://basemaps.cartocdn.com/gl/voyager-nolabels-gl-style/style.json"
-        },
-        ignPlan: {
-          label: "Plan IGN (vectoriel)",
-          style: "https://data.geopf.fr/annexes/ressources/vectorTiles/styles/PLAN.IGN/standard.json"
-        },
-        osmShortbread: {
-          label: "OSM Shortbread / Colorful (vectoriel)",
-          style: "https://tiles.versatiles.org/assets/styles/colorful/style.json"
-        },
-        positronVector: {
-          label: "CARTO Positron (vectoriel)",
-          style: "https://basemaps.cartocdn.com/gl/positron-gl-style/style.json"
-        },
-        voyagerVector: {
-          label: "CARTO Voyager (vectoriel)",
-          style: "https://basemaps.cartocdn.com/gl/voyager-gl-style/style.json"
+        positronMinimal: creerVarianteVectorielle("CARTO Positron (vectoriel) - Minimal", URL_STYLE_POSITRON, "minimal"),
+        positronBalanced: creerVarianteVectorielle("CARTO Positron (vectoriel) - Equilibre", URL_STYLE_POSITRON, "balanced"),
+        positronRoadsFocus: creerVarianteVectorielle(
+          "CARTO Positron (vectoriel) - Axes principaux",
+          URL_STYLE_POSITRON,
+          "roadsFocus"
+        ),
+        shortbreadMinimal: creerVarianteVectorielle("OSM Shortbread (vectoriel) - Minimal", URL_STYLE_SHORTBREAD, "minimal"),
+        shortbreadBalanced: creerVarianteVectorielle(
+          "OSM Shortbread (vectoriel) - Equilibre",
+          URL_STYLE_SHORTBREAD,
+          "balanced"
+        ),
+        shortbreadRoadsFocus: creerVarianteVectorielle(
+          "OSM Shortbread (vectoriel) - Axes principaux",
+          URL_STYLE_SHORTBREAD,
+          "roadsFocus"
+        ),
+        voyagerMinimal: creerVarianteVectorielle("CARTO Voyager (vectoriel) - Minimal", URL_STYLE_VOYAGER, "minimal"),
+        voyagerBalanced: creerVarianteVectorielle("CARTO Voyager (vectoriel) - Equilibre", URL_STYLE_VOYAGER, "balanced"),
+        voyagerRoadsFocus: creerVarianteVectorielle(
+          "CARTO Voyager (vectoriel) - Axes principaux",
+          URL_STYLE_VOYAGER,
+          "roadsFocus"
+        ),
+        voyagerVectorRaw: {
+          label: "CARTO Voyager (vectoriel) - Brut",
+          style: URL_STYLE_VOYAGER
         }
       };
 
@@ -220,7 +328,7 @@
 
       const map = new maplibregl.Map({
         container: "map",
-        style: styles.osmStandard.style,
+        style: URL_STYLE_POSITRON,
         center: centreInitial,
         zoom: zoomInitial,
         attributionControl: false
@@ -230,17 +338,29 @@
       map.addControl(new maplibregl.ScaleControl({ maxWidth: 120, unit: "metric" }), "bottom-left");
       map.addControl(new maplibregl.AttributionControl({ compact: true }), "bottom-right");
 
-      function appliquerStyle(cleStyle) {
+      async function appliquerStyle(cleStyle) {
         const entree = styles[cleStyle];
         if (!entree) {
           return;
         }
+        activeStyleLabel.textContent = entree.label + " (chargement...)";
         const centre = map.getCenter();
         const zoom = map.getZoom();
         const bearing = map.getBearing();
         const pitch = map.getPitch();
 
-        map.setStyle(entree.style);
+        let styleFinal = entree.style;
+        if (typeof entree.getStyle === "function") {
+          try {
+            styleFinal = await entree.getStyle();
+          } catch (erreur) {
+            console.error("Impossible de preparer la variante de style", erreur);
+            activeStyleLabel.textContent = entree.label + " (erreur de chargement)";
+            return;
+          }
+        }
+
+        map.setStyle(styleFinal);
         map.once("style.load", () => {
           map.jumpTo({
             center: centre,
@@ -259,6 +379,10 @@
           return;
         }
         appliquerStyle(valeur);
+      });
+
+      map.once("load", () => {
+        appliquerStyle("positronMinimal");
       });
     </script>
   </body>
