@@ -3997,8 +3997,8 @@ function construireSectionAppareilsAssociesDepuisPostes(postesListe, options = {
     })
     .join("");
 
-  const consigneAjout = "Ajoutez un appareil en cliquant sur le poste ou le SAT concerné.";
-  return `<section class="popup-section"><p class="popup-poste-details">${echapperHtml(consigneAjout)}</p><div class="popup-poste-appareils-groupes">${lignes}</div></section>`;
+  const consigneAjout = "Pour ajouter un appareil, cliquez sur le bouton du lieu concerné : poste ou SAT.";
+  return `<section class="popup-section"><p class="popup-poste-aide">${echapperHtml(consigneAjout)}</p><div class="popup-poste-appareils-groupes">${lignes}</div></section>`;
 }
 
 function construireFichePosteDepuisEntree(poste, options = {}) {
