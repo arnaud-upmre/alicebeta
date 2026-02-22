@@ -195,6 +195,8 @@ let mesurePoints = [];
 let navigationInternePopup = null;
 let minuterieClignotementLocalisation = null;
 let minuterieArretLocalisation = null;
+let minuterieClignotementMarqueurClic = null;
+let minuterieSuppressionMarqueurClic = null;
 let coordonneesDerniereFiche = null;
 let marqueurLocalisation = null;
 let marqueurClicContextuel = null;
@@ -1313,13 +1315,21 @@ function supprimerPointLocalisation() {
 }
 
 function supprimerMarqueurClicContextuel() {
+  if (minuterieClignotementMarqueurClic) {
+    clearInterval(minuterieClignotementMarqueurClic);
+    minuterieClignotementMarqueurClic = null;
+  }
+  if (minuterieSuppressionMarqueurClic) {
+    clearTimeout(minuterieSuppressionMarqueurClic);
+    minuterieSuppressionMarqueurClic = null;
+  }
   if (marqueurClicContextuel) {
     marqueurClicContextuel.remove();
     marqueurClicContextuel = null;
   }
 }
 
-function afficherMarqueurClicContextuel(longitude, latitude) {
+function afficherMarqueurClicContextuel(longitude, latitude, options = {}) {
   if (!Number.isFinite(longitude) || !Number.isFinite(latitude)) {
     return;
   }
@@ -1328,6 +1338,24 @@ function afficherMarqueurClicContextuel(longitude, latitude) {
   const element = document.createElement("div");
   element.className = "marqueur-clic-contextuel";
   marqueurClicContextuel = new maplibregl.Marker({ element, anchor: "center" }).setLngLat([longitude, latitude]).addTo(carte);
+
+  if (!options.clignoter) {
+    return;
+  }
+
+  let visible = true;
+  minuterieClignotementMarqueurClic = setInterval(() => {
+    if (!element.isConnected) {
+      return;
+    }
+    visible = !visible;
+    element.style.opacity = visible ? "1" : "0.2";
+  }, 280);
+
+  const delaiSuppression = Number.isFinite(options.autoRemoveMs) ? Math.max(0, options.autoRemoveMs) : 7000;
+  minuterieSuppressionMarqueurClic = setTimeout(() => {
+    supprimerMarqueurClicContextuel();
+  }, delaiSuppression);
 }
 
 function arreterClignotementLocalisation() {
@@ -5056,8 +5084,14 @@ function estParametreUrlActif(valeur) {
 
 async function ouvrirPositionPartageeDepuisParametres() {
   const params = new URLSearchParams(window.location.search);
-  const latitude = Number(params.get("lat"));
-  const longitude = Number(params.get("lon") ?? params.get("lng") ?? params.get("longitude"));
+  const paramLatitude = String(params.get("lat") || "").trim();
+  const paramLongitude = String(params.get("lon") ?? params.get("lng") ?? params.get("longitude") ?? "").trim();
+  if (!paramLatitude || !paramLongitude) {
+    return false;
+  }
+
+  const latitude = Number(paramLatitude.replace(",", "."));
+  const longitude = Number(paramLongitude.replace(",", "."));
   if (!Number.isFinite(latitude) || !Number.isFinite(longitude)) {
     return false;
   }
@@ -5085,7 +5119,7 @@ async function ouvrirPositionPartageeDepuisParametres() {
 
   contexteMenuPosition = { longitude, latitude };
   if (markerActif) {
-    afficherMarqueurClicContextuel(longitude, latitude);
+    afficherMarqueurClicContextuel(longitude, latitude, { clignoter: true, autoRemoveMs: 7000 });
   } else {
     supprimerMarqueurClicContextuel();
   }
