@@ -2755,39 +2755,68 @@ function convertirRecordPnEnFeature(record) {
 async function chargerDonneesPnDepuisApiSNCF() {
   const limiteParPage = 100;
   const maxPages = 80;
-  const features = [];
+  const [minLng, minLat, maxLng, maxLat] = BBOX_HAUTS_DE_FRANCE;
+  const filtresWhere = [
+    `xlong_wgs84 >= ${minLng} AND xlong_wgs84 <= ${maxLng} AND ylat_wgs84 >= ${minLat} AND ylat_wgs84 <= ${maxLat}`,
+    `longitude >= ${minLng} AND longitude <= ${maxLng} AND latitude >= ${minLat} AND latitude <= ${maxLat}`,
+    `lon >= ${minLng} AND lon <= ${maxLng} AND lat >= ${minLat} AND lat <= ${maxLat}`
+  ];
 
-  for (let page = 0; page < maxPages; page += 1) {
-    const start = page * limiteParPage;
-    const url = new URL(URL_API_PN_SNCF);
-    url.searchParams.set("dataset", "liste-des-passages-a-niveau");
-    url.searchParams.set("rows", String(limiteParPage));
-    url.searchParams.set("start", String(start));
-    url.searchParams.set("geofilter.bbox", BBOX_HAUTS_DE_FRANCE.join(","));
+  const chargerAvecWhere = async (filtreWhere) => {
+    const features = [];
+    for (let page = 0; page < maxPages; page += 1) {
+      const start = page * limiteParPage;
+      const url = new URL(URL_API_PN_SNCF);
+      url.searchParams.set("dataset", "liste-des-passages-a-niveau");
+      url.searchParams.set("rows", String(limiteParPage));
+      url.searchParams.set("start", String(start));
+      url.searchParams.set("where", filtreWhere);
 
-    const reponse = await fetch(url.toString(), { cache: "no-store" });
-    if (!reponse.ok) {
-      throw new Error(`HTTP ${reponse.status}`);
-    }
+      const reponse = await fetch(url.toString(), { cache: "no-store" });
+      if (!reponse.ok) {
+        const messageErreur = await reponse.text().catch(() => "");
+        throw new Error(`HTTP ${reponse.status} ${messageErreur}`.trim());
+      }
 
-    const payload = await reponse.json();
-    const records = Array.isArray(payload?.records) ? payload.records : [];
-    for (const record of records) {
-      const feature = convertirRecordPnEnFeature(record);
-      if (feature) {
-        features.push(feature);
+      const payload = await reponse.json();
+      const records = Array.isArray(payload?.records) ? payload.records : [];
+      for (const record of records) {
+        const feature = convertirRecordPnEnFeature(record);
+        if (feature) {
+          features.push(feature);
+        }
+      }
+
+      if (records.length < limiteParPage) {
+        break;
       }
     }
+    return features;
+  };
 
-    if (records.length < limiteParPage) {
-      break;
+  let dernierErreur = null;
+  for (const filtreWhere of filtresWhere) {
+    try {
+      const features = await chargerAvecWhere(filtreWhere);
+      if (features.length) {
+        return {
+          type: "FeatureCollection",
+          features: features.filter((feature) => {
+            const [longitude, latitude] = feature?.geometry?.coordinates || [];
+            return estCoordonneeDansBboxHdf(longitude, latitude);
+          })
+        };
+      }
+    } catch (erreur) {
+      dernierErreur = erreur;
     }
   }
 
-  return { type: "FeatureCollection", features: features.filter((feature) => {
-    const [longitude, latitude] = feature?.geometry?.coordinates || [];
-    return estCoordonneeDansBboxHdf(longitude, latitude);
-  }) };
+  if (dernierErreur) {
+    throw dernierErreur;
+  }
+
+  return { type: "FeatureCollection", features: [] };
 }
 
 async function chargerDonneesPn() {
