@@ -4774,13 +4774,6 @@ function construirePopupDepuisFeatures(longitude, latitude, featurePostes, featu
     : `<section class="popup-section popup-section-localiser"><div class="popup-itineraires popup-itineraires-poste-actions"><button class="popup-bouton-itineraire popup-bouton-localiser" id="popup-localiser-carte" type="button" data-lng="${longitude}" data-lat="${latitude}">📍 Localiser sur la carte</button><a class="popup-bouton-itineraire" href="${echapperHtml(lienPowerBi)}" target="_blank" rel="noopener noreferrer">⚡️ Patrimoine SPOT</a></div></section>`;
   const sectionRssFinale = estVueAccesSeule ? "" : sectionRssAssocieDepuisAcces;
   const contenuFiche = `<div class="popup-carte">${sections.join("")}${sectionConsigneRssAcces}${sectionRssFinale}${sectionItineraire}${sectionExplorerAcces}${sectionActionsPoste}${sectionTerrain}${sectionCodesAvecPills}${sectionLocaliser}${sectionRetourPoste}${modalStreetView}</div>`;
-  const typePartageFiche = estVueAccesSeule ? "acces" : estVueAppareilsSeule ? "appareils" : "postes";
-  contextePartageFiche = {
-    type: typePartageFiche,
-    latitude,
-    longitude,
-    cibleSatPoste: estVuePosteSeule ? String(options?.cibleSatPoste || "").trim() : ""
-  };
 
   let contenuVueAppareils = "";
   if (sectionAppareilsAssociesPoste) {
@@ -4788,6 +4781,13 @@ function construirePopupDepuisFeatures(longitude, latitude, featurePostes, featu
   }
 
   fermerPopupCarte({ preserveNavigationLock: conserverFichePendantNavigation });
+  const typePartageFiche = estVueAccesSeule ? "acces" : estVueAppareilsSeule ? "appareils" : "postes";
+  contextePartageFiche = {
+    type: typePartageFiche,
+    latitude,
+    longitude,
+    cibleSatPoste: estVuePosteSeule ? String(options?.cibleSatPoste || "").trim() : ""
+  };
   coordonneesDerniereFiche = [longitude, latitude];
   navigationInternePopup = sectionAppareilsAssociesPoste
     ? {
