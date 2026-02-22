@@ -163,13 +163,26 @@
     function construireTitreResultat(type, entree) {
       const nom = champCompletOuVide(entree?.nom);
       const typeSupport = champCompletOuVide(entree?.type);
-      const sat = champCompletOuVide(entree?.SAT);
+      const sat = champCompletOuVide(entree?.SAT ?? entree?.sat);
       const acces = champCompletOuVide(entree?.acces);
       const appareil = champCompletOuVide(entree?.appareil);
       const joindre = (segments) => segments.filter(Boolean).join(" / ");
+      const joindreAvecEspaces = (segments) => segments.filter(Boolean).join(" ");
+      const formaterAcces = (valeurAcces) => {
+        const texte = champCompletOuVide(valeurAcces);
+        if (!texte) {
+          return "";
+        }
+        const numero = texte.replace(/^acc(?:e|è)s?\s*(?:n[°o])?\s*/i, "").trim();
+        const valeur = numero || texte;
+        return `(acces n°${valeur})`;
+      };
 
       if (type === "acces") {
-        return joindre([nom, sat]) || "Acces";
+        const prefixe = joindreAvecEspaces([nom, typeSupport, sat]);
+        const suffixeAcces = formaterAcces(acces);
+        const titreAcces = joindreAvecEspaces([prefixe, suffixeAcces]);
+        return titreAcces || "Acces";
       }
 
       if (type === "appareils") {
@@ -180,7 +193,7 @@
         return contexteAppareil ? `Appareil (${contexteAppareil})` : "Appareil";
       }
 
-      return joindre([nom, sat]) || "Poste";
+      return joindreAvecEspaces([nom, typeSupport, sat]) || "Poste";
     }
 
     function construireResultatsProximite(longitude, latitude) {
