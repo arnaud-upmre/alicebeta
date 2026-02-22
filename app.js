@@ -1694,13 +1694,7 @@ function filtrerPkPourVue() {
   }
 
   const bounds = carte.getBounds();
-  const centreLat = carte.getCenter().lat;
-  const metresParDegLat = 111320;
-  const metresParDegLon = Math.max(1, 111320 * Math.cos((centreLat * Math.PI) / 180));
-  const espacementMinMetres = pasMetres > 0 ? pasMetres : 0;
-  const pasDegLat = espacementMinMetres > 0 ? espacementMinMetres / metresParDegLat : 0;
-  const pasDegLon = espacementMinMetres > 0 ? espacementMinMetres / metresParDegLon : 0;
-  const cellules = new Set();
+  const uniques = new Set();
   const features = [];
 
   for (const feature of donneesPk.features) {
@@ -1712,14 +1706,23 @@ function filtrerPkPourVue() {
       continue;
     }
 
-    if (espacementMinMetres > 0) {
-      const i = Math.floor(latitude / pasDegLat);
-      const j = Math.floor(longitude / pasDegLon);
-      const cleCellule = `${i}:${j}`;
-      if (cellules.has(cleCellule)) {
+    const codeLigne = String(feature?.properties?.code_ligne || "");
+    const pkKm = Number(String(feature?.properties?.pk ?? "").replace(",", "."));
+    const pkMetres = Number.isFinite(pkKm) ? Math.round(pkKm * 1000) : null;
+
+    if (pasMetres > 0 && Number.isFinite(pkMetres)) {
+      const modulo = ((pkMetres % pasMetres) + pasMetres) % pasMetres;
+      if (modulo !== 0) {
         continue;
       }
-      cellules.add(cleCellule);
+    }
+
+    if (Number.isFinite(pkMetres)) {
+      const cleUnique = `${codeLigne}|${pkMetres}`;
+      if (uniques.has(cleUnique)) {
+        continue;
+      }
+      uniques.add(cleUnique);
     }
 
     const properties = {
