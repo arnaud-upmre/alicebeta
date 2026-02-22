@@ -171,6 +171,7 @@ let promesseChargementAcces = null;
 let promesseChargementPostes = null;
 let promesseChargementPk = null;
 let popupCarte = null;
+let popupPkInfo = null;
 let initialisationDonneesLancee = false;
 let totalAppareilsBrut = 0;
 let totalPostesBrut = 0;
@@ -1953,6 +1954,7 @@ function planifierMiseAJourPk() {
 }
 
 function viderMarqueursPk() {
+  fermerPopupPkInfo();
   for (const marker of marqueursPk) {
     marker.remove();
   }
@@ -1976,8 +1978,54 @@ function creerElementMarqueurPk(libelle) {
   element.style.lineHeight = "1.15";
   element.style.whiteSpace = "nowrap";
   element.style.boxShadow = "0 1px 2px rgba(0, 0, 0, 0.2)";
-  element.style.pointerEvents = "none";
+  element.style.pointerEvents = "auto";
+  element.style.cursor = "pointer";
   return element;
+}
+
+function normaliserTextePk(valeur) {
+  const texte = String(valeur ?? "").trim();
+  return texte || "Non renseigne";
+}
+
+function formaterAltitudePk(valeur) {
+  const texte = String(valeur ?? "").trim().replace(",", ".");
+  const nombre = Number(texte);
+  if (Number.isFinite(nombre)) {
+    return `${nombre.toFixed(2).replace(".", ",")} m`;
+  }
+  return "Non renseignee";
+}
+
+function fermerPopupPkInfo() {
+  if (!popupPkInfo) {
+    return;
+  }
+  popupPkInfo.remove();
+  popupPkInfo = null;
+}
+
+function ouvrirPopupPkInfo(feature, longitude, latitude) {
+  if (!Number.isFinite(longitude) || !Number.isFinite(latitude)) {
+    return;
+  }
+  const codeLigne = normaliserTextePk(feature?.properties?.code_ligne);
+  const altitude = formaterAltitudePk(feature?.properties?.altitude);
+
+  fermerPopupPkInfo();
+  popupPkInfo = new maplibregl.Popup({
+    closeButton: false,
+    closeOnClick: false,
+    className: "popup-pk-info",
+    offset: 10
+  })
+    .setLngLat([longitude, latitude])
+    .setHTML(
+      `<div class="popup-pk-info-contenu"><p><strong>Code ligne :</strong> ${echapperHtml(
+        codeLigne
+      )}</p><p><strong>Altitude :</strong> ${echapperHtml(altitude)}</p></div>`
+    )
+    .addTo(carte);
 }
 
 function afficherMarqueursPk(features) {
@@ -1991,8 +2039,21 @@ function afficherMarqueursPk(features) {
     if (!libelle) {
       continue;
     }
+    const element = creerElementMarqueurPk(libelle);
+    const ouvrir = () => {
+      ouvrirPopupPkInfo(feature, longitude, latitude);
+    };
+    element.addEventListener("mouseenter", ouvrir);
+    element.addEventListener("click", (event) => {
+      event.stopPropagation();
+      ouvrir();
+    });
+    element.addEventListener("mouseleave", () => {
+      fermerPopupPkInfo();
+    });
+
     const marker = new maplibregl.Marker({
-      element: creerElementMarqueurPk(libelle),
+      element,
       anchor: "center"
     })
       .setLngLat([longitude, latitude])
@@ -5111,6 +5172,8 @@ carte.on("zoomend", () => {
   appliquerFondIgnAutomatique();
   planifierMiseAJourPk();
 });
+carte.on("zoomstart", fermerPopupPkInfo);
+carte.on("movestart", fermerPopupPkInfo);
 carte.on("moveend", planifierMiseAJourPk);
 appliquerFondIgnAutomatique({ force: true });
 

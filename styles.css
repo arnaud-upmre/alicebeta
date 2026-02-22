@@ -1249,6 +1249,29 @@ body {
   color: var(--ui-text-secondary);
 }
 
+.popup-pk-info {
+  max-width: 220px !important;
+}
+
+.popup-pk-info .maplibregl-popup-content {
+  width: auto;
+  min-width: 170px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  max-height: none;
+}
+
+.popup-pk-info-contenu p {
+  margin: 0;
+  color: var(--ui-text-primary);
+  font-size: 0.82rem;
+  line-height: 1.35;
+}
+
+.popup-pk-info-contenu p + p {
+  margin-top: 4px;
+}
+
 .popup-section + .popup-section {
   margin-top: 12px;
   padding-top: 12px;
