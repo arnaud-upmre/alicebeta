@@ -2,6 +2,19 @@
 const CENTRE_INITIAL = [2.35, 48.85];
 const ZOOM_INITIAL = 6;
 const ZOOM_MAX = 19;
+const BOUNDS_DEMARRAGE = [
+  [1.60412, 49.51155],
+  [4.29321, 51.0309]
+];
+const OPTIONS_CADRAGE_DEMARRAGE = {
+  padding: {
+    top: 86,
+    right: 64,
+    bottom: 78,
+    left: 64
+  },
+  maxZoom: 10.8
+};
 const SOURCE_APPAREILS = "appareils-source";
 const COUCHE_APPAREILS = "appareils-points";
 const COUCHE_APPAREILS_GROUPES = "appareils-groupes";
@@ -761,6 +774,8 @@ const carte = new maplibregl.Map({
   container: "map",
   center: CENTRE_INITIAL,
   zoom: ZOOM_INITIAL,
+  bounds: BOUNDS_DEMARRAGE,
+  fitBoundsOptions: OPTIONS_CADRAGE_DEMARRAGE,
   maxZoom: ZOOM_MAX,
   attributionControl: false,
   prefetchZoomDelta: 0,
@@ -5264,7 +5279,6 @@ async function initialiserDonneesParDefaut() {
 
   appliquerCouchesDonnees();
   remonterCouchesDonnees();
-  cadrerCarteSurDonneesInitiales();
 }
 
 function lancerInitialisationDonneesSiNecessaire() {
