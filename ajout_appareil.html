@@ -1215,21 +1215,25 @@ if (params.has("poste")) {
 
 if (params.has("poste")) {
   let display = $("poste").value;
-
   if ($("type").value) display += " " + $("type").value;
   if ($("sat").value)  display += " (" + $("sat").value + ")";
 
   $("searchPoste").value = display;
   $("nextPoste").disabled = false;
 
-}
+  // Contexte venant d'une fiche: ne pas redemander le poste.
+  const stepPoste = document.getElementById("stepPoste");
+  if (stepPoste) {
+    stepPoste.classList.add("skip");
+    stepPoste.style.display = "none";
+  }
 
-if (params.has("poste")) {
-  currentStep = 2;
+  // Le demandeur reste obligatoire s'il n'est pas déjà connu.
+  const demandeurDejaRenseigne = $("demandeur").value.trim() !== "";
+  currentStep = demandeurDejaRenseigne ? 2 : 0;
   showStep(currentStep);
 
   document.getElementById("introStep").style.display = "none";
-
   progress.style.display = "block";
   document.getElementById("progressbar").style.display = "block";
 }   
