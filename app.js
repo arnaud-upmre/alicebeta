@@ -51,7 +51,8 @@ const PK_VIDE = { type: "FeatureCollection", features: [] };
 const PN_VIDE = { type: "FeatureCollection", features: [] };
 const PK_ZOOM_MIN = 11;
 const PN_ZOOM_MIN = 9;
-const BBOX_HAUTS_DE_FRANCE = [1.32, 49.94, 4.36, 51.12];
+// Emprise large de la region Hauts-de-France (inclut le sud de l'Aisne et de l'Oise).
+const BBOX_HAUTS_DE_FRANCE = [1.2, 48.8, 4.45, 51.2];
 const URL_API_PN_SNCF = "https://ressources.data.sncf.com/api/records/1.0/search/";
 const PALETTE_CARTE = Object.freeze({
   acces: "#7c3aed",
@@ -2753,8 +2754,8 @@ function convertirRecordPnEnFeature(record) {
 }
 
 async function chargerDonneesPnDepuisApiSNCF() {
-  const limiteParPage = 100;
-  const maxPages = 80;
+  const limiteParPage = 1000;
+  const maxPages = 20;
   const [minLng, minLat, maxLng, maxLat] = BBOX_HAUTS_DE_FRANCE;
   const filtresWhere = [
     `xlong_wgs84 >= ${minLng} AND xlong_wgs84 <= ${maxLng} AND ylat_wgs84 >= ${minLat} AND ylat_wgs84 <= ${maxLat}`,
