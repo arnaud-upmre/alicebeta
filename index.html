@@ -131,6 +131,8 @@
           <input type="checkbox" name="filtre-vitesse-ligne" />
           <span>Vitesse de ligne</span>
         </label>
+        <div class="menu-filtres-separateur" role="presentation"></div>
+        <button class="bouton-filtres-legende" id="bouton-legende-filtres" type="button">Légende</button>
       </form>
     </div>
 
@@ -299,14 +301,17 @@
     <div class="modal-apropos" id="modal-apropos" role="dialog" aria-modal="true" aria-label="À propos" aria-hidden="true">
       <div class="modal-apropos-carte">
         <button class="modal-apropos-fermer" id="modal-apropos-fermer" type="button" aria-label="Fermer la fenêtre À propos">×</button>
-        <h2 class="modal-apropos-titre">À propos d'ALICE</h2>
+        <div class="modal-apropos-entete">
+          <img src="./alice.webp" alt="Logo ALICE" class="modal-apropos-logo" onerror="this.style.display='none';" />
+          <h2 class="modal-apropos-titre">À propos d'ALICE</h2>
+        </div>
         <p class="modal-apropos-texte">
           ALICE est une <strong>A</strong>pplication interne de <strong>L</strong>ocalisation des <strong>I</strong>nstallations de <strong>C</strong>onduite des <strong>EALE</strong>, destinée à faciliter le repérage terrain et l'accès aux informations utiles d'exploitation.
         </p>
         <p class="modal-apropos-texte">Application développée par A. Debaecker.</p>
         <p class="modal-apropos-texte">
           Contact technique :
-          <a href="mailto:ALICEGrpO365@sncf.onmicrosoft.com">ALICEGrpO365@sncf.onmicrosoft.com</a>
+          <a href="mailto:ALICEGrpO365@sncf.onmicrosoft.com">A.DEBAECKER</a>
         </p>
         <h3 class="modal-apropos-sous-titre">Sources de données</h3>
         <ul class="modal-apropos-liste">

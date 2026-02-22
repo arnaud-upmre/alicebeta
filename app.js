@@ -861,6 +861,7 @@ const controleFiltres = document.getElementById("controle-filtres");
 const boutonFiltres = document.getElementById("bouton-filtres");
 const boutonItineraire = document.getElementById("bouton-itineraire");
 const boutonLocalisationMobile = document.getElementById("bouton-localisation-mobile");
+const boutonLegendeFiltres = document.getElementById("bouton-legende-filtres");
 const caseAppareils = document.querySelector('input[name="filtre-appareils"]');
 const caseAcces = document.querySelector('input[name="filtre-acces"]');
 const casePostes = document.querySelector('input[name="filtre-postes"]');
@@ -935,7 +936,7 @@ class ControleActionsCarte {
     const boutonInfo = document.createElement("button");
     boutonInfo.type = "button";
     boutonInfo.className = "bouton-carte-action";
-    boutonInfo.setAttribute("aria-label", "Afficher la légende");
+    boutonInfo.setAttribute("aria-label", "Afficher à propos");
     boutonInfo.setAttribute("aria-expanded", "false");
     boutonInfo.innerHTML = `
       <svg viewBox="0 0 24 24" aria-hidden="true">
@@ -5754,6 +5755,17 @@ if (boutonInfoCarte) {
     fermerMenuFiltres();
     fermerResultatsRecherche();
     fermerMenuContextuel();
+    ouvrirModalApropos();
+  });
+}
+
+if (boutonLegendeFiltres) {
+  boutonLegendeFiltres.addEventListener("click", (event) => {
+    event.stopPropagation();
+    fermerMenuFonds();
+    fermerResultatsRecherche();
+    fermerMenuContextuel();
+    fermerMenuFiltres();
     basculerMenuLegende();
   });
 }
