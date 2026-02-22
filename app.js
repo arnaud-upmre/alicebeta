@@ -4083,6 +4083,11 @@ function attacherActionsPopupInterne() {
     return;
   }
 
+  const estVueListeAppareilsAssocies = Boolean(racinePopup.querySelector("#popup-retour-fiche-poste"));
+  if (boutonPartagerModalFiche) {
+    boutonPartagerModalFiche.hidden = estVueListeAppareilsAssocies;
+  }
+
   const ouvrirLienCodes = (url) => {
     if (!url) {
       return;
