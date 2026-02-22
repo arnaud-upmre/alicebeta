@@ -196,6 +196,8 @@ let recadragePopupMobileEnCours = false;
 let navigationPopupProgrammatiqueEnCours = false;
 let conserverFichePendantNavigation = false;
 let restaurationStylePlanifiee = false;
+let controleAttributionCarte = null;
+let signatureAttributionCarte = "";
 let contexteMenuPosition = {
   longitude: null,
   latitude: null
@@ -803,7 +805,54 @@ const carte = new maplibregl.Map({
 
 carte.addControl(new maplibregl.NavigationControl({ showCompass: false }), "top-right");
 carte.addControl(new maplibregl.ScaleControl({ maxWidth: 120, unit: "metric" }), "bottom-left");
-carte.addControl(new maplibregl.AttributionControl({ compact: true }), "bottom-right");
+
+const LIEN_SNCF_OPEN_DATA = "https://ressources.data.sncf.com/";
+const LIEN_EXTRA_PK = "https://github.com/nicolaswurtz/extras-opendata-sncf-reseau";
+const AFFICHER_MENTION_SNCF_PAR_DEFAUT = true;
+
+function construireAttributionsDynamiquesCarte() {
+  const attributions = [];
+  if (AFFICHER_MENTION_SNCF_PAR_DEFAUT) {
+    attributions.push(
+      `Donnees ferroviaires: <a href="${LIEN_SNCF_OPEN_DATA}" target="_blank" rel="noopener noreferrer">SNCF Open Data</a>`
+    );
+  }
+  if (afficherPn) {
+    attributions.push(
+      `PN affiches: <a href="${LIEN_SNCF_OPEN_DATA}" target="_blank" rel="noopener noreferrer">SNCF Open Data</a>`
+    );
+  }
+  if (afficherPk) {
+    attributions.push(
+      `PK affiches: <a href="${LIEN_SNCF_OPEN_DATA}" target="_blank" rel="noopener noreferrer">SNCF Open Data</a> + <a href="${LIEN_EXTRA_PK}" target="_blank" rel="noopener noreferrer">extras-opendata-sncf-reseau</a>`
+    );
+  }
+  if (afficherAppareils || afficherAcces || afficherPostes) {
+    attributions.push("© ALICE - Donnees internes : reutilisation interdite sans autorisation.");
+  }
+  return attributions;
+}
+
+function mettreAJourControleAttributionCarte() {
+  const attributionsDynamiques = construireAttributionsDynamiquesCarte();
+  const signature = attributionsDynamiques.join(" | ");
+  if (signature === signatureAttributionCarte && controleAttributionCarte) {
+    return;
+  }
+  signatureAttributionCarte = signature;
+
+  if (controleAttributionCarte) {
+    carte.removeControl(controleAttributionCarte);
+  }
+
+  controleAttributionCarte = new maplibregl.AttributionControl({
+    compact: true,
+    customAttribution: attributionsDynamiques
+  });
+  carte.addControl(controleAttributionCarte, "bottom-right");
+}
+
+mettreAJourControleAttributionCarte();
 
 const controleFonds = document.getElementById("controle-fonds");
 const boutonFonds = document.getElementById("bouton-fonds");
@@ -847,10 +896,14 @@ const textePanneauMesure = document.getElementById("panneau-mesure-texte");
 const boutonSortieMesure = document.getElementById("bouton-sortie-mesure");
 const menuLegendeCarte = document.getElementById("menu-legende-carte");
 const boutonFermerLegende = document.getElementById("bouton-fermer-legende");
+const boutonApropos = document.getElementById("bouton-apropos");
+const modalApropos = document.getElementById("modal-apropos");
+const boutonFermerModalApropos = document.getElementById("modal-apropos-fermer");
 let modalFiche = document.getElementById("modal-fiche");
 let modalFicheContenu = document.getElementById("modal-fiche-contenu");
 let boutonFermerModalFiche = document.getElementById("modal-fiche-fermer");
 let elementRetourFocusModalFiche = null;
+let elementRetourFocusModalApropos = null;
 const CLE_STOCKAGE_FENETRE_ACCUEIL = "alice.fenetre-accueil.derniere-date";
 let temporisationInfoVitesse = null;
 let temporisationInfoPk = null;
@@ -1703,6 +1756,38 @@ function basculerMenuLegende() {
   ouvrirMenuLegende();
 }
 
+function ouvrirModalApropos() {
+  if (!modalApropos) {
+    return;
+  }
+  const actif = document.activeElement;
+  if (actif instanceof HTMLElement && !modalApropos.contains(actif)) {
+    elementRetourFocusModalApropos = actif;
+  }
+  modalApropos.classList.add("est-visible");
+  modalApropos.setAttribute("aria-hidden", "false");
+  fermerMenuLegende();
+  window.requestAnimationFrame(() => {
+    boutonFermerModalApropos?.focus({ preventScroll: true });
+  });
+}
+
+function fermerModalApropos() {
+  if (!modalApropos) {
+    return;
+  }
+  const actif = document.activeElement;
+  if (actif instanceof HTMLElement && modalApropos.contains(actif)) {
+    if (elementRetourFocusModalApropos instanceof HTMLElement && elementRetourFocusModalApropos.isConnected) {
+      elementRetourFocusModalApropos.focus({ preventScroll: true });
+    } else {
+      actif.blur();
+    }
+  }
+  modalApropos.classList.remove("est-visible");
+  modalApropos.setAttribute("aria-hidden", "true");
+}
+
 async function localiserUtilisateurCarte(options = {}) {
   try {
     const module = await obtenirModuleLocalisation();
@@ -2411,6 +2496,7 @@ function appliquerCouchesDonnees() {
   carte.setLayoutProperty(COUCHE_VITESSE_LIGNE, "visibility", afficherVitesseLigne ? "visible" : "none");
   mettreAJourAffichagePk();
   mettreAJourAffichagePn();
+  mettreAJourControleAttributionCarte();
 }
 
 function restaurerEtatFiltres() {
@@ -5669,6 +5755,19 @@ if (boutonFermerLegende) {
   });
 }
 
+if (boutonApropos) {
+  boutonApropos.addEventListener("click", (event) => {
+    event.stopPropagation();
+    ouvrirModalApropos();
+  });
+}
+
+if (boutonFermerModalApropos) {
+  boutonFermerModalApropos.addEventListener("click", () => {
+    fermerModalApropos();
+  });
+}
+
 document.addEventListener("click", (event) => {
   if (event.target instanceof Element && event.target.closest("#modal-fiche-fermer")) {
     fermerPopupCarte({ localiserPoint: true });
@@ -5676,6 +5775,9 @@ document.addEventListener("click", (event) => {
   }
   if (modalFiche && event.target === modalFiche) {
     fermerPopupCarte();
+  }
+  if (modalApropos && event.target === modalApropos) {
+    fermerModalApropos();
   }
 });
 
@@ -5878,6 +5980,7 @@ document.addEventListener("click", (event) => {
 
 document.addEventListener("keydown", (event) => {
   if (event.key === "Escape") {
+    fermerModalApropos();
     fermerPopupCarte();
     fermerFenetreAccueil();
     fermerMenuFonds();

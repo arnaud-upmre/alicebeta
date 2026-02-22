@@ -72,6 +72,7 @@ body {
 .modal-itineraire,
 .modal-fiche,
 .modal-localisation,
+.modal-apropos,
 .maplibregl-popup-content {
   touch-action: pan-y;
 }
@@ -178,6 +179,21 @@ body {
   display: flex;
 }
 
+.modal-apropos {
+  position: fixed;
+  inset: 0;
+  z-index: 21;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  background: rgba(15, 23, 42, 0.32);
+}
+
+.modal-apropos.est-visible {
+  display: flex;
+}
+
 .modal-fiche-carte {
   position: relative;
   width: min(540px, calc(100vw - 28px));
@@ -248,6 +264,18 @@ body {
   box-shadow: 0 18px 38px rgba(15, 23, 42, 0.32);
 }
 
+.modal-apropos-carte {
+  position: relative;
+  width: min(540px, calc(100vw - 28px));
+  max-height: min(92vh, 820px);
+  overflow: auto;
+  padding: 16px 16px 14px;
+  border-radius: 16px;
+  border: 1px solid rgba(31, 41, 55, 0.15);
+  background: rgba(255, 255, 255, 0.98);
+  box-shadow: 0 18px 38px rgba(15, 23, 42, 0.32);
+}
+
 .modal-itineraire-fermer {
   position: absolute;
   top: 8px;
@@ -278,6 +306,21 @@ body {
   cursor: pointer;
 }
 
+.modal-apropos-fermer {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 30px;
+  height: 30px;
+  border: 0;
+  border-radius: 999px;
+  background: rgba(15, 23, 42, 0.08);
+  color: #0f172a;
+  font-size: 1.2rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
 .modal-itineraire-fermer:hover {
   background: rgba(15, 23, 42, 0.16);
 }
@@ -286,6 +329,47 @@ body {
 .modal-localisation-fermer:focus-visible {
   background: rgba(15, 23, 42, 0.16);
   outline: none;
+}
+
+.modal-apropos-fermer:hover,
+.modal-apropos-fermer:focus-visible {
+  background: rgba(15, 23, 42, 0.16);
+  outline: none;
+}
+
+.modal-apropos-titre {
+  margin: 0;
+  padding-right: 34px;
+  color: #0f172a;
+  font-size: 1.2rem;
+}
+
+.modal-apropos-sous-titre {
+  margin: 10px 0 6px;
+  color: #334155;
+  font-size: 0.9rem;
+}
+
+.modal-apropos-texte {
+  margin: 0;
+  color: #0f172a;
+  font-size: 0.88rem;
+  line-height: 1.4;
+}
+
+.modal-apropos-liste {
+  margin: 0;
+  padding-left: 18px;
+  color: #0f172a;
+  font-size: 0.86rem;
+  line-height: 1.4;
+}
+
+.modal-apropos-note {
+  margin: 8px 0 0;
+  color: #64748b;
+  font-size: 0.8rem;
+  line-height: 1.35;
 }
 
 .modal-itineraire-titre {
@@ -1118,6 +1202,30 @@ body {
   margin-top: 12px;
 }
 
+.menu-legende-actions {
+  margin-top: 12px;
+  padding-top: 10px;
+  border-top: 1px solid rgba(148, 163, 184, 0.35);
+}
+
+.menu-legende-bouton-apropos {
+  width: 100%;
+  min-height: 34px;
+  border: 1px solid rgba(31, 41, 55, 0.16);
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.86);
+  color: var(--ui-text-on-glass);
+  font-size: 0.86rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.menu-legende-bouton-apropos:hover,
+.menu-legende-bouton-apropos:focus-visible {
+  background: #ffffff;
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(26, 115, 232, 0.24);
+}
 .menu-legende-section-titre {
   margin: 0 0 6px;
   font-size: 0.92rem;
@@ -1156,6 +1264,10 @@ body {
 
 .pastille-poste {
   background: var(--color-poste);
+}
+
+.pastille-pn {
+  background: #06b6d4;
 }
 
 .pastille-hp {
@@ -2342,6 +2454,11 @@ body {
     align-items: stretch;
   }
 
+  .modal-apropos {
+    padding: 0;
+    align-items: stretch;
+  }
+
   .modal-itineraire-carte {
     width: 100vw;
     max-height: 100vh;
@@ -2351,6 +2468,14 @@ body {
   }
 
   .modal-localisation-carte {
+    width: 100vw;
+    max-height: 100vh;
+    border-radius: 0;
+    border: 0;
+    padding: calc(14px + env(safe-area-inset-top)) 11px calc(12px + env(safe-area-inset-bottom));
+  }
+
+  .modal-apropos-carte {
     width: 100vw;
     max-height: 100vh;
     border-radius: 0;
@@ -2386,6 +2511,11 @@ body {
   }
 
   .modal-localisation-fermer {
+    top: calc(8px + env(safe-area-inset-top));
+    right: 9px;
+  }
+
+  .modal-apropos-fermer {
     top: calc(8px + env(safe-area-inset-top));
     right: 9px;
   }

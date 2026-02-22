@@ -193,6 +193,7 @@
         <ul class="menu-legende-liste">
           <li class="menu-legende-item"><span class="menu-legende-pastille pastille-acces"></span>Accès voiture</li>
           <li class="menu-legende-item"><span class="menu-legende-pastille pastille-poste"></span>Postes</li>
+          <li class="menu-legende-item"><span class="menu-legende-pastille pastille-pn"></span>Passages à niveau</li>
           <li class="menu-legende-item"><span class="menu-legende-pastille pastille-hp"></span>Hors patrimoine</li>
         </ul>
       </div>
@@ -206,6 +207,9 @@
           <li class="menu-legende-item"><span class="menu-legende-pastille pastille-app-alim"></span>Alimentation</li>
           <li class="menu-legende-item"><span class="menu-legende-pastille pastille-app-autre"></span>Autres</li>
         </ul>
+      </div>
+      <div class="menu-legende-actions">
+        <button class="menu-legende-bouton-apropos" id="bouton-apropos" type="button">À propos</button>
       </div>
     </div>
 
@@ -290,6 +294,26 @@
       <div class="modal-fiche-carte">
         <button class="modal-fiche-fermer" id="modal-fiche-fermer" type="button" aria-label="Fermer la fiche">×</button>
         <div class="modal-fiche-contenu maplibregl-popup-content" id="modal-fiche-contenu"></div>
+      </div>
+    </div>
+    <div class="modal-apropos" id="modal-apropos" role="dialog" aria-modal="true" aria-label="À propos" aria-hidden="true">
+      <div class="modal-apropos-carte">
+        <button class="modal-apropos-fermer" id="modal-apropos-fermer" type="button" aria-label="Fermer la fenêtre À propos">×</button>
+        <h2 class="modal-apropos-titre">À propos d'ALICE</h2>
+        <p class="modal-apropos-texte">
+          ALICE est une application interne de localisation des installations de conduite des EALE, destinée à faciliter le repérage terrain et l'accès aux informations utiles d'exploitation.
+        </p>
+        <h3 class="modal-apropos-sous-titre">Sources de données</h3>
+        <ul class="modal-apropos-liste">
+          <li>Données ferroviaires: SNCF Open Data (selon couches actives).</li>
+          <li>PK complémentaires: extras-opendata-sncf-reseau (selon couches actives).</li>
+          <li>Fond cartographique: OpenStreetMap, CARTO, IGN, OpenRailwayMap (selon fond/couches).</li>
+        </ul>
+        <h3 class="modal-apropos-sous-titre">Réutilisation</h3>
+        <p class="modal-apropos-texte">© ALICE – Données internes : réutilisation interdite sans autorisation.</p>
+        <p class="modal-apropos-note">
+          Les données Open Data tierces restent soumises à leurs licences respectives.
+        </p>
       </div>
     </div>
     <div
