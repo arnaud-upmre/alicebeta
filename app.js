@@ -53,6 +53,31 @@ const stylePlanOsm = {
   ]
 };
 
+// Style raster "carte transport" (base claire orientee reseaux et voirie).
+const styleCarteTransport = {
+  version: 8,
+  sources: {
+    carteTransport: {
+      type: "raster",
+      tiles: [
+        "https://a.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}.png",
+        "https://b.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}.png",
+        "https://c.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}.png",
+        "https://d.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}.png"
+      ],
+      tileSize: 256,
+      attribution: "© OpenStreetMap contributors, © CARTO"
+    }
+  },
+  layers: [
+    {
+      id: "carteTransport",
+      type: "raster",
+      source: "carteTransport"
+    }
+  ]
+};
+
 // Style raster des orthophotos IGN (satellite).
 const styleSatelliteIgn = {
   version: 8,
@@ -76,6 +101,9 @@ const styleSatelliteIgn = {
   ]
 };
 
+// Style vectoriel OSM base sur le schema Shortbread.
+const URL_STYLE_OSM_SHORTBREAD = "https://tiles.versatiles.org/assets/styles/colorful/style.json";
+
 // Style vectoriel officiel du Plan IGN (plus fluide pour le fond plan).
 const URL_STYLE_PLAN_IGN =
   "https://data.geopf.fr/annexes/ressources/vectorTiles/styles/PLAN.IGN/standard.json";
@@ -84,12 +112,14 @@ const ZOOM_PASSAGE_SATELLITE_IGN = 15;
 const ZOOM_RETOUR_PLAN_IGN = 14.5;
 
 const fondsCartographiques = {
+  carteTransport: styleCarteTransport,
+  osmShortbread: URL_STYLE_OSM_SHORTBREAD,
   planIgn: URL_STYLE_PLAN_IGN,
   osm: stylePlanOsm,
   satelliteIgn: styleSatelliteIgn
 };
 
-let fondActif = "planIgn";
+let fondActif = "carteTransport";
 let ignAutomatiqueActif = true;
 let afficherAppareils = true;
 let afficherAcces = true;
@@ -4710,12 +4740,9 @@ function cadrerCarteSurDonneesInitiales() {
   }
 
   if (coordonnees.length === 1) {
-    carte.flyTo({
+    carte.jumpTo({
       center: coordonnees[0],
-      zoom: Math.max(carte.getZoom(), 12),
-      speed: 1.1,
-      curve: 1.2,
-      essential: true
+      zoom: Math.max(carte.getZoom(), 12)
     });
     return;
   }
@@ -4753,8 +4780,7 @@ function cadrerCarteSurDonneesInitiales() {
         left: 64
       },
       maxZoom: 10.8,
-      duration: 850,
-      essential: true
+      duration: 0
     }
   );
 }
@@ -4780,12 +4806,12 @@ function determinerFondIgnAutomatique(zoom, fondCourant = fondActif) {
     return "satelliteIgn";
   }
   if (zoom <= ZOOM_RETOUR_PLAN_IGN) {
-    return "planIgn";
+    return "carteTransport";
   }
-  if (fondCourant === "planIgn" || fondCourant === "satelliteIgn") {
+  if (fondCourant === "carteTransport" || fondCourant === "satelliteIgn") {
     return fondCourant;
   }
-  return "planIgn";
+  return "carteTransport";
 }
 
 function appliquerFondIgnAutomatique(options = {}) {
