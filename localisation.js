@@ -160,7 +160,23 @@
       return estHorsOuSpecial ? "🗂️" : "📍";
     }
 
-    function construireTitreResultat(type, entree) {
+    function estResultatHorsPatrimoine(type, feature, entree) {
+      if (type !== "postes" && type !== "appareils") {
+        return false;
+      }
+      const proprietes = feature?.properties || {};
+      const source = entree || proprietes;
+      return Boolean(
+        estHorsPatrimoine(source?.hors_patrimoine) ||
+          estHorsPatrimoine(source?.special) ||
+          estHorsPatrimoine(proprietes?.hors_patrimoine) ||
+          estHorsPatrimoine(proprietes?.special) ||
+          Number(proprietes?.hors_patrimoine_count) > 0
+      );
+    }
+
+    function construireTitreResultat(type, entree, options) {
+      const estEntreeHorsPatrimoine = Boolean(options?.estHorsPatrimoine);
       const nom = champCompletOuVide(entree?.nom);
       const typeSupport = champCompletOuVide(entree?.type);
       const sat = champCompletOuVide(entree?.SAT ?? entree?.sat);
@@ -168,6 +184,16 @@
       const appareil = champCompletOuVide(entree?.appareil);
       const joindre = (segments) => segments.filter(Boolean).join(" / ");
       const joindreAvecEspaces = (segments) => segments.filter(Boolean).join(" ");
+      const ajouterMentionHorsPatrimoine = (titre) => {
+        const texte = champCompletOuVide(titre);
+        if (!texte) {
+          return texte;
+        }
+        if (!estEntreeHorsPatrimoine || /hors\s*patrimoine/i.test(texte)) {
+          return texte;
+        }
+        return `${texte} (hors patrimoine)`;
+      };
       const formaterAcces = (valeurAcces) => {
         const texte = champCompletOuVide(valeurAcces);
         if (!texte) {
@@ -188,12 +214,12 @@
       if (type === "appareils") {
         const contexteAppareil = joindre([nom, sat, acces]);
         if (appareil) {
-          return contexteAppareil ? `${appareil} (${contexteAppareil})` : appareil;
+          return ajouterMentionHorsPatrimoine(contexteAppareil ? `${appareil} (${contexteAppareil})` : appareil);
         }
-        return contexteAppareil ? `Appareil (${contexteAppareil})` : "Appareil";
+        return ajouterMentionHorsPatrimoine(contexteAppareil ? `Appareil (${contexteAppareil})` : "Appareil");
       }
 
-      return joindreAvecEspaces([nom, typeSupport, sat]) || "Poste";
+      return ajouterMentionHorsPatrimoine(joindreAvecEspaces([nom, typeSupport, sat]) || "Poste");
     }
 
     function construireResultatsProximite(longitude, latitude) {
@@ -215,13 +241,14 @@
           const cleListe = type === "postes" ? "postes_liste_json" : type === "acces" ? "acces_liste_json" : "appareils_liste_json";
           const listeEntrees = extraireListeDepuisFeature(feature, cleListe);
           for (const entree of listeEntrees) {
+            const estHorsPatrimoine = estResultatHorsPatrimoine(type, feature, entree);
             resultats.push({
               type,
               longitude: lng,
               latitude: lat,
               distanceMetres,
               icone: determinerIconeResultat(type, feature, entree),
-              titre: construireTitreResultat(type, entree)
+              titre: construireTitreResultat(type, entree, { estHorsPatrimoine })
             });
           }
         }
