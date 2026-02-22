@@ -1178,21 +1178,34 @@ if (params.has("poste")) {
 
   let foundType = "";
   let foundSat  = "";
+  const typeParam = String(params.get("type") || "").trim().toUpperCase();
+  const satParam = String(params.get("sat") || "")
+    .trim()
+    .toUpperCase()
+    .replace(/\s+/g, "");
+
+  if (satParam) {
+    foundSat = satParam;
+  }
 
   const satM = raw.match(/\bSAT[\s-]*\d+\b/i);
-  if (satM) {
-    foundSat = satM[0].replace(/\s+/g,"").toUpperCase(); 
-    raw = raw.slice(0, satM.index).trim();            
+  if (!foundSat && satM) {
+    foundSat = satM[0].replace(/\s+/g,"").toUpperCase();
+    raw = raw.slice(0, satM.index).trim();
   }
 
   if (!satM) {
     raw = raw.split(/(?:—|–|-|,|;|\/|\(|\[|\baccès\b|\bacces\b|\baccess\b)/i)[0].trim();
   }
   
+  if (typeParam) {
+    foundType = typeParam;
+  }
+
   const typeM = raw.match(TYPES_RE);
-  if (typeM) {
+  if (!foundType && typeM) {
     foundType = typeM[1].toUpperCase();
-    raw = raw.replace(TYPES_RE, "").trim(); 
+    raw = raw.replace(TYPES_RE, "").trim();
   }
 
   $("poste").value = raw;           

@@ -4645,6 +4645,47 @@ function construirePopupDepuisFeatures(longitude, latitude, featurePostes, featu
   const libelleSectionActionsPoste = "Explorer les équipements";
   const activerSectionEquipements = Boolean(featurePostes || estVueAppareilsSeule);
   const actionsExplorerEquipements = [];
+  const lienAjoutAppareilDepuisPoste = (() => {
+    if (!featurePostes || !estVuePosteSeule) {
+      return "";
+    }
+
+    const postesListe = extraireListeDepuisFeature(featurePostes, "postes_liste_json");
+    if (!postesListe.length) {
+      return "";
+    }
+
+    let posteCible = postesListe[0];
+    if (cibleSatCourante) {
+      const filtresSat = postesListe.filter((poste) => {
+        const satNorm = normaliserTexteRecherche(champCompletOuVide(poste?.SAT));
+        if (cibleSatCourante === "poste") {
+          return !satNorm;
+        }
+        return satNorm === cibleSatCourante;
+      });
+      if (filtresSat.length) {
+        posteCible = filtresSat[0];
+      }
+    }
+
+    const nomPoste = champCompletOuVide(posteCible?.nom);
+    if (!nomPoste) {
+      return "";
+    }
+
+    const typePoste = champCompletOuVide(posteCible?.type);
+    const satPoste = champCompletOuVide(posteCible?.SAT);
+    const urlAjout = new URL("./ajout_appareil.html", window.location.href);
+    urlAjout.searchParams.set("poste", nomPoste);
+    if (typePoste) {
+      urlAjout.searchParams.set("type", typePoste);
+    }
+    if (satPoste) {
+      urlAjout.searchParams.set("sat", satPoste);
+    }
+    return urlAjout.toString();
+  })();
   if (lienImajnet) {
     actionsExplorerEquipements.push({
       label: "Imajnet",
@@ -4656,6 +4697,11 @@ function construirePopupDepuisFeatures(longitude, latitude, featurePostes, featu
     actionsExplorerEquipements.push({
       label: "Afficher les appareils",
       html: `<button class="popup-bouton-itineraire" id="popup-voir-appareils-associes" type="button">${echapperHtml(libelleAfficherAppareils)}</button>`
+    });
+  } else if (lienAjoutAppareilDepuisPoste) {
+    actionsExplorerEquipements.push({
+      label: "Ajouter un appareil",
+      html: `<a class="popup-bouton-itineraire" href="${echapperHtml(lienAjoutAppareilDepuisPoste)}">➕ Ajouter un appareil</a>`
     });
   }
   actionsExplorerEquipements.push({
