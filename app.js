@@ -32,7 +32,6 @@ const ACCES_VIDE = { type: "FeatureCollection", features: [] };
 const POSTES_VIDE = { type: "FeatureCollection", features: [] };
 const PK_VIDE = { type: "FeatureCollection", features: [] };
 const PK_ZOOM_MIN = 11;
-const PK_TOLERANCE_M = 50;
 
 // Style raster OSM (plan open).
 const stylePlanOsm = {
@@ -1636,9 +1635,6 @@ function determinerPasPkMetres(zoomEffectif) {
   if (zoomEffectif < 16) {
     return 1000;
   }
-  if (zoomEffectif < 17) {
-    return 500;
-  }
   if (zoomEffectif < 18) {
     return 200;
   }
@@ -1704,7 +1700,7 @@ function filtrerPkPourVue() {
   const centreLat = carte.getCenter().lat;
   const metresParDegLat = 111320;
   const metresParDegLon = Math.max(1, 111320 * Math.cos((centreLat * Math.PI) / 180));
-  const espacementMinMetres = pasMetres > 0 ? Math.max(50, pasMetres - PK_TOLERANCE_M) : 0;
+  const espacementMinMetres = pasMetres > 0 ? pasMetres : 0;
   const pasDegLat = espacementMinMetres > 0 ? espacementMinMetres / metresParDegLat : 0;
   const pasDegLon = espacementMinMetres > 0 ? espacementMinMetres / metresParDegLon : 0;
   const cellules = new Set();
