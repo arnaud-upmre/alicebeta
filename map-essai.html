@@ -1,0 +1,265 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Map Essai - Fonds de carte</title>
+    <link href="https://unpkg.com/maplibre-gl@5.1.0/dist/maplibre-gl.css" rel="stylesheet" />
+    <style>
+      :root {
+        --panel-bg: rgba(255, 255, 255, 0.96);
+        --panel-border: rgba(15, 23, 42, 0.12);
+        --text: #0f172a;
+        --muted: #64748b;
+        --accent: #2563eb;
+      }
+
+      html,
+      body {
+        margin: 0;
+        width: 100%;
+        height: 100%;
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        color: var(--text);
+      }
+
+      #map {
+        width: 100%;
+        height: 100%;
+      }
+
+      .panel {
+        position: absolute;
+        top: 12px;
+        left: 12px;
+        z-index: 10;
+        width: min(360px, calc(100vw - 24px));
+        max-height: calc(100vh - 24px);
+        overflow: auto;
+        background: var(--panel-bg);
+        border: 1px solid var(--panel-border);
+        border-radius: 12px;
+        box-shadow: 0 10px 30px rgba(15, 23, 42, 0.18);
+        padding: 12px 14px;
+      }
+
+      .panel h1 {
+        margin: 0 0 6px;
+        font-size: 16px;
+      }
+
+      .panel p {
+        margin: 0 0 10px;
+        font-size: 13px;
+        color: var(--muted);
+      }
+
+      .choice {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 6px 0;
+        font-size: 14px;
+      }
+
+      .active {
+        margin-top: 10px;
+        font-size: 13px;
+      }
+
+      .active b {
+        color: var(--accent);
+      }
+    </style>
+  </head>
+  <body>
+    <div id="map"></div>
+
+    <aside class="panel">
+      <h1>Map essai</h1>
+      <p>Ordre: du plus fluide au plus couteux a afficher sur le site.</p>
+      <form id="styles-form">
+        <label class="choice">
+          <input type="radio" name="style" value="osmStandard" checked />
+          <span>OSM Standard (PNG raster)</span>
+        </label>
+        <label class="choice">
+          <input type="radio" name="style" value="positronRaster" />
+          <span>CARTO Positron (PNG raster)</span>
+        </label>
+        <label class="choice">
+          <input type="radio" name="style" value="voyagerRaster" />
+          <span>CARTO Voyager (PNG raster, ton actuel)</span>
+        </label>
+        <label class="choice">
+          <input type="radio" name="style" value="ignSatellite" />
+          <span>IGN Satellite (PNG/JPEG raster)</span>
+        </label>
+        <label class="choice">
+          <input type="radio" name="style" value="voyagerNoLabels" />
+          <span>CARTO Voyager No Labels (vectoriel)</span>
+        </label>
+        <label class="choice">
+          <input type="radio" name="style" value="ignPlan" />
+          <span>Plan IGN (vectoriel)</span>
+        </label>
+        <label class="choice">
+          <input type="radio" name="style" value="osmShortbread" />
+          <span>OSM Shortbread / Colorful (vectoriel)</span>
+        </label>
+        <label class="choice">
+          <input type="radio" name="style" value="positronVector" />
+          <span>CARTO Positron (vectoriel)</span>
+        </label>
+        <label class="choice">
+          <input type="radio" name="style" value="voyagerVector" />
+          <span>CARTO Voyager (vectoriel)</span>
+        </label>
+      </form>
+      <div class="active">Fond actif: <b id="active-style">OSM Standard (PNG raster)</b></div>
+    </aside>
+
+    <script src="https://unpkg.com/maplibre-gl@5.1.0/dist/maplibre-gl.js"></script>
+    <script>
+      const centreInitial = [2.9, 50.55];
+      const zoomInitial = 8.1;
+
+      function styleRaster(id, tiles, attribution, maxzoom = 20) {
+        return {
+          version: 8,
+          sources: {
+            [id]: {
+              type: "raster",
+              tiles,
+              tileSize: 256,
+              maxzoom,
+              attribution
+            }
+          },
+          layers: [
+            {
+              id,
+              type: "raster",
+              source: id
+            }
+          ]
+        };
+      }
+
+      const styles = {
+        osmStandard: {
+          label: "OSM Standard (PNG raster)",
+          style: styleRaster(
+            "osmStandard",
+            ["https://tile.openstreetmap.org/{z}/{x}/{y}.png"],
+            "© OpenStreetMap contributors",
+            19
+          )
+        },
+        positronRaster: {
+          label: "CARTO Positron (PNG raster)",
+          style: styleRaster(
+            "positronRaster",
+            [
+              "https://a.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png",
+              "https://b.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png",
+              "https://c.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png",
+              "https://d.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png"
+            ],
+            "© OpenStreetMap contributors, © CARTO"
+          )
+        },
+        voyagerRaster: {
+          label: "CARTO Voyager (PNG raster, ton actuel)",
+          style: styleRaster(
+            "voyagerRaster",
+            [
+              "https://a.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}.png",
+              "https://b.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}.png",
+              "https://c.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}.png",
+              "https://d.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}.png"
+            ],
+            "© OpenStreetMap contributors, © CARTO"
+          )
+        },
+        ignSatellite: {
+          label: "IGN Satellite (PNG/JPEG raster)",
+          style: styleRaster(
+            "ignSatellite",
+            [
+              "https://data.geopf.fr/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER=ORTHOIMAGERY.ORTHOPHOTOS&STYLE=normal&TILEMATRIXSET=PM&FORMAT=image/jpeg&TILEMATRIX={z}&TILEROW={y}&TILECOL={x}"
+            ],
+            "© IGN, © OpenStreetMap contributors",
+            18
+          )
+        },
+        voyagerNoLabels: {
+          label: "CARTO Voyager No Labels (vectoriel)",
+          style: "https://basemaps.cartocdn.com/gl/voyager-nolabels-gl-style/style.json"
+        },
+        ignPlan: {
+          label: "Plan IGN (vectoriel)",
+          style: "https://data.geopf.fr/annexes/ressources/vectorTiles/styles/PLAN.IGN/standard.json"
+        },
+        osmShortbread: {
+          label: "OSM Shortbread / Colorful (vectoriel)",
+          style: "https://tiles.versatiles.org/assets/styles/colorful/style.json"
+        },
+        positronVector: {
+          label: "CARTO Positron (vectoriel)",
+          style: "https://basemaps.cartocdn.com/gl/positron-gl-style/style.json"
+        },
+        voyagerVector: {
+          label: "CARTO Voyager (vectoriel)",
+          style: "https://basemaps.cartocdn.com/gl/voyager-gl-style/style.json"
+        }
+      };
+
+      const activeStyleLabel = document.getElementById("active-style");
+      const stylesForm = document.getElementById("styles-form");
+
+      const map = new maplibregl.Map({
+        container: "map",
+        style: styles.osmStandard.style,
+        center: centreInitial,
+        zoom: zoomInitial,
+        attributionControl: false
+      });
+
+      map.addControl(new maplibregl.NavigationControl({ showCompass: false }), "top-right");
+      map.addControl(new maplibregl.ScaleControl({ maxWidth: 120, unit: "metric" }), "bottom-left");
+      map.addControl(new maplibregl.AttributionControl({ compact: true }), "bottom-right");
+
+      function appliquerStyle(cleStyle) {
+        const entree = styles[cleStyle];
+        if (!entree) {
+          return;
+        }
+        const centre = map.getCenter();
+        const zoom = map.getZoom();
+        const bearing = map.getBearing();
+        const pitch = map.getPitch();
+
+        map.setStyle(entree.style);
+        map.once("style.load", () => {
+          map.jumpTo({
+            center: centre,
+            zoom,
+            bearing,
+            pitch
+          });
+        });
+
+        activeStyleLabel.textContent = entree.label;
+      }
+
+      stylesForm.addEventListener("change", (event) => {
+        const valeur = event.target && event.target.value;
+        if (!valeur) {
+          return;
+        }
+        appliquerStyle(valeur);
+      });
+    </script>
+  </body>
+</html>
