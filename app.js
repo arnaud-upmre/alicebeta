@@ -814,7 +814,7 @@ function construireAttributionsDynamiquesCarte() {
   const attributions = [];
   if (AFFICHER_MENTION_SNCF_PAR_DEFAUT) {
     attributions.push(
-      `Donnees ferroviaires: <a href="${LIEN_SNCF_OPEN_DATA}" target="_blank" rel="noopener noreferrer">SNCF Open Data</a>`
+      `<a href="${LIEN_SNCF_OPEN_DATA}" target="_blank" rel="noopener noreferrer">SNCF Open Data</a>`
     );
   }
   if (afficherPn) {
