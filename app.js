@@ -121,7 +121,7 @@ const fondsCartographiques = {
 
 let fondActif = "carteTransport";
 let ignAutomatiqueActif = true;
-let afficherAppareils = true;
+let afficherAppareils = false;
 let afficherAcces = true;
 let afficherPostes = true;
 let afficherPk = false;
@@ -1997,7 +1997,7 @@ function appliquerCouchesDonnees() {
       filter: ["==", ["get", "postes_count"], 1],
       paint: {
         "circle-radius": ["interpolate", ["linear"], ["zoom"], 6, 5, 12, 5.8, 18, 6.8],
-        "circle-color": ["case", ["==", ["get", "hors_patrimoine"], true], "#ef4444", "#2563eb"],
+        "circle-color": ["case", ["==", ["get", "hors_patrimoine"], true], "#ef4444", "#60a5fa"],
         "circle-opacity": ["case", ["==", ["get", "hors_patrimoine"], true], 0.82, 0.92],
         "circle-stroke-color": "#ffffff",
         "circle-stroke-width": 1.1
@@ -2013,7 +2013,7 @@ function appliquerCouchesDonnees() {
       filter: [">", ["get", "postes_count"], 1],
       paint: {
         "circle-radius": ["interpolate", ["linear"], ["get", "postes_count"], 2, 13, 5, 17, 10, 22],
-        "circle-color": ["case", [">", ["get", "hors_patrimoine_count"], 0], "#f87171", "#3b82f6"],
+        "circle-color": ["case", [">", ["get", "hors_patrimoine_count"], 0], "#f87171", "#93c5fd"],
         "circle-opacity": ["case", [">", ["get", "hors_patrimoine_count"], 0], 0.38, 0.34],
         "circle-stroke-color": "#ffffff",
         "circle-stroke-width": 1.8
@@ -5047,7 +5047,6 @@ if (caseVitesseLigne) {
 }
 
 async function initialiserDonneesParDefaut() {
-  await chargerCompteurAppareils();
   await chargerCompteurPostes();
 
   if (!afficherAcces && !afficherPostes) {
