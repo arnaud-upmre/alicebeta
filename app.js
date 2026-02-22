@@ -33,12 +33,10 @@ const POSTES_VIDE = { type: "FeatureCollection", features: [] };
 const PK_VIDE = { type: "FeatureCollection", features: [] };
 const PK_ZOOM_MIN = 11;
 const PK_TOLERANCE_M = 50;
-const URL_GLYPHS_MAPLIBRE = "https://demotiles.maplibre.org/font/{fontstack}/{range}.pbf";
 
 // Style raster OSM (plan open).
 const stylePlanOsm = {
   version: 8,
-  glyphs: URL_GLYPHS_MAPLIBRE,
   sources: {
     osm: {
       type: "raster",
@@ -59,7 +57,6 @@ const stylePlanOsm = {
 // Style raster des orthophotos IGN (satellite).
 const styleSatelliteIgn = {
   version: 8,
-  glyphs: URL_GLYPHS_MAPLIBRE,
   sources: {
     satelliteIgn: {
       type: "raster",
@@ -656,7 +653,7 @@ let promesseChargementModuleItineraire = null;
 let moduleLocalisation = null;
 let promesseChargementModuleLocalisation = null;
 let rafMiseAJourPk = null;
-let imagePkPillEnregistree = false;
+let marqueursPk = [];
 
 class ControleActionsCarte {
   onAdd() {
@@ -1746,25 +1743,11 @@ function filtrerPkPourVue() {
 }
 
 function mettreAJourAffichagePk() {
-  if (!carte.isStyleLoaded()) {
-    return;
-  }
-
-  const sourcePk = carte.getSource(SOURCE_PK);
-  if (!sourcePk) {
-    return;
-  }
-
   const bonusMobile = estAffichageMobilePk() ? 1 : 0;
   const zoomEffectif = carte.getZoom() + bonusMobile;
   const doitAfficher = afficherPk && Boolean(donneesPk?.features?.length) && zoomEffectif >= PK_ZOOM_MIN;
   donneesPkAffichees = doitAfficher ? filtrerPkPourVue() : PK_VIDE;
-  sourcePk.setData(donneesPkAffichees);
-
-  const visibiliteLabels = doitAfficher ? "visible" : "none";
-  if (carte.getLayer(COUCHE_PK_LABELS)) {
-    carte.setLayoutProperty(COUCHE_PK_LABELS, "visibility", visibiliteLabels);
-  }
+  afficherMarqueursPk(donneesPkAffichees.features || []);
 }
 
 function planifierMiseAJourPk() {
@@ -1777,53 +1760,53 @@ function planifierMiseAJourPk() {
   });
 }
 
-function creerImagePkPill() {
-  const largeur = 92;
-  const hauteur = 34;
-  const rayon = 9;
-  const canvas = document.createElement("canvas");
-  canvas.width = largeur;
-  canvas.height = hauteur;
-  const ctx = canvas.getContext("2d");
-  if (!ctx) {
-    return null;
+function viderMarqueursPk() {
+  for (const marker of marqueursPk) {
+    marker.remove();
   }
-
-  ctx.clearRect(0, 0, largeur, hauteur);
-  ctx.beginPath();
-  ctx.moveTo(rayon, 1);
-  ctx.arcTo(largeur - 1, 1, largeur - 1, hauteur - 1, rayon);
-  ctx.arcTo(largeur - 1, hauteur - 1, 1, hauteur - 1, rayon);
-  ctx.arcTo(1, hauteur - 1, 1, 1, rayon);
-  ctx.arcTo(1, 1, largeur - 1, 1, rayon);
-  ctx.closePath();
-  ctx.fillStyle = "rgba(255, 255, 255, 0.98)";
-  ctx.fill();
-  ctx.strokeStyle = "rgba(0, 0, 0, 0.78)";
-  ctx.lineWidth = 2;
-  ctx.stroke();
-
-  return {
-    width: largeur,
-    height: hauteur,
-    data: ctx.getImageData(0, 0, largeur, hauteur).data
-  };
+  marqueursPk = [];
 }
 
-function enregistrerImagePkPillSiNecessaire() {
-  if (imagePkPillEnregistree || !carte.isStyleLoaded()) {
-    return;
+function creerElementMarqueurPk(libelle) {
+  const element = document.createElement("div");
+  element.textContent = libelle;
+  element.style.display = "inline-flex";
+  element.style.alignItems = "center";
+  element.style.justifyContent = "center";
+  element.style.padding = "1px 7px";
+  element.style.borderRadius = "6px";
+  element.style.border = "1px solid rgba(17, 24, 39, 0.85)";
+  element.style.background = "rgba(255, 255, 255, 0.98)";
+  element.style.color = "#111827";
+  element.style.fontFamily = "Manrope, sans-serif";
+  element.style.fontWeight = "800";
+  element.style.fontSize = "12px";
+  element.style.lineHeight = "1.15";
+  element.style.whiteSpace = "nowrap";
+  element.style.boxShadow = "0 1px 2px rgba(0, 0, 0, 0.2)";
+  element.style.pointerEvents = "none";
+  return element;
+}
+
+function afficherMarqueursPk(features) {
+  viderMarqueursPk();
+  for (const feature of features) {
+    const [longitude, latitude] = feature?.geometry?.coordinates || [];
+    if (!Number.isFinite(longitude) || !Number.isFinite(latitude)) {
+      continue;
+    }
+    const libelle = String(feature?.properties?.pk_affichage || feature?.properties?.pk_label || "").trim();
+    if (!libelle) {
+      continue;
+    }
+    const marker = new maplibregl.Marker({
+      element: creerElementMarqueurPk(libelle),
+      anchor: "center"
+    })
+      .setLngLat([longitude, latitude])
+      .addTo(carte);
+    marqueursPk.push(marker);
   }
-  if (carte.hasImage("pk-pill")) {
-    imagePkPillEnregistree = true;
-    return;
-  }
-  const image = creerImagePkPill();
-  if (!image) {
-    return;
-  }
-  carte.addImage("pk-pill", image, { pixelRatio: 2 });
-  imagePkPillEnregistree = true;
 }
 
 function appliquerCouchesDonnees() {
@@ -2019,29 +2002,6 @@ function appliquerCouchesDonnees() {
     });
   }
 
-  if (!carte.getLayer(COUCHE_PK_LABELS)) {
-    carte.addLayer({
-      id: COUCHE_PK_LABELS,
-      type: "symbol",
-      source: SOURCE_PK,
-      layout: {
-        "text-field": ["coalesce", ["get", "pk_affichage"], ["get", "pk_label"], ["concat", "PK ", ["to-string", ["get", "pk"]]]],
-        "text-font": ["Open Sans Bold"],
-        "text-size": ["interpolate", ["linear"], ["zoom"], 11, 9, 15, 10, 18, 10.8, 19, 11.2],
-        "text-offset": [0, 0],
-        "text-allow-overlap": true,
-        "text-padding": 2,
-        "symbol-sort-key": ["to-number", ["get", "pk"], 0]
-      },
-      paint: {
-        "text-color": "#111827",
-        "text-halo-color": "#ffffff",
-        "text-halo-width": 3,
-        "text-halo-blur": 0.25
-      }
-    });
-  }
-
   carte.setLayoutProperty(
     COUCHE_APPAREILS,
     "visibility",
@@ -2118,9 +2078,6 @@ function remonterCouchesDonnees() {
     carte.moveLayer(COUCHE_APPAREILS);
   }
 
-  if (carte.getLayer(COUCHE_PK_LABELS)) {
-    carte.moveLayer(COUCHE_PK_LABELS);
-  }
 }
 
 function restaurerAffichageDonnees() {
@@ -4863,7 +4820,7 @@ function activerFondIgnAutomatique() {
 }
 
 function gererStyleCharge() {
-  imagePkPillEnregistree = false;
+  viderMarqueursPk();
   restaurerEtatFiltres();
   restaurerAffichageDonnees();
   rafraichirAffichageMesure();
