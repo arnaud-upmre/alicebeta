@@ -1723,13 +1723,17 @@ body {
   text-align: center;
 }
 
-.popup-poste-aide {
+.popup-section .popup-poste-aide {
   display: block;
-  margin: 0 0 16px;
+  margin: 0 0 24px;
   font-size: 0.84rem;
   line-height: 1.35;
   color: var(--ui-text-secondary);
   font-style: italic;
+}
+
+.modal-fiche.est-vue-appareils-associes #modal-fiche-partager {
+  display: none;
 }
 
 .popup-poste-entete-principal {

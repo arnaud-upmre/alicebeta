@@ -1101,6 +1101,11 @@ function fermerPopupCarte(options = {}) {
   popupCarte = null;
   navigationInternePopup = null;
   contextePartageFiche = null;
+  modalFiche?.classList.remove("est-vue-appareils-associes");
+  if (boutonPartagerModalFiche) {
+    boutonPartagerModalFiche.hidden = false;
+    boutonPartagerModalFiche.style.display = "";
+  }
   if (localiserPoint && coordonnees) {
     demarrerClignotementLocalisation(coordonnees[0], coordonnees[1]);
   }
@@ -3905,14 +3910,23 @@ function construireSectionAppareilsAssociesDepuisPostes(postesListe, options = {
     return "";
   }
 
+  const normaliserCleSat = (valeurSat) =>
+    normaliserTexteRecherche(champCompletOuVide(valeurSat))
+      .replace(/^sat[\s-]*/i, "")
+      .trim();
+
   const trouverPosteCiblePourSat = (libelleSat) => {
     const cible = normaliserTexteRecherche(libelleSat);
+    const cibleCleSat = normaliserCleSat(libelleSat);
     const candidats = postesListe.filter((poste) => {
       const satNorm = normaliserTexteRecherche(champCompletOuVide(poste?.SAT));
       if (cible === "poste") {
         return !satNorm;
       }
-      return satNorm === cible;
+      if (satNorm === cible) {
+        return true;
+      }
+      return normaliserCleSat(poste?.SAT) === cibleCleSat;
     });
     return candidats[0] || postesListe[0] || null;
   };
@@ -4084,8 +4098,10 @@ function attacherActionsPopupInterne() {
   }
 
   const estVueListeAppareilsAssocies = Boolean(racinePopup.querySelector("#popup-retour-fiche-poste"));
+  modalFiche?.classList.toggle("est-vue-appareils-associes", estVueListeAppareilsAssocies);
   if (boutonPartagerModalFiche) {
     boutonPartagerModalFiche.hidden = estVueListeAppareilsAssocies;
+    boutonPartagerModalFiche.style.display = estVueListeAppareilsAssocies ? "none" : "";
   }
 
   const ouvrirLienCodes = (url) => {
@@ -4857,6 +4873,11 @@ function construirePopupDepuisFeatures(longitude, latitude, featurePostes, featu
     navigationInternePopup = null;
     coordonneesDerniereFiche = null;
     contextePartageFiche = null;
+    modalFiche?.classList.remove("est-vue-appareils-associes");
+    if (boutonPartagerModalFiche) {
+      boutonPartagerModalFiche.hidden = false;
+      boutonPartagerModalFiche.style.display = "";
+    }
   });
 
   return true;
