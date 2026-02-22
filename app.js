@@ -111,15 +111,16 @@ const stylePlanOsm = {
   ]
 };
 
+const URL_TUILES_SATELLITE_IGN =
+  "https://data.geopf.fr/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER=ORTHOIMAGERY.ORTHOPHOTOS&STYLE=normal&TILEMATRIXSET=PM&FORMAT=image/jpeg&TILEMATRIX={z}&TILEROW={y}&TILECOL={x}";
+
 // Style raster des orthophotos IGN (satellite).
 const styleSatelliteIgn = {
   version: 8,
   sources: {
     satelliteIgn: {
       type: "raster",
-      tiles: [
-        "https://data.geopf.fr/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER=ORTHOIMAGERY.ORTHOPHOTOS&STYLE=normal&TILEMATRIXSET=PM&FORMAT=image/jpeg&TILEMATRIX={z}&TILEROW={y}&TILECOL={x}"
-      ],
+      tiles: [URL_TUILES_SATELLITE_IGN],
       tileSize: 256,
       maxzoom: 18,
       attribution: "© IGN, © OpenStreetMap contributors"
@@ -143,6 +144,11 @@ const URL_STYLE_PLAN_IGN =
 const FOND_IGN_AUTOMATIQUE = "ignAuto";
 const ZOOM_PASSAGE_SATELLITE_IGN = 15;
 const ZOOM_RETOUR_PLAN_IGN = 14.5;
+const ZOOM_DEBUT_FONDU_IGN_AUTO = ZOOM_RETOUR_PLAN_IGN;
+const ZOOM_FIN_FONDU_IGN_AUTO = ZOOM_PASSAGE_SATELLITE_IGN + 0.45;
+const OPACITE_MAX_SATELLITE_IGN_AUTO = 0.96;
+const SOURCE_SATELLITE_IGN_AUTO = "satellite-ign-auto-source";
+const COUCHE_SATELLITE_IGN_AUTO = "satellite-ign-auto-layer";
 
 const fondsCartographiques = {
   positron: URL_STYLE_POSITRON,
@@ -5384,35 +5390,122 @@ async function changerFondCarte(nomFond, options = {}) {
 }
 
 function determinerFondIgnAutomatique(zoom, fondCourant = fondActif) {
-  if (zoom >= ZOOM_PASSAGE_SATELLITE_IGN) {
-    return "satelliteIgn";
-  }
-  if (zoom <= ZOOM_RETOUR_PLAN_IGN) {
-    return "positron";
-  }
-  if (fondCourant === "positron" || fondCourant === "satelliteIgn") {
-    return fondCourant;
-  }
   return "positron";
 }
 
-function appliquerFondIgnAutomatique(options = {}) {
+function calculerProgressionFonduIgnAuto(zoom) {
+  if (!Number.isFinite(zoom)) {
+    return 0;
+  }
+  if (zoom <= ZOOM_DEBUT_FONDU_IGN_AUTO) {
+    return 0;
+  }
+  if (zoom >= ZOOM_FIN_FONDU_IGN_AUTO) {
+    return 1;
+  }
+  const ratio = (zoom - ZOOM_DEBUT_FONDU_IGN_AUTO) / (ZOOM_FIN_FONDU_IGN_AUTO - ZOOM_DEBUT_FONDU_IGN_AUTO);
+  return Math.min(1, Math.max(0, ratio));
+}
+
+function adoucirProgressionFondu(progress) {
+  const borne = Math.min(1, Math.max(0, progress));
+  return borne * borne * (3 - 2 * borne);
+}
+
+function calculerOpaciteSatelliteIgnAuto(zoom) {
+  const progression = calculerProgressionFonduIgnAuto(zoom);
+  return adoucirProgressionFondu(progression) * OPACITE_MAX_SATELLITE_IGN_AUTO;
+}
+
+function obtenirCoucheInsertionLabels() {
+  const style = carte.getStyle();
+  const couches = Array.isArray(style?.layers) ? style.layers : [];
+  const coucheLabel = couches.find((couche) => couche?.type === "symbol");
+  return coucheLabel?.id || undefined;
+}
+
+function assurerCoucheSatelliteIgnAuto() {
+  if (!carte.isStyleLoaded()) {
+    return;
+  }
+
+  if (!carte.getSource(SOURCE_SATELLITE_IGN_AUTO)) {
+    carte.addSource(SOURCE_SATELLITE_IGN_AUTO, {
+      type: "raster",
+      tiles: [URL_TUILES_SATELLITE_IGN],
+      tileSize: 256,
+      maxzoom: 18,
+      attribution: "© IGN, © OpenStreetMap contributors"
+    });
+  }
+
+  if (!carte.getLayer(COUCHE_SATELLITE_IGN_AUTO)) {
+    carte.addLayer(
+      {
+        id: COUCHE_SATELLITE_IGN_AUTO,
+        type: "raster",
+        source: SOURCE_SATELLITE_IGN_AUTO,
+        paint: {
+          "raster-opacity": 0,
+          "raster-opacity-transition": {
+            duration: 250,
+            delay: 0
+          }
+        }
+      },
+      obtenirCoucheInsertionLabels()
+    );
+  }
+}
+
+function masquerCoucheSatelliteIgnAuto() {
+  if (!carte.getLayer(COUCHE_SATELLITE_IGN_AUTO)) {
+    return;
+  }
+  carte.setLayoutProperty(COUCHE_SATELLITE_IGN_AUTO, "visibility", "none");
+  carte.setPaintProperty(COUCHE_SATELLITE_IGN_AUTO, "raster-opacity", 0);
+}
+
+function mettreAJourTransitionFondIgnAuto() {
+  if (!carte.isStyleLoaded()) {
+    return;
+  }
+
+  if (!ignAutomatiqueActif || fondActif !== "positron") {
+    masquerCoucheSatelliteIgnAuto();
+    return;
+  }
+
+  assurerCoucheSatelliteIgnAuto();
+  if (!carte.getLayer(COUCHE_SATELLITE_IGN_AUTO)) {
+    return;
+  }
+
+  const opacite = calculerOpaciteSatelliteIgnAuto(carte.getZoom());
+  carte.setLayoutProperty(COUCHE_SATELLITE_IGN_AUTO, "visibility", opacite > 0.001 ? "visible" : "none");
+  carte.setPaintProperty(COUCHE_SATELLITE_IGN_AUTO, "raster-opacity", opacite);
+}
+
+function appliquerFondIgnAutomatique() {
   if (!ignAutomatiqueActif) {
+    mettreAJourTransitionFondIgnAuto();
     return;
   }
 
-  const forcer = options.force === true;
   const fondCible = determinerFondIgnAutomatique(carte.getZoom(), fondActif);
-  if (!forcer && fondCible === fondActif) {
+  if (fondCible === fondActif) {
+    mettreAJourTransitionFondIgnAuto();
+    mettreAJourSelection(FOND_IGN_AUTOMATIQUE);
     return;
   }
 
-  changerFondCarte(fondCible, { force: forcer });
+  changerFondCarte(fondCible, { force: true });
   mettreAJourSelection(FOND_IGN_AUTOMATIQUE);
 }
 
 function choisirFondManuel(nomFond) {
   ignAutomatiqueActif = false;
+  mettreAJourTransitionFondIgnAuto();
   changerFondCarte(nomFond);
   mettreAJourSelection(nomFond);
 }
@@ -5429,6 +5522,7 @@ function gererStyleCharge() {
   restaurerEtatFiltres();
   restaurerAffichageDonnees();
   rafraichirAffichageMesure();
+  mettreAJourTransitionFondIgnAuto();
 }
 
 carte.on("style.load", gererStyleCharge);
@@ -5486,6 +5580,7 @@ carte.on("zoomend", () => {
   appliquerFondIgnAutomatique();
   planifierMiseAJourPk();
 });
+carte.on("zoom", mettreAJourTransitionFondIgnAuto);
 carte.on("zoomstart", () => {
   fermerPopupPkInfo();
   fermerPopupPnInfo();
