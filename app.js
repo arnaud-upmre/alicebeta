@@ -198,6 +198,7 @@ let minuterieArretLocalisation = null;
 let minuterieClignotementMarqueurClic = null;
 let minuterieSuppressionMarqueurClic = null;
 let coordonneesDerniereFiche = null;
+let contextePartageFiche = null;
 let marqueurLocalisation = null;
 let marqueurClicContextuel = null;
 let recadragePopupMobileEnCours = false;
@@ -929,6 +930,7 @@ const boutonFermerModalApropos = document.getElementById("modal-apropos-fermer")
 let modalFiche = document.getElementById("modal-fiche");
 let modalFicheContenu = document.getElementById("modal-fiche-contenu");
 let boutonFermerModalFiche = document.getElementById("modal-fiche-fermer");
+let boutonPartagerModalFiche = document.getElementById("modal-fiche-partager");
 let elementRetourFocusModalFiche = null;
 let elementRetourFocusModalApropos = null;
 const CLE_STOCKAGE_FENETRE_ACCUEIL = "alice.fenetre-accueil.derniere-date";
@@ -1098,13 +1100,14 @@ function fermerPopupCarte(options = {}) {
   popupCarte.remove();
   popupCarte = null;
   navigationInternePopup = null;
+  contextePartageFiche = null;
   if (localiserPoint && coordonnees) {
     demarrerClignotementLocalisation(coordonnees[0], coordonnees[1]);
   }
 }
 
 function assurerElementsModalFiche() {
-  if (modalFiche && modalFicheContenu && boutonFermerModalFiche) {
+  if (modalFiche && modalFicheContenu && boutonFermerModalFiche && boutonPartagerModalFiche) {
     return true;
   }
 
@@ -1113,7 +1116,8 @@ function assurerElementsModalFiche() {
     modalFiche = existante;
     modalFicheContenu = document.getElementById("modal-fiche-contenu");
     boutonFermerModalFiche = document.getElementById("modal-fiche-fermer");
-    return Boolean(modalFicheContenu && boutonFermerModalFiche);
+    boutonPartagerModalFiche = document.getElementById("modal-fiche-partager");
+    return Boolean(modalFicheContenu && boutonFermerModalFiche && boutonPartagerModalFiche);
   }
 
   const racine = document.createElement("div");
@@ -1125,6 +1129,7 @@ function assurerElementsModalFiche() {
   racine.setAttribute("aria-hidden", "true");
   racine.innerHTML = `
     <div class="modal-fiche-carte">
+      <button class="modal-fiche-partager" id="modal-fiche-partager" type="button" aria-label="Partager la fiche">🔗</button>
       <button class="modal-fiche-fermer" id="modal-fiche-fermer" type="button" aria-label="Fermer la fiche">×</button>
       <div class="modal-fiche-contenu maplibregl-popup-content" id="modal-fiche-contenu"></div>
     </div>
@@ -1134,7 +1139,8 @@ function assurerElementsModalFiche() {
   modalFiche = racine;
   modalFicheContenu = document.getElementById("modal-fiche-contenu");
   boutonFermerModalFiche = document.getElementById("modal-fiche-fermer");
-  return Boolean(modalFicheContenu && boutonFermerModalFiche);
+  boutonPartagerModalFiche = document.getElementById("modal-fiche-partager");
+  return Boolean(modalFicheContenu && boutonFermerModalFiche && boutonPartagerModalFiche);
 }
 
 function creerPopupFicheModale() {
@@ -1267,6 +1273,76 @@ function formaterCoordonneeMenu(valeur) {
 
 function construireUrlPartagePosition(latitude, longitude) {
   return `${location.origin}${location.pathname}?lat=${encodeURIComponent(latitude)}&lon=${encodeURIComponent(longitude)}&z=18&marker=true`;
+}
+
+function normaliserTypePartageFiche(type) {
+  const brut = String(type || "")
+    .trim()
+    .toLowerCase();
+  if (brut === "poste" || brut === "postes") {
+    return "postes";
+  }
+  if (brut === "appareil" || brut === "appareils") {
+    return "appareils";
+  }
+  if (brut === "acces" || brut === "accès" || brut === "access") {
+    return "acces";
+  }
+  return "";
+}
+
+function construireUrlPartageFiche(contexte) {
+  const latitude = Number(contexte?.latitude);
+  const longitude = Number(contexte?.longitude);
+  const type = normaliserTypePartageFiche(contexte?.type);
+  if (!Number.isFinite(latitude) || !Number.isFinite(longitude) || !type) {
+    return "";
+  }
+
+  const url = new URL(`${location.origin}${location.pathname}`);
+  url.searchParams.set("lat", String(latitude));
+  url.searchParams.set("lon", String(longitude));
+  url.searchParams.set("z", "18");
+  url.searchParams.set("type", type);
+  url.searchParams.set("fiche", "1");
+
+  const cibleSat = String(contexte?.cibleSatPoste || "").trim();
+  if (cibleSat) {
+    url.searchParams.set("sat", cibleSat);
+  }
+
+  return url.toString();
+}
+
+async function partagerFicheCourante() {
+  const lien = construireUrlPartageFiche(contextePartageFiche);
+  if (!lien) {
+    return;
+  }
+
+  if (navigator.share) {
+    try {
+      await navigator.share({
+        title: "Fiche ALICE",
+        text: "Ouvrir cette fiche",
+        url: lien
+      });
+      return;
+    } catch {
+      // Annulation utilisateur ou API indisponible: fallback copie.
+    }
+  }
+
+  if (navigator.clipboard?.writeText) {
+    try {
+      await navigator.clipboard.writeText(lien);
+      return;
+    } catch {
+      // Fallback ultime plus bas.
+    }
+  }
+
+  window.prompt("Copiez ce lien :", lien);
 }
 
 function obtenirLienImajnetDepuisContexte() {
@@ -4692,6 +4768,13 @@ function construirePopupDepuisFeatures(longitude, latitude, featurePostes, featu
     : `<section class="popup-section popup-section-localiser"><div class="popup-itineraires popup-itineraires-poste-actions"><button class="popup-bouton-itineraire popup-bouton-localiser" id="popup-localiser-carte" type="button" data-lng="${longitude}" data-lat="${latitude}">📍 Localiser sur la carte</button><a class="popup-bouton-itineraire" href="${echapperHtml(lienPowerBi)}" target="_blank" rel="noopener noreferrer">⚡️ Patrimoine SPOT</a></div></section>`;
   const sectionRssFinale = estVueAccesSeule ? "" : sectionRssAssocieDepuisAcces;
   const contenuFiche = `<div class="popup-carte">${sections.join("")}${sectionConsigneRssAcces}${sectionRssFinale}${sectionItineraire}${sectionExplorerAcces}${sectionActionsPoste}${sectionTerrain}${sectionCodesAvecPills}${sectionLocaliser}${sectionRetourPoste}${modalStreetView}</div>`;
+  const typePartageFiche = estVueAccesSeule ? "acces" : estVueAppareilsSeule ? "appareils" : "postes";
+  contextePartageFiche = {
+    type: typePartageFiche,
+    latitude,
+    longitude,
+    cibleSatPoste: estVuePosteSeule ? String(options?.cibleSatPoste || "").trim() : ""
+  };
 
   let contenuVueAppareils = "";
   if (sectionAppareilsAssociesPoste) {
@@ -4719,6 +4802,7 @@ function construirePopupDepuisFeatures(longitude, latitude, featurePostes, featu
     popupCarte = null;
     navigationInternePopup = null;
     coordonneesDerniereFiche = null;
+    contextePartageFiche = null;
   });
 
   return true;
@@ -5123,6 +5207,58 @@ async function ouvrirPositionPartageeDepuisParametres() {
   } else {
     supprimerMarqueurClicContextuel();
   }
+  return true;
+}
+
+async function ouvrirFichePartageeDepuisParametres() {
+  const params = new URLSearchParams(window.location.search);
+  const type = normaliserTypePartageFiche(params.get("type"));
+  if (!type) {
+    return false;
+  }
+
+  const paramLatitude = String(params.get("lat") || "").trim();
+  const paramLongitude = String(params.get("lon") ?? params.get("lng") ?? params.get("longitude") ?? "").trim();
+  if (!paramLatitude || !paramLongitude) {
+    return false;
+  }
+
+  const latitude = Number(paramLatitude.replace(",", "."));
+  const longitude = Number(paramLongitude.replace(",", "."));
+  if (!Number.isFinite(latitude) || !Number.isFinite(longitude)) {
+    return false;
+  }
+
+  if (!carte.loaded()) {
+    await new Promise((resolve) => {
+      carte.once("load", resolve);
+    });
+  }
+
+  await activerFiltrePourType(type);
+  appliquerCouchesDonnees();
+  remonterCouchesDonnees();
+
+  const cibleSat = String(params.get("sat") || "").trim();
+  let popupOuverte = false;
+  const ouvrirPopup = () => {
+    if (popupOuverte) {
+      return;
+    }
+    popupOuverte = true;
+    const options =
+      type === "postes" && cibleSat
+        ? { fallbackGenerique: false, cibleSatPoste: cibleSat }
+        : { fallbackGenerique: false };
+    ouvrirPopupDepuisCoordonneesPourType(type, longitude, latitude, options);
+  };
+
+  naviguerVersCoordonneesPuisOuvrirPopup(longitude, latitude, ouvrirPopup, {
+    forceZoom: true,
+    zoomMin: 14.4,
+    durationDouxMs: 430
+  });
+
   return true;
 }
 
@@ -6054,6 +6190,10 @@ if (doitAfficherModalAproposPremiereVisite()) {
 }
 
 document.addEventListener("click", (event) => {
+  if (event.target instanceof Element && event.target.closest("#modal-fiche-partager")) {
+    partagerFicheCourante();
+    return;
+  }
   if (event.target instanceof Element && event.target.closest("#modal-fiche-fermer")) {
     fermerPopupCarte({ localiserPoint: true });
     return;
@@ -6238,8 +6378,11 @@ if (boutonCtxAjoutAppareil) {
 }
 
 async function initialiserNavigationDepuisUrl() {
-  await ouvrirPositionPartageeDepuisParametres();
-  await ouvrirFicheDepuisParametreId();
+  const fichePartageeOuverte = await ouvrirFichePartageeDepuisParametres();
+  if (!fichePartageeOuverte) {
+    await ouvrirPositionPartageeDepuisParametres();
+    await ouvrirFicheDepuisParametreId();
+  }
 }
 
 initialiserNavigationDepuisUrl();
