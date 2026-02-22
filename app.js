@@ -28,8 +28,6 @@ const COUCHE_POSTES = "postes-points";
 const COUCHE_POSTES_GROUPES = "postes-groupes";
 const SOURCE_PK = "pk-source";
 const COUCHE_PK_LABELS = "pk-labels";
-const SOURCE_PN = "pn-source";
-const COUCHE_PN = "pn-points";
 const SOURCE_LIGNES = "openrailwaymap-source";
 const COUCHE_LIGNES = "openrailwaymap-lignes";
 const SOURCE_VITESSE_LIGNE = "openrailwaymap-maxspeed-source";
@@ -48,12 +46,7 @@ const APPAREILS_VIDE = { type: "FeatureCollection", features: [] };
 const ACCES_VIDE = { type: "FeatureCollection", features: [] };
 const POSTES_VIDE = { type: "FeatureCollection", features: [] };
 const PK_VIDE = { type: "FeatureCollection", features: [] };
-const PN_VIDE = { type: "FeatureCollection", features: [] };
 const PK_ZOOM_MIN = 11;
-const PN_ZOOM_MIN = 9;
-// Emprise large de la region Hauts-de-France (inclut le sud de l'Aisne et de l'Oise).
-const BBOX_HAUTS_DE_FRANCE = [1.2, 48.8, 4.45, 51.2];
-const URL_API_PN_SNCF = "https://ressources.data.sncf.com/api/records/1.0/search/";
 const PALETTE_CARTE = Object.freeze({
   acces: "#7c3aed",
   accesGroupe: "#8b5cf6",
@@ -166,7 +159,6 @@ let afficherAppareils = false;
 let afficherAcces = true;
 let afficherPostes = true;
 let afficherPk = false;
-let afficherPn = false;
 let afficherLignes = false;
 let afficherVitesseLigne = false;
 let donneesAppareils = null;
@@ -174,17 +166,12 @@ let donneesAcces = null;
 let donneesPostes = null;
 let donneesPk = null;
 let donneesPkAffichees = PK_VIDE;
-let donneesPn = null;
-let donneesPnAffichees = PN_VIDE;
 let promesseChargementAppareils = null;
 let promesseChargementAcces = null;
 let promesseChargementPostes = null;
 let promesseChargementPk = null;
-let promesseChargementPn = null;
 let popupCarte = null;
 let popupPkInfo = null;
-let popupPnInfo = null;
-let clePopupPnActive = "";
 let initialisationDonneesLancee = false;
 let totalAppareilsBrut = 0;
 let totalPostesBrut = 0;
@@ -822,13 +809,11 @@ const caseAppareils = document.querySelector('input[name="filtre-appareils"]');
 const caseAcces = document.querySelector('input[name="filtre-acces"]');
 const casePostes = document.querySelector('input[name="filtre-postes"]');
 const casePk = document.querySelector('input[name="filtre-pk"]');
-const casePn = document.querySelector('input[name="filtre-pn"]');
 const caseLignes = document.querySelector('input[name="filtre-lignes"]');
 const caseVitesseLigne = document.querySelector('input[name="filtre-vitesse-ligne"]');
 const compteurAppareils = document.getElementById("compteur-appareils");
 const compteurAcces = document.getElementById("compteur-acces");
 const compteurPostes = document.getElementById("compteur-postes");
-const compteurPn = document.getElementById("compteur-pn");
 const controleRecherche = document.getElementById("controle-recherche");
 const champRecherche = document.getElementById("champ-recherche");
 const listeResultatsRecherche = document.getElementById("recherche-resultats");
@@ -1822,9 +1807,6 @@ function mettreAJourCompteursFiltres() {
     const totalPostes = donneesPostes ? totalPostesBrut : calculerTotalEntrees(donneesPostes, "postes_count");
     compteurPostes.textContent = `(${totalPostes})`;
   }
-  if (compteurPn) {
-    compteurPn.textContent = `(${Array.isArray(donneesPn?.features) ? donneesPn.features.length : 0})`;
-  }
 }
 
 function estAffichageMobilePk() {
@@ -1968,7 +1950,6 @@ function planifierMiseAJourPk() {
   rafMiseAJourPk = window.requestAnimationFrame(() => {
     rafMiseAJourPk = null;
     mettreAJourAffichagePk();
-    mettreAJourAffichagePn();
   });
 }
 
@@ -2079,96 +2060,6 @@ function afficherMarqueursPk(features) {
       .addTo(carte);
     marqueursPk.push(marker);
   }
-}
-
-function filtrerPnPourVue() {
-  if (!donneesPn?.features?.length) {
-    return PN_VIDE;
-  }
-
-  if (carte.getZoom() < PN_ZOOM_MIN) {
-    return PN_VIDE;
-  }
-
-  const bounds = carte.getBounds();
-  const features = [];
-
-  for (const feature of donneesPn.features) {
-    const [longitude, latitude] = feature?.geometry?.coordinates || [];
-    if (!Number.isFinite(longitude) || !Number.isFinite(latitude)) {
-      continue;
-    }
-    if (!estCoordonneeDansVue(bounds, longitude, latitude)) {
-      continue;
-    }
-    features.push(feature);
-  }
-
-  return { type: "FeatureCollection", features };
-}
-
-function mettreAJourAffichagePn() {
-  const doitAfficher = afficherPn && Boolean(donneesPn?.features?.length) && carte.getZoom() >= PN_ZOOM_MIN;
-  donneesPnAffichees = doitAfficher ? filtrerPnPourVue() : PN_VIDE;
-  if (!doitAfficher) {
-    fermerPopupPnInfo();
-  }
-  const source = carte.getSource(SOURCE_PN);
-  if (source) {
-    source.setData(donneesPnAffichees);
-  }
-  if (carte.getLayer(COUCHE_PN)) {
-    carte.setLayoutProperty(COUCHE_PN, "visibility", doitAfficher ? "visible" : "none");
-  }
-}
-
-function normaliserTextePn(valeur) {
-  const texte = String(valeur ?? "").trim();
-  return texte || "Non renseigne";
-}
-
-function fermerPopupPnInfo() {
-  if (!popupPnInfo) {
-    return;
-  }
-  popupPnInfo.remove();
-  popupPnInfo = null;
-  clePopupPnActive = "";
-}
-
-function ouvrirPopupPnInfo(feature) {
-  const [longitude, latitude] = feature?.geometry?.coordinates || [];
-  if (!Number.isFinite(longitude) || !Number.isFinite(latitude)) {
-    return;
-  }
-
-  const numeroPn = normaliserTextePn(feature?.properties?.pn_numero);
-  const codeLigne = normaliserTextePn(feature?.properties?.code_ligne);
-  const pk = normaliserTextePn(feature?.properties?.pk);
-  const classe = normaliserTextePn(feature?.properties?.classe);
-  const cle = `${numeroPn}|${codeLigne}|${pk}|${classe}|${longitude}|${latitude}`;
-
-  if (popupPnInfo && clePopupPnActive === cle) {
-    return;
-  }
-
-  fermerPopupPnInfo();
-  clePopupPnActive = cle;
-  popupPnInfo = new maplibregl.Popup({
-    closeButton: false,
-    closeOnClick: false,
-    className: "popup-pk-info",
-    offset: 12
-  })
-    .setLngLat([longitude, latitude])
-    .setHTML(
-      `<div class="popup-pk-info-contenu"><p><strong>${echapperHtml(
-        numeroPn
-      )}</strong></p><p><strong>Code ligne :</strong> ${echapperHtml(codeLigne)}</p><p><strong>PK :</strong> ${echapperHtml(
-        pk
-      )}</p><p><strong>Classe :</strong> ${echapperHtml(classe)}</p></div>`
-    )
-    .addTo(carte);
 }
 
 function appliquerCouchesDonnees() {
@@ -2374,30 +2265,6 @@ function appliquerCouchesDonnees() {
     });
   }
 
-  if (!carte.getSource(SOURCE_PN)) {
-    carte.addSource(SOURCE_PN, {
-      type: "geojson",
-      data: PN_VIDE
-    });
-  } else {
-    carte.getSource(SOURCE_PN).setData(donneesPnAffichees || PN_VIDE);
-  }
-
-  if (!carte.getLayer(COUCHE_PN)) {
-    carte.addLayer({
-      id: COUCHE_PN,
-      type: "circle",
-      source: SOURCE_PN,
-      paint: {
-        "circle-radius": ["interpolate", ["linear"], ["zoom"], 8, 3.4, 12, 4.4, 16, 5.8],
-        "circle-color": "#f59e0b",
-        "circle-stroke-color": "#78350f",
-        "circle-stroke-width": 1.1,
-        "circle-opacity": 0.9
-      }
-    });
-  }
-
   carte.setLayoutProperty(
     COUCHE_APPAREILS,
     "visibility",
@@ -2420,11 +2287,9 @@ function appliquerCouchesDonnees() {
     "visibility",
     afficherPostes && donneesPostes ? "visible" : "none"
   );
-  carte.setLayoutProperty(COUCHE_PN, "visibility", afficherPn ? "visible" : "none");
   carte.setLayoutProperty(COUCHE_LIGNES, "visibility", afficherLignes ? "visible" : "none");
   carte.setLayoutProperty(COUCHE_VITESSE_LIGNE, "visibility", afficherVitesseLigne ? "visible" : "none");
   mettreAJourAffichagePk();
-  mettreAJourAffichagePn();
 }
 
 function restaurerEtatFiltres() {
@@ -2439,9 +2304,6 @@ function restaurerEtatFiltres() {
   }
   if (casePk) {
     casePk.checked = afficherPk;
-  }
-  if (casePn) {
-    casePn.checked = afficherPn;
   }
   if (caseLignes) {
     caseLignes.checked = afficherLignes;
@@ -2477,10 +2339,6 @@ function remonterCouchesDonnees() {
 
   if (carte.getLayer(COUCHE_APPAREILS)) {
     carte.moveLayer(COUCHE_APPAREILS);
-  }
-
-  if (carte.getLayer(COUCHE_PN)) {
-    carte.moveLayer(COUCHE_PN);
   }
 
 }
@@ -2638,210 +2496,6 @@ async function chargerDonneesPk() {
   }
 
   return promesseChargementPk;
-}
-
-function lirePremierChampRenseigne(...valeurs) {
-  for (const valeur of valeurs) {
-    const texte = String(valeur ?? "").trim();
-    if (texte) {
-      return texte;
-    }
-  }
-  return "";
-}
-
-function estCoordonneeDansBboxHdf(longitude, latitude) {
-  return (
-    Number.isFinite(longitude) &&
-    Number.isFinite(latitude) &&
-    longitude >= BBOX_HAUTS_DE_FRANCE[0] &&
-    latitude >= BBOX_HAUTS_DE_FRANCE[1] &&
-    longitude <= BBOX_HAUTS_DE_FRANCE[2] &&
-    latitude <= BBOX_HAUTS_DE_FRANCE[3]
-  );
-}
-
-function normaliserCoordonneesPn(longitudeBrute, latitudeBrute) {
-  let longitude = Number(longitudeBrute);
-  let latitude = Number(latitudeBrute);
-  if (!Number.isFinite(longitude) || !Number.isFinite(latitude)) {
-    return null;
-  }
-
-  const estLongitudeFr = longitude >= -6.5 && longitude <= 10.5;
-  const estLatitudeFr = latitude >= 41 && latitude <= 52;
-  const estLongitudeFrSiInverse = latitude >= -6.5 && latitude <= 10.5;
-  const estLatitudeFrSiInverse = longitude >= 41 && longitude <= 52;
-
-  if (!estLongitudeFr && !estLatitudeFr && estLongitudeFrSiInverse && estLatitudeFrSiInverse) {
-    const temp = longitude;
-    longitude = latitude;
-    latitude = temp;
-  }
-
-  if (!Number.isFinite(longitude) || !Number.isFinite(latitude)) {
-    return null;
-  }
-  if (longitude < -180 || longitude > 180 || latitude < -90 || latitude > 90) {
-    return null;
-  }
-  return [longitude, latitude];
-}
-
-function extraireCoordonneesPn(record) {
-  const coordinates = record?.geometry?.coordinates;
-  if (Array.isArray(coordinates) && coordinates.length >= 2) {
-    const normalisees = normaliserCoordonneesPn(coordinates[0], coordinates[1]);
-    if (normalisees) {
-      return normalisees;
-    }
-  }
-
-  const champs = record?.fields || {};
-  const longitude = String(champs.xlong_wgs84 ?? champs.lon ?? champs.longitude ?? "").replace(",", ".");
-  const latitude = String(champs.ylat_wgs84 ?? champs.lat ?? champs.latitude ?? "").replace(",", ".");
-  const normalisees = normaliserCoordonneesPn(longitude, latitude);
-  if (normalisees) {
-    return normalisees;
-  }
-  return null;
-}
-
-function formaterNumeroPn(champs) {
-  const brut = lirePremierChampRenseigne(
-    champs.numero_pn,
-    champs.num_pn,
-    champs.id_pn,
-    champs.pn,
-    champs.libelle
-  );
-  if (!brut) {
-    return "PN non renseigne";
-  }
-
-  const normalise = brut.replace(/\s+/g, " ").trim();
-  if (/^pn\b/i.test(normalise)) {
-    return normalise.toUpperCase().replace(/\s+/g, "");
-  }
-  return `PN${normalise}`;
-}
-
-function convertirRecordPnEnFeature(record) {
-  const champs = record?.fields || {};
-  const coordonnees = extraireCoordonneesPn(record);
-  if (!coordonnees) {
-    return null;
-  }
-
-  const pn_numero = formaterNumeroPn(champs);
-  const code_ligne = lirePremierChampRenseigne(champs.code_ligne, champs.code_lig, champs.ligne);
-  const pk = lirePremierChampRenseigne(champs.pk, champs.point_km);
-  const classe = lirePremierChampRenseigne(champs.classe, champs.type_pn);
-
-  return {
-    type: "Feature",
-    geometry: {
-      type: "Point",
-      coordinates: coordonnees
-    },
-    properties: {
-      pn_numero,
-      code_ligne,
-      pk,
-      classe
-    }
-  };
-}
-
-async function chargerDonneesPnDepuisApiSNCF() {
-  const limiteParPage = 1000;
-  const maxPages = 20;
-  const [minLng, minLat, maxLng, maxLat] = BBOX_HAUTS_DE_FRANCE;
-  const filtresWhere = [
-    `xlong_wgs84 >= ${minLng} AND xlong_wgs84 <= ${maxLng} AND ylat_wgs84 >= ${minLat} AND ylat_wgs84 <= ${maxLat}`,
-    `longitude >= ${minLng} AND longitude <= ${maxLng} AND latitude >= ${minLat} AND latitude <= ${maxLat}`,
-    `lon >= ${minLng} AND lon <= ${maxLng} AND lat >= ${minLat} AND lat <= ${maxLat}`
-  ];
-
-  const chargerAvecWhere = async (filtreWhere) => {
-    const features = [];
-    for (let page = 0; page < maxPages; page += 1) {
-      const start = page * limiteParPage;
-      const url = new URL(URL_API_PN_SNCF);
-      url.searchParams.set("dataset", "liste-des-passages-a-niveau");
-      url.searchParams.set("rows", String(limiteParPage));
-      url.searchParams.set("start", String(start));
-      url.searchParams.set("where", filtreWhere);
-
-      const reponse = await fetch(url.toString(), { cache: "no-store" });
-      if (!reponse.ok) {
-        const messageErreur = await reponse.text().catch(() => "");
-        throw new Error(`HTTP ${reponse.status} ${messageErreur}`.trim());
-      }
-
-      const payload = await reponse.json();
-      const records = Array.isArray(payload?.records) ? payload.records : [];
-      for (const record of records) {
-        const feature = convertirRecordPnEnFeature(record);
-        if (feature) {
-          features.push(feature);
-        }
-      }
-
-      if (records.length < limiteParPage) {
-        break;
-      }
-    }
-    return features;
-  };
-
-  let dernierErreur = null;
-  for (const filtreWhere of filtresWhere) {
-    try {
-      const features = await chargerAvecWhere(filtreWhere);
-      if (features.length) {
-        return {
-          type: "FeatureCollection",
-          features: features.filter((feature) => {
-            const [longitude, latitude] = feature?.geometry?.coordinates || [];
-            return estCoordonneeDansBboxHdf(longitude, latitude);
-          })
-        };
-      }
-    } catch (erreur) {
-      dernierErreur = erreur;
-    }
-  }
-
-  if (dernierErreur) {
-    throw dernierErreur;
-  }
-
-  return { type: "FeatureCollection", features: [] };
-}
-
-async function chargerDonneesPn() {
-  if (donneesPn) {
-    return donneesPn;
-  }
-
-  if (!promesseChargementPn) {
-    promesseChargementPn = chargerDonneesPnDepuisApiSNCF()
-      .then((geojson) => {
-        const features = Array.isArray(geojson?.features) ? geojson.features : [];
-        if (!features.length) {
-          throw new Error("Aucun PN renvoye par l'API pour la zone HDF.");
-        }
-        donneesPn = { type: "FeatureCollection", features };
-        mettreAJourCompteursFiltres();
-        return donneesPn;
-      })
-      .finally(() => {
-        promesseChargementPn = null;
-      });
-  }
-
-  return promesseChargementPn;
 }
 
 async function chargerCompteurPostes() {
@@ -5227,27 +4881,8 @@ function activerInteractionsCarte() {
     survolCurseurPlanifie = true;
     window.requestAnimationFrame(() => {
       survolCurseurPlanifie = false;
-      if (!dernierPointCurseur) {
-        carte.getCanvas().style.cursor = "";
-        fermerPopupPnInfo();
-        return;
-      }
-
-      const couchePnDisponible = Boolean(carte.getLayer(COUCHE_PN)) && afficherPn;
-      if (couchePnDisponible) {
-        const featuresPn = carte.queryRenderedFeatures(dernierPointCurseur, { layers: [COUCHE_PN] });
-        const featurePn = featuresPn[0] || null;
-        if (featurePn) {
-          carte.getCanvas().style.cursor = "pointer";
-          ouvrirPopupPnInfo(featurePn);
-          return;
-        }
-      }
-
-      fermerPopupPnInfo();
-
       const couchesDisponibles = couchesInteractives.filter((id) => Boolean(carte.getLayer(id)));
-      if (!couchesDisponibles.length) {
+      if (!couchesDisponibles.length || !dernierPointCurseur) {
         carte.getCanvas().style.cursor = "";
         return;
       }
@@ -5494,7 +5129,7 @@ if (carte.loaded()) {
 bloquerZoomTactileHorsCarte();
 
 carte.on("styledata", () => {
-  if (!(afficherAppareils || afficherAcces || afficherPostes || afficherPk || afficherPn || afficherLignes || afficherVitesseLigne)) {
+  if (!(afficherAppareils || afficherAcces || afficherPostes || afficherPk || afficherLignes || afficherVitesseLigne)) {
     return;
   }
   if (!carte.isStyleLoaded()) {
@@ -5537,14 +5172,8 @@ carte.on("zoomend", () => {
   appliquerFondIgnAutomatique();
   planifierMiseAJourPk();
 });
-carte.on("zoomstart", () => {
-  fermerPopupPkInfo();
-  fermerPopupPnInfo();
-});
-carte.on("movestart", () => {
-  fermerPopupPkInfo();
-  fermerPopupPnInfo();
-});
+carte.on("zoomstart", fermerPopupPkInfo);
+carte.on("movestart", fermerPopupPkInfo);
 carte.on("moveend", planifierMiseAJourPk);
 appliquerFondIgnAutomatique({ force: true });
 
@@ -5554,53 +5183,138 @@ boutonFonds.addEventListener("click", (event) => {
   basculerMenuFonds();
 });
 
-if (typeof window.creerGestionnaireFiltresAlice === "function") {
-  window.creerGestionnaireFiltresAlice({
-    caseAppareils,
-    caseAcces,
-    casePostes,
-    casePk,
-    casePn,
-    caseLignes,
-    caseVitesseLigne,
-    getTemporisationInfoVitesse: () => temporisationInfoVitesse,
-    clearTemporisationInfoVitesse: () => {
+if (caseAppareils) {
+  caseAppareils.addEventListener("change", async () => {
+    afficherAppareils = caseAppareils.checked;
+    if (afficherAppareils) {
+      caseAppareils.disabled = true;
+      try {
+        await chargerDonneesAppareils();
+      } catch (erreur) {
+        afficherAppareils = false;
+        caseAppareils.checked = false;
+        console.error("Impossible de charger appareils.geojson", erreur);
+        alert(
+          "Chargement des appareils impossible. Ouvre la carte via un serveur local (http://localhost...) ou vérifie appareils.geojson."
+        );
+      } finally {
+        caseAppareils.disabled = false;
+      }
+    }
+
+    appliquerCouchesDonnees();
+    remonterCouchesDonnees();
+  });
+}
+
+if (caseAcces) {
+  caseAcces.addEventListener("change", async () => {
+    afficherAcces = caseAcces.checked;
+    if (afficherAcces) {
+      caseAcces.disabled = true;
+      try {
+        await chargerDonneesAcces();
+      } catch (erreur) {
+        afficherAcces = false;
+        caseAcces.checked = false;
+        console.error("Impossible de charger acces.geojson", erreur);
+        alert(
+          "Chargement des acces impossible. Ouvre la carte via un serveur local (http://localhost...) ou vérifie acces.geojson."
+        );
+      } finally {
+        caseAcces.disabled = false;
+      }
+    }
+
+    appliquerCouchesDonnees();
+    remonterCouchesDonnees();
+  });
+}
+
+if (casePostes) {
+  casePostes.addEventListener("change", async () => {
+    afficherPostes = casePostes.checked;
+    if (afficherPostes) {
+      casePostes.disabled = true;
+      try {
+        await chargerDonneesPostes();
+      } catch (erreur) {
+        afficherPostes = false;
+        casePostes.checked = false;
+        console.error("Impossible de charger postes.geojson", erreur);
+        alert(
+          "Chargement des postes impossible. Ouvre la carte via un serveur local (http://localhost...) ou vérifie postes.geojson."
+        );
+      } finally {
+        casePostes.disabled = false;
+      }
+    }
+
+    appliquerCouchesDonnees();
+    remonterCouchesDonnees();
+  });
+}
+
+if (casePk) {
+  casePk.addEventListener("change", async () => {
+    afficherPk = casePk.checked;
+    if (afficherPk) {
+      casePk.disabled = true;
+      try {
+        await chargerDonneesPk();
+      } catch (erreur) {
+        afficherPk = false;
+        casePk.checked = false;
+        console.error("Impossible de charger pk.geojson", erreur);
+        alert("Chargement des PK impossible. Vérifie la présence de pk.geojson.");
+      } finally {
+        casePk.disabled = false;
+      }
+    }
+
+    appliquerCouchesDonnees();
+    remonterCouchesDonnees();
+    planifierMiseAJourPk();
+  });
+}
+
+if (caseLignes) {
+  caseLignes.addEventListener("change", () => {
+    afficherLignes = caseLignes.checked;
+    if (afficherLignes) {
+      afficherVitesseLigne = false;
+      if (caseVitesseLigne) {
+        caseVitesseLigne.checked = false;
+      }
+      masquerMessageInfoVitesseLigne();
       if (temporisationInfoVitesse) {
         clearTimeout(temporisationInfoVitesse);
         temporisationInfoVitesse = null;
       }
-    },
-    afficherMessageInfoVitesseLigne,
-    masquerMessageInfoVitesseLigne,
-    chargerDonneesAppareils,
-    chargerDonneesAcces,
-    chargerDonneesPostes,
-    chargerDonneesPk,
-    chargerDonneesPn,
-    appliquerCouchesDonnees,
-    remonterCouchesDonnees,
-    planifierMiseAJourPk,
-    setAfficherAppareils: (valeur) => {
-      afficherAppareils = Boolean(valeur);
-    },
-    setAfficherAcces: (valeur) => {
-      afficherAcces = Boolean(valeur);
-    },
-    setAfficherPostes: (valeur) => {
-      afficherPostes = Boolean(valeur);
-    },
-    setAfficherPk: (valeur) => {
-      afficherPk = Boolean(valeur);
-    },
-    setAfficherPn: (valeur) => {
-      afficherPn = Boolean(valeur);
-    },
-    setAfficherLignes: (valeur) => {
-      afficherLignes = Boolean(valeur);
-    },
-    setAfficherVitesseLigne: (valeur) => {
-      afficherVitesseLigne = Boolean(valeur);
     }
+    appliquerCouchesDonnees();
+    remonterCouchesDonnees();
+  });
+}
+
+if (caseVitesseLigne) {
+  caseVitesseLigne.addEventListener("change", () => {
+    afficherVitesseLigne = caseVitesseLigne.checked;
+    if (afficherVitesseLigne) {
+      afficherLignes = false;
+      if (caseLignes) {
+        caseLignes.checked = false;
+      }
+      afficherMessageInfoVitesseLigne();
+    } else {
+      masquerMessageInfoVitesseLigne();
+      if (temporisationInfoVitesse) {
+        clearTimeout(temporisationInfoVitesse);
+        temporisationInfoVitesse = null;
+      }
+    }
+    appliquerCouchesDonnees();
+    remonterCouchesDonnees();
   });
 }
 
