@@ -77,50 +77,26 @@
 
     <aside class="panel">
       <h1>Map essai</h1>
-      <p>Variantes vectorielles allegees: moins de routes et moins de labels.</p>
+      <p>Comparatif direct entre tes 2 choix vectoriels et leurs equivalents PNG.</p>
       <form id="styles-form">
         <label class="choice">
-          <input type="radio" name="style" value="positronMinimal" checked />
-          <span>CARTO Positron (vectoriel) - Minimal</span>
-        </label>
-        <label class="choice">
-          <input type="radio" name="style" value="positronBalanced" />
+          <input type="radio" name="style" value="positronBalanced" checked />
           <span>CARTO Positron (vectoriel) - Equilibre</span>
         </label>
         <label class="choice">
-          <input type="radio" name="style" value="positronRoadsFocus" />
-          <span>CARTO Positron (vectoriel) - Axes principaux</span>
-        </label>
-        <label class="choice">
-          <input type="radio" name="style" value="shortbreadMinimal" />
-          <span>OSM Shortbread (vectoriel) - Minimal</span>
-        </label>
-        <label class="choice">
-          <input type="radio" name="style" value="shortbreadBalanced" />
-          <span>OSM Shortbread (vectoriel) - Equilibre</span>
-        </label>
-        <label class="choice">
-          <input type="radio" name="style" value="shortbreadRoadsFocus" />
-          <span>OSM Shortbread (vectoriel) - Axes principaux</span>
-        </label>
-        <label class="choice">
-          <input type="radio" name="style" value="voyagerMinimal" />
-          <span>CARTO Voyager (vectoriel) - Minimal</span>
+          <input type="radio" name="style" value="positronPng" />
+          <span>CARTO Positron (PNG raster)</span>
         </label>
         <label class="choice">
           <input type="radio" name="style" value="voyagerBalanced" />
           <span>CARTO Voyager (vectoriel) - Equilibre</span>
         </label>
         <label class="choice">
-          <input type="radio" name="style" value="voyagerRoadsFocus" />
-          <span>CARTO Voyager (vectoriel) - Axes principaux</span>
-        </label>
-        <label class="choice">
-          <input type="radio" name="style" value="voyagerVectorRaw" />
-          <span>CARTO Voyager (vectoriel) - Brut</span>
+          <input type="radio" name="style" value="voyagerPng" />
+          <span>CARTO Voyager (PNG raster)</span>
         </label>
       </form>
-      <div class="active">Fond actif: <b id="active-style">CARTO Positron (vectoriel) - Minimal</b></div>
+      <div class="active">Fond actif: <b id="active-style">CARTO Positron (vectoriel) - Equilibre</b></div>
     </aside>
 
     <script src="https://unpkg.com/maplibre-gl@5.1.0/dist/maplibre-gl.js"></script>
@@ -129,10 +105,31 @@
       const zoomInitial = 8.1;
 
       const URL_STYLE_POSITRON = "https://basemaps.cartocdn.com/gl/positron-gl-style/style.json";
-      const URL_STYLE_SHORTBREAD = "https://tiles.versatiles.org/assets/styles/colorful/style.json";
       const URL_STYLE_VOYAGER = "https://basemaps.cartocdn.com/gl/voyager-gl-style/style.json";
 
       const styleCache = new Map();
+
+      function styleRaster(id, tiles, attribution, maxzoom = 20) {
+        return {
+          version: 8,
+          sources: {
+            [id]: {
+              type: "raster",
+              tiles,
+              tileSize: 256,
+              maxzoom,
+              attribution
+            }
+          },
+          layers: [
+            {
+              id,
+              type: "raster",
+              source: id
+            }
+          ]
+        };
+      }
 
       function cloneDeep(value) {
         return JSON.parse(JSON.stringify(value));
@@ -292,34 +289,33 @@
       }
 
       const styles = {
-        positronMinimal: creerVarianteVectorielle("CARTO Positron (vectoriel) - Minimal", URL_STYLE_POSITRON, "minimal"),
         positronBalanced: creerVarianteVectorielle("CARTO Positron (vectoriel) - Equilibre", URL_STYLE_POSITRON, "balanced"),
-        positronRoadsFocus: creerVarianteVectorielle(
-          "CARTO Positron (vectoriel) - Axes principaux",
-          URL_STYLE_POSITRON,
-          "roadsFocus"
-        ),
-        shortbreadMinimal: creerVarianteVectorielle("OSM Shortbread (vectoriel) - Minimal", URL_STYLE_SHORTBREAD, "minimal"),
-        shortbreadBalanced: creerVarianteVectorielle(
-          "OSM Shortbread (vectoriel) - Equilibre",
-          URL_STYLE_SHORTBREAD,
-          "balanced"
-        ),
-        shortbreadRoadsFocus: creerVarianteVectorielle(
-          "OSM Shortbread (vectoriel) - Axes principaux",
-          URL_STYLE_SHORTBREAD,
-          "roadsFocus"
-        ),
-        voyagerMinimal: creerVarianteVectorielle("CARTO Voyager (vectoriel) - Minimal", URL_STYLE_VOYAGER, "minimal"),
+        positronPng: {
+          label: "CARTO Positron (PNG raster)",
+          style: styleRaster(
+            "positronRaster",
+            [
+              "https://a.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png",
+              "https://b.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png",
+              "https://c.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png",
+              "https://d.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png"
+            ],
+            "© OpenStreetMap contributors, © CARTO"
+          )
+        },
         voyagerBalanced: creerVarianteVectorielle("CARTO Voyager (vectoriel) - Equilibre", URL_STYLE_VOYAGER, "balanced"),
-        voyagerRoadsFocus: creerVarianteVectorielle(
-          "CARTO Voyager (vectoriel) - Axes principaux",
-          URL_STYLE_VOYAGER,
-          "roadsFocus"
-        ),
-        voyagerVectorRaw: {
-          label: "CARTO Voyager (vectoriel) - Brut",
-          style: URL_STYLE_VOYAGER
+        voyagerPng: {
+          label: "CARTO Voyager (PNG raster)",
+          style: styleRaster(
+            "voyagerRaster",
+            [
+              "https://a.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}.png",
+              "https://b.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}.png",
+              "https://c.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}.png",
+              "https://d.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}.png"
+            ],
+            "© OpenStreetMap contributors, © CARTO"
+          )
         }
       };
 
@@ -382,7 +378,7 @@
       });
 
       map.once("load", () => {
-        appliquerStyle("positronMinimal");
+        appliquerStyle("positronBalanced");
       });
     </script>
   </body>
