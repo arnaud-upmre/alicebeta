@@ -3905,32 +3905,34 @@ function construireSectionAppareilsAssociesDepuisPostes(postesListe, options = {
     return "";
   }
 
-  const trouverCoordonneesPostePourSat = (libelleSat) => {
+  const trouverPosteCiblePourSat = (libelleSat) => {
     const cible = normaliserTexteRecherche(libelleSat);
-    for (const featurePostes of donneesPostes?.features || []) {
-      const [lng, lat] = featurePostes.geometry?.coordinates || [];
-      if (!Number.isFinite(lng) || !Number.isFinite(lat)) {
-        continue;
+    const candidats = postesListe.filter((poste) => {
+      const satNorm = normaliserTexteRecherche(champCompletOuVide(poste?.SAT));
+      if (cible === "poste") {
+        return !satNorm;
       }
-      const liste = extraireListeDepuisFeature(featurePostes, "postes_liste_json");
-      if (!liste.length) {
-        continue;
-      }
-      const match = liste.some((poste) => {
-        if (!clesPostesNomType.has(construireCleNomType(poste))) {
-          return false;
-        }
-        const satNorm = normaliserTexteRecherche(champCompletOuVide(poste?.SAT));
-        if (cible === "poste") {
-          return !satNorm;
-        }
-        return satNorm === cible;
-      });
-      if (match) {
-        return [lng, lat];
-      }
+      return satNorm === cible;
+    });
+    return candidats[0] || postesListe[0] || null;
+  };
+
+  const construireLienAjoutDepuisPoste = (posteEntree) => {
+    const nomPoste = champCompletOuVide(posteEntree?.nom);
+    if (!nomPoste) {
+      return "";
     }
-    return null;
+    const typePoste = champCompletOuVide(posteEntree?.type);
+    const satPoste = champCompletOuVide(posteEntree?.SAT);
+    const urlAjout = new URL("./ajout_appareil.html", window.location.href);
+    urlAjout.searchParams.set("poste", nomPoste);
+    if (typePoste) {
+      urlAjout.searchParams.set("type", typePoste);
+    }
+    if (satPoste) {
+      urlAjout.searchParams.set("sat", satPoste);
+    }
+    return urlAjout.toString();
   };
 
   const groupes = new Map();
@@ -3979,31 +3981,24 @@ function construireSectionAppareilsAssociesDepuisPostes(postesListe, options = {
       const codes = Array.from(groupe.codes.values()).sort((a, b) =>
         String(a.code).localeCompare(String(b.code), "fr", { numeric: true })
       );
-      const entreePill = codes[0] || null;
       const codesHtml = codes
         .map(
           (entree) =>
             `<button class="popup-poste-appareil-lien" type="button" data-lng="${entree.longitude}" data-lat="${entree.latitude}">${echapperHtml(entree.code)}</button>`
         )
         .join(", ");
-      const coordonneesSat = trouverCoordonneesPostePourSat(groupe.label);
-      const lngPoste = Number(coordonneesSat?.[0] ?? options?.coordonneesPoste?.[0]);
-      const latPoste = Number(coordonneesSat?.[1] ?? options?.coordonneesPoste?.[1]);
-      const lngOrigineAppareil = Number(options?.coordonneesAppareilPrecedent?.[0]);
-      const latOrigineAppareil = Number(options?.coordonneesAppareilPrecedent?.[1]);
-      const attributsOrigineAppareil =
-        Number.isFinite(lngOrigineAppareil) && Number.isFinite(latOrigineAppareil)
-          ? ` data-origin-appareil-lng="${lngOrigineAppareil}" data-origin-appareil-lat="${latOrigineAppareil}"`
-          : "";
+      const posteCible = trouverPosteCiblePourSat(groupe.label);
+      const lienAjout = construireLienAjoutDepuisPoste(posteCible);
       const pillSatHtml =
-        Number.isFinite(lngPoste) && Number.isFinite(latPoste)
-          ? `<button class="popup-badge popup-badge-itineraire popup-badge-poste-sat popup-poste-sat-lien" type="button" data-target-type="postes" data-target-sat="${echapperHtml(groupe.label)}" data-lng="${lngPoste}" data-lat="${latPoste}"${attributsOrigineAppareil}>${echapperHtml(groupe.label)}</button>`
+        lienAjout
+          ? `<a class="popup-badge popup-badge-itineraire popup-badge-poste-sat popup-poste-sat-lien" href="${echapperHtml(lienAjout)}">${echapperHtml(groupe.label)}</a>`
           : `<span class="popup-badge popup-badge-itineraire popup-badge-poste-sat">${echapperHtml(groupe.label)}</span>`;
       return `<div class="popup-poste-appareils-groupe"><div class="popup-poste-appareils-entete-ligne">${pillSatHtml}<p class="popup-poste-appareils-ligne">${codesHtml}</p></div></div>`;
     })
     .join("");
 
-  return `<section class="popup-section"><div class="popup-poste-appareils-groupes">${lignes}</div></section>`;
+  const consigneAjout = "Ajoutez un appareil en cliquant sur le poste ou le SAT concerné.";
+  return `<section class="popup-section"><p class="popup-poste-details">${echapperHtml(consigneAjout)}</p><div class="popup-poste-appareils-groupes">${lignes}</div></section>`;
 }
 
 function construireFichePosteDepuisEntree(poste, options = {}) {
@@ -4693,7 +4688,9 @@ function construirePopupDepuisFeatures(longitude, latitude, featurePostes, featu
     });
   }
   if (sectionAppareilsAssociesPoste) {
-    const libelleAfficherAppareils = estVueAppareilsSeule ? "💡Afficher d'autres appareils" : "💡 Afficher les appareils";
+    const libelleAfficherAppareils = estVueAppareilsSeule
+      ? "💡Afficher d'autres appareils"
+      : "💡 Afficher/Ajouter des appareils";
     actionsExplorerEquipements.push({
       label: "Afficher les appareils",
       html: `<button class="popup-bouton-itineraire" id="popup-voir-appareils-associes" type="button">${echapperHtml(libelleAfficherAppareils)}</button>`
