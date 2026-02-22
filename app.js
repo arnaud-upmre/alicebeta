@@ -4618,6 +4618,17 @@ function construirePopupDepuisFeatures(longitude, latitude, featurePostes, featu
     const liste = extraireListeDepuisFeature(featureAppareils, "appareils_liste_json");
     return liste.length || 1;
   })();
+  const accesCountCourant = (() => {
+    if (!featureAcces) {
+      return 0;
+    }
+    const countBrut = Number(featureAcces?.properties?.acces_count);
+    if (Number.isFinite(countBrut) && countBrut > 0) {
+      return countBrut;
+    }
+    const liste = extraireListeDepuisFeature(featureAcces, "acces_liste_json");
+    return liste.length || 1;
+  })();
   const libelleSectionItineraire = (() => {
     if (estVueAppareilsSeule) {
       return appareilsCountCourant > 1 ? "Itinéraire vers l’accès des appareils" : "Itinéraire vers l’accès de cet appareil";
@@ -4626,7 +4637,7 @@ function construirePopupDepuisFeatures(longitude, latitude, featurePostes, featu
       return cibleSatCourante && cibleSatCourante !== "poste" ? "Itinéraire vers l’accès du SAT" : "Itinéraire vers l’accès du poste";
     }
     if (estVueAccesSeule) {
-      return "Créer un itineraire vers cet acces";
+      return accesCountCourant > 1 ? "Créer un itineraire vers ces accès" : "Créer un itineraire vers cet acces";
     }
     return "Créer un itineraire";
   })();
