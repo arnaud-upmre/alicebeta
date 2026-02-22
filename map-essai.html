@@ -84,12 +84,20 @@
           <span>CARTO Positron (vectoriel) - Equilibre</span>
         </label>
         <label class="choice">
+          <input type="radio" name="style" value="positronBalancedLabels" />
+          <span>CARTO Positron (vectoriel) - Equilibre + labels villes</span>
+        </label>
+        <label class="choice">
           <input type="radio" name="style" value="positronPng" />
           <span>CARTO Positron (PNG raster)</span>
         </label>
         <label class="choice">
           <input type="radio" name="style" value="voyagerBalanced" />
           <span>CARTO Voyager (vectoriel) - Equilibre</span>
+        </label>
+        <label class="choice">
+          <input type="radio" name="style" value="voyagerBalancedLabels" />
+          <span>CARTO Voyager (vectoriel) - Equilibre + labels villes</span>
         </label>
         <label class="choice">
           <input type="radio" name="style" value="voyagerPng" />
@@ -239,6 +247,25 @@
             return sortie;
           }
 
+          if (preset === "balancedLabels") {
+            if (c.estPoi) {
+              masquerLayer(sortie);
+              return sortie;
+            }
+            if (c.estRouteMineure) {
+              pousserMinZoom(sortie, 11);
+            }
+            if (c.estLabelRoute) {
+              pousserMinZoom(sortie, 12);
+            }
+            // Garde plus de labels de localites, mais a zoom plus eleve
+            // pour ne pas surcharger la carte.
+            if (c.estLabelLocal) {
+              pousserMinZoom(sortie, 10.5);
+            }
+            return sortie;
+          }
+
           if (preset === "roadsFocus") {
             if (c.estPoi || c.estLabelLocal) {
               masquerLayer(sortie);
@@ -290,6 +317,11 @@
 
       const styles = {
         positronBalanced: creerVarianteVectorielle("CARTO Positron (vectoriel) - Equilibre", URL_STYLE_POSITRON, "balanced"),
+        positronBalancedLabels: creerVarianteVectorielle(
+          "CARTO Positron (vectoriel) - Equilibre + labels villes",
+          URL_STYLE_POSITRON,
+          "balancedLabels"
+        ),
         positronPng: {
           label: "CARTO Positron (PNG raster)",
           style: styleRaster(
@@ -304,6 +336,11 @@
           )
         },
         voyagerBalanced: creerVarianteVectorielle("CARTO Voyager (vectoriel) - Equilibre", URL_STYLE_VOYAGER, "balanced"),
+        voyagerBalancedLabels: creerVarianteVectorielle(
+          "CARTO Voyager (vectoriel) - Equilibre + labels villes",
+          URL_STYLE_VOYAGER,
+          "balancedLabels"
+        ),
         voyagerPng: {
           label: "CARTO Voyager (PNG raster)",
           style: styleRaster(
