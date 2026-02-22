@@ -1827,7 +1827,6 @@ function appliquerCouchesDonnees() {
   if (!carte.isStyleLoaded()) {
     return;
   }
-  enregistrerImagePkPillSiNecessaire();
 
   if (!carte.getSource(SOURCE_LIGNES)) {
     carte.addSource(SOURCE_LIGNES, {
@@ -2029,16 +2028,13 @@ function appliquerCouchesDonnees() {
         "text-offset": [0, 0],
         "text-allow-overlap": true,
         "text-padding": 2,
-        "icon-image": "pk-pill",
-        "icon-text-fit": "both",
-        "icon-text-fit-padding": [2, 7, 2, 7],
-        "icon-allow-overlap": true,
         "symbol-sort-key": ["to-number", ["get", "pk"], 0]
       },
       paint: {
         "text-color": "#111827",
-        "text-halo-color": "rgba(255,255,255,0)",
-        "text-halo-width": 0
+        "text-halo-color": "#ffffff",
+        "text-halo-width": 3,
+        "text-halo-blur": 0.25
       }
     });
   }
