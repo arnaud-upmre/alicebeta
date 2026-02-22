@@ -3910,34 +3910,21 @@ function construireSectionAppareilsAssociesDepuisPostes(postesListe, options = {
     return "";
   }
 
-  const normaliserCleSat = (valeurSat) =>
-    normaliserTexteRecherche(champCompletOuVide(valeurSat))
-      .replace(/^sat[\s-]*/i, "")
-      .trim();
-
-  const trouverPosteCiblePourSat = (libelleSat) => {
-    const cible = normaliserTexteRecherche(libelleSat);
-    const cibleCleSat = normaliserCleSat(libelleSat);
-    const candidats = postesListe.filter((poste) => {
-      const satNorm = normaliserTexteRecherche(champCompletOuVide(poste?.SAT));
-      if (cible === "poste") {
-        return !satNorm;
-      }
-      if (satNorm === cible) {
-        return true;
-      }
-      return normaliserCleSat(poste?.SAT) === cibleCleSat;
-    });
-    return candidats[0] || postesListe[0] || null;
+  const normaliserSatDeLien = (libelleSat) => {
+    const sat = champCompletOuVide(libelleSat);
+    if (!sat) {
+      return "";
+    }
+    return normaliserTexteRecherche(sat) === "poste" ? "" : sat;
   };
 
-  const construireLienAjoutDepuisPoste = (posteEntree) => {
+  const construireLienAjoutDepuisPoste = (posteEntree, libelleSat) => {
     const nomPoste = champCompletOuVide(posteEntree?.nom);
     if (!nomPoste) {
       return "";
     }
     const typePoste = champCompletOuVide(posteEntree?.type);
-    const satPoste = champCompletOuVide(posteEntree?.SAT);
+    const satPoste = normaliserSatDeLien(libelleSat);
     const urlAjout = new URL("./ajout_appareil.html", window.location.href);
     urlAjout.searchParams.set("poste", nomPoste);
     if (typePoste) {
@@ -4001,8 +3988,8 @@ function construireSectionAppareilsAssociesDepuisPostes(postesListe, options = {
             `<button class="popup-poste-appareil-lien" type="button" data-lng="${entree.longitude}" data-lat="${entree.latitude}">${echapperHtml(entree.code)}</button>`
         )
         .join(", ");
-      const posteCible = trouverPosteCiblePourSat(groupe.label);
-      const lienAjout = construireLienAjoutDepuisPoste(posteCible);
+      const posteReference = postesListe[0] || null;
+      const lienAjout = construireLienAjoutDepuisPoste(posteReference, groupe.label);
       const pillSatHtml =
         lienAjout
           ? `<a class="popup-badge popup-badge-itineraire popup-badge-poste-sat popup-poste-sat-lien" href="${echapperHtml(lienAjout)}">${echapperHtml(groupe.label)}</a>`
