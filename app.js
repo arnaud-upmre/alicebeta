@@ -267,8 +267,15 @@ function appliquerPresetEquilibreStyleFond(styleJson) {
     const sortie = { ...couche };
     const classe = classifierCoucheStyleFond(sortie);
 
-    if (classe.estPoi || classe.estLabelLocal) {
+    // Variante "equilibre + labels villes":
+    // on masque les POI, mais on conserve une partie des labels de localites
+    // a zoom plus eleve pour eviter la surcharge.
+    if (classe.estPoi) {
       masquerCoucheStyleFond(sortie);
+      return sortie;
+    }
+    if (classe.estLabelLocal) {
+      releverMinZoomCoucheStyleFond(sortie, 10.5);
       return sortie;
     }
     if (classe.estRouteMineure) {
