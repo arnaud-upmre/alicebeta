@@ -905,8 +905,6 @@ const champRecherche = document.getElementById("champ-recherche");
 const listeResultatsRecherche = document.getElementById("recherche-resultats");
 const infoVitesseLigne = document.getElementById("info-vitesse-ligne");
 const infoPk = document.getElementById("info-pk");
-const fenetreAccueil = document.getElementById("fenetre-accueil");
-const boutonFermerFenetreAccueil = document.getElementById("fenetre-accueil-fermer");
 const menuContextuelCarte = document.getElementById("menu-contextuel-carte");
 const boutonCtxCoord = document.getElementById("ctx-coord");
 const boutonCtxShare = document.getElementById("ctx-share");
@@ -933,7 +931,6 @@ let boutonFermerModalFiche = document.getElementById("modal-fiche-fermer");
 let boutonPartagerModalFiche = document.getElementById("modal-fiche-partager");
 let elementRetourFocusModalFiche = null;
 let elementRetourFocusModalApropos = null;
-const CLE_STOCKAGE_FENETRE_ACCUEIL = "alice.fenetre-accueil.derniere-date";
 const CLE_STOCKAGE_APROPOS_VU = "alice.apropos.vu";
 let temporisationInfoVitesse = null;
 let temporisationInfoPk = null;
@@ -1012,28 +1009,6 @@ function obtenirDateLocaleDuJour() {
   const mois = String(maintenant.getMonth() + 1).padStart(2, "0");
   const jour = String(maintenant.getDate()).padStart(2, "0");
   return `${annee}-${mois}-${jour}`;
-}
-
-function doitAfficherFenetreAccueilAujourdhui() {
-  try {
-    const dateEnregistree = localStorage.getItem(CLE_STOCKAGE_FENETRE_ACCUEIL);
-    return dateEnregistree !== obtenirDateLocaleDuJour();
-  } catch {
-    return true;
-  }
-}
-
-function fermerFenetreAccueil() {
-  if (!fenetreAccueil) {
-    return;
-  }
-  fenetreAccueil.classList.remove("est-visible");
-  fenetreAccueil.setAttribute("aria-hidden", "true");
-  try {
-    localStorage.setItem(CLE_STOCKAGE_FENETRE_ACCUEIL, obtenirDateLocaleDuJour());
-  } catch {
-    // Ignore les erreurs de stockage (mode prive, quota, etc.).
-  }
 }
 
 function masquerMessageInfoVitesseLigne() {
@@ -1987,12 +1962,6 @@ async function partagerPositionContextuelle() {
   }
 
   window.prompt("Copiez ce lien :", lien);
-}
-
-if (boutonFermerFenetreAccueil) {
-  boutonFermerFenetreAccueil.addEventListener("click", () => {
-    fermerFenetreAccueil();
-  });
 }
 
 actualiserPlaceholderRecherche();
@@ -6484,7 +6453,6 @@ document.addEventListener("keydown", (event) => {
   if (event.key === "Escape") {
     fermerModalApropos();
     fermerPopupCarte();
-    fermerFenetreAccueil();
     fermerMenuFonds();
     fermerMenuFiltres();
     fermerResultatsRecherche();
