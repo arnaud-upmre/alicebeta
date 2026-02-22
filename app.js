@@ -2112,6 +2112,9 @@ function mettreAJourAffichagePn() {
   if (source) {
     source.setData(donneesPnAffichees);
   }
+  if (carte.getLayer(COUCHE_PN)) {
+    carte.setLayoutProperty(COUCHE_PN, "visibility", doitAfficher ? "visible" : "none");
+  }
 }
 
 function normaliserTextePn(valeur) {
@@ -2412,7 +2415,7 @@ function appliquerCouchesDonnees() {
     "visibility",
     afficherPostes && donneesPostes ? "visible" : "none"
   );
-  carte.setLayoutProperty(COUCHE_PN, "visibility", afficherPn && donneesPnAffichees?.features?.length ? "visible" : "none");
+  carte.setLayoutProperty(COUCHE_PN, "visibility", afficherPn ? "visible" : "none");
   carte.setLayoutProperty(COUCHE_LIGNES, "visibility", afficherLignes ? "visible" : "none");
   carte.setLayoutProperty(COUCHE_VITESSE_LIGNE, "visibility", afficherVitesseLigne ? "visible" : "none");
   mettreAJourAffichagePk();
