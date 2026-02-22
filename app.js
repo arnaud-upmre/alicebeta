@@ -144,9 +144,9 @@ const URL_STYLE_PLAN_IGN =
 const FOND_IGN_AUTOMATIQUE = "ignAuto";
 const ZOOM_PASSAGE_SATELLITE_IGN = 15;
 const ZOOM_RETOUR_PLAN_IGN = 14.5;
-const ZOOM_DEBUT_FONDU_IGN_AUTO = ZOOM_RETOUR_PLAN_IGN;
-const ZOOM_FIN_FONDU_IGN_AUTO = ZOOM_PASSAGE_SATELLITE_IGN + 0.45;
-const OPACITE_MAX_SATELLITE_IGN_AUTO = 0.96;
+const ZOOM_DEBUT_FONDU_IGN_AUTO = ZOOM_PASSAGE_SATELLITE_IGN;
+const ZOOM_FIN_FONDU_IGN_AUTO = ZOOM_MAX - 1;
+const OPACITE_MAX_SATELLITE_IGN_AUTO = 1;
 const SOURCE_SATELLITE_IGN_AUTO = "satellite-ign-auto-source";
 const COUCHE_SATELLITE_IGN_AUTO = "satellite-ign-auto-layer";
 
@@ -204,6 +204,7 @@ let conserverFichePendantNavigation = false;
 let restaurationStylePlanifiee = false;
 let controleAttributionCarte = null;
 let signatureAttributionCarte = "";
+let idsCouchesFondNatives = [];
 let contexteMenuPosition = {
   longitude: null,
   latitude: null
@@ -5424,6 +5425,58 @@ function obtenirCoucheInsertionLabels() {
   return coucheLabel?.id || undefined;
 }
 
+function memoriserCouchesFondNatives() {
+  const style = carte.getStyle();
+  idsCouchesFondNatives = Array.isArray(style?.layers)
+    ? style.layers.map((couche) => couche?.id).filter(Boolean)
+    : [];
+}
+
+function obtenirProprietesOpaciteParType(typeCouche) {
+  switch (typeCouche) {
+    case "background":
+      return ["background-opacity"];
+    case "fill":
+      return ["fill-opacity"];
+    case "line":
+      return ["line-opacity"];
+    case "symbol":
+      return ["icon-opacity", "text-opacity"];
+    case "raster":
+      return ["raster-opacity"];
+    case "circle":
+      return ["circle-opacity"];
+    case "fill-extrusion":
+      return ["fill-extrusion-opacity"];
+    case "heatmap":
+      return ["heatmap-opacity"];
+    default:
+      return [];
+  }
+}
+
+function appliquerOpaciteCouchesFondNatives(opacite) {
+  const opaciteBorne = Math.min(1, Math.max(0, opacite));
+  for (const idCouche of idsCouchesFondNatives) {
+    if (idCouche === COUCHE_SATELLITE_IGN_AUTO) {
+      continue;
+    }
+    const couche = carte.getLayer(idCouche);
+    if (!couche) {
+      continue;
+    }
+    const proprietes = obtenirProprietesOpaciteParType(couche.type);
+    for (const propriete of proprietes) {
+      try {
+        carte.setPaintProperty(idCouche, `${propriete}-transition`, { duration: 250, delay: 0 });
+        carte.setPaintProperty(idCouche, propriete, opaciteBorne);
+      } catch (_erreur) {
+        // Ignore les styles ne supportant pas la propriete sur une couche specifique.
+      }
+    }
+  }
+}
+
 function assurerCoucheSatelliteIgnAuto() {
   if (!carte.isStyleLoaded()) {
     return;
@@ -5472,6 +5525,7 @@ function mettreAJourTransitionFondIgnAuto() {
   }
 
   if (!ignAutomatiqueActif || fondActif !== "positron") {
+    appliquerOpaciteCouchesFondNatives(1);
     masquerCoucheSatelliteIgnAuto();
     return;
   }
@@ -5482,6 +5536,8 @@ function mettreAJourTransitionFondIgnAuto() {
   }
 
   const opacite = calculerOpaciteSatelliteIgnAuto(carte.getZoom());
+  const opaciteFond = 1 - opacite;
+  appliquerOpaciteCouchesFondNatives(opaciteFond);
   carte.setLayoutProperty(COUCHE_SATELLITE_IGN_AUTO, "visibility", opacite > 0.001 ? "visible" : "none");
   carte.setPaintProperty(COUCHE_SATELLITE_IGN_AUTO, "raster-opacity", opacite);
 }
@@ -5519,6 +5575,7 @@ function activerFondIgnAutomatique() {
 function gererStyleCharge() {
   viderMarqueursPk();
   fermerPopupPnInfo();
+  memoriserCouchesFondNatives();
   restaurerEtatFiltres();
   restaurerAffichageDonnees();
   rafraichirAffichageMesure();
