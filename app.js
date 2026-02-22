@@ -4620,14 +4620,10 @@ function construirePopupDepuisFeatures(longitude, latitude, featurePostes, featu
   })();
   const libelleSectionItineraire = (() => {
     if (estVueAppareilsSeule) {
-      return appareilsCountCourant > 1
-        ? "Créer un itineraire vers les appareils :"
-        : "Créer un itineraire vers cet appareil";
+      return appareilsCountCourant > 1 ? "Itinéraire vers l’accès des appareils" : "Itinéraire vers l’accès de cet appareil";
     }
     if (estVuePosteSeule) {
-      return cibleSatCourante && cibleSatCourante !== "poste"
-        ? "Créer un itineraire vers ce SAT"
-        : "Créer un itineraire vers ce poste";
+      return cibleSatCourante && cibleSatCourante !== "poste" ? "Itinéraire vers l’accès du SAT" : "Itinéraire vers l’accès du poste";
     }
     if (estVueAccesSeule) {
       return "Créer un itineraire vers cet acces";
