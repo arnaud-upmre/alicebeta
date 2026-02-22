@@ -16,8 +16,16 @@
   --ui-text-on-glass: #111827;
   --ui-link-color: #1d4ed8;
   --ui-link-hover: #1e40af;
-  --badge-postes-fg: #1e40af;
-  --badge-postes-bg: rgba(59, 130, 246, 0.2);
+  --color-acces: #7c3aed;
+  --color-acces-groupe: #8b5cf6;
+  --color-poste: #60a5fa;
+  --color-poste-groupe: #93c5fd;
+  --color-hp: #ef4444;
+  --color-hp-groupe: #f87171;
+  --badge-postes-fg: #1e3a8a;
+  --badge-postes-bg: rgba(96, 165, 250, 0.22);
+  --badge-acces-fg: #5b21b6;
+  --badge-acces-bg: rgba(139, 92, 246, 0.2);
 }
 
 * {
@@ -723,11 +731,11 @@ body {
 }
 
 .recherche-resultat-pastille-acces {
-  background: #8b5cf6;
+  background: var(--color-acces-groupe);
 }
 
 .recherche-resultat-pastille-postes {
-  background: #2563eb;
+  background: var(--color-poste);
 }
 
 .recherche-resultat-type-inline {
@@ -1135,15 +1143,15 @@ body {
 }
 
 .pastille-acces {
-  background: #8b5cf6;
+  background: var(--color-acces-groupe);
 }
 
 .pastille-poste {
-  background: #2563eb;
+  background: var(--color-poste);
 }
 
 .pastille-hp {
-  background: #ef4444;
+  background: var(--color-hp);
 }
 
 .pastille-app-du {
@@ -1267,8 +1275,8 @@ body {
 }
 
 .popup-badge-acces {
-  color: #5b21b6;
-  background: rgba(139, 92, 246, 0.2);
+  color: var(--badge-acces-fg);
+  background: var(--badge-acces-bg);
 }
 
 .popup-badge-postes {

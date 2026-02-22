@@ -32,6 +32,32 @@ const ACCES_VIDE = { type: "FeatureCollection", features: [] };
 const POSTES_VIDE = { type: "FeatureCollection", features: [] };
 const PK_VIDE = { type: "FeatureCollection", features: [] };
 const PK_ZOOM_MIN = 11;
+const PALETTE_CARTE = Object.freeze({
+  acces: "#7c3aed",
+  accesGroupe: "#8b5cf6",
+  poste: "#60a5fa",
+  posteGroupe: "#93c5fd",
+  horsPatrimoine: "#ef4444",
+  horsPatrimoineGroupe: "#f87171"
+});
+
+function appliquerPaletteCarteDansCss() {
+  const racine = document.documentElement;
+  if (!racine?.style) {
+    return;
+  }
+  racine.style.setProperty("--color-acces", PALETTE_CARTE.acces);
+  racine.style.setProperty("--color-acces-groupe", PALETTE_CARTE.accesGroupe);
+  racine.style.setProperty("--color-poste", PALETTE_CARTE.poste);
+  racine.style.setProperty("--color-poste-groupe", PALETTE_CARTE.posteGroupe);
+  racine.style.setProperty("--color-hp", PALETTE_CARTE.horsPatrimoine);
+  racine.style.setProperty("--color-hp-groupe", PALETTE_CARTE.horsPatrimoineGroupe);
+  racine.style.setProperty("--badge-postes-fg", "#1e3a8a");
+  racine.style.setProperty("--badge-postes-bg", "rgba(96, 165, 250, 0.22)");
+  racine.style.setProperty("--badge-acces-fg", "#5b21b6");
+  racine.style.setProperty("--badge-acces-bg", "rgba(139, 92, 246, 0.2)");
+}
+appliquerPaletteCarteDansCss();
 
 // Style raster OSM (plan open).
 const stylePlanOsm = {
@@ -49,31 +75,6 @@ const stylePlanOsm = {
       id: "osm",
       type: "raster",
       source: "osm"
-    }
-  ]
-};
-
-// Style raster "carte transport" (base claire orientee reseaux et voirie).
-const styleCarteTransport = {
-  version: 8,
-  sources: {
-    carteTransport: {
-      type: "raster",
-      tiles: [
-        "https://a.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}.png",
-        "https://b.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}.png",
-        "https://c.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}.png",
-        "https://d.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}.png"
-      ],
-      tileSize: 256,
-      attribution: "© OpenStreetMap contributors, © CARTO"
-    }
-  },
-  layers: [
-    {
-      id: "carteTransport",
-      type: "raster",
-      source: "carteTransport"
     }
   ]
 };
@@ -101,8 +102,8 @@ const styleSatelliteIgn = {
   ]
 };
 
-// Style vectoriel OSM base sur le schema Shortbread.
-const URL_STYLE_OSM_SHORTBREAD = "https://tiles.versatiles.org/assets/styles/colorful/style.json";
+const URL_STYLE_POSITRON = "https://basemaps.cartocdn.com/gl/positron-gl-style/style.json";
+const URL_STYLE_VOYAGER = "https://basemaps.cartocdn.com/gl/voyager-gl-style/style.json";
 
 // Style vectoriel officiel du Plan IGN (plus fluide pour le fond plan).
 const URL_STYLE_PLAN_IGN =
@@ -112,14 +113,18 @@ const ZOOM_PASSAGE_SATELLITE_IGN = 15;
 const ZOOM_RETOUR_PLAN_IGN = 14.5;
 
 const fondsCartographiques = {
-  carteTransport: styleCarteTransport,
-  osmShortbread: URL_STYLE_OSM_SHORTBREAD,
+  positron: URL_STYLE_POSITRON,
+  voyager: URL_STYLE_VOYAGER,
   planIgn: URL_STYLE_PLAN_IGN,
   osm: stylePlanOsm,
   satelliteIgn: styleSatelliteIgn
 };
 
-let fondActif = "carteTransport";
+const stylesFondsVectorielsPrepares = new Map();
+const promessesStylesFondsVectoriels = new Map();
+let compteurChangementFond = 0;
+
+let fondActif = "positron";
 let ignAutomatiqueActif = true;
 let afficherAppareils = false;
 let afficherAcces = true;
@@ -160,6 +165,129 @@ let contexteMenuPosition = {
 };
 let contexteMenuFeature = null;
 const DIAMETRE_ICONE_GROUPE_APPAREILS = 84;
+
+function clonerStyle(style) {
+  return JSON.parse(JSON.stringify(style));
+}
+
+async function chargerStyleJsonDepuisUrl(url) {
+  const reponse = await fetch(url, { cache: "default" });
+  if (!reponse.ok) {
+    throw new Error(`HTTP ${reponse.status}`);
+  }
+  return reponse.json();
+}
+
+function contientMotStyle(texte, mots) {
+  const normalise = String(texte || "").toLowerCase();
+  return mots.some((mot) => normalise.includes(mot));
+}
+
+function classifierCoucheStyleFond(couche) {
+  const id = String(couche?.id || "").toLowerCase();
+  const sourceLayer = String(couche?.["source-layer"] || "").toLowerCase();
+  const concat = `${id} ${sourceLayer}`;
+  const estLabel = couche?.type === "symbol";
+  const estRoute = contientMotStyle(concat, [
+    "road",
+    "street",
+    "highway",
+    "transportation",
+    "transport",
+    "path",
+    "track",
+    "motorway",
+    "trunk",
+    "primary",
+    "secondary",
+    "tertiary",
+    "residential",
+    "service"
+  ]);
+  const estRouteMineure = contientMotStyle(concat, [
+    "minor",
+    "residential",
+    "service",
+    "tertiary",
+    "living",
+    "pedestrian",
+    "footway",
+    "path",
+    "track",
+    "unclassified"
+  ]);
+  const estLabelRoute = estLabel && contientMotStyle(concat, ["road", "street", "highway", "transport"]);
+  const estPoi = contientMotStyle(concat, ["poi", "amenity", "landmark", "shop", "tourism", "leisure", "icon"]);
+  const estLabelLocal = estLabel && contientMotStyle(concat, ["neighbour", "neighborhood", "suburb", "quarter", "hamlet", "village"]);
+  return { estLabel, estRoute, estRouteMineure, estLabelRoute, estPoi, estLabelLocal };
+}
+
+function masquerCoucheStyleFond(couche) {
+  if (!couche.layout) {
+    couche.layout = {};
+  }
+  couche.layout.visibility = "none";
+}
+
+function releverMinZoomCoucheStyleFond(couche, minZoom) {
+  const minzoomCourant = Number.isFinite(couche.minzoom) ? couche.minzoom : 0;
+  couche.minzoom = Math.max(minzoomCourant, minZoom);
+}
+
+function appliquerPresetEquilibreStyleFond(styleJson) {
+  const style = clonerStyle(styleJson);
+  style.layers = (style.layers || []).map((couche) => {
+    const sortie = { ...couche };
+    const classe = classifierCoucheStyleFond(sortie);
+
+    if (classe.estPoi || classe.estLabelLocal) {
+      masquerCoucheStyleFond(sortie);
+      return sortie;
+    }
+    if (classe.estRouteMineure) {
+      releverMinZoomCoucheStyleFond(sortie, 11);
+    }
+    if (classe.estLabelRoute) {
+      releverMinZoomCoucheStyleFond(sortie, 12);
+    }
+    if (classe.estRoute) {
+      releverMinZoomCoucheStyleFond(sortie, 8);
+    }
+    return sortie;
+  });
+  return style;
+}
+
+async function obtenirStyleFond(nomFond) {
+  const style = fondsCartographiques[nomFond];
+  if (!style) {
+    return null;
+  }
+
+  if (nomFond !== "positron" && nomFond !== "voyager") {
+    return style;
+  }
+
+  if (stylesFondsVectorielsPrepares.has(nomFond)) {
+    return clonerStyle(stylesFondsVectorielsPrepares.get(nomFond));
+  }
+
+  if (!promessesStylesFondsVectoriels.has(nomFond)) {
+    const promesse = chargerStyleJsonDepuisUrl(style)
+      .then((styleJson) => {
+        const stylePrepare = appliquerPresetEquilibreStyleFond(styleJson);
+        stylesFondsVectorielsPrepares.set(nomFond, stylePrepare);
+        return stylePrepare;
+      })
+      .finally(() => {
+        promessesStylesFondsVectoriels.delete(nomFond);
+      });
+    promessesStylesFondsVectoriels.set(nomFond, promesse);
+  }
+
+  const stylePrepare = await promessesStylesFondsVectoriels.get(nomFond);
+  return clonerStyle(stylePrepare);
+}
 
 function determinerCouleurAppareil(codeAppareil) {
   const code = String(codeAppareil || "").trim().toUpperCase();
@@ -1956,7 +2084,7 @@ function appliquerCouchesDonnees() {
       filter: ["==", ["get", "acces_count"], 1],
       paint: {
         "circle-radius": ["interpolate", ["linear"], ["zoom"], 6, 5, 12, 5.8, 18, 6.8],
-        "circle-color": "#7c3aed",
+        "circle-color": PALETTE_CARTE.acces,
         "circle-opacity": 0.9,
         "circle-stroke-color": "#ffffff",
         "circle-stroke-width": 1.1
@@ -1972,7 +2100,7 @@ function appliquerCouchesDonnees() {
       filter: [">", ["get", "acces_count"], 1],
       paint: {
         "circle-radius": ["interpolate", ["linear"], ["get", "acces_count"], 2, 13, 5, 17, 10, 22],
-        "circle-color": "#8b5cf6",
+        "circle-color": PALETTE_CARTE.accesGroupe,
         "circle-opacity": 0.34,
         "circle-stroke-color": "#ffffff",
         "circle-stroke-width": 1.8
@@ -1997,7 +2125,12 @@ function appliquerCouchesDonnees() {
       filter: ["==", ["get", "postes_count"], 1],
       paint: {
         "circle-radius": ["interpolate", ["linear"], ["zoom"], 6, 5, 12, 5.8, 18, 6.8],
-        "circle-color": ["case", ["==", ["get", "hors_patrimoine"], true], "#ef4444", "#60a5fa"],
+        "circle-color": [
+          "case",
+          ["==", ["get", "hors_patrimoine"], true],
+          PALETTE_CARTE.horsPatrimoine,
+          PALETTE_CARTE.poste
+        ],
         "circle-opacity": ["case", ["==", ["get", "hors_patrimoine"], true], 0.82, 0.92],
         "circle-stroke-color": "#ffffff",
         "circle-stroke-width": 1.1
@@ -2013,7 +2146,12 @@ function appliquerCouchesDonnees() {
       filter: [">", ["get", "postes_count"], 1],
       paint: {
         "circle-radius": ["interpolate", ["linear"], ["get", "postes_count"], 2, 13, 5, 17, 10, 22],
-        "circle-color": ["case", [">", ["get", "hors_patrimoine_count"], 0], "#f87171", "#93c5fd"],
+        "circle-color": [
+          "case",
+          [">", ["get", "hors_patrimoine_count"], 0],
+          PALETTE_CARTE.horsPatrimoineGroupe,
+          PALETTE_CARTE.posteGroupe
+        ],
         "circle-opacity": ["case", [">", ["get", "hors_patrimoine_count"], 0], 0.38, 0.34],
         "circle-stroke-color": "#ffffff",
         "circle-stroke-width": 1.8
@@ -4785,13 +4923,29 @@ function cadrerCarteSurDonneesInitiales() {
   );
 }
 
-function changerFondCarte(nomFond) {
-  if (!fondsCartographiques[nomFond] || nomFond === fondActif) {
+async function changerFondCarte(nomFond, options = {}) {
+  const forcer = options.force === true;
+  if (!fondsCartographiques[nomFond] || (!forcer && nomFond === fondActif)) {
+    return;
+  }
+
+  const versionChangement = ++compteurChangementFond;
+  let styleFond = null;
+  try {
+    styleFond = await obtenirStyleFond(nomFond);
+  } catch (erreur) {
+    console.error(`Impossible de charger le fond "${nomFond}"`, erreur);
+    return;
+  }
+  if (!styleFond) {
+    return;
+  }
+  if (versionChangement !== compteurChangementFond) {
     return;
   }
 
   // Changement de style complet pour basculer proprement entre raster et vectoriel.
-  carte.setStyle(fondsCartographiques[nomFond]);
+  carte.setStyle(styleFond);
   fondActif = nomFond;
   planifierRestaurationFiltres();
 
@@ -4806,12 +4960,12 @@ function determinerFondIgnAutomatique(zoom, fondCourant = fondActif) {
     return "satelliteIgn";
   }
   if (zoom <= ZOOM_RETOUR_PLAN_IGN) {
-    return "carteTransport";
+    return "positron";
   }
-  if (fondCourant === "carteTransport" || fondCourant === "satelliteIgn") {
+  if (fondCourant === "positron" || fondCourant === "satelliteIgn") {
     return fondCourant;
   }
-  return "carteTransport";
+  return "positron";
 }
 
 function appliquerFondIgnAutomatique(options = {}) {
@@ -4825,7 +4979,7 @@ function appliquerFondIgnAutomatique(options = {}) {
     return;
   }
 
-  changerFondCarte(fondCible);
+  changerFondCarte(fondCible, { force: forcer });
   mettreAJourSelection(FOND_IGN_AUTOMATIQUE);
 }
 
@@ -4904,6 +5058,7 @@ carte.on("zoomend", () => {
   planifierMiseAJourPk();
 });
 carte.on("moveend", planifierMiseAJourPk);
+appliquerFondIgnAutomatique({ force: true });
 
 boutonFonds.addEventListener("click", (event) => {
   event.stopPropagation();
