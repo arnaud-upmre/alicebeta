@@ -33,10 +33,12 @@ const POSTES_VIDE = { type: "FeatureCollection", features: [] };
 const PK_VIDE = { type: "FeatureCollection", features: [] };
 const PK_ZOOM_MIN = 11;
 const PK_TOLERANCE_M = 50;
+const URL_GLYPHS_MAPLIBRE = "https://demotiles.maplibre.org/font/{fontstack}/{range}.pbf";
 
 // Style raster OSM (plan open).
 const stylePlanOsm = {
   version: 8,
+  glyphs: URL_GLYPHS_MAPLIBRE,
   sources: {
     osm: {
       type: "raster",
@@ -57,6 +59,7 @@ const stylePlanOsm = {
 // Style raster des orthophotos IGN (satellite).
 const styleSatelliteIgn = {
   version: 8,
+  glyphs: URL_GLYPHS_MAPLIBRE,
   sources: {
     satelliteIgn: {
       type: "raster",
