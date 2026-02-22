@@ -53,8 +53,6 @@ const PK_ZOOM_MIN = 11;
 const PN_ZOOM_MIN = 9;
 const BBOX_HAUTS_DE_FRANCE = [1.32, 49.94, 4.36, 51.12];
 const URL_API_PN_SNCF = "https://data.sncf.com/api/records/1.0/search/";
-const URL_EXPORT_PN_SNCF_GEOJSON =
-  "https://data.sncf.com/explore/dataset/liste-des-passages-a-niveau/download/?format=geojson&timezone=Europe%2FParis&lang=fr";
 const PALETTE_CARTE = Object.freeze({
   acces: "#7c3aed",
   accesGroupe: "#8b5cf6",
@@ -2750,48 +2748,6 @@ function convertirRecordPnEnFeature(record) {
   };
 }
 
-function convertirFeatureGeojsonPn(feature) {
-  const props = feature?.properties || {};
-  const coordinates = feature?.geometry?.coordinates;
-  let coordonnees = null;
-  if (Array.isArray(coordinates) && coordinates.length >= 2) {
-    coordonnees = normaliserCoordonneesPn(coordinates[0], coordinates[1]);
-  }
-
-  if (!coordonnees) {
-    const longitude = String(
-      props.xlong_wgs84 ?? props.x_long_wgs84 ?? props.longitude ?? props.lon ?? props.x ?? ""
-    ).replace(",", ".");
-    const latitude = String(
-      props.ylat_wgs84 ?? props.y_lat_wgs84 ?? props.latitude ?? props.lat ?? props.y ?? ""
-    ).replace(",", ".");
-    coordonnees = normaliserCoordonneesPn(longitude, latitude);
-  }
-
-  if (!coordonnees) {
-    return null;
-  }
-
-  const pn_numero = formaterNumeroPn(props);
-  const code_ligne = lirePremierChampRenseigne(props.code_ligne, props.code_lig, props.ligne, props.code_line);
-  const pk = lirePremierChampRenseigne(props.pk, props.point_km, props.point_kilometrique);
-  const classe = lirePremierChampRenseigne(props.classe, props.type_pn, props.class_pn);
-
-  return {
-    type: "Feature",
-    geometry: {
-      type: "Point",
-      coordinates: coordonnees
-    },
-    properties: {
-      pn_numero,
-      code_ligne,
-      pk,
-      classe
-    }
-  };
-}
-
 async function chargerDonneesPnDepuisApiSNCF() {
   const limiteParPage = 100;
   const maxPages = 80;
@@ -2830,28 +2786,6 @@ async function chargerDonneesPnDepuisApiSNCF() {
   }) };
 }
 
-async function chargerDonneesPnDepuisExportGeojson() {
-  const reponse = await fetch(URL_EXPORT_PN_SNCF_GEOJSON, { cache: "no-store" });
-  if (!reponse.ok) {
-    throw new Error(`HTTP ${reponse.status}`);
-  }
-  const geojson = await reponse.json();
-  const featuresSource = Array.isArray(geojson?.features) ? geojson.features : [];
-  const features = [];
-  for (const feature of featuresSource) {
-    const featurePn = convertirFeatureGeojsonPn(feature);
-    if (!featurePn) {
-      continue;
-    }
-    const [longitude, latitude] = featurePn.geometry.coordinates;
-    if (!estCoordonneeDansBboxHdf(longitude, latitude)) {
-      continue;
-    }
-    features.push(featurePn);
-  }
-  return { type: "FeatureCollection", features };
-}
-
 async function chargerDonneesPn() {
   if (donneesPn) {
     return donneesPn;
@@ -2859,17 +2793,6 @@ async function chargerDonneesPn() {
 
   if (!promesseChargementPn) {
     promesseChargementPn = chargerDonneesPnDepuisApiSNCF()
-      .catch((erreurApi) => {
-        console.warn("Fallback export GeoJSON pour les PN (API records indisponible)", erreurApi);
-        return chargerDonneesPnDepuisExportGeojson();
-      })
-      .then((geojson) => {
-        const features = Array.isArray(geojson?.features) ? geojson.features : [];
-        if (features.length > 0) {
-          return { type: "FeatureCollection", features };
-        }
-        return chargerDonneesPnDepuisExportGeojson();
-      })
       .then((geojson) => {
         const features = Array.isArray(geojson?.features) ? geojson.features : [];
         donneesPn = { type: "FeatureCollection", features };
