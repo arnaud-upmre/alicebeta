@@ -89,6 +89,8 @@
       construireDetailsPoste,
       construireTitreNomTypeSatAcces,
       determinerCouleurAppareil,
+      paletteCarte,
+      paletteAppareils,
       extraireListeDepuisFeature,
       chargerDonneesPostes,
       chargerDonneesAppareils,
@@ -130,6 +132,22 @@
     const PREFIXES_SECTIONNEUR = ["ST", "S", "FB", "F", "P", "B"];
     const PREFIXES_ALIM = ["ALIM"];
     const MOTS_VIDES = new Set(["de", "du", "des", "d", "la", "le", "les", "a", "à", "au", "aux", "en", "sur", "et", "l"]);
+    const COULEUR_PASTILLE_POSTE = normaliserCouleurHex(paletteCarte?.poste || "#60a5fa");
+    const COULEUR_PASTILLE_ACCES = normaliserCouleurHex(paletteCarte?.accesGroupe || "#8b5cf6");
+    const COULEUR_PASTILLE_APPAREIL = normaliserCouleurHex(paletteAppareils?.autre || "#111111");
+    const CLASSES_COULEUR_APPAREIL_PAR_HEX = new Map([
+      [normaliserCouleurHex(paletteAppareils?.urgence || "#d90429"), "pastille-app-du"],
+      [normaliserCouleurHex(paletteAppareils?.interrupteur || "#f77f00"), "pastille-app-si"],
+      [normaliserCouleurHex(paletteAppareils?.transfo || "#ffd60a"), "pastille-app-tt"],
+      [normaliserCouleurHex(paletteAppareils?.sectionneur || "#2a9d8f"), "pastille-app-t"],
+      [normaliserCouleurHex(paletteAppareils?.alim || "#8d99ae"), "pastille-app-alim"],
+      [normaliserCouleurHex(paletteAppareils?.autre || "#111111"), "pastille-app-autre"]
+    ]);
+
+    function determinerClassePastilleAppareil(couleur) {
+      const couleurNormalisee = normaliserCouleurHex(couleur || COULEUR_PASTILLE_APPAREIL);
+      return CLASSES_COULEUR_APPAREIL_PAR_HEX.get(couleurNormalisee) || "pastille-app-autre";
+    }
 
     function fermerResultatsRecherche() {
       controleRecherche?.classList.remove("est-ouvert");
@@ -187,7 +205,7 @@
             sat,
             longitude,
             latitude,
-            couleurPastille: "#2563eb",
+            couleurPastille: COULEUR_PASTILLE_POSTE,
             texteRecherche: normaliserTexteRecherche(motsCles)
           });
         }
@@ -284,7 +302,7 @@
             sat,
             longitude,
             latitude,
-            couleurPastille: "#8b5cf6",
+            couleurPastille: COULEUR_PASTILLE_ACCES,
             texteRecherche: normaliserTexteRecherche(motsCles)
           });
         }
@@ -520,10 +538,6 @@
       const titre = echapperHtml(resultat.titre || "Element");
       const meta = construireResumeRecherche(resultat);
       const classePastille = `recherche-resultat-pastille-${echapperHtml(resultat.type || "acces")}`;
-      const couleurPastille = echapperHtml(
-        normaliserCouleurHex(resultat.couleurPastille || (resultat.type === "postes" ? "#2563eb" : resultat.type === "appareils" ? "#111111" : "#8b5cf6"))
-      );
-
       if (resultat.type === "appareils") {
         const appareilsLignes =
           Array.isArray(resultat.appareilsLignesUniques) && resultat.appareilsLignesUniques.length
@@ -535,15 +549,15 @@
             const code = echapperHtml(ligne?.code || "Appareil");
             const contexte = echapperHtml(ligne?.contexte || "");
             const blocContexte = contexte ? `<span class="recherche-appareil-contexte">(${contexte})</span>` : "";
-            const couleurLigne = echapperHtml(normaliserCouleurHex(ligne?.couleur || "#111111"));
+            const classeCouleurLigne = determinerClassePastilleAppareil(ligne?.couleur || COULEUR_PASTILLE_APPAREIL);
             const blocHorsPatrimoine = ligne?.horsPatrimoine ? '<span class="recherche-appareil-hors-patrimoine">Hors patrimoine</span>' : "";
-            return `<span class="recherche-appareil-ligne"><span class="recherche-appareil-ligne-principale"><span class="recherche-resultat-pastille recherche-resultat-pastille-ligne-appareil" style="background-color:${couleurLigne};"></span><span class="recherche-appareil-code">${code}</span>${blocContexte}</span>${blocHorsPatrimoine}</span>`;
+            return `<span class="recherche-appareil-ligne"><span class="recherche-appareil-ligne-principale"><span class="recherche-resultat-pastille recherche-resultat-pastille-ligne-appareil ${echapperHtml(classeCouleurLigne)}"></span><span class="recherche-appareil-code">${code}</span>${blocContexte}</span>${blocHorsPatrimoine}</span>`;
           })
           .join("");
         return `<li><button class="recherche-resultat" type="button" data-action="ouvrir-resultat" data-type="${echapperHtml(resultat.type)}" data-lng="${resultat.longitude}" data-lat="${resultat.latitude}"><span class="recherche-resultat-titre"><span class="recherche-appareil-liste${classeGroupe}">${lignesAppareils}</span></span></button></li>`;
       }
 
-      return `<li><button class="recherche-resultat" type="button" data-action="ouvrir-resultat" data-type="${echapperHtml(resultat.type)}" data-lng="${resultat.longitude}" data-lat="${resultat.latitude}"><span class="recherche-resultat-titre"><span class="recherche-resultat-pastille ${classePastille}" style="background-color:${couleurPastille};"></span>${titre}<span class="recherche-resultat-type-inline">${echapperHtml(meta)}</span></span></button></li>`;
+      return `<li><button class="recherche-resultat" type="button" data-action="ouvrir-resultat" data-type="${echapperHtml(resultat.type)}" data-lng="${resultat.longitude}" data-lat="${resultat.latitude}"><span class="recherche-resultat-titre"><span class="recherche-resultat-pastille ${classePastille}"></span>${titre}<span class="recherche-resultat-type-inline">${echapperHtml(meta)}</span></span></button></li>`;
     }
 
     function construireBarreFiltres(typeForce, compteurs) {

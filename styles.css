@@ -22,6 +22,12 @@
   --color-poste-groupe: #93c5fd;
   --color-hp: #ef4444;
   --color-hp-groupe: #f87171;
+  --color-app-du: #d90429;
+  --color-app-si: #f77f00;
+  --color-app-tt: #ffd60a;
+  --color-app-t: #2a9d8f;
+  --color-app-alim: #8d99ae;
+  --color-app-autre: #111111;
   --badge-postes-fg: #1e3a8a;
   --badge-postes-bg: rgba(96, 165, 250, 0.22);
   --badge-acces-fg: #5b21b6;
@@ -1155,27 +1161,27 @@ body {
 }
 
 .pastille-app-du {
-  background: #d90429;
+  background: var(--color-app-du);
 }
 
 .pastille-app-si {
-  background: #f77f00;
+  background: var(--color-app-si);
 }
 
 .pastille-app-tt {
-  background: #ffd60a;
+  background: var(--color-app-tt);
 }
 
 .pastille-app-t {
-  background: #2a9d8f;
+  background: var(--color-app-t);
 }
 
 .pastille-app-alim {
-  background: #8d99ae;
+  background: var(--color-app-alim);
 }
 
 .pastille-app-autre {
-  background: #111111;
+  background: var(--color-app-autre);
 }
 
 .popup-carte {

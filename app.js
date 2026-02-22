@@ -40,6 +40,14 @@ const PALETTE_CARTE = Object.freeze({
   horsPatrimoine: "#ef4444",
   horsPatrimoineGroupe: "#f87171"
 });
+const PALETTE_APPAREILS = Object.freeze({
+  urgence: "#d90429",
+  interrupteur: "#f77f00",
+  transfo: "#ffd60a",
+  sectionneur: "#2a9d8f",
+  alim: "#8d99ae",
+  autre: "#111111"
+});
 
 function appliquerPaletteCarteDansCss() {
   const racine = document.documentElement;
@@ -52,6 +60,12 @@ function appliquerPaletteCarteDansCss() {
   racine.style.setProperty("--color-poste-groupe", PALETTE_CARTE.posteGroupe);
   racine.style.setProperty("--color-hp", PALETTE_CARTE.horsPatrimoine);
   racine.style.setProperty("--color-hp-groupe", PALETTE_CARTE.horsPatrimoineGroupe);
+  racine.style.setProperty("--color-app-du", PALETTE_APPAREILS.urgence);
+  racine.style.setProperty("--color-app-si", PALETTE_APPAREILS.interrupteur);
+  racine.style.setProperty("--color-app-tt", PALETTE_APPAREILS.transfo);
+  racine.style.setProperty("--color-app-t", PALETTE_APPAREILS.sectionneur);
+  racine.style.setProperty("--color-app-alim", PALETTE_APPAREILS.alim);
+  racine.style.setProperty("--color-app-autre", PALETTE_APPAREILS.autre);
   racine.style.setProperty("--badge-postes-fg", "#1e3a8a");
   racine.style.setProperty("--badge-postes-bg", "rgba(96, 165, 250, 0.22)");
   racine.style.setProperty("--badge-acces-fg", "#5b21b6");
@@ -293,15 +307,15 @@ function determinerCouleurAppareil(codeAppareil) {
   const code = String(codeAppareil || "").trim().toUpperCase();
 
   if (!code) {
-    return "#111111";
+    return PALETTE_APPAREILS.autre;
   }
 
   if (code.startsWith("DU")) {
-    return "#d90429"; // Rouge
+    return PALETTE_APPAREILS.urgence;
   }
 
   if (code.startsWith("SI") || code.startsWith("I") || code.startsWith("D")) {
-    return "#f77f00"; // Orange
+    return PALETTE_APPAREILS.interrupteur;
   }
 
   if (
@@ -312,7 +326,7 @@ function determinerCouleurAppareil(codeAppareil) {
     /^GT\d+$/.test(code) ||
     /^AT\d+$/.test(code)
   ) {
-    return "#ffd60a"; // Jaune
+    return PALETTE_APPAREILS.transfo;
   }
 
   if (
@@ -326,14 +340,14 @@ function determinerCouleurAppareil(codeAppareil) {
     code.startsWith("P") ||
     code.startsWith("B")
   ) {
-    return "#2a9d8f"; // Vert
+    return PALETTE_APPAREILS.sectionneur;
   }
 
   if (code.startsWith("ALIM")) {
-    return "#8d99ae"; // Gris
+    return PALETTE_APPAREILS.alim;
   }
 
-  return "#111111"; // Noir
+  return PALETTE_APPAREILS.autre;
 }
 
 function estHorsPatrimoine(valeur) {
@@ -351,7 +365,7 @@ function normaliserCouleurHex(couleur) {
     .trim()
     .toLowerCase();
   if (!valeur) {
-    return "#111111";
+    return PALETTE_APPAREILS.autre;
   }
   const hex = valeur.startsWith("#") ? valeur.slice(1) : valeur;
   if (/^[0-9a-f]{3}$/.test(hex)) {
@@ -363,7 +377,7 @@ function normaliserCouleurHex(couleur) {
   if (/^[0-9a-f]{6}$/.test(hex)) {
     return `#${hex}`;
   }
-  return "#111111";
+  return PALETTE_APPAREILS.autre;
 }
 
 function convertirHexEnRgba(couleurHex, alpha) {
@@ -384,9 +398,9 @@ function construireIdIconeGroupeAppareils(couleurs, horsPatrimoine) {
 
 function determinerCouleurCarteAppareil(appareil) {
   if (appareil?.hors_patrimoine) {
-    return "#ef4444";
+    return PALETTE_CARTE.horsPatrimoine;
   }
-  return normaliserCouleurHex(appareil?.couleur_appareil || "#111111");
+  return normaliserCouleurHex(appareil?.couleur_appareil || PALETTE_APPAREILS.autre);
 }
 
 function creerImageIconeGroupeAppareils(couleurs, horsPatrimoine) {
@@ -398,7 +412,7 @@ function creerImageIconeGroupeAppareils(couleurs, horsPatrimoine) {
     return null;
   }
 
-  const teintes = Array.isArray(couleurs) && couleurs.length ? couleurs : ["#2563eb"];
+  const teintes = Array.isArray(couleurs) && couleurs.length ? couleurs : [PALETTE_APPAREILS.autre];
   const taille = teintes.length;
   const centre = DIAMETRE_ICONE_GROUPE_APPAREILS / 2;
   const rayon = centre - 3;
@@ -417,7 +431,7 @@ function creerImageIconeGroupeAppareils(couleurs, horsPatrimoine) {
 
   ctx.beginPath();
   ctx.arc(centre, centre, rayon, 0, Math.PI * 2);
-  ctx.strokeStyle = horsPatrimoine ? "#f87171" : "#ffffff";
+  ctx.strokeStyle = horsPatrimoine ? PALETTE_CARTE.horsPatrimoineGroupe : "#ffffff";
   ctx.lineWidth = 3;
   ctx.stroke();
 
@@ -5348,6 +5362,8 @@ moduleRechercheAlice =
         construireDetailsPoste,
         construireTitreNomTypeSatAcces,
         determinerCouleurAppareil,
+        paletteCarte: PALETTE_CARTE,
+        paletteAppareils: PALETTE_APPAREILS,
         extraireListeDepuisFeature,
         chargerDonneesPostes,
         chargerDonneesAppareils,
