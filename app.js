@@ -52,7 +52,7 @@ const PN_VIDE = { type: "FeatureCollection", features: [] };
 const PK_ZOOM_MIN = 11;
 const PN_ZOOM_MIN = 9;
 const BBOX_HAUTS_DE_FRANCE = [1.32, 49.94, 4.36, 51.12];
-const URL_API_PN_SNCF = "https://data.sncf.com/api/records/1.0/search/";
+const URL_API_PN_SNCF = "https://ressources.data.sncf.com/api/records/1.0/search/";
 const PALETTE_CARTE = Object.freeze({
   acces: "#7c3aed",
   accesGroupe: "#8b5cf6",
@@ -827,6 +827,7 @@ const caseVitesseLigne = document.querySelector('input[name="filtre-vitesse-lign
 const compteurAppareils = document.getElementById("compteur-appareils");
 const compteurAcces = document.getElementById("compteur-acces");
 const compteurPostes = document.getElementById("compteur-postes");
+const compteurPn = document.getElementById("compteur-pn");
 const controleRecherche = document.getElementById("controle-recherche");
 const champRecherche = document.getElementById("champ-recherche");
 const listeResultatsRecherche = document.getElementById("recherche-resultats");
@@ -1820,6 +1821,9 @@ function mettreAJourCompteursFiltres() {
     const totalPostes = donneesPostes ? totalPostesBrut : calculerTotalEntrees(donneesPostes, "postes_count");
     compteurPostes.textContent = `(${totalPostes})`;
   }
+  if (compteurPn) {
+    compteurPn.textContent = `(${Array.isArray(donneesPn?.features) ? donneesPn.features.length : 0})`;
+  }
 }
 
 function estAffichageMobilePk() {
@@ -2795,7 +2799,11 @@ async function chargerDonneesPn() {
     promesseChargementPn = chargerDonneesPnDepuisApiSNCF()
       .then((geojson) => {
         const features = Array.isArray(geojson?.features) ? geojson.features : [];
+        if (!features.length) {
+          throw new Error("Aucun PN renvoye par l'API pour la zone HDF.");
+        }
         donneesPn = { type: "FeatureCollection", features };
+        mettreAJourCompteursFiltres();
         return donneesPn;
       })
       .finally(() => {
