@@ -158,7 +158,7 @@ let compteurChangementFond = 0;
 
 let fondActif = "positron";
 let ignAutomatiqueActif = true;
-let afficherAppareils = false;
+let afficherAppareils = true;
 let afficherAcces = true;
 let afficherPostes = true;
 let afficherPk = false;
@@ -5647,10 +5647,29 @@ if (caseVitesseLigne) {
 async function initialiserDonneesParDefaut() {
   await chargerCompteurPostes();
 
-  if (!afficherAcces && !afficherPostes) {
+  if (!afficherAppareils && !afficherAcces && !afficherPostes) {
     appliquerCouchesDonnees();
     remonterCouchesDonnees();
     return;
+  }
+
+  if (afficherAppareils) {
+    if (caseAppareils) {
+      caseAppareils.disabled = true;
+    }
+    try {
+      await chargerDonneesAppareils();
+    } catch (erreur) {
+      afficherAppareils = false;
+      if (caseAppareils) {
+        caseAppareils.checked = false;
+      }
+      console.error("Impossible de charger appareils.geojson", erreur);
+    } finally {
+      if (caseAppareils) {
+        caseAppareils.disabled = false;
+      }
+    }
   }
 
   if (afficherAcces) {
