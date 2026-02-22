@@ -905,6 +905,7 @@ let boutonFermerModalFiche = document.getElementById("modal-fiche-fermer");
 let elementRetourFocusModalFiche = null;
 let elementRetourFocusModalApropos = null;
 const CLE_STOCKAGE_FENETRE_ACCUEIL = "alice.fenetre-accueil.derniere-date";
+const CLE_STOCKAGE_APROPOS_VU = "alice.apropos.vu";
 let temporisationInfoVitesse = null;
 let temporisationInfoPk = null;
 let moduleItineraire = null;
@@ -1786,6 +1787,19 @@ function fermerModalApropos() {
   }
   modalApropos.classList.remove("est-visible");
   modalApropos.setAttribute("aria-hidden", "true");
+  try {
+    localStorage.setItem(CLE_STOCKAGE_APROPOS_VU, "1");
+  } catch {
+    // Ignore les erreurs de stockage.
+  }
+}
+
+function doitAfficherModalAproposPremiereVisite() {
+  try {
+    return localStorage.getItem(CLE_STOCKAGE_APROPOS_VU) !== "1";
+  } catch {
+    return true;
+  }
 }
 
 async function localiserUtilisateurCarte(options = {}) {
@@ -1833,11 +1847,6 @@ async function partagerPositionContextuelle() {
   }
 
   window.prompt("Copiez ce lien :", lien);
-}
-
-if (fenetreAccueil && doitAfficherFenetreAccueilAujourdhui()) {
-  fenetreAccueil.classList.add("est-visible");
-  fenetreAccueil.setAttribute("aria-hidden", "false");
 }
 
 if (boutonFermerFenetreAccueil) {
@@ -5766,6 +5775,10 @@ if (boutonFermerModalApropos) {
   boutonFermerModalApropos.addEventListener("click", () => {
     fermerModalApropos();
   });
+}
+
+if (doitAfficherModalAproposPremiereVisite()) {
+  ouvrirModalApropos();
 }
 
 document.addEventListener("click", (event) => {
