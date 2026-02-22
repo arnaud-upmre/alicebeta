@@ -2,6 +2,9 @@
 const CENTRE_INITIAL = [2.35, 48.85];
 const ZOOM_INITIAL = 6;
 const ZOOM_MAX = 19;
+const ZOOM_MIN_OUVERTURE_POPUP = 13;
+const ZOOM_CIBLE_PREMIER_CLIC_OBJET = 12;
+const ZOOM_CIBLE_SECOND_CLIC_OBJET = 13;
 const BOUNDS_DEMARRAGE = [
   [1.60412, 49.51155],
   [4.29321, 51.0309]
@@ -4744,6 +4747,22 @@ function activerInteractionsCarte() {
       layers: couchesDisponibles
     });
     if (!objets.length) {
+      return;
+    }
+
+    const zoomActuel = carte.getZoom();
+    if (zoomActuel < ZOOM_MIN_OUVERTURE_POPUP) {
+      const [longitudeObjet, latitudeObjet] = objets[0]?.geometry?.coordinates || [];
+      if (!Number.isFinite(longitudeObjet) || !Number.isFinite(latitudeObjet)) {
+        return;
+      }
+      const zoomCible = zoomActuel < ZOOM_CIBLE_PREMIER_CLIC_OBJET ? ZOOM_CIBLE_PREMIER_CLIC_OBJET : ZOOM_CIBLE_SECOND_CLIC_OBJET;
+      carte.easeTo({
+        center: [longitudeObjet, latitudeObjet],
+        zoom: Math.max(zoomActuel, zoomCible),
+        duration: 360,
+        essential: true
+      });
       return;
     }
 
