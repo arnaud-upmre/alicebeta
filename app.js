@@ -1802,50 +1802,65 @@ function ouvrirMenuContextuel(event, feature) {
   const largeur = menuContextuelCarte.offsetWidth;
   const hauteur = menuContextuelCarte.offsetHeight;
   const estEcranTactile = window.matchMedia?.("(hover: none), (pointer: coarse)")?.matches;
+  const decalageCoin = estEcranTactile ? 16 : 12;
 
-  let gauche = Number.isFinite(clientX) ? clientX + 12 : 28;
-  let haut = Number.isFinite(clientY) ? clientY + 12 : 28;
+  let gauche = 28;
+  let haut = 28;
 
-  const contraindre = (valeur, min, max) => Math.max(min, Math.min(max, valeur));
-  const gaucheMin = marge;
-  const hautMin = marge;
-  const gaucheMax = Math.max(gaucheMin, window.innerWidth - largeur - marge);
-  const hautMax = Math.max(hautMin, window.innerHeight - hauteur - marge);
+  if (Number.isFinite(clientX) && Number.isFinite(clientY)) {
+    const gaucheMin = marge;
+    const hautMin = marge;
+    const gaucheMax = Math.max(gaucheMin, window.innerWidth - largeur - marge);
+    const hautMax = Math.max(hautMin, window.innerHeight - hauteur - marge);
+    const contraindre = (valeur, min, max) => Math.max(min, Math.min(max, valeur));
+    const debordement = (candidat) => {
+      const depasseGauche = Math.max(0, gaucheMin - candidat.gauche);
+      const depasseHaut = Math.max(0, hautMin - candidat.haut);
+      const depasseDroite = Math.max(0, candidat.gauche + largeur - (window.innerWidth - marge));
+      const depasseBas = Math.max(0, candidat.haut + hauteur - (window.innerHeight - marge));
+      return depasseGauche + depasseHaut + depasseDroite + depasseBas;
+    };
 
-  if (estEcranTactile && Number.isFinite(clientX) && Number.isFinite(clientY)) {
-    const zoneProtection = 36;
-    const candidats = [
-      { gauche: clientX + 16, haut: clientY + 16 },
-      { gauche: clientX - largeur - 16, haut: clientY + 16 },
-      { gauche: clientX + 16, haut: clientY - hauteur - 16 },
-      { gauche: clientX - largeur - 16, haut: clientY - hauteur - 16 }
+    const prefererDroite = clientX <= window.innerWidth / 2;
+    const prefererBas = clientY <= window.innerHeight / 2;
+    const premierQuadrant = `${prefererBas ? "bas" : "haut"}-${prefererDroite ? "droite" : "gauche"}`;
+    const ordreQuadrants = [
+      premierQuadrant,
+      `${prefererBas ? "bas" : "haut"}-${prefererDroite ? "gauche" : "droite"}`,
+      `${prefererBas ? "haut" : "bas"}-${prefererDroite ? "droite" : "gauche"}`,
+      `${prefererBas ? "haut" : "bas"}-${prefererDroite ? "gauche" : "droite"}`
     ];
 
-    let choisi = null;
-    for (const candidat of candidats) {
-      const cg = contraindre(candidat.gauche, gaucheMin, gaucheMax);
-      const ch = contraindre(candidat.haut, hautMin, hautMax);
-      const recouvrePoint =
-        clientX >= cg - zoneProtection &&
-        clientX <= cg + largeur + zoneProtection &&
-        clientY >= ch - zoneProtection &&
-        clientY <= ch + hauteur + zoneProtection;
-      if (!recouvrePoint) {
-        choisi = { gauche: cg, haut: ch };
+    const candidatDepuisQuadrant = (quadrant) => {
+      if (quadrant === "bas-droite") {
+        return { gauche: clientX + decalageCoin, haut: clientY + decalageCoin };
+      }
+      if (quadrant === "bas-gauche") {
+        return { gauche: clientX - largeur - decalageCoin, haut: clientY + decalageCoin };
+      }
+      if (quadrant === "haut-droite") {
+        return { gauche: clientX + decalageCoin, haut: clientY - hauteur - decalageCoin };
+      }
+      return { gauche: clientX - largeur - decalageCoin, haut: clientY - hauteur - decalageCoin };
+    };
+
+    let candidatChoisi = null;
+    let debordementMinimal = Number.POSITIVE_INFINITY;
+    for (const quadrant of ordreQuadrants) {
+      const candidat = candidatDepuisQuadrant(quadrant);
+      const scoreDebordement = debordement(candidat);
+      if (scoreDebordement < debordementMinimal) {
+        debordementMinimal = scoreDebordement;
+        candidatChoisi = candidat;
+      }
+      if (scoreDebordement === 0) {
+        candidatChoisi = candidat;
         break;
       }
     }
 
-    if (choisi) {
-      gauche = choisi.gauche;
-      haut = choisi.haut;
-    } else {
-      gauche = contraindre(gauche, gaucheMin, gaucheMax);
-      haut = contraindre(haut, hautMin, hautMax);
-    }
-  } else {
-    gauche = contraindre(gauche, gaucheMin, gaucheMax);
-    haut = contraindre(haut, hautMin, hautMax);
+    gauche = contraindre(candidatChoisi?.gauche ?? gauche, gaucheMin, gaucheMax);
+    haut = contraindre(candidatChoisi?.haut ?? haut, hautMin, hautMax);
   }
 
   menuContextuelCarte.style.left = `${Math.round(gauche)}px`;
