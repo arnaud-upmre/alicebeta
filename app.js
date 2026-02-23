@@ -2,8 +2,6 @@
 const CENTRE_INITIAL = [2.35, 48.85];
 const ZOOM_INITIAL = 6;
 const ZOOM_MAX = 19;
-const ZOOM_MIN_OUVERTURE_POPUP = 9;
-const PAS_ZOOM_CLIC_OBJET = 1;
 const BOUNDS_DEMARRAGE = [
   [1.60412, 49.51155],
   [4.29321, 51.0309]
@@ -142,6 +140,7 @@ const URL_STYLE_VOYAGER = "https://basemaps.cartocdn.com/gl/voyager-gl-style/sty
 const URL_STYLE_PLAN_IGN =
   "https://data.geopf.fr/annexes/ressources/vectorTiles/styles/PLAN.IGN/standard.json";
 const FOND_IGN_AUTOMATIQUE = "ignAuto";
+const FOND_BASE_IGN_AUTOMATIQUE = "voyager";
 const ZOOM_PASSAGE_SATELLITE_IGN = 15;
 const ZOOM_RETOUR_PLAN_IGN = 14.5;
 const ZOOM_DEBUT_FONDU_IGN_AUTO = ZOOM_PASSAGE_SATELLITE_IGN;
@@ -162,7 +161,7 @@ const stylesFondsVectorielsPrepares = new Map();
 const promessesStylesFondsVectoriels = new Map();
 let compteurChangementFond = 0;
 
-let fondActif = "positron";
+let fondActif = FOND_BASE_IGN_AUTOMATIQUE;
 let ignAutomatiqueActif = true;
 let afficherAppareils = true;
 let afficherAcces = true;
@@ -4836,9 +4835,11 @@ function construirePopupDepuisFeatures(longitude, latitude, featurePostes, featu
     .setHTML(contenuFiche)
     .addTo(carte);
   attacherActionsPopupInterne();
-  setTimeout(() => {
-    recadrerCartePourPopupMobile(longitude, latitude);
-  }, 30);
+  if (!options?.eviterRecentrageCarte) {
+    setTimeout(() => {
+      recadrerCartePourPopupMobile(longitude, latitude);
+    }, 30);
+  }
   popupCarte.on("close", () => {
     popupCarte = null;
     navigationInternePopup = null;
@@ -5160,7 +5161,9 @@ function ouvrirPopupDepuisObjetsCarte(objets) {
     return false;
   }
 
-  return construirePopupDepuisFeatures(longitude, latitude, featurePostes, featureAcces, featureAppareils);
+  return construirePopupDepuisFeatures(longitude, latitude, featurePostes, featureAcces, featureAppareils, {
+    eviterRecentrageCarte: true
+  });
 }
 
 async function ouvrirFicheDepuisParametreId() {
@@ -5379,25 +5382,7 @@ function activerInteractionsCarte() {
       return;
     }
 
-    const zoomActuel = carte.getZoom();
-    if (zoomActuel < ZOOM_MIN_OUVERTURE_POPUP) {
-      const [longitudeObjet, latitudeObjet] = objets[0]?.geometry?.coordinates || [];
-      if (!Number.isFinite(longitudeObjet) || !Number.isFinite(latitudeObjet)) {
-        return;
-      }
-      const zoomCible = Math.min(ZOOM_MIN_OUVERTURE_POPUP, zoomActuel + PAS_ZOOM_CLIC_OBJET);
-      carte.easeTo({
-        center: [longitudeObjet, latitudeObjet],
-        zoom: zoomCible,
-        duration: 360,
-        essential: true
-      });
-      return;
-    }
-
-    if (!ouvrirPopupAvecAnimationDepuisObjets(objets)) {
-      ouvrirPopupDepuisObjetsCarte(objets);
-    }
+    ouvrirPopupDepuisObjetsCarte(objets);
   });
 
   carte.on("contextmenu", (event) => {
@@ -5652,7 +5637,7 @@ async function changerFondCarte(nomFond, options = {}) {
 }
 
 function determinerFondIgnAutomatique(zoom, fondCourant = fondActif) {
-  return "positron";
+  return FOND_BASE_IGN_AUTOMATIQUE;
 }
 
 function calculerProgressionFonduIgnAuto(zoom) {
@@ -5785,7 +5770,7 @@ function mettreAJourTransitionFondIgnAuto() {
     return;
   }
 
-  if (!ignAutomatiqueActif || fondActif !== "positron") {
+  if (!ignAutomatiqueActif || fondActif !== FOND_BASE_IGN_AUTOMATIQUE) {
     appliquerOpaciteCouchesFondNatives(1);
     masquerCoucheSatelliteIgnAuto();
     return;
