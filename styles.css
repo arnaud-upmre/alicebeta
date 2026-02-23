@@ -2161,13 +2161,13 @@ body {
   z-index: 9;
   display: none;
   flex-direction: column;
-  min-width: 242px;
-  max-width: min(336px, calc(100vw - 20px));
-  max-height: min(76vh, calc(100vh - 24px));
+  min-width: 220px;
+  max-width: min(300px, calc(100vw - 22px));
+  max-height: min(70vh, calc(100vh - 26px));
   overflow-y: auto;
   overscroll-behavior: contain;
-  padding: 8px 0;
-  border-radius: 14px;
+  padding: 5px 0;
+  border-radius: 12px;
   border: 1px solid var(--ui-glass-border);
   background: var(--ui-glass-bg);
   box-shadow: var(--ui-glass-shadow);
@@ -2182,18 +2182,18 @@ body {
 .menu-contextuel-item {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
   width: 100%;
   margin: 0;
-  padding: 10px 14px;
+  padding: 8px 11px;
   border: 0;
   background: transparent;
   color: var(--ui-text-on-glass);
   text-align: left;
   font-family: "Manrope", "Avenir Next", "Segoe UI", sans-serif;
-  font-size: 0.93rem;
+  font-size: 0.88rem;
   font-weight: 500;
-  line-height: 1.2;
+  line-height: 1.15;
   cursor: pointer;
 }
 
@@ -2209,16 +2209,16 @@ body {
 
 .menu-contextuel-separateur {
   height: 1px;
-  margin: 6px 0;
+  margin: 4px 0;
   background: rgba(255, 255, 255, 0.2);
 }
 
 .menu-contextuel-sousmenu {
   display: none;
   flex-direction: column;
-  margin: -4px 8px 6px;
-  padding: 6px 0;
-  border-radius: 10px;
+  margin: -2px 7px 4px;
+  padding: 4px 0;
+  border-radius: 9px;
   background: rgba(148, 163, 184, 0.2);
 }
 
@@ -2229,15 +2229,15 @@ body {
 .menu-contextuel-sousitem {
   width: 100%;
   margin: 0;
-  padding: 9px 14px 9px 20px;
+  padding: 7px 11px 7px 16px;
   border: 0;
   background: transparent;
   color: var(--ui-text-on-glass);
   text-align: left;
   font-family: "Manrope", "Avenir Next", "Segoe UI", sans-serif;
-  font-size: 0.86rem;
+  font-size: 0.83rem;
   font-weight: 500;
-  line-height: 1.2;
+  line-height: 1.15;
   cursor: pointer;
 }
 
@@ -2349,8 +2349,8 @@ body {
   }
 
   .menu-contextuel-carte {
-    min-width: min(250px, calc(100vw - 34px));
-    max-width: min(300px, calc(100vw - 34px));
+    min-width: min(232px, calc(100vw - 34px));
+    max-width: min(276px, calc(100vw - 34px));
   }
 
   .menu-legende-carte {
@@ -2360,7 +2360,7 @@ body {
   }
 
   .menu-contextuel-item {
-    font-size: 0.92rem;
+    font-size: 0.88rem;
   }
 
   .modal-itineraire-carte {
@@ -2458,9 +2458,9 @@ body {
   }
 
   .menu-contextuel-carte {
-    min-width: min(230px, calc(100vw - 28px));
-    max-width: min(280px, calc(100vw - 28px));
-    border-radius: 14px;
+    min-width: min(220px, calc(100vw - 26px));
+    max-width: min(258px, calc(100vw - 26px));
+    border-radius: 12px;
   }
 
   .menu-legende-carte {
@@ -2472,8 +2472,8 @@ body {
   }
 
   .menu-contextuel-item {
-    padding: 8px 11px;
-    font-size: 0.9rem;
+    padding: 7px 9px;
+    font-size: 0.84rem;
   }
 
   .bouton-sortie-mesure {
