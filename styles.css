@@ -2161,9 +2161,9 @@ body {
   z-index: 9;
   display: none;
   flex-direction: column;
-  min-width: 220px;
-  max-width: min(300px, calc(100vw - 22px));
-  max-height: min(70vh, calc(100vh - 26px));
+  min-width: 206px;
+  max-width: min(276px, calc(100vw - 24px));
+  max-height: min(66vh, calc(100vh - 28px));
   overflow-y: auto;
   overscroll-behavior: contain;
   padding: 5px 0;
@@ -2278,7 +2278,7 @@ body {
   .popup-action-lien,
   .menu-contextuel-item,
   .menu-contextuel-sousitem {
-    min-height: 44px;
+    min-height: 32px;
   }
 
   .maplibregl-popup-close-button {
@@ -2349,8 +2349,8 @@ body {
   }
 
   .menu-contextuel-carte {
-    min-width: min(232px, calc(100vw - 34px));
-    max-width: min(276px, calc(100vw - 34px));
+    min-width: min(210px, calc(100vw - 40px));
+    max-width: min(250px, calc(100vw - 40px));
   }
 
   .menu-legende-carte {
@@ -2360,7 +2360,7 @@ body {
   }
 
   .menu-contextuel-item {
-    font-size: 0.88rem;
+    font-size: 0.83rem;
   }
 
   .modal-itineraire-carte {
@@ -2458,8 +2458,8 @@ body {
   }
 
   .menu-contextuel-carte {
-    min-width: min(220px, calc(100vw - 26px));
-    max-width: min(258px, calc(100vw - 26px));
+    min-width: min(198px, calc(100vw - 28px));
+    max-width: min(236px, calc(100vw - 28px));
     border-radius: 12px;
   }
 
@@ -2473,7 +2473,7 @@ body {
 
   .menu-contextuel-item {
     padding: 7px 9px;
-    font-size: 0.84rem;
+    font-size: 0.8rem;
   }
 
   .bouton-sortie-mesure {
