@@ -680,6 +680,16 @@ body {
   pointer-events: none;
 }
 
+@media (hover: none), (pointer: coarse) {
+  .marqueur-clic-contextuel {
+    width: 32px;
+    height: 32px;
+    border-width: 3px;
+    background: radial-gradient(circle at center, #ef4444 0 4px, rgba(255, 255, 255, 0.98) 4px 11px, transparent 11px);
+    box-shadow: 0 0 0 5px rgba(239, 68, 68, 0.34), 0 0 18px rgba(239, 68, 68, 0.28);
+  }
+}
+
 .modal-itineraire-apercu {
   display: none;
   margin-top: 8px;

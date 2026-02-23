@@ -930,6 +930,8 @@ let boutonFermerModalFiche = document.getElementById("modal-fiche-fermer");
 let boutonPartagerModalFiche = document.getElementById("modal-fiche-partager");
 let elementRetourFocusModalFiche = null;
 let elementRetourFocusModalApropos = null;
+let modalStreetViewContextuelle = null;
+let iframeStreetViewContextuelle = null;
 const CLE_STOCKAGE_APROPOS_VU = "alice.apropos.vu";
 let temporisationInfoVitesse = null;
 let temporisationInfoPk = null;
@@ -1799,21 +1801,51 @@ function ouvrirMenuContextuel(event, feature) {
 
   const largeur = menuContextuelCarte.offsetWidth;
   const hauteur = menuContextuelCarte.offsetHeight;
+  const estEcranTactile = window.matchMedia?.("(hover: none), (pointer: coarse)")?.matches;
 
   let gauche = Number.isFinite(clientX) ? clientX + 12 : 28;
   let haut = Number.isFinite(clientY) ? clientY + 12 : 28;
 
-  if (gauche + largeur > window.innerWidth - marge) {
-    gauche = window.innerWidth - largeur - marge;
-  }
-  if (haut + hauteur > window.innerHeight - marge) {
-    haut = window.innerHeight - hauteur - marge;
-  }
-  if (gauche < marge) {
-    gauche = marge;
-  }
-  if (haut < marge) {
-    haut = marge;
+  const contraindre = (valeur, min, max) => Math.max(min, Math.min(max, valeur));
+  const gaucheMin = marge;
+  const hautMin = marge;
+  const gaucheMax = Math.max(gaucheMin, window.innerWidth - largeur - marge);
+  const hautMax = Math.max(hautMin, window.innerHeight - hauteur - marge);
+
+  if (estEcranTactile && Number.isFinite(clientX) && Number.isFinite(clientY)) {
+    const zoneProtection = 36;
+    const candidats = [
+      { gauche: clientX + 16, haut: clientY + 16 },
+      { gauche: clientX - largeur - 16, haut: clientY + 16 },
+      { gauche: clientX + 16, haut: clientY - hauteur - 16 },
+      { gauche: clientX - largeur - 16, haut: clientY - hauteur - 16 }
+    ];
+
+    let choisi = null;
+    for (const candidat of candidats) {
+      const cg = contraindre(candidat.gauche, gaucheMin, gaucheMax);
+      const ch = contraindre(candidat.haut, hautMin, hautMax);
+      const recouvrePoint =
+        clientX >= cg - zoneProtection &&
+        clientX <= cg + largeur + zoneProtection &&
+        clientY >= ch - zoneProtection &&
+        clientY <= ch + hauteur + zoneProtection;
+      if (!recouvrePoint) {
+        choisi = { gauche: cg, haut: ch };
+        break;
+      }
+    }
+
+    if (choisi) {
+      gauche = choisi.gauche;
+      haut = choisi.haut;
+    } else {
+      gauche = contraindre(gauche, gaucheMin, gaucheMax);
+      haut = contraindre(haut, hautMin, hautMax);
+    }
+  } else {
+    gauche = contraindre(gauche, gaucheMin, gaucheMax);
+    haut = contraindre(haut, hautMin, hautMax);
   }
 
   menuContextuelCarte.style.left = `${Math.round(gauche)}px`;
@@ -1847,6 +1879,55 @@ function basculerSousMenuItineraire() {
   }
   sousMenuItin.classList.add("est-visible");
   sousMenuItin.setAttribute("aria-hidden", "false");
+}
+
+function initialiserModalStreetViewContextuelle() {
+  if (modalStreetViewContextuelle && iframeStreetViewContextuelle) {
+    return;
+  }
+  const conteneur = document.createElement("div");
+  conteneur.innerHTML =
+    '<div class="popup-streetview-modal" id="ctx-streetview-modal" hidden><div class="popup-streetview-dialog" role="dialog" aria-modal="true" aria-label="Street View"><button class="popup-streetview-fermer" id="ctx-fermer-street-view" type="button" aria-label="Fermer">✕</button><iframe class="popup-streetview-iframe" id="ctx-streetview-iframe" title="Street View" loading="lazy" referrerpolicy="no-referrer-when-downgrade" allowfullscreen></iframe></div></div>';
+  const modal = conteneur.firstElementChild;
+  if (!modal) {
+    return;
+  }
+  document.body.appendChild(modal);
+  modalStreetViewContextuelle = modal;
+  iframeStreetViewContextuelle = modal.querySelector("#ctx-streetview-iframe");
+  const boutonFermerStreetViewContextuel = modal.querySelector("#ctx-fermer-street-view");
+
+  const fermer = () => {
+    if (!modalStreetViewContextuelle) {
+      return;
+    }
+    modalStreetViewContextuelle.setAttribute("hidden", "hidden");
+    if (iframeStreetViewContextuelle) {
+      iframeStreetViewContextuelle.removeAttribute("src");
+    }
+  };
+
+  if (boutonFermerStreetViewContextuel) {
+    boutonFermerStreetViewContextuel.addEventListener("click", fermer);
+  }
+  modalStreetViewContextuelle.addEventListener("click", (event) => {
+    if (event.target === modalStreetViewContextuelle) {
+      fermer();
+    }
+  });
+}
+
+function ouvrirStreetViewEnSurimpression(longitude, latitude) {
+  if (!Number.isFinite(longitude) || !Number.isFinite(latitude)) {
+    return;
+  }
+  initialiserModalStreetViewContextuelle();
+  if (!modalStreetViewContextuelle || !iframeStreetViewContextuelle) {
+    return;
+  }
+  const urlStreetView = `https://maps.google.com/maps?layer=c&cbll=${latitude},${longitude}&cbp=11,0,0,0,0&output=svembed`;
+  iframeStreetViewContextuelle.setAttribute("src", urlStreetView);
+  modalStreetViewContextuelle.removeAttribute("hidden");
 }
 
 function fermerMenuLegende() {
@@ -6390,11 +6471,7 @@ if (boutonCtxStreet) {
     if (!Number.isFinite(latitude) || !Number.isFinite(longitude)) {
       return;
     }
-    window.open(
-      `https://www.google.com/maps?q=&layer=c&cbll=${latitude},${longitude}`,
-      "_blank",
-      "noopener"
-    );
+    ouvrirStreetViewEnSurimpression(longitude, latitude);
     fermerMenuContextuel();
   });
 }
