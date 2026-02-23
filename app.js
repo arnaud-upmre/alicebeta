@@ -1793,8 +1793,17 @@ function ouvrirMenuContextuel(event, feature) {
 
   const eventDom = event.originalEvent;
   const marge = 10;
-  const clientX = Number(eventDom?.clientX);
-  const clientY = Number(eventDom?.clientY);
+  const toucher = eventDom?.touches?.[0] || eventDom?.changedTouches?.[0] || null;
+  let clientX = Number(toucher?.clientX ?? eventDom?.clientX);
+  let clientY = Number(toucher?.clientY ?? eventDom?.clientY);
+  if (!Number.isFinite(clientX) || !Number.isFinite(clientY)) {
+    const pointConteneur = carte.project([lng, lat]);
+    const rectCarte = carte.getContainer()?.getBoundingClientRect();
+    if (pointConteneur && rectCarte) {
+      clientX = rectCarte.left + pointConteneur.x;
+      clientY = rectCarte.top + pointConteneur.y;
+    }
+  }
 
   menuContextuelCarte.classList.add("est-visible");
   menuContextuelCarte.setAttribute("aria-hidden", "false");
