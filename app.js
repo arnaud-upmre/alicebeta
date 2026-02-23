@@ -1802,7 +1802,9 @@ function ouvrirMenuContextuel(event, feature) {
   const largeur = menuContextuelCarte.offsetWidth;
   const hauteur = menuContextuelCarte.offsetHeight;
   const estEcranTactile = window.matchMedia?.("(hover: none), (pointer: coarse)")?.matches;
-  const decalageCoin = estEcranTactile ? 16 : 12;
+  const rayonMarqueur = estEcranTactile ? 16 : 12;
+  const margeSeparatrice = estEcranTactile ? 8 : 6;
+  const decalageCoin = rayonMarqueur + margeSeparatrice;
 
   let gauche = 28;
   let haut = 28;
@@ -1813,14 +1815,6 @@ function ouvrirMenuContextuel(event, feature) {
     const gaucheMax = Math.max(gaucheMin, window.innerWidth - largeur - marge);
     const hautMax = Math.max(hautMin, window.innerHeight - hauteur - marge);
     const contraindre = (valeur, min, max) => Math.max(min, Math.min(max, valeur));
-    const debordement = (candidat) => {
-      const depasseGauche = Math.max(0, gaucheMin - candidat.gauche);
-      const depasseHaut = Math.max(0, hautMin - candidat.haut);
-      const depasseDroite = Math.max(0, candidat.gauche + largeur - (window.innerWidth - marge));
-      const depasseBas = Math.max(0, candidat.haut + hauteur - (window.innerHeight - marge));
-      return depasseGauche + depasseHaut + depasseDroite + depasseBas;
-    };
-
     const prefererDroite = clientX <= window.innerWidth / 2;
     const prefererBas = clientY <= window.innerHeight / 2;
     const premierQuadrant = `${prefererBas ? "bas" : "haut"}-${prefererDroite ? "droite" : "gauche"}`;
@@ -1844,23 +1838,30 @@ function ouvrirMenuContextuel(event, feature) {
       return { gauche: clientX - largeur - decalageCoin, haut: clientY - hauteur - decalageCoin };
     };
 
+    const rayonProtection = rayonMarqueur + 4;
     let candidatChoisi = null;
-    let debordementMinimal = Number.POSITIVE_INFINITY;
-    for (const quadrant of ordreQuadrants) {
-      const candidat = candidatDepuisQuadrant(quadrant);
-      const scoreDebordement = debordement(candidat);
-      if (scoreDebordement < debordementMinimal) {
-        debordementMinimal = scoreDebordement;
-        candidatChoisi = candidat;
-      }
-      if (scoreDebordement === 0) {
-        candidatChoisi = candidat;
-        break;
+    let meilleurScore = Number.POSITIVE_INFINITY;
+    for (let i = 0; i < ordreQuadrants.length; i += 1) {
+      const quadrant = ordreQuadrants[i];
+      const brut = candidatDepuisQuadrant(quadrant);
+      const cg = contraindre(brut.gauche, gaucheMin, gaucheMax);
+      const ch = contraindre(brut.haut, hautMin, hautMax);
+
+      const recouvrePoint =
+        clientX >= cg - rayonProtection &&
+        clientX <= cg + largeur + rayonProtection &&
+        clientY >= ch - rayonProtection &&
+        clientY <= ch + hauteur + rayonProtection;
+      const deplacementParClamp = Math.abs(cg - brut.gauche) + Math.abs(ch - brut.haut);
+      const score = (recouvrePoint ? 1_000_000 : 0) + deplacementParClamp * 100 + i;
+      if (score < meilleurScore) {
+        meilleurScore = score;
+        candidatChoisi = { gauche: cg, haut: ch };
       }
     }
 
-    gauche = contraindre(candidatChoisi?.gauche ?? gauche, gaucheMin, gaucheMax);
-    haut = contraindre(candidatChoisi?.haut ?? haut, hautMin, hautMax);
+    gauche = candidatChoisi?.gauche ?? gauche;
+    haut = candidatChoisi?.haut ?? haut;
   }
 
   menuContextuelCarte.style.left = `${Math.round(gauche)}px`;
