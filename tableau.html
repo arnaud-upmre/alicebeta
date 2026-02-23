@@ -91,6 +91,35 @@
   gap: 4px;
 }
 
+.board-close {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  z-index: 2;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 999px;
+  border: 0;
+  background: rgba(15, 23, 42, 0.08);
+  color: #0f172a;
+  text-decoration: none;
+  font-size: 1.2rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.board-close:hover {
+  background: rgba(15, 23, 42, 0.16);
+}
+
+.board-close:focus-visible {
+  background: rgba(15, 23, 42, 0.16);
+  outline: none;
+}
+
 .board-title {
   display: flex;
   align-items: center;
@@ -433,6 +462,7 @@ body {
 </head>
 <body>
 <div class="board-header">
+  <a class="board-close" href="index.html" aria-label="Fermer le tableau blanc et revenir à la page principale" title="Fermer">×</a>
   <div class="board-title-wrap">
     <div class="board-title">
       <img src="alice.webp" alt="Logo ALICE" class="board-logo">
