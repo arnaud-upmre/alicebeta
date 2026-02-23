@@ -914,14 +914,6 @@ body {
   color: #334155;
 }
 
-.recherche-appareil-hors-patrimoine {
-  display: block;
-  margin-top: 1px;
-  font-size: 0.7rem;
-  font-weight: 600;
-  color: #dc2626;
-}
-
 .recherche-resultat-meta {
   display: block;
   margin-top: 2px;
