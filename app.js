@@ -38,7 +38,6 @@ const COUCHE_MESURE_POINTS = "mesure-points";
 const COUCHE_MESURE_LABELS = "mesure-labels";
 const TABLES_RSS = window.RSS_TABLE_NUMBERS || {};
 const DUREE_APPUI_LONG_MENU_CONTEXTUEL_MS = 800;
-const DELAI_SUPPRESSION_MARQUEUR_CLIC_MS = 7000;
 const DELAI_DEMARRAGE_DONNEES_MS = 220;
 const PLACEHOLDER_RECHERCHE_DESKTOP = "Rechercher un poste, appareil, acces...";
 const PLACEHOLDER_RECHERCHE_MOBILE = "Rechercher...";
@@ -197,7 +196,6 @@ let minuterieClignotementLocalisation = null;
 let minuterieArretLocalisation = null;
 let minuterieClignotementMarqueurClic = null;
 let minuterieSuppressionMarqueurClic = null;
-let delaiSuppressionMarqueurClicApresFermetureFiche = null;
 let coordonneesDerniereFiche = null;
 let contextePartageFiche = null;
 let marqueurLocalisation = null;
@@ -1394,21 +1392,6 @@ function supprimerMarqueurClicContextuel() {
     marqueurClicContextuel.remove();
     marqueurClicContextuel = null;
   }
-  delaiSuppressionMarqueurClicApresFermetureFiche = null;
-}
-
-function programmerSuppressionMarqueurClicContextuel(delaiMs = DELAI_SUPPRESSION_MARQUEUR_CLIC_MS) {
-  if (minuterieSuppressionMarqueurClic) {
-    clearTimeout(minuterieSuppressionMarqueurClic);
-    minuterieSuppressionMarqueurClic = null;
-  }
-  if (!marqueurClicContextuel) {
-    return;
-  }
-  const delai = Number.isFinite(delaiMs) ? Math.max(0, delaiMs) : DELAI_SUPPRESSION_MARQUEUR_CLIC_MS;
-  minuterieSuppressionMarqueurClic = setTimeout(() => {
-    supprimerMarqueurClicContextuel();
-  }, delai);
 }
 
 function afficherMarqueurClicContextuel(longitude, latitude, options = {}) {
@@ -1437,7 +1420,10 @@ function afficherMarqueurClicContextuel(longitude, latitude, options = {}) {
   if (options.attendreFermetureFicheAvantSuppression) {
     return;
   }
-  programmerSuppressionMarqueurClicContextuel(options.autoRemoveMs);
+  const delaiSuppression = Number.isFinite(options.autoRemoveMs) ? Math.max(0, options.autoRemoveMs) : 7000;
+  minuterieSuppressionMarqueurClic = setTimeout(() => {
+    supprimerMarqueurClicContextuel();
+  }, delaiSuppression);
 }
 
 function arreterClignotementLocalisation() {
@@ -1452,7 +1438,7 @@ function arreterClignotementLocalisation() {
   supprimerPointLocalisation();
 }
 
-function demarrerClignotementLocalisation(longitude, latitude) {
+function demarrerClignotementLocalisation(longitude, latitude, options = {}) {
   if (!Number.isFinite(longitude) || !Number.isFinite(latitude)) {
     return;
   }
@@ -1470,6 +1456,9 @@ function demarrerClignotementLocalisation(longitude, latitude) {
     }
     element.style.opacity = visible ? "1" : "0.15";
   }, 390);
+  if (options.attendreFermetureFicheAvantArret) {
+    return;
+  }
   minuterieArretLocalisation = setTimeout(() => {
     arreterClignotementLocalisation();
   }, 5000);
@@ -4641,7 +4630,6 @@ function construirePopupDepuisFeatures(longitude, latitude, featurePostes, featu
   const sectionExplorerAcces = estAccesFiche ? construireSectionExplorerAcces(longitude, latitude) : "";
   const modalStreetView = estAccesFiche ? construireModalStreetView() : "";
   const lienImajnet = featurePostes || estVueAppareilsSeule ? construireLienImajnet(longitude, latitude) : "";
-  const lienPowerBi = "https://app.powerbi.com/groups/me/reports/e63d15fe-0d14-4471-8571-6e146456990f/ReportSection0107f8f0b80dcd560566?experience=power-bi";
   const lienSignalementTerrain =
     "https://forms.office.com/Pages/ResponsePage.aspx?id=OIJ8SplXFkufxprY_OWn2UJJqJxHNcNPmrPMZznt7P1UNUhTNFRJVkhJVzBPMTMyM1g5UUlUMlgzTS4u";
   const classeActionsPoste = "popup-itineraires-poste-actions";
@@ -4715,7 +4703,7 @@ function construirePopupDepuisFeatures(longitude, latitude, featurePostes, featu
   });
   actionsExplorerEquipements.push({
     label: "Power BI",
-    html: `<a class="popup-bouton-itineraire" href="${echapperHtml(lienPowerBi)}" target="_blank" rel="noopener noreferrer">⚡️ Patrimoine SPOT</a>`
+    html: '<span class="popup-bouton-itineraire popup-bouton-desactive" aria-disabled="true">⚡️ Patrimoine SPOT</span>'
   });
   const actionsExploreesTriees = actionsExplorerEquipements
     .sort((a, b) => a.label.localeCompare(b.label, "fr", { sensitivity: "base", numeric: true }))
@@ -4822,7 +4810,7 @@ function construirePopupDepuisFeatures(longitude, latitude, featurePostes, featu
     : "";
   const sectionLocaliser = featurePostes || estVueAppareilsSeule || estVueAccesSeule
     ? ""
-    : `<section class="popup-section popup-section-localiser"><div class="popup-itineraires popup-itineraires-poste-actions"><button class="popup-bouton-itineraire popup-bouton-localiser" id="popup-localiser-carte" type="button" data-lng="${longitude}" data-lat="${latitude}">📍 Localiser sur la carte</button><a class="popup-bouton-itineraire" href="${echapperHtml(lienPowerBi)}" target="_blank" rel="noopener noreferrer">⚡️ Patrimoine SPOT</a></div></section>`;
+    : '<section class="popup-section popup-section-localiser"><div class="popup-itineraires popup-itineraires-poste-actions"><button class="popup-bouton-itineraire popup-bouton-localiser" id="popup-localiser-carte" type="button" data-lng="${longitude}" data-lat="${latitude}">📍 Localiser sur la carte</button><span class="popup-bouton-itineraire popup-bouton-desactive" aria-disabled="true">⚡️ Patrimoine SPOT</span></div></section>';
   const sectionRssFinale = estVueAccesSeule ? "" : sectionRssAssocieDepuisAcces;
   const contenuFiche = `<div class="popup-carte">${sections.join("")}${sectionConsigneRssAcces}${sectionRssFinale}${sectionItineraire}${sectionExplorerAcces}${sectionActionsPoste}${sectionTerrain}${sectionCodesAvecPills}${sectionLocaliser}${sectionRetourPoste}${modalStreetView}</div>`;
 
@@ -4858,10 +4846,6 @@ function construirePopupDepuisFeatures(longitude, latitude, featurePostes, featu
     }, 30);
   }
   popupCarte.on("close", () => {
-    if (Number.isFinite(delaiSuppressionMarqueurClicApresFermetureFiche) && delaiSuppressionMarqueurClicApresFermetureFiche >= 0) {
-      programmerSuppressionMarqueurClicContextuel(delaiSuppressionMarqueurClicApresFermetureFiche);
-      delaiSuppressionMarqueurClicApresFermetureFiche = null;
-    }
     popupCarte = null;
     navigationInternePopup = null;
     coordonneesDerniereFiche = null;
@@ -5182,20 +5166,15 @@ function ouvrirPopupDepuisObjetsCarte(objets) {
     return false;
   }
 
-  afficherMarqueurClicContextuel(longitude, latitude, {
-    clignoter: true,
-    attendreFermetureFicheAvantSuppression: true
-  });
+  demarrerClignotementLocalisation(longitude, latitude, { attendreFermetureFicheAvantArret: true });
 
   const popupOuverte = construirePopupDepuisFeatures(longitude, latitude, featurePostes, featureAcces, featureAppareils, {
     eviterRecentrageCarte: true
   });
   if (!popupOuverte) {
-    programmerSuppressionMarqueurClicContextuel(DELAI_SUPPRESSION_MARQUEUR_CLIC_MS);
-    delaiSuppressionMarqueurClicApresFermetureFiche = null;
+    arreterClignotementLocalisation();
     return false;
   }
-  delaiSuppressionMarqueurClicApresFermetureFiche = DELAI_SUPPRESSION_MARQUEUR_CLIC_MS;
   return true;
 }
 
@@ -5285,7 +5264,7 @@ async function ouvrirPositionPartageeDepuisParametres() {
 
   contexteMenuPosition = { longitude, latitude };
   if (markerActif) {
-    afficherMarqueurClicContextuel(longitude, latitude, { clignoter: true, autoRemoveMs: DELAI_SUPPRESSION_MARQUEUR_CLIC_MS });
+    afficherMarqueurClicContextuel(longitude, latitude, { clignoter: true, autoRemoveMs: 7000 });
   } else {
     supprimerMarqueurClicContextuel();
   }
@@ -6263,7 +6242,7 @@ document.addEventListener("click", (event) => {
     return;
   }
   if (modalFiche && event.target === modalFiche) {
-    fermerPopupCarte();
+    fermerPopupCarte({ localiserPoint: true });
   }
   if (modalApropos && event.target === modalApropos) {
     fermerModalApropos();
