@@ -38,6 +38,7 @@ const COUCHE_MESURE_POINTS = "mesure-points";
 const COUCHE_MESURE_LABELS = "mesure-labels";
 const TABLES_RSS = window.RSS_TABLE_NUMBERS || {};
 const DUREE_APPUI_LONG_MENU_CONTEXTUEL_MS = 800;
+const DELAI_SUPPRESSION_MARQUEUR_CLIC_MS = 7000;
 const DELAI_DEMARRAGE_DONNEES_MS = 220;
 const PLACEHOLDER_RECHERCHE_DESKTOP = "Rechercher un poste, appareil, acces...";
 const PLACEHOLDER_RECHERCHE_MOBILE = "Rechercher...";
@@ -196,6 +197,7 @@ let minuterieClignotementLocalisation = null;
 let minuterieArretLocalisation = null;
 let minuterieClignotementMarqueurClic = null;
 let minuterieSuppressionMarqueurClic = null;
+let delaiSuppressionMarqueurClicApresFermetureFiche = null;
 let coordonneesDerniereFiche = null;
 let contextePartageFiche = null;
 let marqueurLocalisation = null;
@@ -1392,6 +1394,21 @@ function supprimerMarqueurClicContextuel() {
     marqueurClicContextuel.remove();
     marqueurClicContextuel = null;
   }
+  delaiSuppressionMarqueurClicApresFermetureFiche = null;
+}
+
+function programmerSuppressionMarqueurClicContextuel(delaiMs = DELAI_SUPPRESSION_MARQUEUR_CLIC_MS) {
+  if (minuterieSuppressionMarqueurClic) {
+    clearTimeout(minuterieSuppressionMarqueurClic);
+    minuterieSuppressionMarqueurClic = null;
+  }
+  if (!marqueurClicContextuel) {
+    return;
+  }
+  const delai = Number.isFinite(delaiMs) ? Math.max(0, delaiMs) : DELAI_SUPPRESSION_MARQUEUR_CLIC_MS;
+  minuterieSuppressionMarqueurClic = setTimeout(() => {
+    supprimerMarqueurClicContextuel();
+  }, delai);
 }
 
 function afficherMarqueurClicContextuel(longitude, latitude, options = {}) {
@@ -1417,10 +1434,10 @@ function afficherMarqueurClicContextuel(longitude, latitude, options = {}) {
     element.style.opacity = visible ? "1" : "0.2";
   }, 280);
 
-  const delaiSuppression = Number.isFinite(options.autoRemoveMs) ? Math.max(0, options.autoRemoveMs) : 7000;
-  minuterieSuppressionMarqueurClic = setTimeout(() => {
-    supprimerMarqueurClicContextuel();
-  }, delaiSuppression);
+  if (options.attendreFermetureFicheAvantSuppression) {
+    return;
+  }
+  programmerSuppressionMarqueurClicContextuel(options.autoRemoveMs);
 }
 
 function arreterClignotementLocalisation() {
@@ -4841,6 +4858,10 @@ function construirePopupDepuisFeatures(longitude, latitude, featurePostes, featu
     }, 30);
   }
   popupCarte.on("close", () => {
+    if (Number.isFinite(delaiSuppressionMarqueurClicApresFermetureFiche) && delaiSuppressionMarqueurClicApresFermetureFiche >= 0) {
+      programmerSuppressionMarqueurClicContextuel(delaiSuppressionMarqueurClicApresFermetureFiche);
+      delaiSuppressionMarqueurClicApresFermetureFiche = null;
+    }
     popupCarte = null;
     navigationInternePopup = null;
     coordonneesDerniereFiche = null;
@@ -5161,9 +5182,21 @@ function ouvrirPopupDepuisObjetsCarte(objets) {
     return false;
   }
 
-  return construirePopupDepuisFeatures(longitude, latitude, featurePostes, featureAcces, featureAppareils, {
+  afficherMarqueurClicContextuel(longitude, latitude, {
+    clignoter: true,
+    attendreFermetureFicheAvantSuppression: true
+  });
+
+  const popupOuverte = construirePopupDepuisFeatures(longitude, latitude, featurePostes, featureAcces, featureAppareils, {
     eviterRecentrageCarte: true
   });
+  if (!popupOuverte) {
+    programmerSuppressionMarqueurClicContextuel(DELAI_SUPPRESSION_MARQUEUR_CLIC_MS);
+    delaiSuppressionMarqueurClicApresFermetureFiche = null;
+    return false;
+  }
+  delaiSuppressionMarqueurClicApresFermetureFiche = DELAI_SUPPRESSION_MARQUEUR_CLIC_MS;
+  return true;
 }
 
 async function ouvrirFicheDepuisParametreId() {
@@ -5252,7 +5285,7 @@ async function ouvrirPositionPartageeDepuisParametres() {
 
   contexteMenuPosition = { longitude, latitude };
   if (markerActif) {
-    afficherMarqueurClicContextuel(longitude, latitude, { clignoter: true, autoRemoveMs: 7000 });
+    afficherMarqueurClicContextuel(longitude, latitude, { clignoter: true, autoRemoveMs: DELAI_SUPPRESSION_MARQUEUR_CLIC_MS });
   } else {
     supprimerMarqueurClicContextuel();
   }
