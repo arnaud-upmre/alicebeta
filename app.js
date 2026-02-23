@@ -1812,7 +1812,7 @@ function ouvrirMenuContextuel(event, feature) {
   const hauteur = menuContextuelCarte.offsetHeight;
   const estEcranTactile = window.matchMedia?.("(hover: none), (pointer: coarse)")?.matches;
   const rayonMarqueur = estEcranTactile ? 16 : 12;
-  const margeSeparatrice = estEcranTactile ? 8 : 6;
+  const margeSeparatrice = estEcranTactile ? 14 : 8;
   const decalageCoin = rayonMarqueur + margeSeparatrice;
 
   let gauche = 28;
@@ -1847,7 +1847,7 @@ function ouvrirMenuContextuel(event, feature) {
       return { gauche: clientX - largeur - decalageCoin, haut: clientY - hauteur - decalageCoin };
     };
 
-    const rayonProtection = rayonMarqueur + 4;
+    const rayonProtection = rayonMarqueur + margeSeparatrice + 2;
     let candidatChoisi = null;
     let meilleurScore = Number.POSITIVE_INFINITY;
     for (let i = 0; i < ordreQuadrants.length; i += 1) {
