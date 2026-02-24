@@ -32,7 +32,7 @@
     const poste = champCompletOuVide(acces?.nom);
     const type = champCompletOuVide(acces?.type);
     const sat = champCompletOuVide(acces?.SAT);
-    const accesAppareil = champCompletOuVide(acces?.acces);
+    const accesAppareil = champCompletOuVide(acces?.acces || acces?.acces_appareil);
 
     if (poste) {
       url.searchParams.set("poste", poste);
@@ -41,11 +41,25 @@
     }
     if (type) {
       url.searchParams.set("type", type);
+      url.searchParams.set("type_poste", type);
     } else {
       url.searchParams.delete("type");
+      url.searchParams.delete("type_poste");
     }
-    url.searchParams.set("sat", sat || "");
-    url.searchParams.set("acces", accesAppareil || "");
+
+    if (sat) {
+      url.searchParams.set("sat", sat);
+    } else {
+      url.searchParams.delete("sat");
+    }
+
+    if (accesAppareil) {
+      url.searchParams.set("acces", accesAppareil);
+      url.searchParams.set("acces_appareil", accesAppareil);
+    } else {
+      url.searchParams.delete("acces");
+      url.searchParams.delete("acces_appareil");
+    }
 
     return url.toString();
   }
@@ -55,7 +69,7 @@
     const nom = champCompletOuVide(acces?.nom);
     const type = champCompletOuVide(acces?.type);
     const sat = champCompletOuVide(acces?.SAT);
-    const accesAppareil = champCompletOuVide(acces?.acces);
+    const accesAppareil = champCompletOuVide(acces?.acces || acces?.acces_appareil);
     const base = [nom, type, sat].filter(Boolean).join(" ").trim() || "Accès";
     const suffixeAcces = accesAppareil ? ` (accès ${accesAppareil})` : "";
     return `🔐 ${base}${suffixeAcces}`;
@@ -69,7 +83,7 @@
         String(acces?.nom || "").trim().toLowerCase(),
         String(acces?.type || "").trim().toLowerCase(),
         String(acces?.SAT || "").trim().toLowerCase(),
-        String(acces?.acces || "").trim().toLowerCase()
+        String(acces?.acces || acces?.acces_appareil || "").trim().toLowerCase()
       ].join("|");
       if (vus.has(cle)) {
         continue;
@@ -116,9 +130,11 @@
     if (!choix.length) {
       return "";
     }
+    const pillEspaceSecurise =
+      '<div class="popup-section-titre popup-section-titre-gauche"><span class="popup-badge popup-badge-itineraire">Espace sécurisé</span></div>';
 
     if (choix.length === 1) {
-      return `<section class="popup-section popup-section-codes"><button class="popup-bouton-itineraire popup-bouton-codes" id="popup-afficher-codes-acces" type="button" data-mode="direct" data-url="${echapperHtml(choix[0].url)}">🔐 Informations d’accès</button></section>`;
+      return `<section class="popup-section popup-section-codes">${pillEspaceSecurise}<button class="popup-bouton-itineraire popup-bouton-codes" id="popup-afficher-codes-acces" type="button" data-mode="direct" data-url="${echapperHtml(choix[0].url)}">🔐 Informations d’accès</button></section>`;
     }
 
     const optionsChoix = choix
@@ -127,7 +143,7 @@
           `<option value="${echapperHtml(option.url)}">${echapperHtml(option.label)}</option>`
       )
       .join("");
-    return `<section class="popup-section popup-section-codes"><button class="popup-bouton-itineraire popup-bouton-codes" id="popup-afficher-codes-acces" type="button" data-mode="choix">🔐 Informations d’accès</button><select class="popup-codes-select" id="popup-codes-select" hidden><option value="">🔐 Choisir un poste</option>${optionsChoix}</select></section>`;
+    return `<section class="popup-section popup-section-codes">${pillEspaceSecurise}<button class="popup-bouton-itineraire popup-bouton-codes" id="popup-afficher-codes-acces" type="button" data-mode="choix">🔐 Informations d’accès</button><select class="popup-codes-select" id="popup-codes-select" hidden><option value="">🔐 Choisir un poste</option>${optionsChoix}</select></section>`;
   }
 
   function construireSectionBoutonCodesPostes(featurePostes) {
@@ -136,9 +152,11 @@
     if (!choix.length) {
       return "";
     }
+    const pillEspaceSecurise =
+      '<div class="popup-section-titre popup-section-titre-gauche"><span class="popup-badge popup-badge-itineraire">Espace sécurisé</span></div>';
 
     if (choix.length === 1) {
-      return `<section class="popup-section popup-section-codes"><button class="popup-bouton-itineraire popup-bouton-codes" id="popup-afficher-codes-acces" type="button" data-mode="direct" data-url="${echapperHtml(choix[0].url)}">🔐 Informations d’accès</button></section>`;
+      return `<section class="popup-section popup-section-codes">${pillEspaceSecurise}<button class="popup-bouton-itineraire popup-bouton-codes" id="popup-afficher-codes-acces" type="button" data-mode="direct" data-url="${echapperHtml(choix[0].url)}">🔐 Informations d’accès</button></section>`;
     }
 
     const optionsChoix = choix
@@ -147,7 +165,7 @@
           `<option value="${echapperHtml(option.url)}">${echapperHtml(option.label)}</option>`
       )
       .join("");
-    return `<section class="popup-section popup-section-codes"><button class="popup-bouton-itineraire popup-bouton-codes" id="popup-afficher-codes-acces" type="button" data-mode="choix">🔐 Informations d’accès</button><select class="popup-codes-select" id="popup-codes-select" hidden><option value="">🔐 Choisir un poste</option>${optionsChoix}</select></section>`;
+    return `<section class="popup-section popup-section-codes">${pillEspaceSecurise}<button class="popup-bouton-itineraire popup-bouton-codes" id="popup-afficher-codes-acces" type="button" data-mode="choix">🔐 Informations d’accès</button><select class="popup-codes-select" id="popup-codes-select" hidden><option value="">🔐 Choisir un poste</option>${optionsChoix}</select></section>`;
   }
 
   global.URL_POWERAPPS_CODES = global.URL_POWERAPPS_CODES || DEFAULT_POWERAPPS_CODES_URL;
