@@ -2388,38 +2388,50 @@ function construireDonneesSurvolAppareil(feature) {
   if (!appareilsListe.length) {
     return {
       contexteLieu: "Poste inconnu",
-      appareils: ["Appareil"]
+      appareils: [{ code: "Appareil", hp: false }]
     };
   }
   const contexteLieu = construireContexteNomTypeSat(appareilsListe[0] || {}) || "Poste inconnu";
-  const lignes = [];
-  const dejaVu = new Set();
+  const lignesParCode = new Map();
   for (const appareil of appareilsListe) {
     const codeAppareil = champCompletOuVide(appareil?.appareil) || "Appareil";
     const cle = normaliserTexteRecherche(codeAppareil);
+    if (!cle) {
+      continue;
+    }
+    const estHp = Boolean(appareil?.hors_patrimoine);
+    if (!lignesParCode.has(cle)) {
+      lignesParCode.set(cle, { code: codeAppareil, hp: estHp });
+      continue;
+    }
+    if (estHp) {
+      lignesParCode.get(cle).hp = true;
+    }
+  }
+  const lignes = Array.from(lignesParCode.values());
+  return {
+    contexteLieu,
+    appareils: lignes.length ? lignes : [{ code: "Appareil", hp: false }]
+  };
+}
+
+function construireDonneesSurvolAcces(feature) {
+  const accesListe = extraireListeDepuisFeature(feature, "acces_liste_json");
+  if (!accesListe.length) {
+    return ["Accès"];
+  }
+  const lignes = [];
+  const dejaVu = new Set();
+  for (const acces of accesListe) {
+    const ligne = construireTitreNomTypeSatAcces(acces, { nomVilleDe: true }) || "Accès";
+    const cle = normaliserTexteRecherche(ligne);
     if (!cle || dejaVu.has(cle)) {
       continue;
     }
     dejaVu.add(cle);
-    lignes.push(codeAppareil);
+    lignes.push(ligne);
   }
-  return {
-    contexteLieu,
-    appareils: lignes.length ? lignes : ["Appareil"]
-  };
-}
-
-function construireLibelleSurvolAcces(feature) {
-  const accesListe = extraireListeDepuisFeature(feature, "acces_liste_json");
-  if (!accesListe.length) {
-    return "Accès";
-  }
-  const principal = construireTitreNomTypeSatAcces(accesListe[0], { nomVilleDe: true }) || "Accès";
-  if (accesListe.length <= 1) {
-    return principal;
-  }
-  const complement = accesListe.length - 1;
-  return `${principal} + ${complement} autre${complement > 1 ? "s" : ""}`;
+  return lignes.length ? lignes : ["Accès"];
 }
 
 function construireLibelleSurvolPoste(feature) {
@@ -2458,12 +2470,24 @@ function ouvrirPopupSurvolInfo(feature, options = {}) {
     valeur = construireDonneesSurvolAppareil(feature);
     const contexteLieu = echapperHtml(valeur?.contexteLieu || "Poste inconnu");
     const appareils = Array.isArray(valeur?.appareils) ? valeur.appareils : [];
-    const appareilsHtml = appareils.map((ligne) => echapperHtml(ligne || "Appareil")).join("<br/>");
+    const appareilsHtml = appareils
+      .map((ligne) => {
+        const code = echapperHtml(ligne?.code || "Appareil");
+        const tagHp = ligne?.hp ? ' <span class="popup-tag-hp">HP</span>' : "";
+        return `${code}${tagHp}`;
+      })
+      .join("<br/>");
     contenu = `<div class="popup-pk-info-contenu"><p class="popup-survol-poste-titre">${contexteLieu}</p><p><strong>Appareils :</strong><br/>${appareilsHtml}</p></div>`;
-    signatureValeur = `${valeur?.contexteLieu || ""}|${appareils.join("||")}`;
+    signatureValeur = `${valeur?.contexteLieu || ""}|${appareils
+      .map((ligne) => `${ligne?.code || ""}:${ligne?.hp ? "hp" : "ok"}`)
+      .join("||")}`;
   } else if (idCouche === COUCHE_ACCES || idCouche === COUCHE_ACCES_GROUPES) {
     titre = "Accès";
-    valeur = construireLibelleSurvolAcces(feature);
+    valeur = construireDonneesSurvolAcces(feature);
+    const acces = Array.isArray(valeur) ? valeur : [];
+    const accesHtml = acces.map((ligne) => echapperHtml(ligne || "Accès")).join("<br/>");
+    contenu = `<div class="popup-pk-info-contenu"><p><strong>Accès :</strong><br/>${accesHtml}</p></div>`;
+    signatureValeur = acces.join("||");
   } else if (idCouche === COUCHE_POSTES || idCouche === COUCHE_POSTES_GROUPES) {
     titre = "Poste";
     valeur = construireLibelleSurvolPoste(feature);
