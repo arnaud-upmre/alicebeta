@@ -5690,6 +5690,7 @@ function activerInteractionsCarte() {
   let temporisationAppuiLong = null;
   let survolCurseurPlanifie = false;
   let dernierPointCurseur = null;
+  let microZoomSelectionMobileEnCours = false;
   const couchesInteractivesSurvolPrioritaires = [
     COUCHE_POSTES,
     COUCHE_POSTES_GROUPES,
@@ -5698,6 +5699,19 @@ function activerInteractionsCarte() {
     COUCHE_APPAREILS,
     COUCHE_APPAREILS_GROUPES
   ];
+  const estInteractionMobile = () => window.matchMedia?.("(hover: none), (pointer: coarse)")?.matches;
+  const RAYON_TOLERANCE_TAP_MOBILE_PX = 20;
+  const DELTA_MICRO_ZOOM_SELECTION = 0.9;
+  const ZOOM_MAX_MICRO_SELECTION = 18.6;
+  const SEUIL_COLLISION_MICRO_ZOOM = 2;
+  const PRIORITE_COUCHE_SELECTION = {
+    [COUCHE_APPAREILS]: 0,
+    [COUCHE_ACCES]: 1,
+    [COUCHE_POSTES]: 2,
+    [COUCHE_APPAREILS_GROUPES]: 3,
+    [COUCHE_ACCES_GROUPES]: 4,
+    [COUCHE_POSTES_GROUPES]: 5
+  };
 
   const recupererFeatureContexte = (point) => {
     if (!point) {
@@ -5709,6 +5723,73 @@ function activerInteractionsCarte() {
     }
     const objets = carte.queryRenderedFeatures(point, { layers: couchesDisponibles });
     return objets[0] || null;
+  };
+
+  const interrogerObjetsDepuisTap = (point, couchesDisponibles) => {
+    if (!point || !couchesDisponibles.length) {
+      return [];
+    }
+    if (!estInteractionMobile()) {
+      return carte.queryRenderedFeatures(point, { layers: couchesDisponibles });
+    }
+    const rayon = RAYON_TOLERANCE_TAP_MOBILE_PX;
+    return carte.queryRenderedFeatures(
+      [
+        [point.x - rayon, point.y - rayon],
+        [point.x + rayon, point.y + rayon]
+      ],
+      { layers: couchesDisponibles }
+    );
+  };
+
+  const dedupliquerObjetsSelection = (objets) => {
+    const uniques = [];
+    const dejaVu = new Set();
+    for (const objet of objets || []) {
+      const idCouche = String(objet?.layer?.id || "");
+      const [lng, lat] = objet?.geometry?.coordinates || [];
+      if (!idCouche || !Number.isFinite(lng) || !Number.isFinite(lat)) {
+        continue;
+      }
+      const cle = `${idCouche}|${lng.toFixed(6)}|${lat.toFixed(6)}`;
+      if (dejaVu.has(cle)) {
+        continue;
+      }
+      dejaVu.add(cle);
+      uniques.push(objet);
+    }
+    return uniques;
+  };
+
+  const choisirMeilleurObjetDepuisTap = (objets, point) => {
+    const uniques = dedupliquerObjetsSelection(objets);
+    if (!uniques.length || !point) {
+      return null;
+    }
+    const candidats = uniques.map((objet) => {
+      const idCouche = String(objet?.layer?.id || "");
+      const [lng, lat] = objet?.geometry?.coordinates || [];
+      const projection = Number.isFinite(lng) && Number.isFinite(lat) ? carte.project([lng, lat]) : null;
+      const distance = projection ? Math.hypot(projection.x - point.x, projection.y - point.y) : Infinity;
+      const priorite = Number.isFinite(PRIORITE_COUCHE_SELECTION[idCouche]) ? PRIORITE_COUCHE_SELECTION[idCouche] : 99;
+      return { objet, distance, priorite };
+    });
+    candidats.sort((a, b) => a.distance - b.distance || a.priorite - b.priorite);
+    return candidats[0]?.objet || null;
+  };
+
+  const doitDeclencherMicroZoomMobile = (objets) => {
+    if (!estInteractionMobile()) {
+      return false;
+    }
+    if (microZoomSelectionMobileEnCours) {
+      return false;
+    }
+    const uniques = dedupliquerObjetsSelection(objets);
+    if (uniques.length < SEUIL_COLLISION_MICRO_ZOOM) {
+      return false;
+    }
+    return carte.getZoom() < ZOOM_MAX_MICRO_SELECTION;
   };
 
   carte.on("click", (event) => {
@@ -5724,14 +5805,41 @@ function activerInteractionsCarte() {
       return;
     }
 
-    const objets = carte.queryRenderedFeatures(event.point, {
-      layers: couchesDisponibles
-    });
+    const objets = interrogerObjetsDepuisTap(event.point, couchesDisponibles);
     if (!objets.length) {
       return;
     }
 
-    ouvrirPopupDepuisObjetsCarte(objets);
+    if (doitDeclencherMicroZoomMobile(objets)) {
+      microZoomSelectionMobileEnCours = true;
+      carte.once("moveend", () => {
+        microZoomSelectionMobileEnCours = false;
+        const couchesMaj = couchesInteractives.filter((id) => Boolean(carte.getLayer(id)));
+        if (!couchesMaj.length) {
+          return;
+        }
+        const objetsApresZoom = interrogerObjetsDepuisTap(event.point, couchesMaj);
+        const meilleurObjetApresZoom = choisirMeilleurObjetDepuisTap(objetsApresZoom, event.point);
+        if (!meilleurObjetApresZoom) {
+          return;
+        }
+        ouvrirPopupDepuisObjetsCarte([meilleurObjetApresZoom]);
+      });
+      carte.easeTo({
+        center: [event.lngLat.lng, event.lngLat.lat],
+        zoom: Math.min(ZOOM_MAX_MICRO_SELECTION, carte.getZoom() + DELTA_MICRO_ZOOM_SELECTION),
+        duration: 190,
+        easing: (t) => 1 - Math.pow(1 - t, 3),
+        essential: true
+      });
+      return;
+    }
+
+    const meilleurObjet = choisirMeilleurObjetDepuisTap(objets, event.point);
+    if (!meilleurObjet) {
+      return;
+    }
+    ouvrirPopupDepuisObjetsCarte([meilleurObjet]);
   });
 
   carte.on("contextmenu", (event) => {
