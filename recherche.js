@@ -702,7 +702,6 @@
       appliquerCouchesDonnees();
       remonterCouchesDonnees();
 
-      definirConservationFichePendantNavigation?.(true);
       fermerResultatsRecherche();
       champRecherche?.blur();
       fermerMenuFiltres?.();
@@ -712,15 +711,6 @@
       if (!ouvertureOk) {
         return;
       }
-
-      setTimeout(() => {
-        naviguerVersCoordonneesArrierePlan(longitude, latitude, {
-          forceZoom: true,
-          conserverPopupOuvert: true,
-          zoomMin: 14.1,
-          durationDouxMs: 430
-        });
-      }, 40);
     }
 
     function reinitialiserEtatRecherche() {

@@ -184,6 +184,8 @@ let promesseChargementPn = null;
 let popupCarte = null;
 let popupPkInfo = null;
 let popupPnInfo = null;
+let popupSurvolInfo = null;
+let signaturePopupSurvolInfo = "";
 let initialisationDonneesLancee = false;
 let totalAppareilsBrut = 0;
 let totalPostesBrut = 0;
@@ -2360,6 +2362,113 @@ function ouvrirPopupPnInfo(feature) {
         pk
       )}</p><p><strong>Classe :</strong> ${echapperHtml(classe)}</p></div>`
     )
+    .addTo(carte);
+}
+
+function fermerPopupSurvolInfo() {
+  if (!popupSurvolInfo) {
+    signaturePopupSurvolInfo = "";
+    return;
+  }
+  popupSurvolInfo.remove();
+  popupSurvolInfo = null;
+  signaturePopupSurvolInfo = "";
+}
+
+function estSurvolDesktopActif() {
+  return !window.matchMedia?.("(hover: none), (pointer: coarse)")?.matches;
+}
+
+function construireLibelleSurvolAppareil(feature) {
+  const appareilsListe = extraireListeDepuisFeature(feature, "appareils_liste_json");
+  if (!appareilsListe.length) {
+    return "Appareil";
+  }
+  const appareil = appareilsListe[0] || {};
+  const codeAppareil = champCompletOuVide(appareil?.appareil) || "Appareil";
+  const contexte = construireContexteNomTypeSat(appareil);
+  const principal = contexte ? `${codeAppareil} (${contexte})` : codeAppareil;
+  if (appareilsListe.length <= 1) {
+    return principal;
+  }
+  const complement = appareilsListe.length - 1;
+  return `${principal} + ${complement} autre${complement > 1 ? "s" : ""}`;
+}
+
+function construireLibelleSurvolAcces(feature) {
+  const accesListe = extraireListeDepuisFeature(feature, "acces_liste_json");
+  if (!accesListe.length) {
+    return "Accès";
+  }
+  const principal = construireTitreNomTypeSatAcces(accesListe[0], { nomVilleDe: true }) || "Accès";
+  if (accesListe.length <= 1) {
+    return principal;
+  }
+  const complement = accesListe.length - 1;
+  return `${principal} + ${complement} autre${complement > 1 ? "s" : ""}`;
+}
+
+function construireLibelleSurvolPoste(feature) {
+  const postesListe = extraireListeDepuisFeature(feature, "postes_liste_json");
+  if (!postesListe.length) {
+    return "Poste";
+  }
+  const principal = construireTitrePoste(postesListe[0]) || "Poste";
+  if (postesListe.length <= 1) {
+    return principal;
+  }
+  const complement = postesListe.length - 1;
+  return `${principal} + ${complement} autre${complement > 1 ? "s" : ""}`;
+}
+
+function ouvrirPopupSurvolInfo(feature) {
+  if (!estSurvolDesktopActif() || !feature) {
+    fermerPopupSurvolInfo();
+    return;
+  }
+  const coords = feature?.geometry?.coordinates || [];
+  const longitude = Number(coords[0]);
+  const latitude = Number(coords[1]);
+  if (!Number.isFinite(longitude) || !Number.isFinite(latitude)) {
+    fermerPopupSurvolInfo();
+    return;
+  }
+
+  const idCouche = String(feature?.layer?.id || "");
+  let titre = "";
+  let valeur = "";
+  if (idCouche === COUCHE_APPAREILS || idCouche === COUCHE_APPAREILS_GROUPES) {
+    titre = "Appareil";
+    valeur = construireLibelleSurvolAppareil(feature);
+  } else if (idCouche === COUCHE_ACCES || idCouche === COUCHE_ACCES_GROUPES) {
+    titre = "Accès";
+    valeur = construireLibelleSurvolAcces(feature);
+  } else if (idCouche === COUCHE_POSTES || idCouche === COUCHE_POSTES_GROUPES) {
+    titre = "Poste";
+    valeur = construireLibelleSurvolPoste(feature);
+  } else {
+    fermerPopupSurvolInfo();
+    return;
+  }
+
+  const contenu = `<div class="popup-pk-info-contenu"><p><strong>${echapperHtml(titre)} :</strong> ${echapperHtml(
+    valeur || "Non renseigné"
+  )}</p></div>`;
+  const signature = `${idCouche}|${longitude.toFixed(6)}|${latitude.toFixed(6)}|${titre}|${valeur}`;
+  if (popupSurvolInfo && signaturePopupSurvolInfo === signature) {
+    return;
+  }
+  signaturePopupSurvolInfo = signature;
+  fermerPopupSurvolInfo();
+  signaturePopupSurvolInfo = signature;
+  popupSurvolInfo = new maplibregl.Popup({
+    closeButton: false,
+    closeOnClick: false,
+    className: "popup-pk-info",
+    offset: 10
+  })
+    .setLngLat([longitude, latitude])
+    .setHTML(contenu)
     .addTo(carte);
 }
 
@@ -5012,8 +5121,52 @@ function ouvrirPopupDepuisCoordonneesPourType(type, longitude, latitude, options
   return ouvrirPopupDepuisCoordonnees(longitude, latitude);
 }
 
+function ouvrirPopupSurvolDepuisCoordonneesPourType(type, longitude, latitude) {
+  let feature = null;
+  let idCouche = "";
+
+  if (type === "postes") {
+    feature = obtenirFeatureALaCoordonnee(donneesPostes, longitude, latitude) || obtenirFeatureProche(donneesPostes, longitude, latitude);
+    idCouche = COUCHE_POSTES;
+  } else if (type === "appareils") {
+    feature =
+      obtenirFeatureALaCoordonnee(donneesAppareils, longitude, latitude) || obtenirFeatureProche(donneesAppareils, longitude, latitude);
+    idCouche = COUCHE_APPAREILS;
+  } else if (type === "acces") {
+    feature = obtenirFeatureALaCoordonnee(donneesAcces, longitude, latitude) || obtenirFeatureProche(donneesAcces, longitude, latitude);
+    idCouche = COUCHE_ACCES;
+  }
+
+  if (!feature || !idCouche) {
+    return false;
+  }
+  ouvrirPopupSurvolInfo({
+    ...feature,
+    layer: { id: idCouche }
+  });
+  return true;
+}
+
 function ouvrirPopupDepuisResultatRecherche(type, longitude, latitude) {
-  return ouvrirPopupDepuisCoordonneesPourType(type, longitude, latitude, { fallbackGenerique: false });
+  let popupOuverte = false;
+  const ouvrirPopup = () => {
+    if (popupOuverte) {
+      return;
+    }
+    popupOuverte = true;
+    if (estSurvolDesktopActif()) {
+      ouvrirPopupSurvolDepuisCoordonneesPourType(type, longitude, latitude);
+      return;
+    }
+    ouvrirPopupDepuisCoordonneesPourType(type, longitude, latitude, { fallbackGenerique: false });
+  };
+
+  return naviguerVersCoordonneesPuisOuvrirPopup(longitude, latitude, ouvrirPopup, {
+    forceZoom: true,
+    conserverPopupOuvert: !estSurvolDesktopActif(),
+    zoomMin: 14.1,
+    durationDouxMs: 430
+  });
 }
 
 function calculerContexteDeplacement(longitude, latitude) {
@@ -5314,13 +5467,18 @@ async function ouvrirFicheDepuisParametreId() {
         return;
       }
       popupOuverte = true;
+      if (estSurvolDesktopActif()) {
+        ouvrirPopupSurvolDepuisCoordonneesPourType(cible.type, cible.longitude, cible.latitude);
+        return;
+      }
       ouvrirPopupDepuisCoordonneesPourType(cible.type, cible.longitude, cible.latitude, { fallbackGenerique: false });
     };
 
     naviguerVersCoordonneesPuisOuvrirPopup(cible.longitude, cible.latitude, ouvrirPopup, {
       forceZoom: true,
       zoomMin: 14.4,
-      durationDouxMs: 430
+      durationDouxMs: 430,
+      conserverPopupOuvert: !estSurvolDesktopActif()
     });
   } catch (erreur) {
     console.error("Impossible d'ouvrir la fiche depuis le parametre id", erreur);
@@ -5414,6 +5572,10 @@ async function ouvrirFichePartageeDepuisParametres() {
       return;
     }
     popupOuverte = true;
+    if (estSurvolDesktopActif()) {
+      ouvrirPopupSurvolDepuisCoordonneesPourType(type, longitude, latitude);
+      return;
+    }
     const options =
       type === "postes" && cibleSat
         ? { fallbackGenerique: false, cibleSatPoste: cibleSat }
@@ -5424,7 +5586,8 @@ async function ouvrirFichePartageeDepuisParametres() {
   naviguerVersCoordonneesPuisOuvrirPopup(longitude, latitude, ouvrirPopup, {
     forceZoom: true,
     zoomMin: 14.4,
-    durationDouxMs: 430
+    durationDouxMs: 430,
+    conserverPopupOuvert: !estSurvolDesktopActif()
   });
 
   return true;
@@ -5468,6 +5631,14 @@ function activerInteractionsCarte() {
   let temporisationAppuiLong = null;
   let survolCurseurPlanifie = false;
   let dernierPointCurseur = null;
+  const couchesInteractivesSurvolPrioritaires = [
+    COUCHE_POSTES,
+    COUCHE_POSTES_GROUPES,
+    COUCHE_ACCES,
+    COUCHE_ACCES_GROUPES,
+    COUCHE_APPAREILS,
+    COUCHE_APPAREILS_GROUPES
+  ];
 
   const recupererFeatureContexte = (point) => {
     if (!point) {
@@ -5547,6 +5718,12 @@ function activerInteractionsCarte() {
   });
 
   carte.on("mousemove", (event) => {
+    if (!estSurvolDesktopActif()) {
+      fermerPopupPnInfo();
+      fermerPopupSurvolInfo();
+      return;
+    }
+
     dernierPointCurseur = event.point;
     if (survolCurseurPlanifie) {
       return;
@@ -5560,6 +5737,7 @@ function activerInteractionsCarte() {
         });
         if (pnObjets.length) {
           carte.getCanvas().style.cursor = "pointer";
+          fermerPopupSurvolInfo();
           ouvrirPopupPnInfo(pnObjets[0]);
           return;
         }
@@ -5575,7 +5753,21 @@ function activerInteractionsCarte() {
         layers: couchesDisponibles
       });
       carte.getCanvas().style.cursor = objets.length ? "pointer" : "";
+      if (!objets.length) {
+        fermerPopupSurvolInfo();
+        return;
+      }
+
+      const objetSurvole = couchesInteractivesSurvolPrioritaires
+        .map((idCouche) => objets.find((objet) => objet?.layer?.id === idCouche))
+        .find(Boolean);
+      ouvrirPopupSurvolInfo(objetSurvole || objets[0]);
     });
+  });
+  carte.on("mouseout", () => {
+    fermerPopupPnInfo();
+    fermerPopupSurvolInfo();
+    carte.getCanvas().style.cursor = "";
   });
 
   carte.on("movestart", () => {
@@ -6020,10 +6212,12 @@ carte.on("zoom", planifierMiseAJourTransitionFondIgnAuto);
 carte.on("zoomstart", () => {
   fermerPopupPkInfo();
   fermerPopupPnInfo();
+  fermerPopupSurvolInfo();
 });
 carte.on("movestart", () => {
   fermerPopupPkInfo();
   fermerPopupPnInfo();
+  fermerPopupSurvolInfo();
 });
 carte.on("moveend", planifierMiseAJourPk);
 carte.on("moveend", planifierMiseAJourTransitionFondIgnAuto);
