@@ -2474,7 +2474,7 @@ function ouvrirPopupSurvolInfo(feature, options = {}) {
       .map((ligne) => {
         const code = echapperHtml(ligne?.code || "Appareil");
         const tagHp = ligne?.hp ? ' <span class="popup-tag-hp">HP</span>' : "";
-        return `${code}${tagHp}`;
+        return `- ${code}${tagHp}`;
       })
       .join("<br/>");
     contenu = `<div class="popup-pk-info-contenu"><p class="popup-survol-poste-titre">${contexteLieu}</p><p><strong>Appareils :</strong><br/>${appareilsHtml}</p></div>`;
@@ -2485,7 +2485,7 @@ function ouvrirPopupSurvolInfo(feature, options = {}) {
     titre = "Accès";
     valeur = construireDonneesSurvolAcces(feature);
     const acces = Array.isArray(valeur) ? valeur : [];
-    const accesHtml = acces.map((ligne) => echapperHtml(ligne || "Accès")).join("<br/>");
+    const accesHtml = acces.map((ligne) => `- ${echapperHtml(ligne || "Accès")}`).join("<br/>");
     contenu = `<div class="popup-pk-info-contenu"><p><strong>Accès :</strong><br/>${accesHtml}</p></div>`;
     signatureValeur = acces.join("||");
   } else if (idCouche === COUCHE_POSTES || idCouche === COUCHE_POSTES_GROUPES) {
@@ -5527,7 +5527,7 @@ async function ouvrirFicheDepuisParametreId() {
       }
       popupOuverte = true;
       if (estSurvolDesktopActif()) {
-        ouvrirPopupSurvolDepuisCoordonneesPourType(cible.type, cible.longitude, cible.latitude);
+        ouvrirPopupSurvolDepuisCoordonneesPourType(cible.type, cible.longitude, cible.latitude, { verrouiller: true });
         return;
       }
       ouvrirPopupDepuisCoordonneesPourType(cible.type, cible.longitude, cible.latitude, { fallbackGenerique: false });
@@ -5632,7 +5632,7 @@ async function ouvrirFichePartageeDepuisParametres() {
     }
     popupOuverte = true;
     if (estSurvolDesktopActif()) {
-      ouvrirPopupSurvolDepuisCoordonneesPourType(type, longitude, latitude);
+      ouvrirPopupSurvolDepuisCoordonneesPourType(type, longitude, latitude, { verrouiller: true });
       return;
     }
     const options =
