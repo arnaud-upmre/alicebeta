@@ -2,7 +2,7 @@
   "id": "./",
   "name": "ALICE",
   "short_name": "ALICE",
-  "description": "Application interne de localisation des installations de conduite EALE.",
+  "description": "Application de Localisation des Installations de Conduite EALE",
   "lang": "fr",
   "start_url": "./",
   "scope": "./",
