@@ -186,6 +186,7 @@ let popupPkInfo = null;
 let popupPnInfo = null;
 let popupSurvolInfo = null;
 let signaturePopupSurvolInfo = "";
+let popupSurvolInfoVerrouillee = false;
 let initialisationDonneesLancee = false;
 let totalAppareilsBrut = 0;
 let totalPostesBrut = 0;
@@ -2368,11 +2369,13 @@ function ouvrirPopupPnInfo(feature) {
 function fermerPopupSurvolInfo() {
   if (!popupSurvolInfo) {
     signaturePopupSurvolInfo = "";
+    popupSurvolInfoVerrouillee = false;
     return;
   }
   popupSurvolInfo.remove();
   popupSurvolInfo = null;
   signaturePopupSurvolInfo = "";
+  popupSurvolInfoVerrouillee = false;
 }
 
 function estSurvolDesktopActif() {
@@ -2382,17 +2385,22 @@ function estSurvolDesktopActif() {
 function construireLibelleSurvolAppareil(feature) {
   const appareilsListe = extraireListeDepuisFeature(feature, "appareils_liste_json");
   if (!appareilsListe.length) {
-    return "Appareil";
+    return ["Appareil"];
   }
-  const appareil = appareilsListe[0] || {};
-  const codeAppareil = champCompletOuVide(appareil?.appareil) || "Appareil";
-  const contexte = construireContexteNomTypeSat(appareil);
-  const principal = contexte ? `${codeAppareil} (${contexte})` : codeAppareil;
-  if (appareilsListe.length <= 1) {
-    return principal;
+  const lignes = [];
+  const dejaVu = new Set();
+  for (const appareil of appareilsListe) {
+    const codeAppareil = champCompletOuVide(appareil?.appareil) || "Appareil";
+    const contexte = construireContexteNomTypeSat(appareil);
+    const libelle = contexte ? `${codeAppareil} (${contexte})` : codeAppareil;
+    const cle = normaliserTexteRecherche(libelle);
+    if (!cle || dejaVu.has(cle)) {
+      continue;
+    }
+    dejaVu.add(cle);
+    lignes.push(libelle);
   }
-  const complement = appareilsListe.length - 1;
-  return `${principal} + ${complement} autre${complement > 1 ? "s" : ""}`;
+  return lignes.length ? lignes : ["Appareil"];
 }
 
 function construireLibelleSurvolAcces(feature) {
@@ -2421,7 +2429,7 @@ function construireLibelleSurvolPoste(feature) {
   return `${principal} + ${complement} autre${complement > 1 ? "s" : ""}`;
 }
 
-function ouvrirPopupSurvolInfo(feature) {
+function ouvrirPopupSurvolInfo(feature, options = {}) {
   if (!estSurvolDesktopActif() || !feature) {
     fermerPopupSurvolInfo();
     return;
@@ -2451,16 +2459,28 @@ function ouvrirPopupSurvolInfo(feature) {
     return;
   }
 
-  const contenu = `<div class="popup-pk-info-contenu"><p><strong>${echapperHtml(titre)} :</strong> ${echapperHtml(
-    valeur || "Non renseigné"
-  )}</p></div>`;
-  const signature = `${idCouche}|${longitude.toFixed(6)}|${latitude.toFixed(6)}|${titre}|${valeur}`;
+  const valeurHtml = Array.isArray(valeur)
+    ? valeur.map((ligne) => echapperHtml(ligne || "Non renseigné")).join("<br/>")
+    : echapperHtml(valeur || "Non renseigné");
+  const contenu = `<div class="popup-pk-info-contenu"><p><strong>${echapperHtml(titre)} :</strong> ${valeurHtml}</p></div>`;
+  const signatureValeur = Array.isArray(valeur) ? valeur.join("||") : String(valeur || "");
+  const signature = `${idCouche}|${longitude.toFixed(6)}|${latitude.toFixed(6)}|${titre}|${signatureValeur}`;
   if (popupSurvolInfo && signaturePopupSurvolInfo === signature) {
+    if (options.verrouiller === true) {
+      popupSurvolInfoVerrouillee = true;
+    } else if (options.verrouiller === false) {
+      popupSurvolInfoVerrouillee = false;
+    }
     return;
   }
   signaturePopupSurvolInfo = signature;
   fermerPopupSurvolInfo();
   signaturePopupSurvolInfo = signature;
+  if (options.verrouiller === true) {
+    popupSurvolInfoVerrouillee = true;
+  } else {
+    popupSurvolInfoVerrouillee = false;
+  }
   popupSurvolInfo = new maplibregl.Popup({
     closeButton: false,
     closeOnClick: false,
@@ -5121,7 +5141,7 @@ function ouvrirPopupDepuisCoordonneesPourType(type, longitude, latitude, options
   return ouvrirPopupDepuisCoordonnees(longitude, latitude);
 }
 
-function ouvrirPopupSurvolDepuisCoordonneesPourType(type, longitude, latitude) {
+function ouvrirPopupSurvolDepuisCoordonneesPourType(type, longitude, latitude, options = {}) {
   let feature = null;
   let idCouche = "";
 
@@ -5143,7 +5163,7 @@ function ouvrirPopupSurvolDepuisCoordonneesPourType(type, longitude, latitude) {
   ouvrirPopupSurvolInfo({
     ...feature,
     layer: { id: idCouche }
-  });
+  }, options);
   return true;
 }
 
@@ -5155,7 +5175,7 @@ function ouvrirPopupDepuisResultatRecherche(type, longitude, latitude) {
     }
     popupOuverte = true;
     if (estSurvolDesktopActif()) {
-      ouvrirPopupSurvolDepuisCoordonneesPourType(type, longitude, latitude);
+      ouvrirPopupSurvolDepuisCoordonneesPourType(type, longitude, latitude, { verrouiller: true });
       return;
     }
     ouvrirPopupDepuisCoordonneesPourType(type, longitude, latitude, { fallbackGenerique: false });
@@ -5754,14 +5774,16 @@ function activerInteractionsCarte() {
       });
       carte.getCanvas().style.cursor = objets.length ? "pointer" : "";
       if (!objets.length) {
-        fermerPopupSurvolInfo();
+        if (!popupSurvolInfoVerrouillee) {
+          fermerPopupSurvolInfo();
+        }
         return;
       }
 
       const objetSurvole = couchesInteractivesSurvolPrioritaires
         .map((idCouche) => objets.find((objet) => objet?.layer?.id === idCouche))
         .find(Boolean);
-      ouvrirPopupSurvolInfo(objetSurvole || objets[0]);
+      ouvrirPopupSurvolInfo(objetSurvole || objets[0], { verrouiller: false });
     });
   });
   carte.on("mouseout", () => {
@@ -6012,8 +6034,9 @@ function obtenirProprietesOpaciteParType(typeCouche) {
   }
 }
 
-function appliquerOpaciteCouchesFondNatives(opacite) {
+function appliquerOpaciteCouchesFondNatives(opacite, options = {}) {
   const opaciteBorne = Math.min(1, Math.max(0, opacite));
+  const dureeTransition = Number.isFinite(options?.dureeTransitionMs) ? Math.max(0, options.dureeTransitionMs) : 250;
   for (const idCouche of idsCouchesFondNatives) {
     if (idCouche === COUCHE_SATELLITE_IGN_AUTO) {
       continue;
@@ -6025,7 +6048,7 @@ function appliquerOpaciteCouchesFondNatives(opacite) {
     const proprietes = obtenirProprietesOpaciteParType(couche.type);
     for (const propriete of proprietes) {
       try {
-        carte.setPaintProperty(idCouche, `${propriete}-transition`, { duration: 250, delay: 0 });
+        carte.setPaintProperty(idCouche, `${propriete}-transition`, { duration: dureeTransition, delay: 0 });
         carte.setPaintProperty(idCouche, propriete, opaciteBorne);
       } catch (_erreur) {
         // Ignore les styles ne supportant pas la propriete sur une couche specifique.
@@ -6072,6 +6095,7 @@ function masquerCoucheSatelliteIgnAuto() {
   if (!carte.getLayer(COUCHE_SATELLITE_IGN_AUTO)) {
     return;
   }
+  carte.setPaintProperty(COUCHE_SATELLITE_IGN_AUTO, "raster-opacity-transition", { duration: 0, delay: 0 });
   carte.setLayoutProperty(COUCHE_SATELLITE_IGN_AUTO, "visibility", "none");
   carte.setPaintProperty(COUCHE_SATELLITE_IGN_AUTO, "raster-opacity", 0);
 }
@@ -6094,7 +6118,7 @@ function mettreAJourTransitionFondIgnAuto() {
   }
 
   if (!ignAutomatiqueActif || fondActif !== FOND_BASE_IGN_AUTOMATIQUE) {
-    appliquerOpaciteCouchesFondNatives(1);
+    appliquerOpaciteCouchesFondNatives(1, { dureeTransitionMs: 0 });
     masquerCoucheSatelliteIgnAuto();
     return;
   }
@@ -6107,7 +6131,10 @@ function mettreAJourTransitionFondIgnAuto() {
 
   const opacite = calculerOpaciteSatelliteIgnAuto(carte.getZoom());
   const opaciteFond = 1 - opacite;
-  appliquerOpaciteCouchesFondNatives(opaciteFond);
+  const retourRapideVersFondPlan = carte.getZoom() <= ZOOM_RETOUR_PLAN_IGN;
+  const dureeTransition = retourRapideVersFondPlan ? 0 : 180;
+  appliquerOpaciteCouchesFondNatives(opaciteFond, { dureeTransitionMs: dureeTransition });
+  carte.setPaintProperty(COUCHE_SATELLITE_IGN_AUTO, "raster-opacity-transition", { duration: dureeTransition, delay: 0 });
   carte.setLayoutProperty(COUCHE_SATELLITE_IGN_AUTO, "visibility", opacite > 0.001 ? "visible" : "none");
   carte.setPaintProperty(COUCHE_SATELLITE_IGN_AUTO, "raster-opacity", opacite);
 }
