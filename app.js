@@ -32,10 +32,6 @@ const SOURCE_LIGNES = "openrailwaymap-source";
 const COUCHE_LIGNES = "openrailwaymap-lignes";
 const SOURCE_VITESSE_LIGNE = "openrailwaymap-maxspeed-source";
 const COUCHE_VITESSE_LIGNE = "openrailwaymap-maxspeed";
-// Version manuelle des tuiles OpenRailwayMap:
-// garder la meme valeur pour conserver le cache, la changer uniquement
-// quand tu veux forcer un rafraichissement global.
-const VERSION_CACHE_ORM = "stable-2026-02";
 const SOURCE_MESURE = "mesure-source";
 const COUCHE_MESURE_LIGNES = "mesure-lignes";
 const COUCHE_MESURE_POINTS = "mesure-points";
@@ -228,7 +224,7 @@ function clonerStyle(style) {
 }
 
 async function chargerStyleJsonDepuisUrl(url) {
-  const reponse = await fetch(url, { cache: "no-store" });
+  const reponse = await fetch(url, { cache: "default" });
   if (!reponse.ok) {
     throw new Error(`HTTP ${reponse.status}`);
   }
@@ -2664,9 +2660,9 @@ function appliquerCouchesDonnees() {
     carte.addSource(SOURCE_LIGNES, {
       type: "raster",
       tiles: [
-        `https://a.tiles.openrailwaymap.org/standard/{z}/{x}/{y}.png?v=${VERSION_CACHE_ORM}`,
-        `https://b.tiles.openrailwaymap.org/standard/{z}/{x}/{y}.png?v=${VERSION_CACHE_ORM}`,
-        `https://c.tiles.openrailwaymap.org/standard/{z}/{x}/{y}.png?v=${VERSION_CACHE_ORM}`
+        "https://a.tiles.openrailwaymap.org/standard/{z}/{x}/{y}.png",
+        "https://b.tiles.openrailwaymap.org/standard/{z}/{x}/{y}.png",
+        "https://c.tiles.openrailwaymap.org/standard/{z}/{x}/{y}.png"
       ],
       tileSize: 256,
       attribution: "© OpenRailwayMap, © OpenStreetMap contributors",
@@ -2689,9 +2685,9 @@ function appliquerCouchesDonnees() {
     carte.addSource(SOURCE_VITESSE_LIGNE, {
       type: "raster",
       tiles: [
-        `https://a.tiles.openrailwaymap.org/maxspeed/{z}/{x}/{y}.png?v=${VERSION_CACHE_ORM}`,
-        `https://b.tiles.openrailwaymap.org/maxspeed/{z}/{x}/{y}.png?v=${VERSION_CACHE_ORM}`,
-        `https://c.tiles.openrailwaymap.org/maxspeed/{z}/{x}/{y}.png?v=${VERSION_CACHE_ORM}`
+        "https://a.tiles.openrailwaymap.org/maxspeed/{z}/{x}/{y}.png",
+        "https://b.tiles.openrailwaymap.org/maxspeed/{z}/{x}/{y}.png",
+        "https://c.tiles.openrailwaymap.org/maxspeed/{z}/{x}/{y}.png"
       ],
       tileSize: 256,
       attribution: "© OpenRailwayMap, © OpenStreetMap contributors",
@@ -3004,7 +3000,7 @@ async function chargerDonneesAppareils() {
   }
 
   if (!promesseChargementAppareils) {
-    promesseChargementAppareils = fetch("./appareils.geojson", { cache: "no-store" })
+    promesseChargementAppareils = fetch("./appareils.geojson", { cache: "default" })
       .then((reponse) => {
         if (!reponse.ok) {
           throw new Error(`HTTP ${reponse.status}`);
@@ -3047,7 +3043,7 @@ async function chargerDonneesAcces() {
   }
 
   if (!promesseChargementAcces) {
-    promesseChargementAcces = fetch("./acces.geojson", { cache: "no-store" })
+    promesseChargementAcces = fetch("./acces.geojson", { cache: "default" })
       .then((reponse) => {
         if (!reponse.ok) {
           throw new Error(`HTTP ${reponse.status}`);
@@ -3074,7 +3070,7 @@ async function chargerDonneesPostes() {
   }
 
   if (!promesseChargementPostes) {
-    promesseChargementPostes = fetch("./postes.geojson", { cache: "no-store" })
+    promesseChargementPostes = fetch("./postes.geojson", { cache: "default" })
       .then((reponse) => {
         if (!reponse.ok) {
           throw new Error(`HTTP ${reponse.status}`);
