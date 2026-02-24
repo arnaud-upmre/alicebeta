@@ -2512,7 +2512,6 @@ function ouvrirPopupSurvolInfo(feature, options = {}) {
     }
     return;
   }
-  signaturePopupSurvolInfo = signature;
   fermerPopupSurvolInfo();
   signaturePopupSurvolInfo = signature;
   if (options.verrouiller === true) {
@@ -5310,65 +5309,6 @@ function naviguerVersCoordonneesPuisOuvrirPopup(longitude, latitude, ouvrirPopup
   return true;
 }
 
-function naviguerVersCoordonneesArrierePlan(longitude, latitude, options = {}) {
-  if (!Number.isFinite(longitude) || !Number.isFinite(latitude)) {
-    return false;
-  }
-
-  const { distancePixels, cibleDansZoneConfort } = calculerContexteDeplacement(longitude, latitude);
-  const forcerZoom = Boolean(options.forceZoom);
-  if (!forcerZoom && cibleDansZoneConfort && distancePixels < 210) {
-    return true;
-  }
-
-  const conserverPopupOuvert = Boolean(options.conserverPopupOuvert);
-  if (conserverPopupOuvert) {
-    conserverFichePendantNavigation = true;
-  }
-  demarrerNavigationPopupProgrammatique();
-
-  let fallback = null;
-  const terminer = () => {
-    terminerNavigationPopupProgrammatique();
-    if (conserverPopupOuvert) {
-      conserverFichePendantNavigation = false;
-    }
-    if (fallback) {
-      clearTimeout(fallback);
-      fallback = null;
-    }
-  };
-
-  carte.once("moveend", terminer);
-
-  if (distancePixels < 520) {
-    carte.easeTo({
-      center: [longitude, latitude],
-      zoom: forcerZoom ? Math.max(carte.getZoom(), Number(options.zoomMin) || 14.2) : carte.getZoom(),
-      duration: Number(options.durationDouxMs) || 460,
-      easing: (t) => 1 - Math.pow(1 - t, 3),
-      essential: true
-    });
-  } else {
-    carte.flyTo({
-      center: [longitude, latitude],
-      zoom: Math.max(carte.getZoom(), Number(options.zoomMin) || 14.2),
-      speed: Number(options.speed) || 1.05,
-      curve: Number(options.curve) || 1.15,
-      essential: true
-    });
-  }
-
-  fallback = setTimeout(() => {
-    if (carte.isMoving()) {
-      return;
-    }
-    terminer();
-  }, Number(options.fallbackMs) || (distancePixels < 520 ? 980 : 1500));
-
-  return true;
-}
-
 function ouvrirPopupAvecAnimationDepuisObjets(objets, options = {}) {
   if (!Array.isArray(objets) || !objets.length) {
     return false;
@@ -6778,7 +6718,6 @@ moduleRechercheAlice =
         appliquerCouchesDonnees,
         remonterCouchesDonnees,
         ouvrirPopupDepuisResultatRecherche,
-        naviguerVersCoordonneesArrierePlan,
         fermerMenuFiltres,
         fermerMenuFonds,
         definirConservationFichePendantNavigation: (valeur) => {
