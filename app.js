@@ -204,6 +204,7 @@ let recadragePopupMobileEnCours = false;
 let navigationPopupProgrammatiqueEnCours = false;
 let conserverFichePendantNavigation = false;
 let restaurationStylePlanifiee = false;
+let transitionFondIgnAutoPlanifiee = false;
 let controleAttributionCarte = null;
 let signatureAttributionCarte = "";
 let idsCouchesFondNatives = [];
@@ -5883,8 +5884,20 @@ function masquerCoucheSatelliteIgnAuto() {
   carte.setPaintProperty(COUCHE_SATELLITE_IGN_AUTO, "raster-opacity", 0);
 }
 
+function planifierMiseAJourTransitionFondIgnAuto() {
+  if (transitionFondIgnAutoPlanifiee) {
+    return;
+  }
+  transitionFondIgnAutoPlanifiee = true;
+  window.requestAnimationFrame(() => {
+    transitionFondIgnAutoPlanifiee = false;
+    mettreAJourTransitionFondIgnAuto();
+  });
+}
+
 function mettreAJourTransitionFondIgnAuto() {
   if (!carte.isStyleLoaded()) {
+    planifierMiseAJourTransitionFondIgnAuto();
     return;
   }
 
@@ -5896,6 +5909,7 @@ function mettreAJourTransitionFondIgnAuto() {
 
   assurerCoucheSatelliteIgnAuto();
   if (!carte.getLayer(COUCHE_SATELLITE_IGN_AUTO)) {
+    planifierMiseAJourTransitionFondIgnAuto();
     return;
   }
 
@@ -5975,6 +5989,7 @@ carte.on("styledata", () => {
     }
     restaurerEtatFiltres();
     restaurerAffichageDonnees();
+    planifierMiseAJourTransitionFondIgnAuto();
   });
 });
 
@@ -6001,7 +6016,7 @@ carte.on("zoomend", () => {
   appliquerFondIgnAutomatique();
   planifierMiseAJourPk();
 });
-carte.on("zoom", mettreAJourTransitionFondIgnAuto);
+carte.on("zoom", planifierMiseAJourTransitionFondIgnAuto);
 carte.on("zoomstart", () => {
   fermerPopupPkInfo();
   fermerPopupPnInfo();
@@ -6011,6 +6026,7 @@ carte.on("movestart", () => {
   fermerPopupPnInfo();
 });
 carte.on("moveend", planifierMiseAJourPk);
+carte.on("moveend", planifierMiseAJourTransitionFondIgnAuto);
 appliquerFondIgnAutomatique({ force: true });
 
 boutonFonds.addEventListener("click", (event) => {
