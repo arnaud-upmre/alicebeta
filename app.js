@@ -111,6 +111,8 @@ const stylePlanOsm = {
 
 const URL_TUILES_SATELLITE_IGN =
   "https://data.geopf.fr/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER=ORTHOIMAGERY.ORTHOPHOTOS&STYLE=normal&TILEMATRIXSET=PM&FORMAT=image/jpeg&TILEMATRIX={z}&TILEROW={y}&TILECOL={x}";
+const URL_TUILES_PLAN_IGN =
+  "https://data.geopf.fr/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER=GEOGRAPHICALGRIDSYSTEMS.PLANIGNV2&STYLE=normal&TILEMATRIXSET=PM&FORMAT=image/png&TILEMATRIX={z}&TILEROW={y}&TILECOL={x}";
 
 // Style raster des orthophotos IGN (satellite).
 const styleSatelliteIgn = {
@@ -129,6 +131,27 @@ const styleSatelliteIgn = {
       id: "satelliteIgn",
       type: "raster",
       source: "satelliteIgn"
+    }
+  ]
+};
+
+// Fallback raster pour le Plan IGN si le style vectoriel officiel n'est pas disponible.
+const stylePlanIgnRasterFallback = {
+  version: 8,
+  sources: {
+    planIgnRaster: {
+      type: "raster",
+      tiles: [URL_TUILES_PLAN_IGN],
+      tileSize: 256,
+      maxzoom: 18,
+      attribution: "© IGN, © OpenStreetMap contributors"
+    }
+  },
+  layers: [
+    {
+      id: "planIgnRaster",
+      type: "raster",
+      source: "planIgnRaster"
     }
   ]
 };
@@ -339,6 +362,32 @@ async function obtenirStyleFond(nomFond) {
   const style = fondsCartographiques[nomFond];
   if (!style) {
     return null;
+  }
+
+  if (nomFond === "planIgn") {
+    if (stylesFondsVectorielsPrepares.has(nomFond)) {
+      return clonerStyle(stylesFondsVectorielsPrepares.get(nomFond));
+    }
+
+    if (!promessesStylesFondsVectoriels.has(nomFond)) {
+      const promesse = chargerStyleJsonDepuisUrl(URL_STYLE_PLAN_IGN)
+        .then((styleJson) => {
+          const styleCorrige = corrigerAttributionsStyleFond(styleJson);
+          stylesFondsVectorielsPrepares.set(nomFond, styleCorrige);
+          return styleCorrige;
+        })
+        .catch((erreur) => {
+          console.warn("Style vectoriel Plan IGN indisponible, fallback raster active.", erreur);
+          return stylePlanIgnRasterFallback;
+        })
+        .finally(() => {
+          promessesStylesFondsVectoriels.delete(nomFond);
+        });
+      promessesStylesFondsVectoriels.set(nomFond, promesse);
+    }
+
+    const stylePrepare = await promessesStylesFondsVectoriels.get(nomFond);
+    return clonerStyle(stylePrepare);
   }
 
   if (nomFond !== "positron" && nomFond !== "voyager") {
