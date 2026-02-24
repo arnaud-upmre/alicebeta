@@ -978,6 +978,8 @@ const menuLegendeCarte = document.getElementById("menu-legende-carte");
 const boutonFermerLegende = document.getElementById("bouton-fermer-legende");
 const modalApropos = document.getElementById("modal-apropos");
 const boutonFermerModalApropos = document.getElementById("modal-apropos-fermer");
+const boutonInstallerPwa = document.getElementById("bouton-installer-pwa");
+const messageInstallerPwa = document.getElementById("message-installer-pwa");
 let modalFiche = document.getElementById("modal-fiche");
 let modalFicheContenu = document.getElementById("modal-fiche-contenu");
 let boutonFermerModalFiche = document.getElementById("modal-fiche-fermer");
@@ -995,6 +997,7 @@ let moduleLocalisation = null;
 let promesseChargementModuleLocalisation = null;
 let rafMiseAJourPk = null;
 let marqueursPk = [];
+let evenementInstallationPwaDiffere = null;
 
 class ControleActionsCarte {
   onAdd() {
@@ -2041,6 +2044,37 @@ function basculerMenuLegende() {
   ouvrirMenuLegende();
 }
 
+function applicationDejaInstallee() {
+  const estStandalone = window.matchMedia?.("(display-mode: standalone)")?.matches;
+  const estStandaloneIos = window.navigator?.standalone === true;
+  return Boolean(estStandalone || estStandaloneIos);
+}
+
+function mettreAJourEtatInstallationPwa() {
+  if (!boutonInstallerPwa || !messageInstallerPwa) {
+    return;
+  }
+
+  if (applicationDejaInstallee()) {
+    boutonInstallerPwa.hidden = true;
+    boutonInstallerPwa.disabled = true;
+    messageInstallerPwa.textContent = "ALICE est déjà installée sur cet appareil.";
+    return;
+  }
+
+  if (evenementInstallationPwaDiffere) {
+    boutonInstallerPwa.hidden = false;
+    boutonInstallerPwa.disabled = false;
+    boutonInstallerPwa.textContent = "Installer ALICE";
+    messageInstallerPwa.textContent = "Ajoutez ALICE sur l'écran d'accueil pour un accès rapide.";
+    return;
+  }
+
+  boutonInstallerPwa.hidden = true;
+  boutonInstallerPwa.disabled = true;
+  messageInstallerPwa.textContent = "Installez ALICE via le menu du navigateur (Partager ou Installer l'application).";
+}
+
 function ouvrirModalApropos() {
   if (!modalApropos) {
     return;
@@ -2051,6 +2085,7 @@ function ouvrirModalApropos() {
   }
   modalApropos.classList.add("est-visible");
   modalApropos.setAttribute("aria-hidden", "false");
+  mettreAJourEtatInstallationPwa();
   fermerMenuLegende();
   window.requestAnimationFrame(() => {
     boutonFermerModalApropos?.focus({ preventScroll: true });
@@ -2085,6 +2120,48 @@ function doitAfficherModalAproposPremiereVisite() {
     return true;
   }
 }
+
+if (boutonInstallerPwa) {
+  boutonInstallerPwa.addEventListener("click", async () => {
+    if (!evenementInstallationPwaDiffere) {
+      mettreAJourEtatInstallationPwa();
+      return;
+    }
+
+    const evenement = evenementInstallationPwaDiffere;
+    evenementInstallationPwaDiffere = null;
+    boutonInstallerPwa.disabled = true;
+    boutonInstallerPwa.textContent = "Installation...";
+    messageInstallerPwa.textContent = "Confirmation demandée par le navigateur.";
+
+    try {
+      await evenement.prompt();
+      const resultat = await evenement.userChoice;
+      if (resultat?.outcome === "accepted") {
+        messageInstallerPwa.textContent = "Installation lancée.";
+      } else {
+        messageInstallerPwa.textContent = "Installation annulée.";
+      }
+    } catch {
+      messageInstallerPwa.textContent = "Impossible de lancer l'installation.";
+    }
+
+    mettreAJourEtatInstallationPwa();
+  });
+}
+
+window.addEventListener("beforeinstallprompt", (event) => {
+  event.preventDefault();
+  evenementInstallationPwaDiffere = event;
+  mettreAJourEtatInstallationPwa();
+});
+
+window.addEventListener("appinstalled", () => {
+  evenementInstallationPwaDiffere = null;
+  mettreAJourEtatInstallationPwa();
+});
+
+mettreAJourEtatInstallationPwa();
 
 async function localiserUtilisateurCarte(options = {}) {
   try {
