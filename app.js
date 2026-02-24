@@ -2458,7 +2458,7 @@ function ouvrirPopupSurvolInfo(feature, options = {}) {
     const contexteLieu = echapperHtml(valeur?.contexteLieu || "Poste inconnu");
     const appareils = Array.isArray(valeur?.appareils) ? valeur.appareils : [];
     const appareilsHtml = appareils.map((ligne) => echapperHtml(ligne || "Appareil")).join("<br/>");
-    contenu = `<div class="popup-pk-info-contenu"><p><strong>Poste :</strong> ${contexteLieu}</p><p><strong>Appareils :</strong><br/>${appareilsHtml}</p></div>`;
+    contenu = `<div class="popup-pk-info-contenu"><p class="popup-survol-poste-titre">${contexteLieu}</p><p><strong>Appareils :</strong><br/>${appareilsHtml}</p></div>`;
     signatureValeur = `${valeur?.contexteLieu || ""}|${appareils.join("||")}`;
   } else if (idCouche === COUCHE_ACCES || idCouche === COUCHE_ACCES_GROUPES) {
     titre = "Accès";

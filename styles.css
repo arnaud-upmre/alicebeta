@@ -1408,6 +1408,11 @@ body {
   margin-top: 4px;
 }
 
+.popup-survol-poste-titre {
+  text-align: center;
+  font-weight: 800;
+}
+
 .popup-section + .popup-section {
   margin-top: 12px;
   padding-top: 12px;
