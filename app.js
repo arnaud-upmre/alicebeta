@@ -208,6 +208,7 @@ let navigationPopupProgrammatiqueEnCours = false;
 let conserverFichePendantNavigation = false;
 let restaurationStylePlanifiee = false;
 let transitionFondIgnAutoPlanifiee = false;
+let dernierZoomTransitionFondIgnAuto = null;
 let controleAttributionCarte = null;
 let signatureAttributionCarte = "";
 let idsCouchesFondNatives = [];
@@ -6143,11 +6144,22 @@ function mettreAJourTransitionFondIgnAuto() {
     return;
   }
 
-  const opacite = calculerOpaciteSatelliteIgnAuto(carte.getZoom());
+  const zoomCourant = carte.getZoom();
+  const estDezoom =
+    Number.isFinite(dernierZoomTransitionFondIgnAuto) && zoomCourant < dernierZoomTransitionFondIgnAuto - 0.001;
+  dernierZoomTransitionFondIgnAuto = zoomCourant;
+
+  const opacite = calculerOpaciteSatelliteIgnAuto(zoomCourant);
   const opaciteFond = 1 - opacite;
-  const retourRapideVersFondPlan = carte.getZoom() <= ZOOM_RETOUR_PLAN_IGN;
-  const dureeTransition = retourRapideVersFondPlan ? 0 : 180;
-  appliquerOpaciteCouchesFondNatives(opaciteFond, { dureeTransitionMs: dureeTransition });
+  const retourRapideVersFondPlan = estDezoom && zoomCourant <= ZOOM_PASSAGE_SATELLITE_IGN;
+  const dureeTransition = retourRapideVersFondPlan ? 90 : 180;
+
+  if (retourRapideVersFondPlan) {
+    // Au dezoom, on ramene vite le fond plan pour eviter la sensation de latence.
+    appliquerOpaciteCouchesFondNatives(1, { dureeTransitionMs: dureeTransition });
+  } else {
+    appliquerOpaciteCouchesFondNatives(opaciteFond, { dureeTransitionMs: dureeTransition });
+  }
   carte.setPaintProperty(COUCHE_SATELLITE_IGN_AUTO, "raster-opacity-transition", { duration: dureeTransition, delay: 0 });
   carte.setLayoutProperty(COUCHE_SATELLITE_IGN_AUTO, "visibility", opacite > 0.001 ? "visible" : "none");
   carte.setPaintProperty(COUCHE_SATELLITE_IGN_AUTO, "raster-opacity", opacite);
