@@ -2382,25 +2382,30 @@ function estSurvolDesktopActif() {
   return !window.matchMedia?.("(hover: none), (pointer: coarse)")?.matches;
 }
 
-function construireLibelleSurvolAppareil(feature) {
+function construireDonneesSurvolAppareil(feature) {
   const appareilsListe = extraireListeDepuisFeature(feature, "appareils_liste_json");
   if (!appareilsListe.length) {
-    return ["Appareil"];
+    return {
+      contexteLieu: "Poste inconnu",
+      appareils: ["Appareil"]
+    };
   }
+  const contexteLieu = construireContexteNomTypeSat(appareilsListe[0] || {}) || "Poste inconnu";
   const lignes = [];
   const dejaVu = new Set();
   for (const appareil of appareilsListe) {
     const codeAppareil = champCompletOuVide(appareil?.appareil) || "Appareil";
-    const contexte = construireContexteNomTypeSat(appareil);
-    const libelle = contexte ? `${codeAppareil} (${contexte})` : codeAppareil;
-    const cle = normaliserTexteRecherche(libelle);
+    const cle = normaliserTexteRecherche(codeAppareil);
     if (!cle || dejaVu.has(cle)) {
       continue;
     }
     dejaVu.add(cle);
-    lignes.push(libelle);
+    lignes.push(codeAppareil);
   }
-  return lignes.length ? lignes : ["Appareil"];
+  return {
+    contexteLieu,
+    appareils: lignes.length ? lignes : ["Appareil"]
+  };
 }
 
 function construireLibelleSurvolAcces(feature) {
@@ -2445,9 +2450,16 @@ function ouvrirPopupSurvolInfo(feature, options = {}) {
   const idCouche = String(feature?.layer?.id || "");
   let titre = "";
   let valeur = "";
+  let contenu = "";
+  let signatureValeur = "";
   if (idCouche === COUCHE_APPAREILS || idCouche === COUCHE_APPAREILS_GROUPES) {
     titre = "Appareil";
-    valeur = construireLibelleSurvolAppareil(feature);
+    valeur = construireDonneesSurvolAppareil(feature);
+    const contexteLieu = echapperHtml(valeur?.contexteLieu || "Poste inconnu");
+    const appareils = Array.isArray(valeur?.appareils) ? valeur.appareils : [];
+    const appareilsHtml = appareils.map((ligne) => echapperHtml(ligne || "Appareil")).join("<br/>");
+    contenu = `<div class="popup-pk-info-contenu"><p><strong>Poste :</strong> ${contexteLieu}</p><p><strong>Appareils :</strong><br/>${appareilsHtml}</p></div>`;
+    signatureValeur = `${valeur?.contexteLieu || ""}|${appareils.join("||")}`;
   } else if (idCouche === COUCHE_ACCES || idCouche === COUCHE_ACCES_GROUPES) {
     titre = "Accès";
     valeur = construireLibelleSurvolAcces(feature);
@@ -2459,11 +2471,13 @@ function ouvrirPopupSurvolInfo(feature, options = {}) {
     return;
   }
 
-  const valeurHtml = Array.isArray(valeur)
-    ? valeur.map((ligne) => echapperHtml(ligne || "Non renseigné")).join("<br/>")
-    : echapperHtml(valeur || "Non renseigné");
-  const contenu = `<div class="popup-pk-info-contenu"><p><strong>${echapperHtml(titre)} :</strong> ${valeurHtml}</p></div>`;
-  const signatureValeur = Array.isArray(valeur) ? valeur.join("||") : String(valeur || "");
+  if (!contenu) {
+    const valeurHtml = Array.isArray(valeur)
+      ? valeur.map((ligne) => echapperHtml(ligne || "Non renseigné")).join("<br/>")
+      : echapperHtml(valeur || "Non renseigné");
+    contenu = `<div class="popup-pk-info-contenu"><p><strong>${echapperHtml(titre)} :</strong> ${valeurHtml}</p></div>`;
+    signatureValeur = Array.isArray(valeur) ? valeur.join("||") : String(valeur || "");
+  }
   const signature = `${idCouche}|${longitude.toFixed(6)}|${latitude.toFixed(6)}|${titre}|${signatureValeur}`;
   if (popupSurvolInfo && signaturePopupSurvolInfo === signature) {
     if (options.verrouiller === true) {
