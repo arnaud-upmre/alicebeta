@@ -5679,7 +5679,6 @@ function activerInteractionsCarte() {
   let temporisationAppuiLong = null;
   let survolCurseurPlanifie = false;
   let dernierPointCurseur = null;
-  let microZoomSelectionMobileEnCours = false;
   const couchesInteractivesSurvolPrioritaires = [
     COUCHE_POSTES,
     COUCHE_POSTES_GROUPES,
@@ -5690,9 +5689,6 @@ function activerInteractionsCarte() {
   ];
   const estInteractionMobile = () => window.matchMedia?.("(hover: none), (pointer: coarse)")?.matches;
   const RAYON_TOLERANCE_TAP_MOBILE_PX = 20;
-  const DELTA_MICRO_ZOOM_SELECTION = 0.9;
-  const ZOOM_MAX_MICRO_SELECTION = 18.6;
-  const SEUIL_COLLISION_MICRO_ZOOM = 2;
   const PRIORITE_COUCHE_SELECTION = {
     [COUCHE_APPAREILS]: 0,
     [COUCHE_ACCES]: 1,
@@ -5767,20 +5763,6 @@ function activerInteractionsCarte() {
     return candidats[0]?.objet || null;
   };
 
-  const doitDeclencherMicroZoomMobile = (objets) => {
-    if (!estInteractionMobile()) {
-      return false;
-    }
-    if (microZoomSelectionMobileEnCours) {
-      return false;
-    }
-    const uniques = dedupliquerObjetsSelection(objets);
-    if (uniques.length < SEUIL_COLLISION_MICRO_ZOOM) {
-      return false;
-    }
-    return carte.getZoom() < ZOOM_MAX_MICRO_SELECTION;
-  };
-
   carte.on("click", (event) => {
     fermerMenuContextuel();
 
@@ -5796,31 +5778,6 @@ function activerInteractionsCarte() {
 
     const objets = interrogerObjetsDepuisTap(event.point, couchesDisponibles);
     if (!objets.length) {
-      return;
-    }
-
-    if (doitDeclencherMicroZoomMobile(objets)) {
-      microZoomSelectionMobileEnCours = true;
-      carte.once("moveend", () => {
-        microZoomSelectionMobileEnCours = false;
-        const couchesMaj = couchesInteractives.filter((id) => Boolean(carte.getLayer(id)));
-        if (!couchesMaj.length) {
-          return;
-        }
-        const objetsApresZoom = interrogerObjetsDepuisTap(event.point, couchesMaj);
-        const meilleurObjetApresZoom = choisirMeilleurObjetDepuisTap(objetsApresZoom, event.point);
-        if (!meilleurObjetApresZoom) {
-          return;
-        }
-        ouvrirPopupDepuisObjetsCarte([meilleurObjetApresZoom]);
-      });
-      carte.easeTo({
-        center: [event.lngLat.lng, event.lngLat.lat],
-        zoom: Math.min(ZOOM_MAX_MICRO_SELECTION, carte.getZoom() + DELTA_MICRO_ZOOM_SELECTION),
-        duration: 190,
-        easing: (t) => 1 - Math.pow(1 - t, 3),
-        essential: true
-      });
       return;
     }
 
