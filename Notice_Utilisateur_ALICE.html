@@ -1,0 +1,654 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#0b1726" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <title>ALICE - Notice Utilisateur</title>
+  <link rel="manifest" href="./manifest.webmanifest" />
+  <link rel="icon" type="image/png" sizes="32x32" href="./icons/icon-32.png" />
+  <link rel="icon" type="image/png" sizes="192x192" href="./icons/icon-192.png" />
+  <link rel="shortcut icon" href="./icons/icon-32.png" type="image/png" />
+  <link rel="apple-touch-icon" href="./icons/apple-touch-icon.png" />
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-4602CPKFWF"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-4602CPKFWF');
+  </script>
+  <style>
+    :root {
+      --bg: #f3f6fb;
+      --paper: #ffffff;
+      --ink: #1e293b;
+      --muted: #64748b;
+      --line: #dbe3ef;
+      --brand: #0f4c81;
+      --brand-soft: #e8f1fb;
+      --accent: #0ea5a3;
+      --warn: #f59e0b;
+      --ok: #16a34a;
+      --shadow: 0 14px 32px rgba(15, 76, 129, 0.12);
+      --radius: 14px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      background: radial-gradient(circle at top left, #f8fbff, var(--bg));
+      color: var(--ink);
+      font-family: "Segoe UI", "Aptos", "Helvetica Neue", Arial, sans-serif;
+      line-height: 1.55;
+    }
+
+    .layout {
+      max-width: 1120px;
+      margin: 28px auto;
+      padding: 0 18px 46px;
+      display: grid;
+      grid-template-columns: 300px 1fr;
+      gap: 18px;
+      align-items: start;
+    }
+
+    .toc {
+      position: sticky;
+      top: 18px;
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 18px 16px;
+    }
+
+    .toc h2 {
+      margin: 0 0 10px;
+      font-size: 1.04rem;
+      color: var(--brand);
+    }
+
+    .toc ol {
+      margin: 0;
+      padding-left: 20px;
+      display: grid;
+      gap: 7px;
+      font-size: 0.93rem;
+    }
+
+    .toc a {
+      color: #0b3558;
+      text-decoration: none;
+    }
+
+    .toc a:hover {
+      text-decoration: underline;
+    }
+
+    .doc {
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    .cover {
+      padding: 34px 34px 28px;
+      background:
+        linear-gradient(132deg, rgba(15, 76, 129, 0.96), rgba(11, 54, 91, 0.93)),
+        repeating-linear-gradient(45deg, rgba(255, 255, 255, 0.08) 0 10px, rgba(255, 255, 255, 0.02) 10px 20px);
+      color: #fff;
+    }
+
+    .cover h1 {
+      margin: 0;
+      font-size: clamp(1.7rem, 2.8vw, 2.4rem);
+      letter-spacing: 0.2px;
+    }
+
+    .cover p {
+      margin: 10px 0 0;
+      font-size: 1rem;
+      color: #e6eef7;
+      max-width: 72ch;
+    }
+
+    .meta {
+      margin-top: 20px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .meta span {
+      display: inline-block;
+      border: 1px solid rgba(255, 255, 255, 0.35);
+      border-radius: 999px;
+      padding: 6px 11px;
+      font-size: 0.87rem;
+      color: #f0f6ff;
+    }
+
+    .content {
+      padding: 28px 34px 32px;
+      display: grid;
+      gap: 14px;
+    }
+
+    h2.section-title {
+      margin: 10px 0 8px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid var(--line);
+      color: var(--brand);
+      font-size: 1.26rem;
+    }
+
+    h3 {
+      margin: 10px 0 5px;
+      font-size: 1.03rem;
+      color: #0c3f68;
+    }
+
+    p {
+      margin: 8px 0;
+      font-size: 0.99rem;
+    }
+
+    ul, ol {
+      margin: 7px 0 8px;
+      padding-left: 22px;
+    }
+
+    li {
+      margin: 4px 0;
+    }
+
+    .hint {
+      border-left: 4px solid var(--accent);
+      background: #f0fbfb;
+      border-radius: 10px;
+      padding: 10px 12px;
+      color: #134e4a;
+      margin: 8px 0;
+      font-size: 0.95rem;
+    }
+
+    .important {
+      border-left: 4px solid var(--warn);
+      background: #fff8eb;
+      border-radius: 10px;
+      padding: 10px 12px;
+      color: #7a4410;
+      margin: 8px 0;
+      font-size: 0.95rem;
+    }
+
+    .ok {
+      border-left: 4px solid var(--ok);
+      background: #effdf3;
+      border-radius: 10px;
+      padding: 10px 12px;
+      color: #166534;
+      margin: 8px 0;
+      font-size: 0.95rem;
+    }
+
+    .steps {
+      display: grid;
+      gap: 10px;
+    }
+
+    .step {
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 11px 12px;
+      background: #fcfdff;
+    }
+
+    .step strong {
+      color: #0f3f68;
+    }
+
+    .capture {
+      border: 2px dashed #f3c977;
+      border-radius: 12px;
+      background: #fffcf4;
+      padding: 12px;
+      color: #7a4a06;
+      margin: 10px 0;
+      font-size: 0.93rem;
+    }
+
+    .capture .slot {
+      margin-top: 8px;
+      border: 1px dashed #efb64f;
+      border-radius: 8px;
+      min-height: 120px;
+      display: grid;
+      place-items: center;
+      color: #9a6a17;
+      font-size: 0.88rem;
+      background: #fff;
+    }
+
+    .card-grid {
+      display: grid;
+      gap: 12px;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    }
+
+    .card {
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: #fbfdff;
+      padding: 12px;
+    }
+
+    .card h4 {
+      margin: 0 0 6px;
+      font-size: 0.98rem;
+      color: #0f3f68;
+    }
+
+    .links-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.92rem;
+      margin-top: 8px;
+    }
+
+    .links-table th,
+    .links-table td {
+      border: 1px solid var(--line);
+      padding: 8px;
+      text-align: left;
+      vertical-align: top;
+    }
+
+    .links-table th {
+      background: #edf4fe;
+      color: #0d3d66;
+    }
+
+    code {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      background: #edf2fb;
+      border: 1px solid #d7dfef;
+      border-radius: 6px;
+      padding: 1px 5px;
+      font-size: 0.84rem;
+      color: #223b67;
+      word-break: break-all;
+    }
+
+    .footer {
+      margin-top: 8px;
+      border-top: 1px solid var(--line);
+      padding-top: 12px;
+      color: var(--muted);
+      font-size: 0.88rem;
+    }
+
+    @media (max-width: 980px) {
+      .layout {
+        grid-template-columns: 1fr;
+      }
+
+      .toc {
+        position: static;
+      }
+
+      .cover, .content {
+        padding-left: 20px;
+        padding-right: 20px;
+      }
+    }
+
+    @media print {
+      body {
+        background: #fff;
+      }
+      .layout {
+        display: block;
+        max-width: none;
+        margin: 0;
+        padding: 0;
+      }
+      .toc {
+        display: none;
+      }
+      .doc {
+        box-shadow: none;
+        border: none;
+      }
+      .capture {
+        break-inside: avoid;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="layout">
+    <aside class="toc">
+      <h2>Sommaire</h2>
+      <ol>
+        <li><a href="#presentation">Présentation d'ALICE</a></li>
+        <li><a href="#demarrage">Démarrage rapide</a></li>
+        <li><a href="#recherche">Recherche</a></li>
+        <li><a href="#filtres">Filtres et affichage carte</a></li>
+        <li><a href="#fonds">Fonds de carte</a></li>
+        <li><a href="#fiches">Comprendre une fiche</a></li>
+        <li><a href="#actions">Actions utiles sur les fiches</a></li>
+        <li><a href="#contextuel">Menu contextuel</a></li>
+        <li><a href="#autour">Autour de vous</a></li>
+        <li><a href="#trajet">Comparer 2 postes (trajet)</a></li>
+        <li><a href="#tableau">Tableau blanc</a></li>
+        <li><a href="#ajout">Ajouter un appareil</a></li>
+        <li><a href="#partage">Partage</a></li>
+        <li><a href="#liens">Répertoire des liens</a></li>
+        <li><a href="#bonnespratiques">Bonnes pratiques</a></li>
+      </ol>
+    </aside>
+
+    <main class="doc">
+      <header class="cover">
+        <h1>ALICE - Notice Utilisateur</h1>
+        <p>Guide pratique pour utiliser ALICE au quotidien: rechercher une installation, ouvrir les bonnes fiches, se déplacer rapidement vers le terrain, partager une position et déclarer un appareil.</p>
+        <div class="meta">
+          <span>Version: février 2026</span>
+          <span>Public: utilisateurs terrain et exploitation</span>
+          <span>Document utilisateur (non technique)</span>
+        </div>
+      </header>
+
+      <section class="content">
+        <section id="presentation">
+          <h2 class="section-title">1. Présentation d'ALICE</h2>
+          <p>ALICE est l'application de repérage et d'accès à l'information terrain. Elle sert à trouver rapidement les postes, les accès routiers et les appareils, puis à ouvrir les actions utiles (itinéraire, contacts, outils complémentaires).</p>
+          <div class="card-grid">
+            <article class="card">
+              <h4>Ce que vous pouvez faire</h4>
+              <ul>
+                <li>Rechercher un poste, un accès ou un appareil.</li>
+                <li>Afficher les éléments proches de votre position.</li>
+                <li>Créer un trajet vers un accès.</li>
+                <li>Ajouter un appareil depuis le terrain.</li>
+              </ul>
+            </article>
+            <article class="card">
+              <h4>En un coup d'œil</h4>
+              <ul>
+                <li>Carte centrale.</li>
+                <li>Barre de recherche en haut.</li>
+                <li>Boutons rapides à droite.</li>
+                <li>Fiches détaillées au clic.</li>
+              </ul>
+            </article>
+          </div>
+          <div class="capture">Capture à insérer: écran d'accueil complet.
+            <div class="slot">Déposer ici la capture de la page principale</div>
+          </div>
+        </section>
+
+        <section id="demarrage">
+          <h2 class="section-title">2. Démarrage rapide</h2>
+          <div class="steps">
+            <div class="step"><strong>Étape 1</strong> - Ouvrir ALICE et repérer la barre de recherche en haut.</div>
+            <div class="step"><strong>Étape 2</strong> - Taper votre recherche (poste, SAT, appareil, accès).</div>
+            <div class="step"><strong>Étape 3</strong> - Cliquer le bon résultat pour ouvrir la fiche.</div>
+            <div class="step"><strong>Étape 4</strong> - Utiliser l'action adaptée: itinéraire, Street View, Imajnet, partage, etc.</div>
+          </div>
+          <div class="ok">Objectif de ce parcours: arriver à l'information utile en moins de 30 secondes.</div>
+        </section>
+
+        <section id="recherche">
+          <h2 class="section-title">3. Recherche</h2>
+          <p>La recherche est le point d'entrée principal.</p>
+          <ul>
+            <li>Saisir au moins 2 caractères.</li>
+            <li>Les résultats apparaissent immédiatement.</li>
+            <li>Filtrer ensuite par type: Tous, Accès, Postes, Appareils.</li>
+            <li>Cliquer un résultat pour ouvrir directement la fiche correspondante.</li>
+          </ul>
+          <div class="hint">Conseil: utilisez un mot marquant (nom de site, code SAT, code appareil) pour aller plus vite.</div>
+          <div class="capture">Capture à insérer: recherche + résultats + boutons de filtrage.
+            <div class="slot">Déposer ici la capture de la zone de recherche</div>
+          </div>
+        </section>
+
+        <section id="filtres">
+          <h2 class="section-title">4. Filtres et affichage carte</h2>
+          <p>Le bouton <strong>Filtres</strong> sert à afficher ou masquer les couches utiles.</p>
+          <div class="card-grid">
+            <article class="card">
+              <h4>Couches disponibles</h4>
+              <ul>
+                <li>Appareils</li>
+                <li>Accès voiture</li>
+                <li>Postes</li>
+                <li>PK</li>
+                <li>Passages à niveau</li>
+                <li>Ligne</li>
+                <li>Vitesse de ligne</li>
+              </ul>
+            </article>
+            <article class="card">
+              <h4>Légende</h4>
+              <ul>
+                <li>Accessible depuis le menu filtres.</li>
+                <li>Permet de reconnaître les couleurs et symboles.</li>
+                <li>À utiliser avant toute interprétation visuelle.</li>
+              </ul>
+            </article>
+          </div>
+          <div class="important">La vitesse de ligne affichée est indicative: vérifier avec les documents internes de référence.</div>
+          <div class="capture">Capture à insérer: menu filtres + légende ouverte.
+            <div class="slot">Déposer ici la capture des filtres</div>
+          </div>
+        </section>
+
+        <section id="fonds">
+          <h2 class="section-title">5. Fonds de carte</h2>
+          <p>Le bouton <strong>Fond de carte</strong> permet d'adapter la vue à votre besoin.</p>
+          <ul>
+            <li>Auto Voyager + Satellite IGN</li>
+            <li>Positron</li>
+            <li>Voyager</li>
+            <li>Plan IGN</li>
+            <li>OSM Standard</li>
+            <li>Satellite IGN</li>
+          </ul>
+          <div class="hint">Recommandation terrain: utiliser Satellite IGN ou mode Auto pour affiner le repérage d'accès.</div>
+          <div class="capture">Capture à insérer: menu fonds de carte.
+            <div class="slot">Déposer ici la capture des fonds de carte</div>
+          </div>
+        </section>
+
+        <section id="fiches">
+          <h2 class="section-title">6. Comprendre une fiche</h2>
+          <p>En cliquant un point sur la carte, vous ouvrez une fiche détaillée (poste, accès ou appareil).</p>
+          <ul>
+            <li>Nom et contexte du lieu.</li>
+            <li>SAT associé si présent.</li>
+            <li>Accès routier lié.</li>
+            <li>Liste des appareils sur support.</li>
+            <li>Indication HP (hors patrimoine) lorsque c'est le cas.</li>
+            <li>Numéros utiles appelables directement.</li>
+          </ul>
+          <div class="capture">Capture à insérer: fiche poste + fiche accès + fiche appareil.
+            <div class="slot">Déposer ici les captures des fiches</div>
+          </div>
+        </section>
+
+        <section id="actions">
+          <h2 class="section-title">7. Actions utiles sur les fiches</h2>
+          <div class="card-grid">
+            <article class="card">
+              <h4>Se déplacer</h4>
+              <ul>
+                <li>Itinéraire Google Maps</li>
+                <li>Itinéraire Apple Plans</li>
+                <li>Itinéraire Waze</li>
+              </ul>
+            </article>
+            <article class="card">
+              <h4>Explorer le terrain</h4>
+              <ul>
+                <li>Localiser sur la carte</li>
+                <li>Street View</li>
+                <li>Imajnet</li>
+              </ul>
+            </article>
+            <article class="card">
+              <h4>Aller plus loin</h4>
+              <ul>
+                <li>Patrimoine SPOT</li>
+                <li>Afficher / Ajouter des appareils</li>
+                <li>Signaler un STOP &amp; GO ou incident</li>
+              </ul>
+            </article>
+          </div>
+          <div class="capture">Capture à insérer: bloc complet des actions d'une fiche.
+            <div class="slot">Déposer ici la capture des boutons d'action</div>
+          </div>
+        </section>
+
+        <section id="contextuel">
+          <h2 class="section-title">8. Menu contextuel</h2>
+          <p>Depuis la carte, un appui prolongé (ou clic contextuel) ouvre un menu d'actions rapides sur le point visé.</p>
+          <ul>
+            <li>Voir et copier les coordonnées.</li>
+            <li>Partager la position.</li>
+            <li>Créer un itinéraire vers ce point.</li>
+            <li>Lancer la règle / traçage pour mesurer.</li>
+            <li>Ouvrir Google Maps, Street View ou Imajnet.</li>
+            <li>Ajouter un appareil à cet endroit.</li>
+          </ul>
+          <div class="capture">Capture à insérer: menu contextuel complet.
+            <div class="slot">Déposer ici la capture du menu contextuel</div>
+          </div>
+        </section>
+
+        <section id="autour">
+          <h2 class="section-title">9. Autour de vous</h2>
+          <p>Le bouton <strong>Me localiser</strong> permet de centrer la carte sur votre position et d'afficher les éléments proches.</p>
+          <ul>
+            <li>Résultats triés par distance.</li>
+            <li>Bouton <strong>Voir la fiche</strong> pour ouvrir directement le bon élément.</li>
+            <li>Bouton <strong>Voir Plus</strong> pour charger d'autres résultats.</li>
+          </ul>
+          <div class="hint">Si aucun résultat n'apparaît, vérifier l'autorisation de localisation de l'appareil.</div>
+          <div class="capture">Capture à insérer: fenêtre “Autour de vous”.
+            <div class="slot">Déposer ici la capture de la localisation</div>
+          </div>
+        </section>
+
+        <section id="trajet">
+          <h2 class="section-title">10. Comparer 2 postes (trajet)</h2>
+          <p>Le bouton dédié ouvre un module simple pour comparer deux accès.</p>
+          <ul>
+            <li>Choisir un départ.</li>
+            <li>Choisir une arrivée.</li>
+            <li>Lire la distance et la durée estimées.</li>
+            <li>Ouvrir ensuite le trajet dans l'outil de navigation choisi.</li>
+          </ul>
+          <div class="capture">Capture à insérer: module trajet + résumé distance/durée.
+            <div class="slot">Déposer ici la capture du module trajet</div>
+          </div>
+        </section>
+
+        <section id="tableau">
+          <h2 class="section-title">11. Tableau blanc</h2>
+          <p>Le tableau blanc donne une vue synthétique, triable et cliquable des postes/SAT/appareils.</p>
+          <ul>
+            <li>Recherche libre dans la page.</li>
+            <li>Tri A→Z, Z→A, + appareils, - appareils.</li>
+            <li>Accès direct à la fiche en cliquant un élément.</li>
+            <li>Bouton “Accueil” pour revenir à la carte principale.</li>
+          </ul>
+          <div class="capture">Capture à insérer: tableau blanc avec tri et recherche.
+            <div class="slot">Déposer ici la capture du tableau blanc</div>
+          </div>
+        </section>
+
+        <section id="ajout">
+          <h2 class="section-title">12. Ajouter un appareil</h2>
+          <p>Le formulaire guide l'utilisateur étape par étape, avec vérification avant envoi.</p>
+          <div class="steps">
+            <div class="step"><strong>1.</strong> Demandeur</div>
+            <div class="step"><strong>2.</strong> Sélection du poste</div>
+            <div class="step"><strong>3.</strong> Nom de l'appareil</div>
+            <div class="step"><strong>4.</strong> Localisation appareil: GPS ou lien Maps</div>
+            <div class="step"><strong>5.</strong> Accès routier propre: Oui / Non</div>
+            <div class="step"><strong>6.</strong> Si Oui: localisation de l'accès (GPS ou lien)</div>
+            <div class="step"><strong>7.</strong> Notes complémentaires</div>
+            <div class="step"><strong>8.</strong> Récapitulatif cliquable pour corriger</div>
+            <div class="step"><strong>9.</strong> Envoi de la demande</div>
+          </div>
+          <div class="ok">Le récapitulatif final permet de corriger facilement avant validation.</div>
+          <div class="capture">Capture à insérer: début formulaire + étape GPS + écran de confirmation.
+            <div class="slot">Déposer ici les captures du formulaire d'ajout</div>
+          </div>
+        </section>
+
+        <section id="partage">
+          <h2 class="section-title">13. Partage</h2>
+          <ul>
+            <li>Partager une position depuis la carte.</li>
+            <li>Partager une fiche (poste, accès, appareil).</li>
+            <li>Le destinataire ouvre directement le bon contexte.</li>
+          </ul>
+          <div class="hint">Privilégier le partage de fiche pour éviter les ambiguïtés sur le point visé.</div>
+        </section>
+
+        <section id="liens">
+          <h2 class="section-title">14. Répertoire des liens</h2>
+          <p>Liens ouverts depuis ALICE côté utilisateur:</p>
+          <table class="links-table">
+            <thead>
+              <tr><th>Usage</th><th>Lien</th><th>Depuis</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>Tableau blanc</td><td><code>./tableau.html</code></td><td>Bouton tableau</td></tr>
+              <tr><td>Ajout d'appareil</td><td><code>./ajout_appareil.html</code></td><td>Fiches / menu contextuel</td></tr>
+              <tr><td>Fiche depuis tableau</td><td><code>./index.html?id=...</code></td><td>Tableau blanc</td></tr>
+              <tr><td>Google Maps (trajet)</td><td><code>https://www.google.com/maps/dir/?api=1&amp;destination=lat,lng</code></td><td>Fiches / menu contextuel / trajet</td></tr>
+              <tr><td>Apple Plans</td><td><code>https://maps.apple.com/?daddr=lat,lng&amp;dirflg=d</code></td><td>Fiches / menu contextuel / trajet</td></tr>
+              <tr><td>Waze</td><td><code>https://waze.com/ul?ll=lat,lng&amp;navigate=yes</code></td><td>Fiches / menu contextuel / trajet</td></tr>
+              <tr><td>Google Maps (point)</td><td><code>https://www.google.com/maps?q=lat,lng</code></td><td>Menu contextuel</td></tr>
+              <tr><td>Street View</td><td><code>https://www.google.com/maps?q=&amp;layer=c&amp;cbll=lat,lng</code></td><td>Fiche accès / menu contextuel</td></tr>
+              <tr><td>Imajnet</td><td><code>https://gecko.imajnet.net/#map=OSM;zoom=18;loc=lat,lng;</code></td><td>Fiches / menu contextuel</td></tr>
+              <tr><td>Patrimoine SPOT</td><td><code>https://app.powerbi.com/groups/me/reports/e63d15fe-0d14-4471-8571-6e146456990f/ReportSection0107f8f0b80dcd560566?experience=power-bi</code></td><td>Fiches</td></tr>
+              <tr><td>Signalement terrain</td><td><code>https://forms.office.com/Pages/ResponsePage.aspx?id=OIJ8SplXFkufxprY_OWn2UJJqJxHNcNPmrPMZznt7P1UNUhTNFRJVkhJVzBPMTMyM1g5UUlUMlgzTS4u</code></td><td>Fiches</td></tr>
+              <tr><td>Contact</td><td><code>mailto:ALICEGrpO365@sncf.onmicrosoft.com</code></td><td>À propos</td></tr>
+              <tr><td>Sources de données</td><td><code>https://ressources.data.sncf.com/</code> • <code>https://data.sncf.com/pages/licence/</code> • <code>https://github.com/nicolaswurtz/extras-opendata-sncf-reseau</code></td><td>Informations</td></tr>
+              <tr><td>Appel direct</td><td><code>tel:...</code></td><td>Numéros en fiche</td></tr>
+            </tbody>
+          </table>
+        </section>
+
+        <section id="bonnespratiques">
+          <h2 class="section-title">15. Bonnes pratiques</h2>
+          <ul>
+            <li>Choisir le fond de carte adapté avant toute lecture terrain.</li>
+            <li>Activer la légende en cas de doute sur les symboles/couleurs.</li>
+            <li>Toujours valider le récapitulatif avant envoi d'un ajout d'appareil.</li>
+            <li>Utiliser le partage de fiche pour transmettre un contexte précis.</li>
+          </ul>
+          <div class="footer">
+            Validation interne: Date __________ • Validé par __________
+          </div>
+        </section>
+      </section>
+    </main>
+  </div>
+</body>
+</html>
