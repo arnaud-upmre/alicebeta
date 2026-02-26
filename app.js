@@ -1058,15 +1058,27 @@ function actualiserPlaceholderRecherche() {
 function mettreAJourHauteurViewportCss() {
   const hauteurInner = Number(window.innerHeight) || 0;
   const hauteurViewportVisuel = Number(window.visualViewport?.height) || 0;
-  const hauteurViewport = Math.max(hauteurInner, hauteurViewportVisuel);
+  const hauteurClient = Number(document.documentElement?.clientHeight) || 0;
+  const hauteurScreen = Number(window.screen?.height) || 0;
+  const hauteurViewport = Math.max(hauteurInner, hauteurViewportVisuel, hauteurClient, hauteurScreen);
   if (!Number.isFinite(hauteurViewport) || hauteurViewport <= 0) {
     return;
   }
   const hauteurPx = `${Math.round(hauteurViewport)}px`;
+  const elementCarte = document.getElementById("map");
   document.documentElement.style.setProperty("--app-viewport-height", hauteurPx);
   document.documentElement.style.height = hauteurPx;
   document.body.style.height = hauteurPx;
+  if (elementCarte instanceof HTMLElement) {
+    elementCarte.style.height = hauteurPx;
+  }
   window.scrollTo(0, 0);
+}
+
+function synchroniserViewportEtCarte() {
+  mettreAJourHauteurViewportCss();
+  planifierResizeCarte();
+  planifierMiseAJourPk();
 }
 
 function planifierResizeCarte() {
@@ -2238,29 +2250,25 @@ async function partagerPositionContextuelle() {
 
 actualiserPlaceholderRecherche();
 mettreAJourHauteurViewportCss();
+window.addEventListener("pageshow", synchroniserViewportEtCarte, { passive: true });
 window.addEventListener("resize", () => {
   actualiserPlaceholderRecherche();
-  mettreAJourHauteurViewportCss();
-  planifierResizeCarte();
-  planifierMiseAJourPk();
+  synchroniserViewportEtCarte();
 }, { passive: true });
 window.addEventListener("orientationchange", () => {
-  mettreAJourHauteurViewportCss();
-  planifierResizeCarte();
-  planifierMiseAJourPk();
+  synchroniserViewportEtCarte();
 }, { passive: true });
 if (window.visualViewport) {
   window.visualViewport.addEventListener("resize", () => {
-    mettreAJourHauteurViewportCss();
-    planifierResizeCarte();
-    planifierMiseAJourPk();
+    synchroniserViewportEtCarte();
   }, { passive: true });
   window.visualViewport.addEventListener("scroll", () => {
-    mettreAJourHauteurViewportCss();
-    planifierResizeCarte();
-    planifierMiseAJourPk();
+    synchroniserViewportEtCarte();
   }, { passive: true });
 }
+window.setTimeout(synchroniserViewportEtCarte, 0);
+window.setTimeout(synchroniserViewportEtCarte, 250);
+window.setTimeout(synchroniserViewportEtCarte, 1000);
 
 function calculerTotalEntrees(donnees, cleCount) {
   if (!donnees?.features) {
