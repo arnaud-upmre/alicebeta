@@ -1083,22 +1083,15 @@ function actualiserPlaceholderRecherche() {
 }
 
 function mettreAJourHauteurViewportCss() {
-  if (EST_IOS_STANDALONE) {
-    document.documentElement.style.removeProperty("--app-viewport-height");
-    document.documentElement.style.removeProperty("height");
-    document.body.style.removeProperty("height");
-    const elementCarte = document.getElementById("map");
-    if (elementCarte instanceof HTMLElement) {
-      elementCarte.style.removeProperty("height");
-    }
-    window.scrollTo(0, 0);
-    return;
-  }
-
   const hauteurInner = Number(window.innerHeight) || 0;
   const hauteurViewportVisuel = Number(window.visualViewport?.height) || 0;
   const hauteurClient = Number(document.documentElement?.clientHeight) || 0;
-  const hauteurScreen = Number(window.screen?.height) || 0;
+  const largeurScreen = Number(window.screen?.width) || 0;
+  const hauteurScreenBrute = Number(window.screen?.height) || 0;
+  const estPaysage = window.matchMedia?.("(orientation: landscape)")?.matches === true;
+  const hauteurScreen = EST_IOS_STANDALONE
+    ? (estPaysage ? Math.min(hauteurScreenBrute, largeurScreen) : Math.max(hauteurScreenBrute, largeurScreen))
+    : hauteurScreenBrute;
   const hauteurViewport = Math.max(hauteurInner, hauteurViewportVisuel, hauteurClient, hauteurScreen);
   if (!Number.isFinite(hauteurViewport) || hauteurViewport <= 0) {
     return;
