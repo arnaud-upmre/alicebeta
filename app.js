@@ -1055,18 +1055,22 @@ function actualiserPlaceholderRecherche() {
   champRecherche.placeholder = estMobile ? PLACEHOLDER_RECHERCHE_MOBILE : PLACEHOLDER_RECHERCHE_DESKTOP;
 }
 
-function mettreAJourHauteurViewportCss() {
-  const hauteurViewport = window.visualViewport?.height ?? window.innerHeight;
-  if (!Number.isFinite(hauteurViewport) || hauteurViewport <= 0) {
-    return;
-  }
-  document.documentElement.style.setProperty("--app-viewport-height", `${Math.round(hauteurViewport)}px`);
-}
-
 function planifierResizeCarte() {
   window.requestAnimationFrame(() => {
     carte.resize();
   });
+}
+
+function recalerCarteIosPwa() {
+  window.requestAnimationFrame(() => {
+    carte.resize();
+  });
+  window.setTimeout(() => {
+    carte.resize();
+  }, 120);
+  window.setTimeout(() => {
+    carte.resize();
+  }, 380);
 }
 
 function obtenirDateLocaleDuJour() {
@@ -2231,26 +2235,31 @@ async function partagerPositionContextuelle() {
 }
 
 actualiserPlaceholderRecherche();
-mettreAJourHauteurViewportCss();
+carte.on("load", recalerCarteIosPwa);
+window.addEventListener("pageshow", recalerCarteIosPwa, { passive: true });
+document.addEventListener("visibilitychange", () => {
+  if (document.visibilityState === "visible") {
+    recalerCarteIosPwa();
+  }
+});
+window.addEventListener("focus", recalerCarteIosPwa, { passive: true });
 window.addEventListener("resize", () => {
   actualiserPlaceholderRecherche();
-  mettreAJourHauteurViewportCss();
   planifierResizeCarte();
   planifierMiseAJourPk();
 }, { passive: true });
 window.addEventListener("orientationchange", () => {
-  mettreAJourHauteurViewportCss();
   planifierResizeCarte();
   planifierMiseAJourPk();
 }, { passive: true });
 if (window.visualViewport) {
   window.visualViewport.addEventListener("resize", () => {
-    mettreAJourHauteurViewportCss();
+    recalerCarteIosPwa();
     planifierResizeCarte();
     planifierMiseAJourPk();
   }, { passive: true });
   window.visualViewport.addEventListener("scroll", () => {
-    mettreAJourHauteurViewportCss();
+    recalerCarteIosPwa();
     planifierResizeCarte();
     planifierMiseAJourPk();
   }, { passive: true });
