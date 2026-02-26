@@ -1056,11 +1056,17 @@ function actualiserPlaceholderRecherche() {
 }
 
 function mettreAJourHauteurViewportCss() {
-  const hauteurViewport = window.visualViewport?.height ?? window.innerHeight;
+  const hauteurInner = Number(window.innerHeight) || 0;
+  const hauteurViewportVisuel = Number(window.visualViewport?.height) || 0;
+  const hauteurViewport = Math.max(hauteurInner, hauteurViewportVisuel);
   if (!Number.isFinite(hauteurViewport) || hauteurViewport <= 0) {
     return;
   }
-  document.documentElement.style.setProperty("--app-viewport-height", `${Math.round(hauteurViewport)}px`);
+  const hauteurPx = `${Math.round(hauteurViewport)}px`;
+  document.documentElement.style.setProperty("--app-viewport-height", hauteurPx);
+  document.documentElement.style.height = hauteurPx;
+  document.body.style.height = hauteurPx;
+  window.scrollTo(0, 0);
 }
 
 function planifierResizeCarte() {

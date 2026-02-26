@@ -52,10 +52,16 @@ html,
 body {
   overflow: hidden;
   overscroll-behavior: none;
+  position: fixed;
+  inset: 0;
 }
 
 #map {
-  width: 100vw;
+  position: fixed;
+  inset: 0;
+  width: auto;
+  height: auto;
+  min-height: -webkit-fill-available;
   height: var(--app-viewport-height, 100dvh);
 }
 
