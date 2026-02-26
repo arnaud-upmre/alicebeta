@@ -884,8 +884,13 @@ const carte = new maplibregl.Map({
   style: fondsCartographiques[fondActif]
 });
 
+forcerPleinEcranCarte();
 carte.addControl(new maplibregl.NavigationControl({ showCompass: false }), "top-right");
 carte.addControl(new maplibregl.ScaleControl({ maxWidth: 120, unit: "metric" }), "bottom-left");
+carte.on("load", () => {
+  forcerPleinEcranCarte();
+  planifierResizeCarte();
+});
 
 const LIEN_SNCF_OPEN_DATA = "https://ressources.data.sncf.com/";
 const LIEN_EXTRA_PK = "https://github.com/nicolaswurtz/extras-opendata-sncf-reseau";
@@ -1077,6 +1082,7 @@ function mettreAJourHauteurViewportCss() {
 
 function synchroniserViewportEtCarte() {
   mettreAJourHauteurViewportCss();
+  forcerPleinEcranCarte();
   planifierResizeCarte();
   planifierMiseAJourPk();
 }
@@ -1085,6 +1091,32 @@ function planifierResizeCarte() {
   window.requestAnimationFrame(() => {
     carte.resize();
   });
+}
+
+function forcerPleinEcranCarte() {
+  if (!carte) {
+    return;
+  }
+
+  const conteneurCarte = carte.getContainer?.();
+  if (conteneurCarte instanceof HTMLElement) {
+    conteneurCarte.style.position = "fixed";
+    conteneurCarte.style.inset = "0";
+    conteneurCarte.style.width = "100%";
+    conteneurCarte.style.height = "100%";
+  }
+
+  const conteneurCanvas = carte.getCanvasContainer?.();
+  if (conteneurCanvas instanceof HTMLElement) {
+    conteneurCanvas.style.width = "100%";
+    conteneurCanvas.style.height = "100%";
+  }
+
+  const canvas = carte.getCanvas?.();
+  if (canvas instanceof HTMLCanvasElement) {
+    canvas.style.width = "100%";
+    canvas.style.height = "100%";
+  }
 }
 
 function obtenirDateLocaleDuJour() {
@@ -2251,6 +2283,11 @@ async function partagerPositionContextuelle() {
 actualiserPlaceholderRecherche();
 mettreAJourHauteurViewportCss();
 window.addEventListener("pageshow", synchroniserViewportEtCarte, { passive: true });
+document.addEventListener("visibilitychange", () => {
+  if (document.visibilityState === "visible") {
+    synchroniserViewportEtCarte();
+  }
+});
 window.addEventListener("resize", () => {
   actualiserPlaceholderRecherche();
   synchroniserViewportEtCarte();
