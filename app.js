@@ -164,10 +164,10 @@ const URL_STYLE_PLAN_IGN =
   "https://data.geopf.fr/annexes/ressources/vectorTiles/styles/PLAN.IGN/standard.json";
 const FOND_IGN_AUTOMATIQUE = "ignAuto";
 const FOND_BASE_IGN_AUTOMATIQUE = "voyager";
-const ZOOM_PASSAGE_SATELLITE_IGN = 15;
-const ZOOM_RETOUR_PLAN_IGN = 14.5;
+const ZOOM_PASSAGE_SATELLITE_IGN = 13;
+const ZOOM_RETOUR_PLAN_IGN = 12.5;
 const ZOOM_DEBUT_FONDU_IGN_AUTO = ZOOM_PASSAGE_SATELLITE_IGN;
-const ZOOM_FIN_FONDU_IGN_AUTO = ZOOM_MAX - 1;
+const ZOOM_FIN_FONDU_IGN_AUTO = ZOOM_MAX - 3;
 const OPACITE_MAX_SATELLITE_IGN_AUTO = 1;
 const SOURCE_SATELLITE_IGN_AUTO = "satellite-ign-auto-source";
 const COUCHE_SATELLITE_IGN_AUTO = "satellite-ign-auto-layer";
@@ -1053,6 +1053,14 @@ function actualiserPlaceholderRecherche() {
   }
   const estMobile = window.matchMedia("(max-width: 720px), (pointer: coarse)").matches;
   champRecherche.placeholder = estMobile ? PLACEHOLDER_RECHERCHE_MOBILE : PLACEHOLDER_RECHERCHE_DESKTOP;
+}
+
+function mettreAJourHauteurViewportCss() {
+  const hauteurViewport = window.visualViewport?.height ?? window.innerHeight;
+  if (!Number.isFinite(hauteurViewport) || hauteurViewport <= 0) {
+    return;
+  }
+  document.documentElement.style.setProperty("--app-viewport-height", `${Math.round(hauteurViewport)}px`);
 }
 
 function planifierResizeCarte() {
@@ -2223,21 +2231,26 @@ async function partagerPositionContextuelle() {
 }
 
 actualiserPlaceholderRecherche();
+mettreAJourHauteurViewportCss();
 window.addEventListener("resize", () => {
   actualiserPlaceholderRecherche();
+  mettreAJourHauteurViewportCss();
   planifierResizeCarte();
   planifierMiseAJourPk();
 }, { passive: true });
 window.addEventListener("orientationchange", () => {
+  mettreAJourHauteurViewportCss();
   planifierResizeCarte();
   planifierMiseAJourPk();
 }, { passive: true });
 if (window.visualViewport) {
   window.visualViewport.addEventListener("resize", () => {
+    mettreAJourHauteurViewportCss();
     planifierResizeCarte();
     planifierMiseAJourPk();
   }, { passive: true });
   window.visualViewport.addEventListener("scroll", () => {
+    mettreAJourHauteurViewportCss();
     planifierResizeCarte();
     planifierMiseAJourPk();
   }, { passive: true });
@@ -3133,7 +3146,7 @@ async function chargerDonneesAppareils() {
   }
 
   if (!promesseChargementAppareils) {
-    promesseChargementAppareils = fetch("./appareils.geojson", { cache: "default" })
+    promesseChargementAppareils = fetch("./appareils.geojson", { cache: "no-store" })
       .then((reponse) => {
         if (!reponse.ok) {
           throw new Error(`HTTP ${reponse.status}`);
@@ -3176,7 +3189,7 @@ async function chargerDonneesAcces() {
   }
 
   if (!promesseChargementAcces) {
-    promesseChargementAcces = fetch("./acces.geojson", { cache: "default" })
+    promesseChargementAcces = fetch("./acces.geojson", { cache: "no-store" })
       .then((reponse) => {
         if (!reponse.ok) {
           throw new Error(`HTTP ${reponse.status}`);
@@ -3203,7 +3216,7 @@ async function chargerDonneesPostes() {
   }
 
   if (!promesseChargementPostes) {
-    promesseChargementPostes = fetch("./postes.geojson", { cache: "default" })
+    promesseChargementPostes = fetch("./postes.geojson", { cache: "no-store" })
       .then((reponse) => {
         if (!reponse.ok) {
           throw new Error(`HTTP ${reponse.status}`);

@@ -1,5 +1,6 @@
 :root {
   color-scheme: light;
+  --app-viewport-height: 100vh;
   --ui-glass-bg: linear-gradient(
     135deg,
     rgba(245, 245, 245, 0.82) 0%,
@@ -42,7 +43,7 @@ html,
 body,
 #map {
   width: 100%;
-  height: 100%;
+  height: var(--app-viewport-height, 100vh);
   margin: 0;
   font-family: "Manrope", "Avenir Next", "Segoe UI", sans-serif;
 }
@@ -55,7 +56,7 @@ body {
 
 #map {
   width: 100vw;
-  height: 100dvh;
+  height: var(--app-viewport-height, 100dvh);
 }
 
 #map {
@@ -854,7 +855,7 @@ body {
   box-shadow: 0 14px 26px rgba(15, 23, 42, 0.2);
   list-style: none;
   display: none;
-  max-height: min(62vh, calc(100vh - 120px));
+  max-height: min(62vh, calc(var(--app-viewport-height, 100vh) - 120px));
   overflow: auto;
 }
 
@@ -2107,7 +2108,7 @@ body {
 .popup-streetview-dialog {
   position: relative;
   width: min(920px, calc(100vw - 24px));
-  height: min(580px, calc(100vh - 40px));
+  height: min(580px, calc(var(--app-viewport-height, 100vh) - 40px));
   border-radius: 14px;
   border: 1px solid rgba(148, 163, 184, 0.38);
   background: #0f172a;
@@ -2215,7 +2216,7 @@ body {
   flex-direction: column;
   min-width: 206px;
   max-width: min(276px, calc(100vw - 24px));
-  max-height: min(66vh, calc(100vh - 28px));
+  max-height: min(66vh, calc(var(--app-viewport-height, 100vh) - 28px));
   overflow-y: auto;
   overscroll-behavior: contain;
   padding: 5px 0;
@@ -2351,7 +2352,7 @@ body {
   }
 
   .recherche-resultats {
-    max-height: min(64vh, calc(100vh - 115px));
+    max-height: min(64vh, calc(var(--app-viewport-height, 100vh) - 115px));
   }
 
   .menu-fonds {
@@ -2463,7 +2464,7 @@ body {
   }
 
   .recherche-resultats {
-    max-height: min(66vh, calc(100vh - 120px));
+    max-height: min(66vh, calc(var(--app-viewport-height, 100vh) - 120px));
   }
 
   .popup-badge-poste-nom {
@@ -2556,7 +2557,7 @@ body {
 
   .modal-itineraire-carte {
     width: 100vw;
-    max-height: 100vh;
+    max-height: var(--app-viewport-height, 100vh);
     border-radius: 0;
     border: 0;
     padding: calc(14px + env(safe-area-inset-top)) 11px calc(12px + env(safe-area-inset-bottom));
@@ -2564,7 +2565,7 @@ body {
 
   .modal-localisation-carte {
     width: 100vw;
-    max-height: 100vh;
+    max-height: var(--app-viewport-height, 100vh);
     border-radius: 0;
     border: 0;
     padding: 0 11px calc(12px + env(safe-area-inset-bottom));
@@ -2577,7 +2578,7 @@ body {
 
   .modal-apropos-carte {
     width: 100vw;
-    max-height: 100vh;
+    max-height: var(--app-viewport-height, 100vh);
     border-radius: 0;
     border: 0;
     padding: calc(14px + env(safe-area-inset-top)) 11px calc(12px + env(safe-area-inset-bottom));
@@ -2593,7 +2594,7 @@ body {
 
   .modal-fiche-carte {
     width: 100vw;
-    max-height: 100vh;
+    max-height: var(--app-viewport-height, 100vh);
     border-radius: 0;
     border: 0;
     padding: calc(14px + env(safe-area-inset-top)) 11px calc(12px + env(safe-area-inset-bottom));
