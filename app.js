@@ -1055,6 +1055,14 @@ function actualiserPlaceholderRecherche() {
   champRecherche.placeholder = estMobile ? PLACEHOLDER_RECHERCHE_MOBILE : PLACEHOLDER_RECHERCHE_DESKTOP;
 }
 
+function mettreAJourHauteurViewportCss() {
+  const hauteurViewport = window.visualViewport?.height ?? window.innerHeight;
+  if (!Number.isFinite(hauteurViewport) || hauteurViewport <= 0) {
+    return;
+  }
+  document.documentElement.style.setProperty("--app-viewport-height", `${Math.round(hauteurViewport)}px`);
+}
+
 function planifierResizeCarte() {
   window.requestAnimationFrame(() => {
     carte.resize();
@@ -2223,21 +2231,26 @@ async function partagerPositionContextuelle() {
 }
 
 actualiserPlaceholderRecherche();
+mettreAJourHauteurViewportCss();
 window.addEventListener("resize", () => {
   actualiserPlaceholderRecherche();
+  mettreAJourHauteurViewportCss();
   planifierResizeCarte();
   planifierMiseAJourPk();
 }, { passive: true });
 window.addEventListener("orientationchange", () => {
+  mettreAJourHauteurViewportCss();
   planifierResizeCarte();
   planifierMiseAJourPk();
 }, { passive: true });
 if (window.visualViewport) {
   window.visualViewport.addEventListener("resize", () => {
+    mettreAJourHauteurViewportCss();
     planifierResizeCarte();
     planifierMiseAJourPk();
   }, { passive: true });
   window.visualViewport.addEventListener("scroll", () => {
+    mettreAJourHauteurViewportCss();
     planifierResizeCarte();
     planifierMiseAJourPk();
   }, { passive: true });
