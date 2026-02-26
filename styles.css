@@ -53,20 +53,18 @@ body {
   overscroll-behavior: none;
 }
 
-@media (display-mode: standalone) {
-  html,
-  body {
-    position: fixed;
-    inset: 0;
-    width: 100%;
-    height: 100%;
-    overflow: hidden;
-  }
+body {
+  outline: 3px solid red !important;
 }
 
 #map {
   width: 100vw;
   height: 100dvh;
+  outline: 3px solid blue !important;
+}
+
+.maplibregl-canvas-container {
+  outline: 3px solid lime !important;
 }
 
 #map {
@@ -263,8 +261,20 @@ body {
   background: rgba(248, 250, 252, 0.9);
 }
 
+.modal-localisation-entete {
+  position: relative;
+  display: block;
+  padding: 12px 52px 12px 12px;
+}
+
 .modal-cadre-titres {
   min-width: 0;
+}
+
+.modal-itineraire-entete {
+  position: relative;
+  display: block;
+  padding: 12px 52px 12px 12px;
 }
 
 .modal-apropos-carte {
@@ -280,9 +290,13 @@ body {
 }
 
 .modal-itineraire-fermer {
+  position: absolute;
+  top: 10px;
+  right: 10px;
   width: 30px;
   height: 30px;
   flex: 0 0 30px;
+  margin-left: 0;
   border: 0;
   border-radius: 999px;
   background: rgba(15, 23, 42, 0.08);
@@ -293,9 +307,13 @@ body {
 }
 
 .modal-localisation-fermer {
+  position: absolute;
+  top: 10px;
+  right: 10px;
   width: 30px;
   height: 30px;
   flex: 0 0 30px;
+  margin-left: 0;
   border: 0;
   border-radius: 999px;
   background: rgba(15, 23, 42, 0.08);
@@ -450,13 +468,13 @@ body {
 }
 
 .modal-localisation-titre {
-  margin: 0;
+  margin: 0 0 4px;
   color: #0f172a;
   font-size: 1.25rem;
 }
 
 .modal-localisation-sous-titre {
-  margin: 4px 0 12px;
+  margin: 0;
   color: #64748b;
   font-size: 0.84rem;
 }
@@ -2587,7 +2605,11 @@ body {
 
   .modal-localisation-entete {
     margin: 0 0 12px;
-    padding: 11px;
+    padding: 11px 50px 11px 11px;
+  }
+
+  .modal-itineraire-entete {
+    padding: 11px 50px 11px 11px;
   }
 
   .modal-apropos-carte {
