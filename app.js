@@ -89,6 +89,28 @@ function appliquerPaletteCarteDansCss() {
 }
 appliquerPaletteCarteDansCss();
 
+const EST_IOS = /iPhone|iPad|iPod/i.test(window.navigator?.userAgent || "");
+const EST_STANDALONE = Boolean(
+  window.matchMedia?.("(display-mode: standalone)")?.matches || window.navigator?.standalone === true
+);
+const EST_IOS_STANDALONE = EST_IOS && EST_STANDALONE;
+const BUILD_ALICE = String(window.ALICE_BUILD || "dev-local");
+
+if (EST_IOS_STANDALONE) {
+  document.documentElement.classList.add("ios-standalone");
+}
+
+function afficherBadgeBuild() {
+  if (!document.body || document.getElementById("alice-build-badge")) {
+    return;
+  }
+  const badge = document.createElement("div");
+  badge.id = "alice-build-badge";
+  badge.className = "alice-build-badge";
+  badge.textContent = `Build ${BUILD_ALICE}`;
+  document.body.appendChild(badge);
+}
+
 // Style raster OSM (plan open).
 const stylePlanOsm = {
   version: 8,
@@ -1061,6 +1083,18 @@ function actualiserPlaceholderRecherche() {
 }
 
 function mettreAJourHauteurViewportCss() {
+  if (EST_IOS_STANDALONE) {
+    document.documentElement.style.removeProperty("--app-viewport-height");
+    document.documentElement.style.removeProperty("height");
+    document.body.style.removeProperty("height");
+    const elementCarte = document.getElementById("map");
+    if (elementCarte instanceof HTMLElement) {
+      elementCarte.style.removeProperty("height");
+    }
+    window.scrollTo(0, 0);
+    return;
+  }
+
   const hauteurInner = Number(window.innerHeight) || 0;
   const hauteurViewportVisuel = Number(window.visualViewport?.height) || 0;
   const hauteurClient = Number(document.documentElement?.clientHeight) || 0;
@@ -2281,6 +2315,7 @@ async function partagerPositionContextuelle() {
 }
 
 actualiserPlaceholderRecherche();
+afficherBadgeBuild();
 mettreAJourHauteurViewportCss();
 window.addEventListener("pageshow", synchroniserViewportEtCarte, { passive: true });
 document.addEventListener("visibilitychange", () => {
