@@ -89,28 +89,6 @@ function appliquerPaletteCarteDansCss() {
 }
 appliquerPaletteCarteDansCss();
 
-const EST_IOS = /iPhone|iPad|iPod/i.test(window.navigator?.userAgent || "");
-const EST_STANDALONE = Boolean(
-  window.matchMedia?.("(display-mode: standalone)")?.matches || window.navigator?.standalone === true
-);
-const EST_IOS_STANDALONE = EST_IOS && EST_STANDALONE;
-const BUILD_ALICE = String(window.ALICE_BUILD || "dev-local");
-
-if (EST_IOS_STANDALONE) {
-  document.documentElement.classList.add("ios-standalone");
-}
-
-function afficherBadgeBuild() {
-  if (!document.body || document.getElementById("alice-build-badge")) {
-    return;
-  }
-  const badge = document.createElement("div");
-  badge.id = "alice-build-badge";
-  badge.className = "alice-build-badge";
-  badge.textContent = `Build ${BUILD_ALICE}`;
-  document.body.appendChild(badge);
-}
-
 // Style raster OSM (plan open).
 const stylePlanOsm = {
   version: 8,
@@ -906,13 +884,8 @@ const carte = new maplibregl.Map({
   style: fondsCartographiques[fondActif]
 });
 
-forcerPleinEcranCarte();
 carte.addControl(new maplibregl.NavigationControl({ showCompass: false }), "top-right");
 carte.addControl(new maplibregl.ScaleControl({ maxWidth: 120, unit: "metric" }), "bottom-left");
-carte.on("load", () => {
-  forcerPleinEcranCarte();
-  planifierResizeCarte();
-});
 
 const LIEN_SNCF_OPEN_DATA = "https://ressources.data.sncf.com/";
 const LIEN_EXTRA_PK = "https://github.com/nicolaswurtz/extras-opendata-sncf-reseau";
@@ -1082,68 +1055,10 @@ function actualiserPlaceholderRecherche() {
   champRecherche.placeholder = estMobile ? PLACEHOLDER_RECHERCHE_MOBILE : PLACEHOLDER_RECHERCHE_DESKTOP;
 }
 
-function mettreAJourHauteurViewportCss() {
-  const hauteurInner = Number(window.innerHeight) || 0;
-  const hauteurViewportVisuel = Number(window.visualViewport?.height) || 0;
-  const hauteurClient = Number(document.documentElement?.clientHeight) || 0;
-  const largeurScreen = Number(window.screen?.width) || 0;
-  const hauteurScreenBrute = Number(window.screen?.height) || 0;
-  const estPaysage = window.matchMedia?.("(orientation: landscape)")?.matches === true;
-  const hauteurScreen = EST_IOS_STANDALONE
-    ? (estPaysage ? Math.min(hauteurScreenBrute, largeurScreen) : Math.max(hauteurScreenBrute, largeurScreen))
-    : hauteurScreenBrute;
-  const hauteurViewport = Math.max(hauteurInner, hauteurViewportVisuel, hauteurClient, hauteurScreen);
-  if (!Number.isFinite(hauteurViewport) || hauteurViewport <= 0) {
-    return;
-  }
-  const hauteurPx = `${Math.round(hauteurViewport)}px`;
-  const elementCarte = document.getElementById("map");
-  document.documentElement.style.setProperty("--app-viewport-height", hauteurPx);
-  document.documentElement.style.height = hauteurPx;
-  document.body.style.height = hauteurPx;
-  if (elementCarte instanceof HTMLElement) {
-    elementCarte.style.height = hauteurPx;
-  }
-  window.scrollTo(0, 0);
-}
-
-function synchroniserViewportEtCarte() {
-  mettreAJourHauteurViewportCss();
-  forcerPleinEcranCarte();
-  planifierResizeCarte();
-  planifierMiseAJourPk();
-}
-
 function planifierResizeCarte() {
   window.requestAnimationFrame(() => {
     carte.resize();
   });
-}
-
-function forcerPleinEcranCarte() {
-  if (!carte) {
-    return;
-  }
-
-  const conteneurCarte = carte.getContainer?.();
-  if (conteneurCarte instanceof HTMLElement) {
-    conteneurCarte.style.position = "fixed";
-    conteneurCarte.style.inset = "0";
-    conteneurCarte.style.width = "100%";
-    conteneurCarte.style.height = "100%";
-  }
-
-  const conteneurCanvas = carte.getCanvasContainer?.();
-  if (conteneurCanvas instanceof HTMLElement) {
-    conteneurCanvas.style.width = "100%";
-    conteneurCanvas.style.height = "100%";
-  }
-
-  const canvas = carte.getCanvas?.();
-  if (canvas instanceof HTMLCanvasElement) {
-    canvas.style.width = "100%";
-    canvas.style.height = "100%";
-  }
 }
 
 function obtenirDateLocaleDuJour() {
@@ -2308,32 +2223,25 @@ async function partagerPositionContextuelle() {
 }
 
 actualiserPlaceholderRecherche();
-afficherBadgeBuild();
-mettreAJourHauteurViewportCss();
-window.addEventListener("pageshow", synchroniserViewportEtCarte, { passive: true });
-document.addEventListener("visibilitychange", () => {
-  if (document.visibilityState === "visible") {
-    synchroniserViewportEtCarte();
-  }
-});
 window.addEventListener("resize", () => {
   actualiserPlaceholderRecherche();
-  synchroniserViewportEtCarte();
+  planifierResizeCarte();
+  planifierMiseAJourPk();
 }, { passive: true });
 window.addEventListener("orientationchange", () => {
-  synchroniserViewportEtCarte();
+  planifierResizeCarte();
+  planifierMiseAJourPk();
 }, { passive: true });
 if (window.visualViewport) {
   window.visualViewport.addEventListener("resize", () => {
-    synchroniserViewportEtCarte();
+    planifierResizeCarte();
+    planifierMiseAJourPk();
   }, { passive: true });
   window.visualViewport.addEventListener("scroll", () => {
-    synchroniserViewportEtCarte();
+    planifierResizeCarte();
+    planifierMiseAJourPk();
   }, { passive: true });
 }
-window.setTimeout(synchroniserViewportEtCarte, 0);
-window.setTimeout(synchroniserViewportEtCarte, 250);
-window.setTimeout(synchroniserViewportEtCarte, 1000);
 
 function calculerTotalEntrees(donnees, cleCount) {
   if (!donnees?.features) {

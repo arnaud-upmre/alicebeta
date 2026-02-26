@@ -16,24 +16,12 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet" />
     <title>ALICE</title>
-    <!-- Manifest désactivé pour éviter les incohérences de start_url/scope en ajout écran d'accueil iOS -->
+    <link rel="manifest" href="./manifest.webmanifest" />
     <link rel="icon" type="image/png" sizes="32x32" href="./icons/icon-32.png" />
     <link rel="icon" type="image/png" sizes="192x192" href="./icons/icon-192.png" />
     <link rel="apple-touch-icon" href="./icons/apple-touch-icon.png" />
     <link href="./vendor/maplibre/maplibre-gl.css" rel="stylesheet" />
-    <link rel="stylesheet" href="./styles.css?v=20260226-iospwa5" />
-    <script>
-      window.ALICE_BUILD = "2026-02-26-iospwa5";
-      (function () {
-        var isStandalone = window.matchMedia && window.matchMedia("(display-mode: standalone)").matches;
-        var isIosStandalone = window.navigator && window.navigator.standalone === true;
-        if (!(isStandalone || isIosStandalone)) return;
-        var target = "appv=20260226-iospwa5";
-        if (window.location.search.indexOf(target) !== -1) return;
-        var nextUrl = "./index.html?" + target + window.location.hash;
-        window.location.replace(nextUrl);
-      })();
-    </script>
+    <link rel="stylesheet" href="./styles.css" />
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-4602CPKFWF"></script>
     <script>
       window.dataLayer = window.dataLayer || [];
@@ -247,9 +235,13 @@
       aria-hidden="true"
     >
       <div class="modal-itineraire-carte">
-        <button class="modal-itineraire-fermer" id="modal-itineraire-fermer" type="button" aria-label="Fermer le calcul trajet">×</button>
-        <h2 class="modal-itineraire-titre">Calculer un trajet</h2>
-        <p class="modal-itineraire-sous-titre">Sélectionnez un départ et une arrivée</p>
+        <div class="modal-cadre-entete modal-itineraire-entete">
+          <div class="modal-cadre-titres">
+            <h2 class="modal-itineraire-titre">Calculer un trajet</h2>
+            <p class="modal-itineraire-sous-titre">Sélectionnez un départ et une arrivée</p>
+          </div>
+          <button class="modal-itineraire-fermer" id="modal-itineraire-fermer" type="button" aria-label="Fermer le calcul trajet">×</button>
+        </div>
 
         <div class="modal-itineraire-champs">
           <div class="modal-itineraire-champ">
@@ -353,11 +345,13 @@
     >
       <div class="modal-localisation-carte">
         <div class="modal-localisation-entete">
+          <div class="modal-cadre-titres">
+            <h2 class="modal-localisation-titre">Autour de vous</h2>
+            <p class="modal-localisation-sous-titre">Résultats proches de votre position actuelle</p>
+          </div>
           <button class="modal-localisation-fermer" id="modal-localisation-fermer" type="button" aria-label="Fermer la localisation">×</button>
-          <h2 class="modal-localisation-titre">Autour de vous</h2>
-          <p class="modal-localisation-sous-titre">Résultats proches de votre position actuelle</p>
-          <div class="modal-localisation-etat" id="localisation-etat" aria-live="polite">Appuyez sur "Me localiser".</div>
         </div>
+        <div class="modal-localisation-etat" id="localisation-etat" aria-live="polite">Appuyez sur "Me localiser".</div>
         <ul class="modal-localisation-resultats" id="localisation-resultats" aria-label="Résultats autour de vous"></ul>
       </div>
     </div>
@@ -366,6 +360,6 @@
     <script src="./rss-numeros.js"></script>
     <script src="./code.js"></script>
     <script src="./recherche.js"></script>
-    <script src="./app.js?v=20260226-iospwa5"></script>
+    <script src="./app.js"></script>
   </body>
 </html>
