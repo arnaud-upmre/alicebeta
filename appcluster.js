@@ -19,6 +19,7 @@ const SOURCE_APPAREILS = "appareils-source";
 const COUCHE_APPAREILS = "appareils-points";
 const COUCHE_APPAREILS_GROUPES = "appareils-groupes";
 const COUCHE_APPAREILS_CLUSTER_COMPTE = "appareils-clusters-compte";
+const COUCHE_APPAREILS_SUPPORTS_GROUPES = "appareils-supports-groupes";
 const SOURCE_ACCES = "acces-source";
 const COUCHE_ACCES = "acces-points";
 const COUCHE_ACCES_GROUPES = "acces-groupes";
@@ -2964,7 +2965,11 @@ function ouvrirPopupSurvolInfo(feature, options = {}) {
   let valeur = "";
   let contenu = "";
   let signatureValeur = "";
-  if (idCouche === COUCHE_APPAREILS || idCouche === COUCHE_APPAREILS_GROUPES) {
+  if (
+    idCouche === COUCHE_APPAREILS ||
+    idCouche === COUCHE_APPAREILS_GROUPES ||
+    idCouche === COUCHE_APPAREILS_SUPPORTS_GROUPES
+  ) {
     titre = "Appareil";
     valeur = construireDonneesSurvolAppareil(feature);
     const contexteLieu = echapperHtml(valeur?.contexteLieu || "Poste inconnu");
@@ -3233,7 +3238,11 @@ function appliquerCouchesDonnees() {
       id: COUCHE_APPAREILS,
       type: "circle",
       source: SOURCE_APPAREILS,
-      filter: ["!", ["has", "point_count"]],
+      filter: [
+        "all",
+        ["!", ["has", "point_count"]],
+        ["==", ["coalesce", ["get", "appareils_count"], 1], 1]
+      ],
       paint: {
         "circle-radius": ["interpolate", ["linear"], ["zoom"], 6, 4.5, 12, 5.2, 18, 5.9],
         "circle-color": [
@@ -3317,6 +3326,27 @@ function appliquerCouchesDonnees() {
       },
       paint: {
         "text-color": "#111827"
+      }
+    });
+  }
+
+  if (!carte.getLayer(COUCHE_APPAREILS_SUPPORTS_GROUPES)) {
+    carte.addLayer({
+      id: COUCHE_APPAREILS_SUPPORTS_GROUPES,
+      type: "symbol",
+      source: SOURCE_APPAREILS,
+      filter: [
+        "all",
+        ["!", ["has", "point_count"]],
+        [">", ["coalesce", ["get", "appareils_count"], 1], 1]
+      ],
+      layout: {
+        "icon-image": ["coalesce", ["get", "icone_groupe_appareils"], "appareils-groupe-111111"],
+        "icon-size": ["interpolate", ["linear"], ["get", "appareils_count"], 2, 0.43, 5, 0.56, 10, 0.72],
+        "icon-allow-overlap": true
+      },
+      paint: {
+        "icon-opacity": 1
       }
     });
   }
@@ -3523,6 +3553,11 @@ function appliquerCouchesDonnees() {
     "visibility",
     afficherAppareils && donneesAppareils ? "visible" : "none"
   );
+  carte.setLayoutProperty(
+    COUCHE_APPAREILS_SUPPORTS_GROUPES,
+    "visibility",
+    afficherAppareils && donneesAppareils ? "visible" : "none"
+  );
   carte.setLayoutProperty(COUCHE_ACCES, "visibility", afficherAcces && donneesAcces ? "visible" : "none");
   carte.setLayoutProperty(
     COUCHE_ACCES_GROUPES,
@@ -3610,6 +3645,10 @@ function remonterCouchesDonnees() {
 
   if (carte.getLayer(COUCHE_APPAREILS_CLUSTER_COMPTE)) {
     carte.moveLayer(COUCHE_APPAREILS_CLUSTER_COMPTE);
+  }
+
+  if (carte.getLayer(COUCHE_APPAREILS_SUPPORTS_GROUPES)) {
+    carte.moveLayer(COUCHE_APPAREILS_SUPPORTS_GROUPES);
   }
 
   if (carte.getLayer(COUCHE_APPAREILS)) {
@@ -6137,6 +6176,7 @@ function ouvrirPopupDepuisObjetsCarte(objets) {
     featureAcces = objet;
   } else if (
     idCoucheCliquee === COUCHE_APPAREILS ||
+    idCoucheCliquee === COUCHE_APPAREILS_SUPPORTS_GROUPES ||
     idCoucheCliquee === COUCHE_APPAREILS_GROUPES ||
     idCoucheCliquee === COUCHE_APPAREILS_CLUSTER_COMPTE
   ) {
@@ -6351,6 +6391,7 @@ function activerInteractionsCarte() {
     COUCHE_ACCES,
     COUCHE_APPAREILS_CLUSTER_COMPTE,
     COUCHE_APPAREILS_GROUPES,
+    COUCHE_APPAREILS_SUPPORTS_GROUPES,
     COUCHE_APPAREILS
   ];
   let temporisationAppuiLong = null;
@@ -6364,6 +6405,7 @@ function activerInteractionsCarte() {
     COUCHE_ACCES_CLUSTER_COMPTE,
     COUCHE_ACCES_GROUPES,
     COUCHE_APPAREILS,
+    COUCHE_APPAREILS_SUPPORTS_GROUPES,
     COUCHE_APPAREILS_CLUSTER_COMPTE,
     COUCHE_APPAREILS_GROUPES
   ];
@@ -6371,14 +6413,15 @@ function activerInteractionsCarte() {
   const RAYON_TOLERANCE_TAP_MOBILE_PX = 20;
   const PRIORITE_COUCHE_SELECTION = {
     [COUCHE_APPAREILS]: 0,
-    [COUCHE_ACCES]: 1,
-    [COUCHE_POSTES]: 2,
-    [COUCHE_APPAREILS_CLUSTER_COMPTE]: 3,
-    [COUCHE_ACCES_CLUSTER_COMPTE]: 4,
-    [COUCHE_POSTES_CLUSTER_COMPTE]: 5,
-    [COUCHE_APPAREILS_GROUPES]: 6,
-    [COUCHE_ACCES_GROUPES]: 7,
-    [COUCHE_POSTES_GROUPES]: 8
+    [COUCHE_APPAREILS_SUPPORTS_GROUPES]: 1,
+    [COUCHE_ACCES]: 2,
+    [COUCHE_POSTES]: 3,
+    [COUCHE_APPAREILS_CLUSTER_COMPTE]: 4,
+    [COUCHE_ACCES_CLUSTER_COMPTE]: 5,
+    [COUCHE_POSTES_CLUSTER_COMPTE]: 6,
+    [COUCHE_APPAREILS_GROUPES]: 7,
+    [COUCHE_ACCES_GROUPES]: 8,
+    [COUCHE_POSTES_GROUPES]: 9
   };
 
   const recupererFeatureContexte = (point) => {
