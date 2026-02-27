@@ -980,10 +980,15 @@ const modalApropos = document.getElementById("modal-apropos");
 const boutonFermerModalApropos = document.getElementById("modal-apropos-fermer");
 const boutonInstallerPwa = document.getElementById("bouton-installer-pwa");
 const messageInstallerPwa = document.getElementById("message-installer-pwa");
+const ADRESSE_EMAIL_SIGNAL_FICHE = "ALICEGrpO365@sncf.onmicrosoft.com";
 let modalFiche = document.getElementById("modal-fiche");
 let modalFicheContenu = document.getElementById("modal-fiche-contenu");
 let boutonFermerModalFiche = document.getElementById("modal-fiche-fermer");
 let boutonPartagerModalFiche = document.getElementById("modal-fiche-partager");
+let boutonModifierModalFiche = document.getElementById("modal-fiche-modifier");
+let panneauSignalementModalFiche = document.getElementById("modal-fiche-signalement");
+let champSignalementModalFiche = document.getElementById("modal-fiche-signalement-champ");
+let boutonEnvoyerSignalementModalFiche = document.getElementById("modal-fiche-signalement-envoyer");
 let elementRetourFocusModalFiche = null;
 let elementRetourFocusModalApropos = null;
 let modalStreetViewContextuelle = null;
@@ -1146,10 +1151,15 @@ function fermerPopupCarte(options = {}) {
   popupCarte = null;
   navigationInternePopup = null;
   contextePartageFiche = null;
+  fermerModeSignalementFiche();
   modalFiche?.classList.remove("est-vue-appareils-associes");
   if (boutonPartagerModalFiche) {
     boutonPartagerModalFiche.hidden = false;
     boutonPartagerModalFiche.style.display = "";
+  }
+  if (boutonModifierModalFiche) {
+    boutonModifierModalFiche.hidden = false;
+    boutonModifierModalFiche.style.display = "";
   }
   if (localiserPoint && coordonnees) {
     demarrerClignotementLocalisation(coordonnees[0], coordonnees[1]);
@@ -1157,7 +1167,16 @@ function fermerPopupCarte(options = {}) {
 }
 
 function assurerElementsModalFiche() {
-  if (modalFiche && modalFicheContenu && boutonFermerModalFiche && boutonPartagerModalFiche) {
+  if (
+    modalFiche
+    && modalFicheContenu
+    && boutonFermerModalFiche
+    && boutonPartagerModalFiche
+    && boutonModifierModalFiche
+    && panneauSignalementModalFiche
+    && champSignalementModalFiche
+    && boutonEnvoyerSignalementModalFiche
+  ) {
     return true;
   }
 
@@ -1167,7 +1186,19 @@ function assurerElementsModalFiche() {
     modalFicheContenu = document.getElementById("modal-fiche-contenu");
     boutonFermerModalFiche = document.getElementById("modal-fiche-fermer");
     boutonPartagerModalFiche = document.getElementById("modal-fiche-partager");
-    return Boolean(modalFicheContenu && boutonFermerModalFiche && boutonPartagerModalFiche);
+    boutonModifierModalFiche = document.getElementById("modal-fiche-modifier");
+    panneauSignalementModalFiche = document.getElementById("modal-fiche-signalement");
+    champSignalementModalFiche = document.getElementById("modal-fiche-signalement-champ");
+    boutonEnvoyerSignalementModalFiche = document.getElementById("modal-fiche-signalement-envoyer");
+    return Boolean(
+      modalFicheContenu
+      && boutonFermerModalFiche
+      && boutonPartagerModalFiche
+      && boutonModifierModalFiche
+      && panneauSignalementModalFiche
+      && champSignalementModalFiche
+      && boutonEnvoyerSignalementModalFiche
+    );
   }
 
   const racine = document.createElement("div");
@@ -1186,7 +1217,13 @@ function assurerElementsModalFiche() {
           <path d="M6 10.5v7a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2v-7" />
         </svg>
       </button>
+      <button class="modal-fiche-modifier" id="modal-fiche-modifier" type="button" aria-label="Modifier la fiche">✏️</button>
       <button class="modal-fiche-fermer" id="modal-fiche-fermer" type="button" aria-label="Fermer la fiche">×</button>
+      <div class="modal-fiche-signalement" id="modal-fiche-signalement" hidden>
+        <p class="modal-fiche-signalement-titre">Ajouter/Modifier une information sur cette fiche :</p>
+        <textarea class="modal-fiche-signalement-champ" id="modal-fiche-signalement-champ" rows="9" placeholder="Bonjour,&#10;je propose une modification/ajout sur la fiche &#39;...&#39;.&#10;"></textarea>
+        <button class="modal-fiche-signalement-envoyer" id="modal-fiche-signalement-envoyer" type="button">Envoyer</button>
+      </div>
       <div class="modal-fiche-contenu maplibregl-popup-content" id="modal-fiche-contenu"></div>
     </div>
   `;
@@ -1196,7 +1233,19 @@ function assurerElementsModalFiche() {
   modalFicheContenu = document.getElementById("modal-fiche-contenu");
   boutonFermerModalFiche = document.getElementById("modal-fiche-fermer");
   boutonPartagerModalFiche = document.getElementById("modal-fiche-partager");
-  return Boolean(modalFicheContenu && boutonFermerModalFiche && boutonPartagerModalFiche);
+  boutonModifierModalFiche = document.getElementById("modal-fiche-modifier");
+  panneauSignalementModalFiche = document.getElementById("modal-fiche-signalement");
+  champSignalementModalFiche = document.getElementById("modal-fiche-signalement-champ");
+  boutonEnvoyerSignalementModalFiche = document.getElementById("modal-fiche-signalement-envoyer");
+  return Boolean(
+    modalFicheContenu
+    && boutonFermerModalFiche
+    && boutonPartagerModalFiche
+    && boutonModifierModalFiche
+    && panneauSignalementModalFiche
+    && champSignalementModalFiche
+    && boutonEnvoyerSignalementModalFiche
+  );
 }
 
 function creerPopupFicheModale() {
@@ -1212,6 +1261,7 @@ function creerPopupFicheModale() {
       if (modalFicheContenu) {
         modalFicheContenu.innerHTML = html;
       }
+      fermerModeSignalementFiche();
       return instance;
     },
     addTo() {
@@ -1403,6 +1453,127 @@ async function partagerFicheCourante() {
   }
 
   window.prompt("Copiez ce lien :", lien);
+}
+
+function formaterValeurSignalement(valeur) {
+  const texte = champCompletOuVide(valeur);
+  return texte || "Non renseigné";
+}
+
+function choisirPostePourSignalement(postesListe, satCibleNormalisee = "") {
+  if (!Array.isArray(postesListe) || !postesListe.length) {
+    return null;
+  }
+  if (!satCibleNormalisee) {
+    return postesListe[0] || null;
+  }
+  const trouve = postesListe.find((poste) => {
+    const sat = normaliserTexteRecherche(champCompletOuVide(poste?.SAT));
+    return sat === satCibleNormalisee;
+  });
+  return trouve || postesListe[0] || null;
+}
+
+function extraireInformationsSignalement(featurePostes, featureAcces, featureAppareils, options = {}) {
+  const satCible = normaliserTexteRecherche(options?.cibleSatPoste || "");
+
+  if (featureAcces && !featurePostes && !featureAppareils) {
+    const liste = extraireListeDepuisFeature(featureAcces, "acces_liste_json");
+    const acces = liste[0] || {};
+    return {
+      nom: formaterValeurSignalement(acces?.nom || featureAcces?.properties?.nom),
+      typeObjet: formaterValeurSignalement(acces?.type || featureAcces?.properties?.type),
+      sat: formaterValeurSignalement(acces?.SAT || featureAcces?.properties?.SAT),
+      acces: formaterValeurSignalement(acces?.acces || featureAcces?.properties?.acces)
+    };
+  }
+
+  if (featureAppareils && !featurePostes) {
+    const liste = extraireListeDepuisFeature(featureAppareils, "appareils_liste_json");
+    const appareil = liste[0] || {};
+    return {
+      nom: formaterValeurSignalement(appareil?.nom || featureAppareils?.properties?.nom),
+      typeObjet: formaterValeurSignalement(appareil?.type || featureAppareils?.properties?.type),
+      sat: formaterValeurSignalement(appareil?.SAT || featureAppareils?.properties?.SAT),
+      acces: formaterValeurSignalement(appareil?.acces || featureAppareils?.properties?.acces)
+    };
+  }
+
+  if (featurePostes) {
+    const liste = extraireListeDepuisFeature(featurePostes, "postes_liste_json");
+    const poste = choisirPostePourSignalement(liste, satCible) || {};
+    return {
+      nom: formaterValeurSignalement(poste?.nom || featurePostes?.properties?.nom),
+      typeObjet: formaterValeurSignalement(poste?.type || featurePostes?.properties?.type),
+      sat: formaterValeurSignalement(poste?.SAT || featurePostes?.properties?.SAT),
+      acces: formaterValeurSignalement(poste?.acces || featurePostes?.properties?.acces)
+    };
+  }
+
+  return {
+    nom: "Non renseigné",
+    typeObjet: "Non renseigné",
+    sat: "Non renseigné",
+    acces: "Non renseigné"
+  };
+}
+
+function fermerModeSignalementFiche() {
+  modalFiche?.classList.remove("est-mode-signalement");
+  if (panneauSignalementModalFiche) {
+    panneauSignalementModalFiche.hidden = true;
+  }
+}
+
+function ouvrirModeSignalementFiche() {
+  if (!modalFiche || !panneauSignalementModalFiche || !champSignalementModalFiche) {
+    return;
+  }
+  const contexte = contextePartageFiche || {};
+  const resume = `${formaterValeurSignalement(contexte.nom)} / ${formaterValeurSignalement(contexte.typeObjet)} / ${formaterValeurSignalement(
+    contexte.sat
+  )} : ${formaterValeurSignalement(contexte.acces)}`;
+  const corpsPropose = window.moduleModificationAlice?.construireCorpsSignalement
+    ? window.moduleModificationAlice.construireCorpsSignalement(contexte, "")
+    : `Bonjour,\n\nje propose une modification/ajout sur la fiche '${resume}'.\n\nCommentaire :\n`;
+
+  champSignalementModalFiche.value = corpsPropose;
+  panneauSignalementModalFiche.hidden = false;
+  modalFiche.classList.add("est-mode-signalement");
+  champSignalementModalFiche.focus({ preventScroll: true });
+}
+
+function basculerModeSignalementFiche() {
+  if (!modalFiche) {
+    return;
+  }
+  if (modalFiche.classList.contains("est-mode-signalement")) {
+    fermerModeSignalementFiche();
+    return;
+  }
+  ouvrirModeSignalementFiche();
+}
+
+function envoyerSignalementFicheParEmail() {
+  if (!champSignalementModalFiche) {
+    return;
+  }
+  const commentaire = String(champSignalementModalFiche.value || "").trim();
+  if (!commentaire) {
+    champSignalementModalFiche.focus({ preventScroll: true });
+    return;
+  }
+  const contexte = {
+    ...(contextePartageFiche || {}),
+    lienFiche: construireUrlPartageFiche(contextePartageFiche || {})
+  };
+  const lienMailto = window.moduleModificationAlice?.construireLienMailto
+    ? window.moduleModificationAlice.construireLienMailto(ADRESSE_EMAIL_SIGNAL_FICHE, contexte, commentaire)
+    : "";
+  if (!lienMailto) {
+    return;
+  }
+  window.location.href = lienMailto;
 }
 
 function obtenirLienImajnetDepuisContexte() {
@@ -4500,9 +4671,16 @@ function attacherActionsPopupInterne() {
 
   const estVueListeAppareilsAssocies = Boolean(racinePopup.querySelector("#popup-retour-fiche-poste"));
   modalFiche?.classList.toggle("est-vue-appareils-associes", estVueListeAppareilsAssocies);
+  if (estVueListeAppareilsAssocies && modalFiche?.classList.contains("est-mode-signalement")) {
+    fermerModeSignalementFiche();
+  }
   if (boutonPartagerModalFiche) {
     boutonPartagerModalFiche.hidden = estVueListeAppareilsAssocies;
     boutonPartagerModalFiche.style.display = estVueListeAppareilsAssocies ? "none" : "";
+  }
+  if (boutonModifierModalFiche) {
+    boutonModifierModalFiche.hidden = estVueListeAppareilsAssocies;
+    boutonModifierModalFiche.style.display = estVueListeAppareilsAssocies ? "none" : "";
   }
 
   const ouvrirLienCodes = (url) => {
@@ -5253,11 +5431,18 @@ function construirePopupDepuisFeatures(longitude, latitude, featurePostes, featu
 
   fermerPopupCarte({ preserveNavigationLock: conserverFichePendantNavigation });
   const typePartageFiche = estVueAccesSeule ? "acces" : estVueAppareilsSeule ? "appareils" : "postes";
+  const informationsSignalement = extraireInformationsSignalement(featurePostes, featureAcces, featureAppareils, {
+    cibleSatPoste: options?.cibleSatPoste || ""
+  });
   contextePartageFiche = {
     type: typePartageFiche,
     latitude,
     longitude,
-    cibleSatPoste: estVuePosteSeule ? String(options?.cibleSatPoste || "").trim() : ""
+    cibleSatPoste: estVuePosteSeule ? String(options?.cibleSatPoste || "").trim() : "",
+    nom: informationsSignalement.nom,
+    typeObjet: informationsSignalement.typeObjet,
+    sat: informationsSignalement.sat,
+    acces: informationsSignalement.acces
   };
   coordonneesDerniereFiche = [longitude, latitude];
   navigationInternePopup = sectionAppareilsAssociesPoste
@@ -5282,10 +5467,15 @@ function construirePopupDepuisFeatures(longitude, latitude, featurePostes, featu
     navigationInternePopup = null;
     coordonneesDerniereFiche = null;
     contextePartageFiche = null;
+    fermerModeSignalementFiche();
     modalFiche?.classList.remove("est-vue-appareils-associes");
     if (boutonPartagerModalFiche) {
       boutonPartagerModalFiche.hidden = false;
       boutonPartagerModalFiche.style.display = "";
+    }
+    if (boutonModifierModalFiche) {
+      boutonModifierModalFiche.hidden = false;
+      boutonModifierModalFiche.style.display = "";
     }
   });
 
@@ -6791,6 +6981,14 @@ if (doitAfficherModalAproposPremiereVisite()) {
 document.addEventListener("click", (event) => {
   if (event.target instanceof Element && event.target.closest("#modal-fiche-partager")) {
     partagerFicheCourante();
+    return;
+  }
+  if (event.target instanceof Element && event.target.closest("#modal-fiche-modifier")) {
+    basculerModeSignalementFiche();
+    return;
+  }
+  if (event.target instanceof Element && event.target.closest("#modal-fiche-signalement-envoyer")) {
+    envoyerSignalementFicheParEmail();
     return;
   }
   if (event.target instanceof Element && event.target.closest("#modal-fiche-fermer")) {

@@ -234,9 +234,11 @@
       aria-hidden="true"
     >
       <div class="modal-itineraire-carte">
-        <button class="modal-itineraire-fermer" id="modal-itineraire-fermer" type="button" aria-label="Fermer le calcul trajet">×</button>
-        <h2 class="modal-itineraire-titre">Calculer un trajet</h2>
-        <p class="modal-itineraire-sous-titre">Sélectionnez un départ et une arrivée</p>
+        <div class="modal-itineraire-entete">
+          <button class="modal-itineraire-fermer" id="modal-itineraire-fermer" type="button" aria-label="Fermer le calcul trajet">×</button>
+          <h2 class="modal-itineraire-titre">Calculer un trajet</h2>
+          <p class="modal-itineraire-sous-titre">Sélectionnez un départ et une arrivée</p>
+        </div>
 
         <div class="modal-itineraire-champs">
           <div class="modal-itineraire-champ">
@@ -293,7 +295,20 @@
             <path d="M6 10.5v7a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2v-7" />
           </svg>
         </button>
+        <button class="modal-fiche-modifier" id="modal-fiche-modifier" type="button" aria-label="Modifier la fiche">
+          ✏️
+        </button>
         <button class="modal-fiche-fermer" id="modal-fiche-fermer" type="button" aria-label="Fermer la fiche">×</button>
+        <div class="modal-fiche-signalement" id="modal-fiche-signalement" hidden>
+          <p class="modal-fiche-signalement-titre">Ajouter/Modifier une information sur cette fiche :</p>
+          <textarea
+            class="modal-fiche-signalement-champ"
+            id="modal-fiche-signalement-champ"
+            rows="9"
+            placeholder="Bonjour,&#10;je propose une modification/ajout sur la fiche '...'.&#10;"
+          ></textarea>
+          <button class="modal-fiche-signalement-envoyer" id="modal-fiche-signalement-envoyer" type="button">Envoyer</button>
+        </div>
         <div class="modal-fiche-contenu maplibregl-popup-content" id="modal-fiche-contenu"></div>
       </div>
     </div>
@@ -353,6 +368,7 @@
     <script src="./rss-numeros.js"></script>
     <script src="./code.js"></script>
     <script src="./recherche.js"></script>
+    <script src="./modification.js"></script>
     <script src="./app.js"></script>
     
   </body>
