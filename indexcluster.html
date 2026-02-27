@@ -1,0 +1,190 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ALICE - Cluster appareils</title>
+    <link rel="stylesheet" href="./vendor/maplibre/maplibre-gl.css" />
+    <style>
+      html,
+      body {
+        margin: 0;
+        height: 100%;
+        font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+      }
+      #map {
+        width: 100%;
+        height: 100%;
+      }
+      .legend {
+        position: absolute;
+        top: 12px;
+        left: 12px;
+        z-index: 1;
+        background: rgba(255, 255, 255, 0.95);
+        border-radius: 8px;
+        padding: 10px 12px;
+        font-size: 13px;
+        box-shadow: 0 4px 14px rgba(0, 0, 0, 0.15);
+      }
+    </style>
+  </head>
+  <body>
+    <div id="map"></div>
+    <div class="legend">
+      <strong>Cluster appareils</strong><br />
+      Clic sur un cluster: zoom<br />
+      Clic sur un point: détails
+    </div>
+
+    <script src="./vendor/maplibre/maplibre-gl.js"></script>
+    <script>
+      const styleRaster = {
+        version: 8,
+        sources: {
+          osm: {
+            type: "raster",
+            tiles: ["https://tile.openstreetmap.org/{z}/{x}/{y}.png"],
+            tileSize: 256,
+            attribution: "© OpenStreetMap contributors"
+          }
+        },
+        layers: [{ id: "osm", type: "raster", source: "osm" }]
+      };
+
+      const map = new maplibregl.Map({
+        container: "map",
+        style: styleRaster,
+        center: [2.2, 46.7],
+        zoom: 5
+      });
+
+      map.addControl(new maplibregl.NavigationControl(), "top-right");
+
+      fetch("./appareils.geojson")
+        .then((response) => response.json())
+        .then((geojson) => {
+          map.on("load", () => {
+            map.addSource("appareils", {
+              type: "geojson",
+              data: geojson,
+              cluster: true,
+              clusterMaxZoom: 14,
+              clusterRadius: 55
+            });
+
+            map.addLayer({
+              id: "clusters",
+              type: "circle",
+              source: "appareils",
+              filter: ["has", "point_count"],
+              paint: {
+                "circle-color": [
+                  "step",
+                  ["get", "point_count"],
+                  "#60a5fa",
+                  20,
+                  "#f59e0b",
+                  60,
+                  "#ef4444"
+                ],
+                "circle-radius": [
+                  "step",
+                  ["get", "point_count"],
+                  16,
+                  20,
+                  22,
+                  60,
+                  28
+                ],
+                "circle-stroke-width": 2,
+                "circle-stroke-color": "#ffffff"
+              }
+            });
+
+            map.addLayer({
+              id: "cluster-count",
+              type: "symbol",
+              source: "appareils",
+              filter: ["has", "point_count"],
+              layout: {
+                "text-field": "{point_count_abbreviated}",
+                "text-size": 12
+              },
+              paint: {
+                "text-color": "#111827"
+              }
+            });
+
+            map.addLayer({
+              id: "unclustered-point",
+              type: "circle",
+              source: "appareils",
+              filter: ["!", ["has", "point_count"]],
+              paint: {
+                "circle-color": "#065f46",
+                "circle-radius": 6,
+                "circle-stroke-width": 1.5,
+                "circle-stroke-color": "#ffffff"
+              }
+            });
+
+            map.on("click", "clusters", (e) => {
+              const features = map.queryRenderedFeatures(e.point, { layers: ["clusters"] });
+              const clusterId = features[0].properties.cluster_id;
+              map.getSource("appareils").getClusterExpansionZoom(clusterId, (err, zoom) => {
+                if (err) return;
+                map.easeTo({
+                  center: features[0].geometry.coordinates,
+                  zoom
+                });
+              });
+            });
+
+            map.on("click", "unclustered-point", (e) => {
+              const feature = e.features[0];
+              const coordinates = feature.geometry.coordinates.slice();
+              const p = feature.properties || {};
+              const html = `
+                <strong>${p.appareil || "Appareil"}</strong><br>
+                Nom: ${p.nom || "-"}<br>
+                Type: ${p.type || "-"}<br>
+                SAT: ${p.SAT || "-"}<br>
+                Accès: ${p.acces || "-"}<br>
+                Description: ${p.description || "-"}
+              `;
+              new maplibregl.Popup().setLngLat(coordinates).setHTML(html).addTo(map);
+            });
+
+            map.on("mouseenter", "clusters", () => {
+              map.getCanvas().style.cursor = "pointer";
+            });
+            map.on("mouseleave", "clusters", () => {
+              map.getCanvas().style.cursor = "";
+            });
+            map.on("mouseenter", "unclustered-point", () => {
+              map.getCanvas().style.cursor = "pointer";
+            });
+            map.on("mouseleave", "unclustered-point", () => {
+              map.getCanvas().style.cursor = "";
+            });
+
+            const bounds = new maplibregl.LngLatBounds();
+            let hasPoint = false;
+            for (const feature of geojson.features || []) {
+              if (feature?.geometry?.type === "Point" && Array.isArray(feature.geometry.coordinates)) {
+                bounds.extend(feature.geometry.coordinates);
+                hasPoint = true;
+              }
+            }
+            if (hasPoint) {
+              map.fitBounds(bounds, { padding: 40, maxZoom: 13 });
+            }
+          });
+        })
+        .catch((error) => {
+          console.error("Impossible de charger appareils.geojson", error);
+        });
+    </script>
+  </body>
+</html>
