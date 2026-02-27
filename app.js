@@ -1481,6 +1481,7 @@ function extraireInformationsSignalement(featurePostes, featureAcces, featureApp
     const liste = extraireListeDepuisFeature(featureAcces, "acces_liste_json");
     const acces = liste[0] || {};
     return {
+      designationObjet: "",
       nom: formaterValeurSignalement(acces?.nom || featureAcces?.properties?.nom),
       typeObjet: formaterValeurSignalement(acces?.type || featureAcces?.properties?.type),
       sat: formaterValeurSignalement(acces?.SAT || featureAcces?.properties?.SAT),
@@ -1492,6 +1493,7 @@ function extraireInformationsSignalement(featurePostes, featureAcces, featureApp
     const liste = extraireListeDepuisFeature(featureAppareils, "appareils_liste_json");
     const appareil = liste[0] || {};
     return {
+      designationObjet: formaterValeurSignalement(appareil?.appareil || featureAppareils?.properties?.appareil),
       nom: formaterValeurSignalement(appareil?.nom || featureAppareils?.properties?.nom),
       typeObjet: formaterValeurSignalement(appareil?.type || featureAppareils?.properties?.type),
       sat: formaterValeurSignalement(appareil?.SAT || featureAppareils?.properties?.SAT),
@@ -1503,6 +1505,7 @@ function extraireInformationsSignalement(featurePostes, featureAcces, featureApp
     const liste = extraireListeDepuisFeature(featurePostes, "postes_liste_json");
     const poste = choisirPostePourSignalement(liste, satCible) || {};
     return {
+      designationObjet: "",
       nom: formaterValeurSignalement(poste?.nom || featurePostes?.properties?.nom),
       typeObjet: formaterValeurSignalement(poste?.type || featurePostes?.properties?.type),
       sat: formaterValeurSignalement(poste?.SAT || featurePostes?.properties?.SAT),
@@ -1511,6 +1514,7 @@ function extraireInformationsSignalement(featurePostes, featureAcces, featureApp
   }
 
   return {
+    designationObjet: "",
     nom: "Non renseigné",
     typeObjet: "Non renseigné",
     sat: "Non renseigné",
@@ -5431,6 +5435,7 @@ function construirePopupDepuisFeatures(longitude, latitude, featurePostes, featu
     latitude,
     longitude,
     cibleSatPoste: estVuePosteSeule ? String(options?.cibleSatPoste || "").trim() : "",
+    designationObjet: informationsSignalement.designationObjet,
     nom: informationsSignalement.nom,
     typeObjet: informationsSignalement.typeObjet,
     sat: informationsSignalement.sat,

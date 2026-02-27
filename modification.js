@@ -34,7 +34,10 @@
   }
 
   function construireResumeFiche(contexte) {
+    const typeFiche = libelleTypeFiche(contexte);
+    const designationObjet = valeurSiDisponible(contexte?.designationObjet);
     const morceaux = [
+      typeFiche === "appareil" ? designationObjet : "",
       valeurSiDisponible(contexte?.nom),
       valeurSiDisponible(contexte?.typeObjet),
       valeurSiDisponible(contexte?.sat)
