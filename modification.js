@@ -55,6 +55,9 @@
     if (typeFiche === "acces") {
       const nomsAcces = Array.isArray(contexte?.listeNomsAcces) ? contexte.listeNomsAcces : [];
       const blocAcces = nomsAcces.filter(Boolean).join(", ");
+      if (nomsAcces.length > 1 && blocAcces) {
+        return blocAcces;
+      }
       if (blocAcces && blocPrincipal) {
         return `${blocAcces} / ${blocPrincipal}`;
       }

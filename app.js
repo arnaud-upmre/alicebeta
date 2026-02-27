@@ -1533,12 +1533,17 @@ function extraireListeNomsAccesSignalement(featureAcces) {
   const noms = [];
   const vus = new Set();
   for (const entree of liste) {
-    const nomAcces = champCompletOuVide(entree?.acces);
-    if (!nomAcces || vus.has(nomAcces)) {
+    const nomAcces = champCompletOuVide(entree?.nom);
+    const typeAcces = champCompletOuVide(entree?.type);
+    const satAcces = champCompletOuVide(entree?.SAT);
+    const libelle = [nomAcces, typeAcces, satAcces].filter(Boolean).join(" ");
+    const fallback = champCompletOuVide(entree?.acces);
+    const valeurFinale = libelle || fallback;
+    if (!valeurFinale || vus.has(valeurFinale)) {
       continue;
     }
-    vus.add(nomAcces);
-    noms.push(nomAcces);
+    vus.add(valeurFinale);
+    noms.push(valeurFinale);
   }
   return noms;
 }
