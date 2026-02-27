@@ -284,6 +284,11 @@ body {
   display: none;
 }
 
+.modal-fiche.est-mode-signalement #modal-fiche-partager,
+.modal-fiche.est-mode-signalement #modal-fiche-modifier {
+  display: none;
+}
+
 .modal-itineraire-carte {
   position: relative;
   width: min(540px, calc(100vw - 28px));

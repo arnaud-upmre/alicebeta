@@ -1221,7 +1221,7 @@ function assurerElementsModalFiche() {
       <button class="modal-fiche-fermer" id="modal-fiche-fermer" type="button" aria-label="Fermer la fiche">×</button>
       <div class="modal-fiche-signalement" id="modal-fiche-signalement" hidden>
         <p class="modal-fiche-signalement-titre">Ajouter/Modifier une information sur cette fiche :</p>
-        <textarea class="modal-fiche-signalement-champ" id="modal-fiche-signalement-champ" rows="9" placeholder="Bonjour,&#10;je propose une modification/ajout sur la fiche &#39;...&#39;.&#10;"></textarea>
+        <textarea class="modal-fiche-signalement-champ" id="modal-fiche-signalement-champ" rows="9" placeholder="Ajoutez les infos utiles (débouclage, RAP, PA, etc.) ou décrivez simplement la correction à apporter."></textarea>
         <button class="modal-fiche-signalement-envoyer" id="modal-fiche-signalement-envoyer" type="button">Envoyer</button>
       </div>
       <div class="modal-fiche-contenu maplibregl-popup-content" id="modal-fiche-contenu"></div>
