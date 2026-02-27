@@ -3,48 +3,70 @@
     return String(valeur || "").trim();
   }
 
-  function valeurOuIndisponible(valeur) {
+  function estValeurVideOuIndisponible(valeur) {
     const texte = texteOuVide(valeur);
-    return texte || "Non renseigné";
+    if (!texte) {
+      return true;
+    }
+    const normalise = texte.toLowerCase();
+    return normalise === "non renseigné" || normalise === "non renseigne" || normalise === "a completer";
+  }
+
+  function valeurSiDisponible(valeur) {
+    if (estValeurVideOuIndisponible(valeur)) {
+      return "";
+    }
+    return texteOuVide(valeur);
+  }
+
+  function libelleTypeFiche(contexte) {
+    const type = texteOuVide(contexte?.type).toLowerCase();
+    if (type === "postes" || type === "poste") {
+      return "poste";
+    }
+    if (type === "acces" || type === "accès") {
+      return "acces";
+    }
+    if (type === "appareils" || type === "appareil") {
+      return "appareil";
+    }
+    return "fiche";
   }
 
   function construireResumeFiche(contexte) {
-    const nom = valeurOuIndisponible(contexte?.nom);
-    const type = valeurOuIndisponible(contexte?.typeObjet);
-    const sat = valeurOuIndisponible(contexte?.sat);
-    const acces = valeurOuIndisponible(contexte?.acces);
-    return `${nom} / ${type} / ${sat} : ${acces}`;
+    const morceaux = [
+      valeurSiDisponible(contexte?.nom),
+      valeurSiDisponible(contexte?.typeObjet),
+      valeurSiDisponible(contexte?.sat)
+    ].filter(Boolean);
+    const blocPrincipal = morceaux.join(" / ");
+    const acces = valeurSiDisponible(contexte?.acces);
+    if (blocPrincipal && acces) {
+      return `${blocPrincipal} : ${acces}`;
+    }
+    if (blocPrincipal) {
+      return blocPrincipal;
+    }
+    if (acces) {
+      return acces;
+    }
+    return "Fiche sans informations";
   }
 
   function construireSujetSignalement(contexte) {
-    return `ALICE - Modification fiche - ${construireResumeFiche(contexte)}`;
+    return `ALICE - Modification fiche - ${construireResumeFiche(contexte)} (${libelleTypeFiche(contexte)})`;
   }
 
   function construireCorpsSignalement(contexte, commentaire) {
     const resume = construireResumeFiche(contexte);
-    const latitude = Number(contexte?.latitude);
-    const longitude = Number(contexte?.longitude);
-    const coordonnees =
-      Number.isFinite(latitude) && Number.isFinite(longitude)
-        ? `${latitude.toFixed(5)}, ${longitude.toFixed(5)}`
-        : "Non renseignées";
-    const lien = texteOuVide(contexte?.lienFiche);
     const texteCommentaire = texteOuVide(commentaire);
+    const typeFiche = libelleTypeFiche(contexte);
 
     return [
       "Bonjour,",
       "",
-      `je propose une modification/ajout sur la fiche '${resume}'.`,
+      `je propose une modification/ajout sur la fiche '${resume}' (${typeFiche}).`,
       "",
-      "Informations de la fiche :",
-      `- Nom : ${valeurOuIndisponible(contexte?.nom)}`,
-      `- Type : ${valeurOuIndisponible(contexte?.typeObjet)}`,
-      `- SAT : ${valeurOuIndisponible(contexte?.sat)}`,
-      `- Acces : ${valeurOuIndisponible(contexte?.acces)}`,
-      `- Coordonnees : ${coordonnees}`,
-      `- Lien : ${lien || "Non renseigné"}`,
-      "",
-      "Commentaire :",
       texteCommentaire || "(A compléter)",
       "",
       "Merci."

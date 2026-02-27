@@ -1529,15 +1529,7 @@ function ouvrirModeSignalementFiche() {
   if (!modalFiche || !panneauSignalementModalFiche || !champSignalementModalFiche) {
     return;
   }
-  const contexte = contextePartageFiche || {};
-  const resume = `${formaterValeurSignalement(contexte.nom)} / ${formaterValeurSignalement(contexte.typeObjet)} / ${formaterValeurSignalement(
-    contexte.sat
-  )} : ${formaterValeurSignalement(contexte.acces)}`;
-  const corpsPropose = window.moduleModificationAlice?.construireCorpsSignalement
-    ? window.moduleModificationAlice.construireCorpsSignalement(contexte, "")
-    : `Bonjour,\n\nje propose une modification/ajout sur la fiche '${resume}'.\n\nCommentaire :\n`;
-
-  champSignalementModalFiche.value = corpsPropose;
+  champSignalementModalFiche.value = "";
   panneauSignalementModalFiche.hidden = false;
   modalFiche.classList.add("est-mode-signalement");
   champSignalementModalFiche.focus({ preventScroll: true });
