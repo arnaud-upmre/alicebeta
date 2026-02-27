@@ -33,11 +33,12 @@
     return "fiche";
   }
 
-  function construireResumeFiche(contexte) {
+  function construireResumeFiche(contexte, options = {}) {
     const typeFiche = libelleTypeFiche(contexte);
+    const inclureDesignation = options.inclureDesignation !== false;
     const designationObjet = valeurSiDisponible(contexte?.designationObjet);
     const morceaux = [
-      typeFiche === "appareil" ? designationObjet : "",
+      typeFiche === "appareil" && inclureDesignation ? designationObjet : "",
       valeurSiDisponible(contexte?.nom),
       valeurSiDisponible(contexte?.typeObjet),
       valeurSiDisponible(contexte?.sat)
@@ -61,11 +62,13 @@
   }
 
   function construireCorpsSignalement(contexte, commentaire) {
-    const resume = construireResumeFiche(contexte);
     const texteCommentaire = texteOuVide(commentaire);
     const typeFiche = libelleTypeFiche(contexte);
     const listeAppareils = Array.isArray(contexte?.listeElementsAppareils) ? contexte.listeElementsAppareils : [];
     const listeAcces = Array.isArray(contexte?.listeElementsAcces) ? contexte.listeElementsAcces : [];
+    const resume = construireResumeFiche(contexte, {
+      inclureDesignation: !(typeFiche === "appareil" && listeAppareils.length > 1)
+    });
     const lignesMultiples = [];
     if (listeAppareils.length > 1) {
       lignesMultiples.push(`Appareils concernés : ${listeAppareils.join(", ")}`);
@@ -80,9 +83,7 @@
       `je propose une modification/ajout sur la fiche '${resume}' (${typeFiche}).`,
       ...(lignesMultiples.length ? ["", ...lignesMultiples] : []),
       "",
-      texteCommentaire || "(A compléter)",
-      "",
-      "Merci."
+      texteCommentaire || "(A compléter)"
     ].join("\n");
   }
 
