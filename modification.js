@@ -35,24 +35,25 @@
 
   function construireResumeFiche(contexte, options = {}) {
     const typeFiche = libelleTypeFiche(contexte);
-    const inclureDesignation = options.inclureDesignation !== false;
-    const designationObjet = valeurSiDisponible(contexte?.designationObjet);
-    const morceaux = [
-      typeFiche === "appareil" && inclureDesignation ? designationObjet : "",
+    const morceauxBase = [
       valeurSiDisponible(contexte?.nom),
       valeurSiDisponible(contexte?.typeObjet),
-      valeurSiDisponible(contexte?.sat)
+      valeurSiDisponible(contexte?.sat),
+      valeurSiDisponible(contexte?.acces)
     ].filter(Boolean);
-    const blocPrincipal = morceaux.join(" / ");
-    const acces = valeurSiDisponible(contexte?.acces);
-    if (blocPrincipal && acces) {
-      return `${blocPrincipal} : ${acces}`;
+    const blocPrincipal = morceauxBase.join(" / ");
+    if (typeFiche === "appareil") {
+      const nomsAppareils = Array.isArray(contexte?.listeNomsAppareils) ? contexte.listeNomsAppareils : [];
+      const blocAppareils = nomsAppareils.filter(Boolean).join(", ");
+      if (blocAppareils && blocPrincipal) {
+        return `${blocAppareils} / ${blocPrincipal}`;
+      }
+      if (blocAppareils) {
+        return blocAppareils;
+      }
     }
     if (blocPrincipal) {
       return blocPrincipal;
-    }
-    if (acces) {
-      return acces;
     }
     return "Fiche sans informations";
   }
@@ -63,25 +64,11 @@
 
   function construireCorpsSignalement(contexte, commentaire) {
     const texteCommentaire = texteOuVide(commentaire);
-    const typeFiche = libelleTypeFiche(contexte);
-    const listeAppareils = Array.isArray(contexte?.listeElementsAppareils) ? contexte.listeElementsAppareils : [];
-    const listeAcces = Array.isArray(contexte?.listeElementsAcces) ? contexte.listeElementsAcces : [];
-    const resume = construireResumeFiche(contexte, {
-      inclureDesignation: !(typeFiche === "appareil" && listeAppareils.length > 1)
-    });
-    const lignesMultiples = [];
-    if (listeAppareils.length > 1) {
-      lignesMultiples.push(`Appareils concernés : ${listeAppareils.join(", ")}`);
-    }
-    if (listeAcces.length > 1) {
-      lignesMultiples.push(`Accès concernés : ${listeAcces.join(", ")}`);
-    }
+    const resume = construireResumeFiche(contexte);
 
     return [
-      "Bonjour,",
+      `Bonjour : Modification ou Ajout sur la fiche : ${resume}`,
       "",
-      `je propose une modification/ajout sur la fiche '${resume}' (${typeFiche}).`,
-      ...(lignesMultiples.length ? ["", ...lignesMultiples] : []),
       "",
       texteCommentaire || "(A compléter)"
     ].join("\n");

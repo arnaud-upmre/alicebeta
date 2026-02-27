@@ -1507,6 +1507,24 @@ function extraireListeElementsSignalement(feature, cleJson, options = {}) {
   return resultat;
 }
 
+function extraireListeNomsAppareilsSignalement(featureAppareils) {
+  if (!featureAppareils) {
+    return [];
+  }
+  const liste = extraireListeDepuisFeature(featureAppareils, "appareils_liste_json");
+  const noms = [];
+  const vus = new Set();
+  for (const entree of liste) {
+    const nomAppareil = champCompletOuVide(entree?.appareil);
+    if (!nomAppareil || vus.has(nomAppareil)) {
+      continue;
+    }
+    vus.add(nomAppareil);
+    noms.push(nomAppareil);
+  }
+  return noms;
+}
+
 function choisirPostePourSignalement(postesListe, satCibleNormalisee = "") {
   if (!Array.isArray(postesListe) || !postesListe.length) {
     return null;
@@ -1527,6 +1545,7 @@ function extraireInformationsSignalement(featurePostes, featureAcces, featureApp
     inclureAppareil: true,
     inclureAcces: true
   });
+  const listeNomsAppareils = extraireListeNomsAppareilsSignalement(featureAppareils);
   const listeElementsAcces = extraireListeElementsSignalement(featureAcces, "acces_liste_json", {
     inclureAcces: true
   });
@@ -1540,6 +1559,7 @@ function extraireInformationsSignalement(featurePostes, featureAcces, featureApp
       typeObjet: formaterValeurSignalement(acces?.type || featureAcces?.properties?.type),
       sat: formaterValeurSignalement(acces?.SAT || featureAcces?.properties?.SAT),
       acces: formaterValeurSignalement(acces?.acces || featureAcces?.properties?.acces),
+      listeNomsAppareils,
       listeElementsAppareils,
       listeElementsAcces
     };
@@ -1554,6 +1574,7 @@ function extraireInformationsSignalement(featurePostes, featureAcces, featureApp
       typeObjet: formaterValeurSignalement(appareil?.type || featureAppareils?.properties?.type),
       sat: formaterValeurSignalement(appareil?.SAT || featureAppareils?.properties?.SAT),
       acces: formaterValeurSignalement(appareil?.acces || featureAppareils?.properties?.acces),
+      listeNomsAppareils,
       listeElementsAppareils,
       listeElementsAcces
     };
@@ -1568,6 +1589,7 @@ function extraireInformationsSignalement(featurePostes, featureAcces, featureApp
       typeObjet: formaterValeurSignalement(poste?.type || featurePostes?.properties?.type),
       sat: formaterValeurSignalement(poste?.SAT || featurePostes?.properties?.SAT),
       acces: formaterValeurSignalement(poste?.acces || featurePostes?.properties?.acces),
+      listeNomsAppareils,
       listeElementsAppareils,
       listeElementsAcces
     };
@@ -1579,6 +1601,7 @@ function extraireInformationsSignalement(featurePostes, featureAcces, featureApp
     typeObjet: "Non renseigné",
     sat: "Non renseigné",
     acces: "Non renseigné",
+    listeNomsAppareils,
     listeElementsAppareils,
     listeElementsAcces
   };
@@ -5502,6 +5525,7 @@ function construirePopupDepuisFeatures(longitude, latitude, featurePostes, featu
     typeObjet: informationsSignalement.typeObjet,
     sat: informationsSignalement.sat,
     acces: informationsSignalement.acces,
+    listeNomsAppareils: informationsSignalement.listeNomsAppareils,
     listeElementsAppareils: informationsSignalement.listeElementsAppareils,
     listeElementsAcces: informationsSignalement.listeElementsAcces
   };
