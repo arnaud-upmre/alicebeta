@@ -519,6 +519,42 @@ function determinerCouleurCarteAppareil(appareil) {
   return normaliserCouleurHex(appareil?.couleur_appareil || PALETTE_APPAREILS.autre);
 }
 
+function determinerCategorieAppareilParCouleur(couleurHex) {
+  const couleur = normaliserCouleurHex(couleurHex || PALETTE_APPAREILS.autre);
+  if (couleur === normaliserCouleurHex(PALETTE_APPAREILS.urgence)) {
+    return "urgence";
+  }
+  if (couleur === normaliserCouleurHex(PALETTE_APPAREILS.interrupteur)) {
+    return "interrupteur";
+  }
+  if (couleur === normaliserCouleurHex(PALETTE_APPAREILS.transfo)) {
+    return "transfo";
+  }
+  if (couleur === normaliserCouleurHex(PALETTE_APPAREILS.sectionneur)) {
+    return "sectionneur";
+  }
+  if (couleur === normaliserCouleurHex(PALETTE_APPAREILS.alim)) {
+    return "alim";
+  }
+  return "autre";
+}
+
+function construireCompteCategoriesAppareils(appareils) {
+  const compte = {
+    urgence: 0,
+    interrupteur: 0,
+    transfo: 0,
+    sectionneur: 0,
+    alim: 0,
+    autre: 0
+  };
+  for (const appareil of appareils || []) {
+    const categorie = determinerCategorieAppareilParCouleur(appareil?.couleur_appareil);
+    compte[categorie] += 1;
+  }
+  return compte;
+}
+
 function creerImageIconeGroupeAppareils(couleurs, horsPatrimoine) {
   const canvas = document.createElement("canvas");
   canvas.width = DIAMETRE_ICONE_GROUPE_APPAREILS;
@@ -639,6 +675,7 @@ function regrouperAppareilsParCoordonnees(geojson) {
 
     if (total === 1) {
       const unique = groupe.appareils[0];
+      const compte = construireCompteCategoriesAppareils([unique]);
       features.push({
         type: "Feature",
         geometry: {
@@ -649,12 +686,19 @@ function regrouperAppareilsParCoordonnees(geojson) {
           ...unique,
           appareils_count: 1,
           hors_patrimoine_count: unique.hors_patrimoine ? 1 : 0,
+          appareils_categorie_urgence_count: compte.urgence,
+          appareils_categorie_interrupteur_count: compte.interrupteur,
+          appareils_categorie_transfo_count: compte.transfo,
+          appareils_categorie_sectionneur_count: compte.sectionneur,
+          appareils_categorie_alim_count: compte.alim,
+          appareils_categorie_autre_count: compte.autre,
           appareils_liste_json: JSON.stringify([unique])
         }
       });
       continue;
     }
 
+    const compte = construireCompteCategoriesAppareils(groupe.appareils);
     features.push({
       type: "Feature",
       geometry: {
@@ -675,6 +719,12 @@ function regrouperAppareilsParCoordonnees(geojson) {
         appareils_count: total,
         hors_patrimoine_count: groupe.appareils.filter((a) => a.hors_patrimoine).length,
         hors_patrimoine: groupe.appareils.some((a) => a.hors_patrimoine),
+        appareils_categorie_urgence_count: compte.urgence,
+        appareils_categorie_interrupteur_count: compte.interrupteur,
+        appareils_categorie_transfo_count: compte.transfo,
+        appareils_categorie_sectionneur_count: compte.sectionneur,
+        appareils_categorie_alim_count: compte.alim,
+        appareils_categorie_autre_count: compte.autre,
         imajnet:
           groupe.appareils.find((a) => String(a.imajnet || "").trim())?.imajnet || "",
         appareils_liste_json: JSON.stringify(groupe.appareils)
@@ -3152,7 +3202,17 @@ function appliquerCouchesDonnees() {
       data: donneesAppareils || APPAREILS_VIDE,
       cluster: true,
       clusterMaxZoom: 14,
-      clusterRadius: 55
+      clusterRadius: 55,
+      clusterProperties: {
+        appareils_total: ["+", ["coalesce", ["get", "appareils_count"], 1]],
+        appareils_hp_total: ["+", ["coalesce", ["get", "hors_patrimoine_count"], 0]],
+        appareils_cat_urgence_total: ["+", ["coalesce", ["get", "appareils_categorie_urgence_count"], 0]],
+        appareils_cat_interrupteur_total: ["+", ["coalesce", ["get", "appareils_categorie_interrupteur_count"], 0]],
+        appareils_cat_transfo_total: ["+", ["coalesce", ["get", "appareils_categorie_transfo_count"], 0]],
+        appareils_cat_sectionneur_total: ["+", ["coalesce", ["get", "appareils_categorie_sectionneur_count"], 0]],
+        appareils_cat_alim_total: ["+", ["coalesce", ["get", "appareils_categorie_alim_count"], 0]],
+        appareils_cat_autre_total: ["+", ["coalesce", ["get", "appareils_categorie_autre_count"], 0]]
+      }
     });
   } else {
     carte.getSource(SOURCE_APPAREILS).setData(donneesAppareils || APPAREILS_VIDE);
@@ -3182,6 +3242,46 @@ function appliquerCouchesDonnees() {
   }
 
   if (!carte.getLayer(COUCHE_APPAREILS_GROUPES)) {
+    const totalAppareils = ["max", 1, ["coalesce", ["get", "appareils_total"], ["get", "point_count"]]];
+    const rouge = [
+      "/",
+      [
+        "+",
+        ["*", 217, ["coalesce", ["get", "appareils_cat_urgence_total"], 0]],
+        ["*", 247, ["coalesce", ["get", "appareils_cat_interrupteur_total"], 0]],
+        ["*", 255, ["coalesce", ["get", "appareils_cat_transfo_total"], 0]],
+        ["*", 42, ["coalesce", ["get", "appareils_cat_sectionneur_total"], 0]],
+        ["*", 141, ["coalesce", ["get", "appareils_cat_alim_total"], 0]],
+        ["*", 17, ["coalesce", ["get", "appareils_cat_autre_total"], 0]]
+      ],
+      totalAppareils
+    ];
+    const vert = [
+      "/",
+      [
+        "+",
+        ["*", 4, ["coalesce", ["get", "appareils_cat_urgence_total"], 0]],
+        ["*", 127, ["coalesce", ["get", "appareils_cat_interrupteur_total"], 0]],
+        ["*", 214, ["coalesce", ["get", "appareils_cat_transfo_total"], 0]],
+        ["*", 157, ["coalesce", ["get", "appareils_cat_sectionneur_total"], 0]],
+        ["*", 153, ["coalesce", ["get", "appareils_cat_alim_total"], 0]],
+        ["*", 17, ["coalesce", ["get", "appareils_cat_autre_total"], 0]]
+      ],
+      totalAppareils
+    ];
+    const bleu = [
+      "/",
+      [
+        "+",
+        ["*", 41, ["coalesce", ["get", "appareils_cat_urgence_total"], 0]],
+        ["*", 0, ["coalesce", ["get", "appareils_cat_interrupteur_total"], 0]],
+        ["*", 10, ["coalesce", ["get", "appareils_cat_transfo_total"], 0]],
+        ["*", 143, ["coalesce", ["get", "appareils_cat_sectionneur_total"], 0]],
+        ["*", 174, ["coalesce", ["get", "appareils_cat_alim_total"], 0]],
+        ["*", 17, ["coalesce", ["get", "appareils_cat_autre_total"], 0]]
+      ],
+      totalAppareils
+    ];
     carte.addLayer({
       id: COUCHE_APPAREILS_GROUPES,
       type: "circle",
@@ -3189,17 +3289,7 @@ function appliquerCouchesDonnees() {
       filter: ["has", "point_count"],
       paint: {
         "circle-radius": ["step", ["get", "point_count"], 15, 10, 20, 40, 26, 80, 32],
-        "circle-color": [
-          "step",
-          ["get", "point_count"],
-          "#93c5fd",
-          10,
-          "#60a5fa",
-          40,
-          "#2563eb",
-          80,
-          "#1d4ed8"
-        ],
+        "circle-color": ["rgba", rouge, vert, bleu, 0.92],
         "circle-opacity": 0.9,
         "circle-stroke-color": "#ffffff",
         "circle-stroke-width": 1.8
@@ -3214,7 +3304,7 @@ function appliquerCouchesDonnees() {
       source: SOURCE_APPAREILS,
       filter: ["has", "point_count"],
       layout: {
-        "text-field": "{point_count_abbreviated}",
+        "text-field": ["to-string", ["coalesce", ["get", "appareils_total"], ["get", "point_count"]]],
         "text-size": 12
       },
       paint: {
