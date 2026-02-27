@@ -1460,6 +1460,53 @@ function formaterValeurSignalement(valeur) {
   return texte || "Non renseigné";
 }
 
+function estValeurSignalementRenseignee(valeur) {
+  const texte = String(valeur || "").trim();
+  if (!texte) {
+    return false;
+  }
+  const normalise = texte.toLowerCase();
+  return normalise !== "non renseigné" && normalise !== "non renseigne" && normalise !== "a completer";
+}
+
+function construireLibelleElementSignalement(entree, options = {}) {
+  const morceaux = [];
+  if (options.inclureAppareil && estValeurSignalementRenseignee(entree?.appareil)) {
+    morceaux.push(champCompletOuVide(entree?.appareil));
+  }
+  if (estValeurSignalementRenseignee(entree?.nom)) {
+    morceaux.push(champCompletOuVide(entree?.nom));
+  }
+  if (estValeurSignalementRenseignee(entree?.type)) {
+    morceaux.push(champCompletOuVide(entree?.type));
+  }
+  if (estValeurSignalementRenseignee(entree?.SAT)) {
+    morceaux.push(champCompletOuVide(entree?.SAT));
+  }
+  if (options.inclureAcces && estValeurSignalementRenseignee(entree?.acces)) {
+    morceaux.push(`Accès ${champCompletOuVide(entree?.acces)}`);
+  }
+  return morceaux.join(" / ");
+}
+
+function extraireListeElementsSignalement(feature, cleJson, options = {}) {
+  if (!feature) {
+    return [];
+  }
+  const liste = extraireListeDepuisFeature(feature, cleJson);
+  const resultat = [];
+  const vus = new Set();
+  for (const entree of liste) {
+    const libelle = construireLibelleElementSignalement(entree, options);
+    if (!libelle || vus.has(libelle)) {
+      continue;
+    }
+    vus.add(libelle);
+    resultat.push(libelle);
+  }
+  return resultat;
+}
+
 function choisirPostePourSignalement(postesListe, satCibleNormalisee = "") {
   if (!Array.isArray(postesListe) || !postesListe.length) {
     return null;
@@ -1476,6 +1523,13 @@ function choisirPostePourSignalement(postesListe, satCibleNormalisee = "") {
 
 function extraireInformationsSignalement(featurePostes, featureAcces, featureAppareils, options = {}) {
   const satCible = normaliserTexteRecherche(options?.cibleSatPoste || "");
+  const listeElementsAppareils = extraireListeElementsSignalement(featureAppareils, "appareils_liste_json", {
+    inclureAppareil: true,
+    inclureAcces: true
+  });
+  const listeElementsAcces = extraireListeElementsSignalement(featureAcces, "acces_liste_json", {
+    inclureAcces: true
+  });
 
   if (featureAcces && !featurePostes && !featureAppareils) {
     const liste = extraireListeDepuisFeature(featureAcces, "acces_liste_json");
@@ -1485,7 +1539,9 @@ function extraireInformationsSignalement(featurePostes, featureAcces, featureApp
       nom: formaterValeurSignalement(acces?.nom || featureAcces?.properties?.nom),
       typeObjet: formaterValeurSignalement(acces?.type || featureAcces?.properties?.type),
       sat: formaterValeurSignalement(acces?.SAT || featureAcces?.properties?.SAT),
-      acces: formaterValeurSignalement(acces?.acces || featureAcces?.properties?.acces)
+      acces: formaterValeurSignalement(acces?.acces || featureAcces?.properties?.acces),
+      listeElementsAppareils,
+      listeElementsAcces
     };
   }
 
@@ -1497,7 +1553,9 @@ function extraireInformationsSignalement(featurePostes, featureAcces, featureApp
       nom: formaterValeurSignalement(appareil?.nom || featureAppareils?.properties?.nom),
       typeObjet: formaterValeurSignalement(appareil?.type || featureAppareils?.properties?.type),
       sat: formaterValeurSignalement(appareil?.SAT || featureAppareils?.properties?.SAT),
-      acces: formaterValeurSignalement(appareil?.acces || featureAppareils?.properties?.acces)
+      acces: formaterValeurSignalement(appareil?.acces || featureAppareils?.properties?.acces),
+      listeElementsAppareils,
+      listeElementsAcces
     };
   }
 
@@ -1509,7 +1567,9 @@ function extraireInformationsSignalement(featurePostes, featureAcces, featureApp
       nom: formaterValeurSignalement(poste?.nom || featurePostes?.properties?.nom),
       typeObjet: formaterValeurSignalement(poste?.type || featurePostes?.properties?.type),
       sat: formaterValeurSignalement(poste?.SAT || featurePostes?.properties?.SAT),
-      acces: formaterValeurSignalement(poste?.acces || featurePostes?.properties?.acces)
+      acces: formaterValeurSignalement(poste?.acces || featurePostes?.properties?.acces),
+      listeElementsAppareils,
+      listeElementsAcces
     };
   }
 
@@ -1518,7 +1578,9 @@ function extraireInformationsSignalement(featurePostes, featureAcces, featureApp
     nom: "Non renseigné",
     typeObjet: "Non renseigné",
     sat: "Non renseigné",
-    acces: "Non renseigné"
+    acces: "Non renseigné",
+    listeElementsAppareils,
+    listeElementsAcces
   };
 }
 
@@ -5439,7 +5501,9 @@ function construirePopupDepuisFeatures(longitude, latitude, featurePostes, featu
     nom: informationsSignalement.nom,
     typeObjet: informationsSignalement.typeObjet,
     sat: informationsSignalement.sat,
-    acces: informationsSignalement.acces
+    acces: informationsSignalement.acces,
+    listeElementsAppareils: informationsSignalement.listeElementsAppareils,
+    listeElementsAcces: informationsSignalement.listeElementsAcces
   };
   coordonneesDerniereFiche = [longitude, latitude];
   navigationInternePopup = sectionAppareilsAssociesPoste

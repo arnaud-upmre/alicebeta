@@ -64,11 +64,21 @@
     const resume = construireResumeFiche(contexte);
     const texteCommentaire = texteOuVide(commentaire);
     const typeFiche = libelleTypeFiche(contexte);
+    const listeAppareils = Array.isArray(contexte?.listeElementsAppareils) ? contexte.listeElementsAppareils : [];
+    const listeAcces = Array.isArray(contexte?.listeElementsAcces) ? contexte.listeElementsAcces : [];
+    const lignesMultiples = [];
+    if (listeAppareils.length > 1) {
+      lignesMultiples.push(`Appareils concernés : ${listeAppareils.join(", ")}`);
+    }
+    if (listeAcces.length > 1) {
+      lignesMultiples.push(`Accès concernés : ${listeAcces.join(", ")}`);
+    }
 
     return [
       "Bonjour,",
       "",
       `je propose une modification/ajout sur la fiche '${resume}' (${typeFiche}).`,
+      ...(lignesMultiples.length ? ["", ...lignesMultiples] : []),
       "",
       texteCommentaire || "(A compléter)",
       "",
