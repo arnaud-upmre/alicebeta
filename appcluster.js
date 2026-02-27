@@ -22,9 +22,11 @@ const COUCHE_APPAREILS_CLUSTER_COMPTE = "appareils-clusters-compte";
 const SOURCE_ACCES = "acces-source";
 const COUCHE_ACCES = "acces-points";
 const COUCHE_ACCES_GROUPES = "acces-groupes";
+const COUCHE_ACCES_CLUSTER_COMPTE = "acces-clusters-compte";
 const SOURCE_POSTES = "postes-source";
 const COUCHE_POSTES = "postes-points";
 const COUCHE_POSTES_GROUPES = "postes-groupes";
+const COUCHE_POSTES_CLUSTER_COMPTE = "postes-clusters-compte";
 const SOURCE_PK = "pk-source";
 const COUCHE_PK_LABELS = "pk-labels";
 const SOURCE_PN = "pn-source";
@@ -3224,7 +3226,14 @@ function appliquerCouchesDonnees() {
   if (!carte.getSource(SOURCE_ACCES)) {
     carte.addSource(SOURCE_ACCES, {
       type: "geojson",
-      data: donneesAcces || ACCES_VIDE
+      data: donneesAcces || ACCES_VIDE,
+      cluster: true,
+      clusterMaxZoom: 14,
+      clusterRadius: 55,
+      clusterProperties: {
+        acces_total: ["+", ["coalesce", ["get", "acces_count"], 1]],
+        hors_patrimoine_total: ["+", ["coalesce", ["get", "hors_patrimoine_count"], 0]]
+      }
     });
   } else {
     carte.getSource(SOURCE_ACCES).setData(donneesAcces || ACCES_VIDE);
@@ -3235,7 +3244,7 @@ function appliquerCouchesDonnees() {
       id: COUCHE_ACCES,
       type: "circle",
       source: SOURCE_ACCES,
-      filter: ["==", ["get", "acces_count"], 1],
+      filter: ["!", ["has", "point_count"]],
       paint: {
         "circle-radius": ["interpolate", ["linear"], ["zoom"], 6, 5, 12, 5.8, 18, 6.8],
         "circle-color": PALETTE_CARTE.acces,
@@ -3251,9 +3260,19 @@ function appliquerCouchesDonnees() {
       id: COUCHE_ACCES_GROUPES,
       type: "circle",
       source: SOURCE_ACCES,
-      filter: [">", ["get", "acces_count"], 1],
+      filter: ["has", "point_count"],
       paint: {
-        "circle-radius": ["interpolate", ["linear"], ["get", "acces_count"], 2, 13, 5, 17, 10, 22],
+        "circle-radius": [
+          "interpolate",
+          ["linear"],
+          ["coalesce", ["get", "acces_total"], ["get", "point_count"]],
+          2,
+          13,
+          5,
+          17,
+          10,
+          22
+        ],
         "circle-color": PALETTE_CARTE.accesGroupe,
         "circle-opacity": 0.34,
         "circle-stroke-color": "#ffffff",
@@ -3262,10 +3281,33 @@ function appliquerCouchesDonnees() {
     });
   }
 
+  if (!carte.getLayer(COUCHE_ACCES_CLUSTER_COMPTE)) {
+    carte.addLayer({
+      id: COUCHE_ACCES_CLUSTER_COMPTE,
+      type: "symbol",
+      source: SOURCE_ACCES,
+      filter: ["has", "point_count"],
+      layout: {
+        "text-field": ["to-string", ["coalesce", ["get", "acces_total"], ["get", "point_count"]]],
+        "text-size": 12
+      },
+      paint: {
+        "text-color": "#111827"
+      }
+    });
+  }
+
   if (!carte.getSource(SOURCE_POSTES)) {
     carte.addSource(SOURCE_POSTES, {
       type: "geojson",
-      data: donneesPostes || POSTES_VIDE
+      data: donneesPostes || POSTES_VIDE,
+      cluster: true,
+      clusterMaxZoom: 14,
+      clusterRadius: 55,
+      clusterProperties: {
+        postes_total: ["+", ["coalesce", ["get", "postes_count"], 1]],
+        hors_patrimoine_total: ["+", ["coalesce", ["get", "hors_patrimoine_count"], 0]]
+      }
     });
   } else {
     carte.getSource(SOURCE_POSTES).setData(donneesPostes || POSTES_VIDE);
@@ -3276,7 +3318,7 @@ function appliquerCouchesDonnees() {
       id: COUCHE_POSTES,
       type: "circle",
       source: SOURCE_POSTES,
-      filter: ["==", ["get", "postes_count"], 1],
+      filter: ["!", ["has", "point_count"]],
       paint: {
         "circle-radius": ["interpolate", ["linear"], ["zoom"], 6, 5, 12, 5.8, 18, 6.8],
         "circle-color": [
@@ -3297,18 +3339,44 @@ function appliquerCouchesDonnees() {
       id: COUCHE_POSTES_GROUPES,
       type: "circle",
       source: SOURCE_POSTES,
-      filter: [">", ["get", "postes_count"], 1],
+      filter: ["has", "point_count"],
       paint: {
-        "circle-radius": ["interpolate", ["linear"], ["get", "postes_count"], 2, 13, 5, 17, 10, 22],
+        "circle-radius": [
+          "interpolate",
+          ["linear"],
+          ["coalesce", ["get", "postes_total"], ["get", "point_count"]],
+          2,
+          13,
+          5,
+          17,
+          10,
+          22
+        ],
         "circle-color": [
           "case",
-          [">", ["get", "hors_patrimoine_count"], 0],
+          [">", ["coalesce", ["get", "hors_patrimoine_total"], 0], 0],
           PALETTE_CARTE.horsPatrimoineGroupe,
           PALETTE_CARTE.posteGroupe
         ],
-        "circle-opacity": ["case", [">", ["get", "hors_patrimoine_count"], 0], 0.38, 0.34],
+        "circle-opacity": ["case", [">", ["coalesce", ["get", "hors_patrimoine_total"], 0], 0], 0.38, 0.34],
         "circle-stroke-color": "#ffffff",
         "circle-stroke-width": 1.8
+      }
+    });
+  }
+
+  if (!carte.getLayer(COUCHE_POSTES_CLUSTER_COMPTE)) {
+    carte.addLayer({
+      id: COUCHE_POSTES_CLUSTER_COMPTE,
+      type: "symbol",
+      source: SOURCE_POSTES,
+      filter: ["has", "point_count"],
+      layout: {
+        "text-field": ["to-string", ["coalesce", ["get", "postes_total"], ["get", "point_count"]]],
+        "text-size": 12
+      },
+      paint: {
+        "text-color": "#111827"
       }
     });
   }
@@ -3363,9 +3431,19 @@ function appliquerCouchesDonnees() {
     "visibility",
     afficherAcces && donneesAcces ? "visible" : "none"
   );
+  carte.setLayoutProperty(
+    COUCHE_ACCES_CLUSTER_COMPTE,
+    "visibility",
+    afficherAcces && donneesAcces ? "visible" : "none"
+  );
   carte.setLayoutProperty(COUCHE_POSTES, "visibility", afficherPostes && donneesPostes ? "visible" : "none");
   carte.setLayoutProperty(
     COUCHE_POSTES_GROUPES,
+    "visibility",
+    afficherPostes && donneesPostes ? "visible" : "none"
+  );
+  carte.setLayoutProperty(
+    COUCHE_POSTES_CLUSTER_COMPTE,
     "visibility",
     afficherPostes && donneesPostes ? "visible" : "none"
   );
@@ -3408,12 +3486,20 @@ function remonterCouchesDonnees() {
     carte.moveLayer(COUCHE_ACCES_GROUPES);
   }
 
+  if (carte.getLayer(COUCHE_ACCES_CLUSTER_COMPTE)) {
+    carte.moveLayer(COUCHE_ACCES_CLUSTER_COMPTE);
+  }
+
   if (carte.getLayer(COUCHE_ACCES)) {
     carte.moveLayer(COUCHE_ACCES);
   }
 
   if (carte.getLayer(COUCHE_POSTES_GROUPES)) {
     carte.moveLayer(COUCHE_POSTES_GROUPES);
+  }
+
+  if (carte.getLayer(COUCHE_POSTES_CLUSTER_COMPTE)) {
+    carte.moveLayer(COUCHE_POSTES_CLUSTER_COMPTE);
   }
 
   if (carte.getLayer(COUCHE_POSTES)) {
@@ -5914,32 +6000,50 @@ function ouvrirPopupDepuisObjetsCarte(objets) {
   let featurePostes = null;
   let featureAcces = null;
   let featureAppareils = null;
+  const tenterZoomCluster = (idSource) => {
+    const estCluster = Number(objet?.properties?.point_count) > 0;
+    const clusterId = objet?.properties?.cluster_id;
+    if (!estCluster || clusterId == null) {
+      return false;
+    }
+    const source = carte.getSource(idSource);
+    source?.getClusterExpansionZoom?.(Number(clusterId), (err, zoom) => {
+      if (err) {
+        return;
+      }
+      carte.easeTo({
+        center: [longitude, latitude],
+        zoom
+      });
+    });
+    return true;
+  };
 
-  if (idCoucheCliquee === COUCHE_POSTES || idCoucheCliquee === COUCHE_POSTES_GROUPES) {
+  if (
+    idCoucheCliquee === COUCHE_POSTES ||
+    idCoucheCliquee === COUCHE_POSTES_GROUPES ||
+    idCoucheCliquee === COUCHE_POSTES_CLUSTER_COMPTE
+  ) {
+    if (idCoucheCliquee !== COUCHE_POSTES && tenterZoomCluster(SOURCE_POSTES)) {
+      return true;
+    }
     featurePostes = objet;
-  } else if (idCoucheCliquee === COUCHE_ACCES || idCoucheCliquee === COUCHE_ACCES_GROUPES) {
+  } else if (
+    idCoucheCliquee === COUCHE_ACCES ||
+    idCoucheCliquee === COUCHE_ACCES_GROUPES ||
+    idCoucheCliquee === COUCHE_ACCES_CLUSTER_COMPTE
+  ) {
+    if (idCoucheCliquee !== COUCHE_ACCES && tenterZoomCluster(SOURCE_ACCES)) {
+      return true;
+    }
     featureAcces = objet;
   } else if (
     idCoucheCliquee === COUCHE_APPAREILS ||
     idCoucheCliquee === COUCHE_APPAREILS_GROUPES ||
     idCoucheCliquee === COUCHE_APPAREILS_CLUSTER_COMPTE
   ) {
-    if (idCoucheCliquee !== COUCHE_APPAREILS) {
-      const estCluster = Number(objet?.properties?.point_count) > 0;
-      const clusterId = objet?.properties?.cluster_id;
-      if (estCluster && clusterId != null) {
-        const source = carte.getSource(SOURCE_APPAREILS);
-        source?.getClusterExpansionZoom?.(Number(clusterId), (err, zoom) => {
-          if (err) {
-            return;
-          }
-          carte.easeTo({
-            center: [longitude, latitude],
-            zoom
-          });
-        });
-        return true;
-      }
+    if (idCoucheCliquee !== COUCHE_APPAREILS && tenterZoomCluster(SOURCE_APPAREILS)) {
+      return true;
     }
     featureAppareils = objet;
   } else {
@@ -6142,8 +6246,10 @@ async function activerFiltrePourType(type) {
 function activerInteractionsCarte() {
   const couchesInteractives = [
     COUCHE_POSTES_GROUPES,
+    COUCHE_POSTES_CLUSTER_COMPTE,
     COUCHE_POSTES,
     COUCHE_ACCES_GROUPES,
+    COUCHE_ACCES_CLUSTER_COMPTE,
     COUCHE_ACCES,
     COUCHE_APPAREILS_CLUSTER_COMPTE,
     COUCHE_APPAREILS_GROUPES,
@@ -6154,8 +6260,10 @@ function activerInteractionsCarte() {
   let dernierPointCurseur = null;
   const couchesInteractivesSurvolPrioritaires = [
     COUCHE_POSTES,
+    COUCHE_POSTES_CLUSTER_COMPTE,
     COUCHE_POSTES_GROUPES,
     COUCHE_ACCES,
+    COUCHE_ACCES_CLUSTER_COMPTE,
     COUCHE_ACCES_GROUPES,
     COUCHE_APPAREILS,
     COUCHE_APPAREILS_CLUSTER_COMPTE,
@@ -6168,9 +6276,11 @@ function activerInteractionsCarte() {
     [COUCHE_ACCES]: 1,
     [COUCHE_POSTES]: 2,
     [COUCHE_APPAREILS_CLUSTER_COMPTE]: 3,
-    [COUCHE_APPAREILS_GROUPES]: 4,
-    [COUCHE_ACCES_GROUPES]: 5,
-    [COUCHE_POSTES_GROUPES]: 6
+    [COUCHE_ACCES_CLUSTER_COMPTE]: 4,
+    [COUCHE_POSTES_CLUSTER_COMPTE]: 5,
+    [COUCHE_APPAREILS_GROUPES]: 6,
+    [COUCHE_ACCES_GROUPES]: 7,
+    [COUCHE_POSTES_GROUPES]: 8
   };
 
   const recupererFeatureContexte = (point) => {
