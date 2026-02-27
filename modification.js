@@ -41,7 +41,7 @@
       valeurSiDisponible(contexte?.sat),
       valeurSiDisponible(contexte?.acces)
     ].filter(Boolean);
-    const blocPrincipal = morceauxBase.join(" / ");
+    const blocPrincipal = morceauxBase.join(" ");
     if (typeFiche === "appareil") {
       const nomsAppareils = Array.isArray(contexte?.listeNomsAppareils) ? contexte.listeNomsAppareils : [];
       const blocAppareils = nomsAppareils.filter(Boolean).join(", ");
@@ -67,7 +67,8 @@
     const resume = construireResumeFiche(contexte);
 
     return [
-      `Bonjour : Modification ou Ajout sur la fiche : ${resume}`,
+      "Bonjour :",
+      `Voici une modification ou un ajout sur la fiche : ${resume}`,
       "",
       "",
       texteCommentaire || "(A compléter)"
