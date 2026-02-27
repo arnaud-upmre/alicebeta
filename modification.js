@@ -52,6 +52,16 @@
         return blocAppareils;
       }
     }
+    if (typeFiche === "acces") {
+      const nomsAcces = Array.isArray(contexte?.listeNomsAcces) ? contexte.listeNomsAcces : [];
+      const blocAcces = nomsAcces.filter(Boolean).join(", ");
+      if (blocAcces && blocPrincipal) {
+        return `${blocAcces} / ${blocPrincipal}`;
+      }
+      if (blocAcces) {
+        return blocAcces;
+      }
+    }
     if (blocPrincipal) {
       return blocPrincipal;
     }
@@ -65,10 +75,11 @@
   function construireCorpsSignalement(contexte, commentaire) {
     const texteCommentaire = texteOuVide(commentaire);
     const resume = construireResumeFiche(contexte);
+    const typeFiche = libelleTypeFiche(contexte);
 
     return [
       "Bonjour :",
-      `Voici une modification ou un ajout sur la fiche : ${resume}`,
+      `Voici une modification ou un ajout sur la fiche : ${resume} (${typeFiche})`,
       "",
       "",
       texteCommentaire || "(A compléter)"

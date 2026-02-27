@@ -980,7 +980,7 @@ const modalApropos = document.getElementById("modal-apropos");
 const boutonFermerModalApropos = document.getElementById("modal-apropos-fermer");
 const boutonInstallerPwa = document.getElementById("bouton-installer-pwa");
 const messageInstallerPwa = document.getElementById("message-installer-pwa");
-const ADRESSE_EMAIL_SIGNAL_FICHE = "arnaud.debaecker@sncf.fr";
+const ADRESSE_EMAIL_SIGNAL_FICHE = "ALICEGrpO365@sncf.onmicrosoft.com";
 let modalFiche = document.getElementById("modal-fiche");
 let modalFicheContenu = document.getElementById("modal-fiche-contenu");
 let boutonFermerModalFiche = document.getElementById("modal-fiche-fermer");
@@ -1525,6 +1525,24 @@ function extraireListeNomsAppareilsSignalement(featureAppareils) {
   return noms;
 }
 
+function extraireListeNomsAccesSignalement(featureAcces) {
+  if (!featureAcces) {
+    return [];
+  }
+  const liste = extraireListeDepuisFeature(featureAcces, "acces_liste_json");
+  const noms = [];
+  const vus = new Set();
+  for (const entree of liste) {
+    const nomAcces = champCompletOuVide(entree?.acces);
+    if (!nomAcces || vus.has(nomAcces)) {
+      continue;
+    }
+    vus.add(nomAcces);
+    noms.push(nomAcces);
+  }
+  return noms;
+}
+
 function choisirPostePourSignalement(postesListe, satCibleNormalisee = "") {
   if (!Array.isArray(postesListe) || !postesListe.length) {
     return null;
@@ -1546,6 +1564,7 @@ function extraireInformationsSignalement(featurePostes, featureAcces, featureApp
     inclureAcces: true
   });
   const listeNomsAppareils = extraireListeNomsAppareilsSignalement(featureAppareils);
+  const listeNomsAcces = extraireListeNomsAccesSignalement(featureAcces);
   const listeElementsAcces = extraireListeElementsSignalement(featureAcces, "acces_liste_json", {
     inclureAcces: true
   });
@@ -1560,6 +1579,7 @@ function extraireInformationsSignalement(featurePostes, featureAcces, featureApp
       sat: formaterValeurSignalement(acces?.SAT || featureAcces?.properties?.SAT),
       acces: formaterValeurSignalement(acces?.acces || featureAcces?.properties?.acces),
       listeNomsAppareils,
+      listeNomsAcces,
       listeElementsAppareils,
       listeElementsAcces
     };
@@ -1575,6 +1595,7 @@ function extraireInformationsSignalement(featurePostes, featureAcces, featureApp
       sat: formaterValeurSignalement(appareil?.SAT || featureAppareils?.properties?.SAT),
       acces: formaterValeurSignalement(appareil?.acces || featureAppareils?.properties?.acces),
       listeNomsAppareils,
+      listeNomsAcces,
       listeElementsAppareils,
       listeElementsAcces
     };
@@ -1590,6 +1611,7 @@ function extraireInformationsSignalement(featurePostes, featureAcces, featureApp
       sat: formaterValeurSignalement(poste?.SAT || featurePostes?.properties?.SAT),
       acces: formaterValeurSignalement(poste?.acces || featurePostes?.properties?.acces),
       listeNomsAppareils,
+      listeNomsAcces,
       listeElementsAppareils,
       listeElementsAcces
     };
@@ -1602,6 +1624,7 @@ function extraireInformationsSignalement(featurePostes, featureAcces, featureApp
     sat: "Non renseigné",
     acces: "Non renseigné",
     listeNomsAppareils,
+    listeNomsAcces,
     listeElementsAppareils,
     listeElementsAcces
   };
@@ -5526,6 +5549,7 @@ function construirePopupDepuisFeatures(longitude, latitude, featurePostes, featu
     sat: informationsSignalement.sat,
     acces: informationsSignalement.acces,
     listeNomsAppareils: informationsSignalement.listeNomsAppareils,
+    listeNomsAcces: informationsSignalement.listeNomsAcces,
     listeElementsAppareils: informationsSignalement.listeElementsAppareils,
     listeElementsAcces: informationsSignalement.listeElementsAcces
   };
