@@ -519,6 +519,14 @@ function determinerCouleurCarteAppareil(appareil) {
   return normaliserCouleurHex(appareil?.couleur_appareil || PALETTE_APPAREILS.autre);
 }
 
+function determinerCouleurEntreeAppareil(appareil) {
+  const couleurBrute = String(appareil?.couleur_appareil || "").trim();
+  if (couleurBrute) {
+    return normaliserCouleurHex(couleurBrute);
+  }
+  return determinerCouleurAppareil(appareil?.appareil);
+}
+
 function determinerCategorieAppareilParCouleur(couleurHex) {
   const couleur = normaliserCouleurHex(couleurHex || PALETTE_APPAREILS.autre);
   if (couleur === normaliserCouleurHex(PALETTE_APPAREILS.urgence)) {
@@ -549,7 +557,7 @@ function construireCompteCategoriesAppareils(appareils) {
     autre: 0
   };
   for (const appareil of appareils || []) {
-    const categorie = determinerCategorieAppareilParCouleur(appareil?.couleur_appareil);
+    const categorie = determinerCategorieAppareilParCouleur(determinerCouleurEntreeAppareil(appareil));
     compte[categorie] += 1;
   }
   return compte;
@@ -3974,7 +3982,7 @@ function construireSectionAppareils(feature, options = {}) {
       : "";
   const lignesAppareils = appareilsListe
     .map((a) => {
-      const couleur = a.couleur_appareil || "#111111";
+      const couleur = determinerCouleurEntreeAppareil(a);
       const tagHp = a.hors_patrimoine ? '<span class="popup-tag-hp">HP</span>' : "";
       const libelleAppareil = champCompletOuVide(a.appareil) || "Appareil inconnu";
       const descriptionHtml = convertirDescriptionAppareilEnHtml(a.description);
